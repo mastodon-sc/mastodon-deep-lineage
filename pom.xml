@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.scijava</groupId>
+        <artifactId>pom-scijava</artifactId>
+        <version>33.2.0</version>
+    </parent>
+
+    <groupId>org.mastodon</groupId>
+    <artifactId>mastodon-deep-lineage</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <properties>
+        <package-name>org.mastodon</package-name>
+        <license.licenseName>bsd_2</license.licenseName>
+        <license.projectName>mastodon-deep-lineage</license.projectName>
+        <license.organizationName>Mastodon authors</license.organizationName>
+
+        <mastodon.version>1.0.0-beta-27-SNAPSHOT</mastodon.version>
+
+        <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
+
+        <enforcer.skip>true</enforcer.skip>
+    </properties>
+
+    <name>Deep Lineage Project Mastodon Plugins</name>
+    <description>Mastodon plugins resulting from the Deep Lineage project</description>
+    <url>https://github.com/mastodon-sc/mastodon-deep-lineage</url>
+    <inceptionYear>2022</inceptionYear>
+    <organization>
+        <name>Mastodon Science</name>
+        <url>http://github.com/mastodon-sc</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>BSD-2-Clause</name>
+            <url>https://opensource.org/licenses/BSD-2-Clause</url>
+        </license>
+    </licenses>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mastodon</groupId>
+            <artifactId>mastodon</artifactId>
+            <version>${mastodon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>spim_data</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.scijava</groupId>
+            <artifactId>ui-behaviour</artifactId>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <mailingLists>
+        <mailingList>
+            <name>ImageJ Forum</name>
+            <archive>http://forum.imagej.net/</archive>
+        </mailingList>
+    </mailingLists>
+
+    <scm>
+        <connection>scm:git:https:github.com/mastodon-sc/mastodon-deep-lineage</connection>
+        <developerConnection>scm:git:git@github.com:mastodon-sc/mastodon-deep-lineage</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/mastodon-sc/mastodon-deep-lineage</url>
+    </scm>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/mastodon-sc/mastodon-deep-lineage/issues</url>
+    </issueManagement>
+    <ciManagement>
+        <system>GitHub Actions</system>
+        <url>https://github.com/mastodon-sc/mastodon-deep-lineage/actions</url>
+    </ciManagement>
+
+    <developers>
+        <developer>
+            <id>stefanhahmann</id>
+            <name>Stefan Hahmann</name>
+            <email>stefan.hahmann@tu-dresden.de</email>
+            <organization>TU Dresden (Physics of Life)</organization>
+            <organizationUrl>https://physics-of-life.tu-dresden.de/</organizationUrl>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>none</name>
+        </contributor>
+    </contributors>
+
+    <repositories>
+        <repository>
+            <id>scijava.public</id>
+            <url>https://maven.scijava.org/content/groups/public</url>
+        </repository>
+    </repositories>
+</project>
