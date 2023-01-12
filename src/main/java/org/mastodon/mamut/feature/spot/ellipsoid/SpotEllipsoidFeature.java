@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature;
+package org.mastodon.mamut.feature.spot.ellipsoid;
 
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
@@ -54,55 +54,64 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  */
 public class SpotEllipsoidFeature implements Feature< Spot >
 {
-
-	public static final String KEY = "Spot ellipsoid parameters";
+	public static final String KEY = "Spot ellipsoid properties";
 
 	private static final String HELP_STRING =
 			"Computes spot ellipsoid parameters, i.e. the 3 semi axes and the volume. ";
 
-	public static final FeatureProjectionSpec AXIS_A_PROJECTION_SPEC = new FeatureProjectionSpec( "Semi-axis a", Dimension.LENGTH );
-	public static final FeatureProjectionSpec AXIS_B_PROJECTION_SPEC = new FeatureProjectionSpec( "Semi-axis b", Dimension.LENGTH );
-	public static final FeatureProjectionSpec AXIS_C_PROJECTION_SPEC = new FeatureProjectionSpec( "Semi-axis c", Dimension.LENGTH );
-	public static final FeatureProjectionSpec VOLUME_PROJECTION_SPEC = new FeatureProjectionSpec( "Volume", Dimension.NONE );
+	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
 
-	public static final Spec SPEC = new Spec();
+	public static final FeatureProjectionSpec SHORT_SEMI_AXIS_PROJECTION_SPEC =
+			new FeatureProjectionSpec( "Short semi-axis", Dimension.LENGTH );
+
+	public static final FeatureProjectionSpec MIDDLE_SEMI_AXIS_PROJECTION_SPEC =
+			new FeatureProjectionSpec( "Middle semi-axis", Dimension.LENGTH );
+
+	public static final FeatureProjectionSpec LONG_SEMI_AXIS_PROJECTION_SPEC =
+			new FeatureProjectionSpec( "Long semi-axis", Dimension.LENGTH );
+
+	public static final FeatureProjectionSpec VOLUME_PROJECTION_SPEC =
+			new FeatureProjectionSpec( "Volume", Dimension.NONE );
+
+	final DoublePropertyMap< Spot > shortSemiAxis;
+
+	final DoublePropertyMap< Spot > middleSemiAxis;
+
+	final DoublePropertyMap< Spot > longSemiAxis;
+
+	final DoublePropertyMap< Spot > volume;
 
 	@Plugin( type = FeatureSpec.class )
-	public static class Spec extends FeatureSpec< SpotEllipsoidFeature, Spot >
+	public static class SpotEllipsoidFeatureSpec extends FeatureSpec< SpotEllipsoidFeature, Spot >
 	{
-		public Spec()
+		public SpotEllipsoidFeatureSpec()
 		{
-			super( KEY, HELP_STRING, SpotEllipsoidFeature.class, Spot.class, Multiplicity.SINGLE, AXIS_A_PROJECTION_SPEC, AXIS_B_PROJECTION_SPEC, AXIS_C_PROJECTION_SPEC, VOLUME_PROJECTION_SPEC );
+			super( KEY, HELP_STRING, SpotEllipsoidFeature.class, Spot.class, Multiplicity.SINGLE,
+					SHORT_SEMI_AXIS_PROJECTION_SPEC, MIDDLE_SEMI_AXIS_PROJECTION_SPEC, LONG_SEMI_AXIS_PROJECTION_SPEC,
+					VOLUME_PROJECTION_SPEC );
 		}
 	}
 
-	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
+	public static final SpotEllipsoidFeatureSpec SPOT_ELLIPSOID_FEATURE_SPEC = new SpotEllipsoidFeatureSpec();
 
-	final DoublePropertyMap< Spot > semiAxisA;
-	final DoublePropertyMap< Spot > semiAxisB;
-	final DoublePropertyMap< Spot > semiAxisC;
-	final DoublePropertyMap< Spot > volume;
-
-	SpotEllipsoidFeature(
-			final DoublePropertyMap< Spot > semiAxisA, final DoublePropertyMap< Spot > semiAxisB, final DoublePropertyMap< Spot > semiAxisC,
-			final DoublePropertyMap< Spot > volume )
+	SpotEllipsoidFeature( final DoublePropertyMap< Spot > shortSemiAxis, final DoublePropertyMap< Spot > middleSemiAxis,
+			final DoublePropertyMap< Spot > longSemiAxis, final DoublePropertyMap< Spot > volume )
 	{
-		this.semiAxisA = semiAxisA;
-		this.semiAxisB = semiAxisB;
-		this.semiAxisC = semiAxisC;
+		this.shortSemiAxis = shortSemiAxis;
+		this.middleSemiAxis = middleSemiAxis;
+		this.longSemiAxis = longSemiAxis;
 		this.volume = volume;
 		this.projectionMap = new LinkedHashMap<>( 4 );
-		{
-			final FeatureProjectionKey featureProjectionKeyAxisA = key( AXIS_A_PROJECTION_SPEC );
-			final FeatureProjectionKey featureProjectionKeyAxisB = key( AXIS_B_PROJECTION_SPEC );
-			final FeatureProjectionKey featureProjectionKeyAxisC = key( AXIS_C_PROJECTION_SPEC );
-			final FeatureProjectionKey featureProjectionKeyVolume = key( VOLUME_PROJECTION_SPEC );
 
-			projectionMap.put( featureProjectionKeyAxisA, FeatureProjections.project( featureProjectionKeyAxisA, semiAxisA, Dimension.NONE_UNITS ) );
-			projectionMap.put( featureProjectionKeyAxisB, FeatureProjections.project( featureProjectionKeyAxisB, semiAxisB, Dimension.NONE_UNITS ) );
-			projectionMap.put( featureProjectionKeyAxisC, FeatureProjections.project( featureProjectionKeyAxisC, semiAxisC, Dimension.NONE_UNITS ) );
-			projectionMap.put( featureProjectionKeyVolume, FeatureProjections.project( featureProjectionKeyVolume, volume, Dimension.NONE_UNITS ) );
-		}
+		final FeatureProjectionKey keyShortSemiAxis = key( SHORT_SEMI_AXIS_PROJECTION_SPEC );
+		final FeatureProjectionKey keyMiddleSemiAxis = key( MIDDLE_SEMI_AXIS_PROJECTION_SPEC );
+		final FeatureProjectionKey keyLongSemiAxis = key( LONG_SEMI_AXIS_PROJECTION_SPEC );
+		final FeatureProjectionKey keyVolume = key( VOLUME_PROJECTION_SPEC );
+
+		projectionMap.put( keyShortSemiAxis, FeatureProjections.project( keyShortSemiAxis, shortSemiAxis, Dimension.NONE_UNITS ) );
+		projectionMap.put( keyMiddleSemiAxis, FeatureProjections.project( keyMiddleSemiAxis, middleSemiAxis, Dimension.NONE_UNITS ) );
+		projectionMap.put( keyLongSemiAxis, FeatureProjections.project( keyLongSemiAxis, longSemiAxis, Dimension.NONE_UNITS ) );
+		projectionMap.put( keyVolume, FeatureProjections.project( keyVolume, volume, Dimension.NONE_UNITS ) );
 	}
 
 	@Override
@@ -118,17 +127,17 @@ public class SpotEllipsoidFeature implements Feature< Spot >
 	}
 
 	@Override
-	public Spec getSpec()
+	public SpotEllipsoidFeatureSpec getSpec()
 	{
-		return SPEC;
+		return SPOT_ELLIPSOID_FEATURE_SPEC;
 	}
 
 	@Override
 	public void invalidate( final Spot spot )
 	{
-		semiAxisA.remove( spot );
-		semiAxisB.remove( spot );
-		semiAxisC.remove( spot );
+		shortSemiAxis.remove( spot );
+		middleSemiAxis.remove( spot );
+		longSemiAxis.remove( spot );
 		volume.remove( spot );
 	}
 }

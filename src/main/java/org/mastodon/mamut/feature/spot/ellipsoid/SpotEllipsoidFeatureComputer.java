@@ -26,14 +26,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature;
+package org.mastodon.mamut.feature.spot.ellipsoid;
 
 import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatus;
 import org.mastodon.feature.Feature;
+import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.scijava.Cancelable;
@@ -41,6 +41,9 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -73,19 +76,21 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 		if ( null == output )
 		{
 			// Try to get output from the FeatureModel, if we deserialized a model.
-			final Feature< ? > feature = model.getFeatureModel().getFeature( SpotEllipsoidFeature.SPEC );
+			final Feature< ? > feature =
+					model.getFeatureModel().getFeature( SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
 			if ( null != feature )
 			{
 				output = ( SpotEllipsoidFeature ) feature;
 				return;
 			}
 
-			final DoublePropertyMap< Spot > semiAxisA = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
-			final DoublePropertyMap< Spot > semiAxisB = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
-			final DoublePropertyMap< Spot > semiAxisC = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
-			final DoublePropertyMap< Spot >  volume = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > shortSemiAxis = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > middleSemiAxis =
+					new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > longSemiAxis = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > volume = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 			// Create a new output.
-			output = new SpotEllipsoidFeature( semiAxisA, semiAxisB, semiAxisC, volume);
+			output = new SpotEllipsoidFeature( shortSemiAxis, middleSemiAxis, longSemiAxis, volume );
 		}
 	}
 
@@ -98,13 +103,11 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 		if ( recomputeAll )
 		{
 			// Clear all.
-			output.semiAxisA.beforeClearPool();
-			output.semiAxisB.beforeClearPool();
-			output.semiAxisC.beforeClearPool();
+			output.shortSemiAxis.beforeClearPool();
+			output.middleSemiAxis.beforeClearPool();
+			output.longSemiAxis.beforeClearPool();
 			output.volume.beforeClearPool();
 		}
-
-		final int numTimepoints = bdvData.getNumTimepoints();
 
 		int done = 0;
 
@@ -112,39 +115,34 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 
 		final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
 
-		for ( int timepoint = 0; timepoint < numTimepoints; timepoint++ )
+		Collection< Spot > spots = model.getGraph().vertices();
+		final int numSpots = spots.size();
+		Iterator< Spot > spotIterator = spots.iterator();
+		while ( spotIterator.hasNext() && !isCanceled() )
 		{
+			Spot spot = spotIterator.next();
+			// Limit overhead by only update progress every 1000th spot.
+			if ( done++ % 1000 == 0 )
+				status.notifyProgress( ( double ) done / numSpots );
+			// Skip if we are not forced to recompute all and if a value is already computed.
+			if ( !recomputeAll && output.shortSemiAxis.isSet( spot ) )
+				continue;
 
-			status.notifyProgress( ( double ) done++ / numTimepoints );
-
-			final SpatialIndex< Spot > toProcess = model.getSpatioTemporalIndex().getSpatialIndex( timepoint );
-			for ( final Spot spot : toProcess )
-			{
-				if ( isCanceled() )
-					break;
-
-				// Skip if we are not forced to recompute all and if a value is already computed.
-				if ( !recomputeAll && output.semiAxisA.isSet( spot ) )
-					continue;
-
-				spot.getCovariance( covarianceMatrix );
-				eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
-				final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
-				double volume = 4d / 3d * Math.PI;
-				for ( int k = 0; k < eigenValues.length; k++ )
-				{
-					final double semiAxis = Math.sqrt( eigenValues[ k ] );
-					volume *= semiAxis;
-					if (k == 0)
-						output.semiAxisA.set( spot, semiAxis );
-					else if (k == 1)
-						output.semiAxisB.set( spot, semiAxis );
-					else if (k == 2)
-						output.semiAxisC.set( spot, semiAxis );
-				}
-				output.volume.set(spot, volume);
-			}
+			spot.getCovariance( covarianceMatrix );
+			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
+			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
+			// sort axes lengths in ascending order
+			Arrays.sort( eigenValues );
+			double a = Math.sqrt( eigenValues[ 0 ] );
+			double b = Math.sqrt( eigenValues[ 1 ] );
+			double c = Math.sqrt( eigenValues[ 2 ] );
+			double volume = 4d / 3d * Math.PI * a * b * c;
+			output.shortSemiAxis.set( spot, a );
+			output.middleSemiAxis.set( spot, b );
+			output.longSemiAxis.set( spot, c );
+			output.volume.set( spot, volume );
 		}
+		status.notifyProgress( 1.0 );
 	}
 
 	@Override
@@ -164,4 +162,5 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 	{
 		return cancelReason;
 	}
+
 }
