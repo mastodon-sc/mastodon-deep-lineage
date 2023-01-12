@@ -57,35 +57,39 @@ public class SpotEllipsoidFeature implements Feature< Spot >
 
 	public static final String KEY = "Spot ellipsoid parameters";
 
-	private static final String HELP_STRING =
-			"Computes spot ellipsoid parameters, i.e. the 3 semi axes and the volume. ";
+	private static final String HELP_STRING = "Computes spot ellipsoid parameters, i.e. the 3 semi axes and the volume. ";
+
+	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
 
 	public static final FeatureProjectionSpec AXIS_A_PROJECTION_SPEC = new FeatureProjectionSpec( "Semi-axis a", Dimension.LENGTH );
+
 	public static final FeatureProjectionSpec AXIS_B_PROJECTION_SPEC = new FeatureProjectionSpec( "Semi-axis b", Dimension.LENGTH );
+
 	public static final FeatureProjectionSpec AXIS_C_PROJECTION_SPEC = new FeatureProjectionSpec( "Semi-axis c", Dimension.LENGTH );
+
 	public static final FeatureProjectionSpec VOLUME_PROJECTION_SPEC = new FeatureProjectionSpec( "Volume", Dimension.NONE );
 
-	public static final Spec SPEC = new Spec();
+	final DoublePropertyMap< Spot > semiAxisA;
+
+	final DoublePropertyMap< Spot > semiAxisB;
+
+	final DoublePropertyMap< Spot > semiAxisC;
+
+	final DoublePropertyMap< Spot > volume;
 
 	@Plugin( type = FeatureSpec.class )
-	public static class Spec extends FeatureSpec< SpotEllipsoidFeature, Spot >
+	public static class SpotEllipsoidFeatureSpec extends FeatureSpec< SpotEllipsoidFeature, Spot >
 	{
-		public Spec()
+		public SpotEllipsoidFeatureSpec()
 		{
 			super( KEY, HELP_STRING, SpotEllipsoidFeature.class, Spot.class, Multiplicity.SINGLE, AXIS_A_PROJECTION_SPEC, AXIS_B_PROJECTION_SPEC, AXIS_C_PROJECTION_SPEC, VOLUME_PROJECTION_SPEC );
 		}
 	}
 
-	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
-
-	final DoublePropertyMap< Spot > semiAxisA;
-	final DoublePropertyMap< Spot > semiAxisB;
-	final DoublePropertyMap< Spot > semiAxisC;
-	final DoublePropertyMap< Spot > volume;
+	public static final SpotEllipsoidFeatureSpec SPOT_ELLIPSOID_FEATURE_SPEC = new SpotEllipsoidFeatureSpec();
 
 	SpotEllipsoidFeature(
-			final DoublePropertyMap< Spot > semiAxisA, final DoublePropertyMap< Spot > semiAxisB, final DoublePropertyMap< Spot > semiAxisC,
-			final DoublePropertyMap< Spot > volume )
+			final DoublePropertyMap< Spot > semiAxisA, final DoublePropertyMap< Spot > semiAxisB, final DoublePropertyMap< Spot > semiAxisC, final DoublePropertyMap< Spot > volume )
 	{
 		this.semiAxisA = semiAxisA;
 		this.semiAxisB = semiAxisB;
@@ -118,9 +122,9 @@ public class SpotEllipsoidFeature implements Feature< Spot >
 	}
 
 	@Override
-	public Spec getSpec()
+	public SpotEllipsoidFeatureSpec getSpec()
 	{
-		return SPEC;
+		return SPOT_ELLIPSOID_FEATURE_SPEC;
 	}
 
 	@Override

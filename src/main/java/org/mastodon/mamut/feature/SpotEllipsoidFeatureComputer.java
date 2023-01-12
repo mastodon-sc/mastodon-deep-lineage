@@ -73,7 +73,7 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 		if ( null == output )
 		{
 			// Try to get output from the FeatureModel, if we deserialized a model.
-			final Feature< ? > feature = model.getFeatureModel().getFeature( SpotEllipsoidFeature.SPEC );
+			final Feature< ? > feature = model.getFeatureModel().getFeature( SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
 			if ( null != feature )
 			{
 				output = ( SpotEllipsoidFeature ) feature;
@@ -83,9 +83,9 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 			final DoublePropertyMap< Spot > semiAxisA = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 			final DoublePropertyMap< Spot > semiAxisB = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 			final DoublePropertyMap< Spot > semiAxisC = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
-			final DoublePropertyMap< Spot >  volume = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > volume = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 			// Create a new output.
-			output = new SpotEllipsoidFeature( semiAxisA, semiAxisB, semiAxisC, volume);
+			output = new SpotEllipsoidFeature( semiAxisA, semiAxisB, semiAxisC, volume );
 		}
 	}
 
@@ -135,14 +135,14 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 				{
 					final double semiAxis = Math.sqrt( eigenValues[ k ] );
 					volume *= semiAxis;
-					if (k == 0)
+					if ( k == 0 )
 						output.semiAxisA.set( spot, semiAxis );
-					else if (k == 1)
+					else if ( k == 1 )
 						output.semiAxisB.set( spot, semiAxis );
-					else if (k == 2)
+					else if ( k == 2 )
 						output.semiAxisC.set( spot, semiAxis );
 				}
-				output.volume.set(spot, volume);
+				output.volume.set( spot, volume );
 			}
 		}
 	}
