@@ -2,6 +2,9 @@ package org.mastodon.mamut.feature.branch;
 
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.Set;
 
@@ -14,7 +17,14 @@ import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.feature.io.FeatureSerializer;
+import org.mastodon.io.FileIdToObjectMap;
+import org.mastodon.io.ObjectToFileIdMap;
+import org.mastodon.io.properties.IntPropertyMapSerializer;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
@@ -42,11 +52,13 @@ import org.scijava.plugin.Plugin;
  * <li>{@code branchSpot4 = 1}</li>
  * </ul>
  */
-public class BranchNLeavesFeature implements Feature< BranchSpot >
+public class BranchNLeavesFeature
+		implements Feature< BranchSpot >
 {
 	public static final String KEY = "Branch N leaves";
 
-	private static final String HELP_STRING = "Computes the total number of leaves of a branch spot in the whole track sub-tree of this branch spot.";
+	private static final String HELP_STRING =
+			"Computes the total number of leaves of a branch spot in the whole track sub-tree of this branch spot.";
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
 
