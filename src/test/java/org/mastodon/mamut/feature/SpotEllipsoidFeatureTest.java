@@ -29,10 +29,22 @@ public class SpotEllipsoidFeatureTest
 			Mockito.when( sharedBigDataViewerData.getNumTimepoints() ).thenReturn( 1 );
 
 			// compute features
-			FeatureProjection< Spot > featureProjectionAxisA = FeatureComputerTestUtils.getSpotFeatureProjection( context, exampleGraph3, SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC, SpotEllipsoidFeature.AXIS_A_PROJECTION_SPEC, sharedBigDataViewerData );
-			FeatureProjection< Spot > featureProjectionAxisB = FeatureComputerTestUtils.getSpotFeatureProjection( context, exampleGraph3, SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC, SpotEllipsoidFeature.AXIS_B_PROJECTION_SPEC, sharedBigDataViewerData );
-			FeatureProjection< Spot > featureProjectionAxisC = FeatureComputerTestUtils.getSpotFeatureProjection( context, exampleGraph3, SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC, SpotEllipsoidFeature.AXIS_C_PROJECTION_SPEC, sharedBigDataViewerData );
-			FeatureProjection< Spot > featureProjectionVolume = FeatureComputerTestUtils.getSpotFeatureProjection( context, exampleGraph3, SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC, sharedBigDataViewerData );
+			FeatureProjection< Spot > featureProjectionAxisA =
+					FeatureComputerTestUtils.getSpotFeatureProjection( context, exampleGraph3,
+							SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC,
+							SpotEllipsoidFeature.AXIS_A_PROJECTION_SPEC, sharedBigDataViewerData );
+			FeatureProjection< Spot > featureProjectionAxisB =
+					FeatureComputerTestUtils.getSpotFeatureProjection( context, exampleGraph3,
+							SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC,
+							SpotEllipsoidFeature.AXIS_B_PROJECTION_SPEC, sharedBigDataViewerData );
+			FeatureProjection< Spot > featureProjectionAxisC =
+					FeatureComputerTestUtils.getSpotFeatureProjection( context, exampleGraph3,
+							SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC,
+							SpotEllipsoidFeature.AXIS_C_PROJECTION_SPEC, sharedBigDataViewerData );
+			FeatureProjection< Spot > featureProjectionVolume =
+					FeatureComputerTestUtils.getSpotFeatureProjection( context, exampleGraph3,
+							SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC,
+							SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC, sharedBigDataViewerData );
 
 			// eigenvalues for given covariance matrix
 			// cf. https://matrixcalc.org/de/vectors.html#eigenvectors({{6, 2, 3}, {2, 7, 4}, {3, 4, 8}})
@@ -47,7 +59,8 @@ public class SpotEllipsoidFeatureTest
 			assertEquals( semiAxisB, featureProjectionAxisB.value( exampleGraph3.spot0 ), 0.001d );
 			assertEquals( semiAxisC, featureProjectionAxisC.value( exampleGraph3.spot0 ), 0.001d );
 			// volume of ellipsoid https://en.wikipedia.org/wiki/Ellipsoid#Volume
-			assertEquals( semiAxisA * semiAxisB * semiAxisC * 4d / 3d * Math.PI, featureProjectionVolume.value( exampleGraph3.spot0 ), 0.01d );
+			assertEquals( semiAxisA * semiAxisB * semiAxisC * 4d / 3d * Math.PI,
+					featureProjectionVolume.value( exampleGraph3.spot0 ), 0.01d );
 		}
 	}
 }

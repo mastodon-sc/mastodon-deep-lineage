@@ -96,14 +96,16 @@ public class SpotEllipsoidFeature implements Feature< Spot >, FeatureSerializer<
 	{
 		public SpotEllipsoidFeatureSpec()
 		{
-			super( KEY, HELP_STRING, SpotEllipsoidFeature.class, Spot.class, Multiplicity.SINGLE, AXIS_A_PROJECTION_SPEC, AXIS_B_PROJECTION_SPEC, AXIS_C_PROJECTION_SPEC, VOLUME_PROJECTION_SPEC );
+			super( KEY, HELP_STRING, SpotEllipsoidFeature.class, Spot.class, Multiplicity.SINGLE,
+					AXIS_A_PROJECTION_SPEC, AXIS_B_PROJECTION_SPEC, AXIS_C_PROJECTION_SPEC, VOLUME_PROJECTION_SPEC );
 		}
 	}
 
 	public static final SpotEllipsoidFeatureSpec SPOT_ELLIPSOID_FEATURE_SPEC = new SpotEllipsoidFeatureSpec();
 
 	SpotEllipsoidFeature(
-			final DoublePropertyMap< Spot > semiAxisA, final DoublePropertyMap< Spot > semiAxisB, final DoublePropertyMap< Spot > semiAxisC, final DoublePropertyMap< Spot > volume )
+			final DoublePropertyMap< Spot > semiAxisA, final DoublePropertyMap< Spot > semiAxisB,
+			final DoublePropertyMap< Spot > semiAxisC, final DoublePropertyMap< Spot > volume )
 	{
 		this.semiAxisA = semiAxisA;
 		this.semiAxisB = semiAxisB;
@@ -116,10 +118,14 @@ public class SpotEllipsoidFeature implements Feature< Spot >, FeatureSerializer<
 			final FeatureProjectionKey featureProjectionKeyAxisC = key( AXIS_C_PROJECTION_SPEC );
 			final FeatureProjectionKey featureProjectionKeyVolume = key( VOLUME_PROJECTION_SPEC );
 
-			projectionMap.put( featureProjectionKeyAxisA, FeatureProjections.project( featureProjectionKeyAxisA, semiAxisA, Dimension.NONE_UNITS ) );
-			projectionMap.put( featureProjectionKeyAxisB, FeatureProjections.project( featureProjectionKeyAxisB, semiAxisB, Dimension.NONE_UNITS ) );
-			projectionMap.put( featureProjectionKeyAxisC, FeatureProjections.project( featureProjectionKeyAxisC, semiAxisC, Dimension.NONE_UNITS ) );
-			projectionMap.put( featureProjectionKeyVolume, FeatureProjections.project( featureProjectionKeyVolume, volume, Dimension.NONE_UNITS ) );
+			projectionMap.put( featureProjectionKeyAxisA,
+					FeatureProjections.project( featureProjectionKeyAxisA, semiAxisA, Dimension.NONE_UNITS ) );
+			projectionMap.put( featureProjectionKeyAxisB,
+					FeatureProjections.project( featureProjectionKeyAxisB, semiAxisB, Dimension.NONE_UNITS ) );
+			projectionMap.put( featureProjectionKeyAxisC,
+					FeatureProjections.project( featureProjectionKeyAxisC, semiAxisC, Dimension.NONE_UNITS ) );
+			projectionMap.put( featureProjectionKeyVolume,
+					FeatureProjections.project( featureProjectionKeyVolume, volume, Dimension.NONE_UNITS ) );
 		}
 	}
 

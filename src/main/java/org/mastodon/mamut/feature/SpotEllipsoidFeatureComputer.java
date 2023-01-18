@@ -73,17 +73,22 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 		if ( null == output )
 		{
 			// Try to get output from the FeatureModel, if we deserialized a model.
-			final Feature< ? > feature = model.getFeatureModel().getFeature( SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
+			final Feature< ? > feature =
+					model.getFeatureModel().getFeature( SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
 			if ( null != feature )
 			{
 				output = ( SpotEllipsoidFeature ) feature;
 				return;
 			}
 
-			final DoublePropertyMap< Spot > semiAxisA = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
-			final DoublePropertyMap< Spot > semiAxisB = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
-			final DoublePropertyMap< Spot > semiAxisC = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
-			final DoublePropertyMap< Spot > volume = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > semiAxisA =
+					new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > semiAxisB =
+					new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > semiAxisC =
+					new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > volume =
+					new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 			// Create a new output.
 			output = new SpotEllipsoidFeature( semiAxisA, semiAxisB, semiAxisC, volume );
 		}
