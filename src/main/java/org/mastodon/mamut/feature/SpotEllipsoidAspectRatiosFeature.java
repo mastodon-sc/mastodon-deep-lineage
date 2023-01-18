@@ -28,7 +28,13 @@
  */
 package org.mastodon.mamut.feature;
 
-import org.mastodon.collection.RefCollection;
+import static org.mastodon.feature.FeatureProjectionKey.key;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
@@ -37,30 +43,15 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.io.FileIdToObjectMap;
-import org.mastodon.io.ObjectToFileIdMap;
-import org.mastodon.io.properties.DoublePropertyMapSerializer;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
-import static org.mastodon.feature.FeatureProjectionKey.key;
-
 /**
  * Feature that computes the aspect ratios between the three semi-axes of the ellipsoid that best fits the spot.
  */
-@Plugin( type = FeatureSerializer.class )
 public class SpotEllipsoidAspectRatiosFeature
-		implements Feature< Spot >, FeatureSerializer< SpotEllipsoidAspectRatiosFeature, Spot >
+		implements Feature< Spot >
 {
 
 	public static final String KEY = "Spot ellipsoid aspect ratios";
@@ -158,42 +149,5 @@ public class SpotEllipsoidAspectRatiosFeature
 		aspectRatioAToB.remove( spot );
 		aspectRatioAToC.remove( spot );
 		aspectRatioBToC.remove( spot );
-	}
-
-	@Override
-	public FeatureSpec< SpotEllipsoidAspectRatiosFeature, Spot > getFeatureSpec()
-	{
-		return SPOT_ELLIPSOID_ASPECT_RATIOS_FEATURE_SPEC;
-	}
-
-	@Override
-	public void serialize( SpotEllipsoidAspectRatiosFeature feature, ObjectToFileIdMap< Spot > objectToFileIdMap,
-			ObjectOutputStream objectOutputStream ) throws IOException
-	{
-		final DoublePropertyMapSerializer< Spot > aspectRatioAToBPropertySerializer =
-				new DoublePropertyMapSerializer<>( feature.aspectRatioAToB );
-		final DoublePropertyMapSerializer< Spot > aspectRatioAToCPropertySerializer =
-				new DoublePropertyMapSerializer<>( feature.aspectRatioAToC );
-		final DoublePropertyMapSerializer< Spot > aspectRatioBToCPropertySerializer =
-				new DoublePropertyMapSerializer<>( feature.aspectRatioBToC );
-
-		aspectRatioAToBPropertySerializer.writePropertyMap( objectToFileIdMap, objectOutputStream );
-		aspectRatioAToCPropertySerializer.writePropertyMap( objectToFileIdMap, objectOutputStream );
-		aspectRatioBToCPropertySerializer.writePropertyMap( objectToFileIdMap, objectOutputStream );
-	}
-
-	@Override
-	public SpotEllipsoidAspectRatiosFeature deserialize( FileIdToObjectMap< Spot > fileIdToObjectMap,
-			RefCollection< Spot > pool, ObjectInputStream objectInputStream ) throws IOException, ClassNotFoundException
-	{
-		final DoublePropertyMap< Spot > aspectRatioAToBMap = new DoublePropertyMap<>( pool, Double.NaN );
-		final DoublePropertyMap< Spot > aspectRatioAToCMap = new DoublePropertyMap<>( pool, Double.NaN );
-		final DoublePropertyMap< Spot > aspectRatioBToCMap = new DoublePropertyMap<>( pool, Double.NaN );
-
-		new DoublePropertyMapSerializer<>( aspectRatioAToBMap ).readPropertyMap( fileIdToObjectMap, objectInputStream );
-		new DoublePropertyMapSerializer<>( aspectRatioAToCMap ).readPropertyMap( fileIdToObjectMap, objectInputStream );
-		new DoublePropertyMapSerializer<>( aspectRatioBToCMap ).readPropertyMap( fileIdToObjectMap, objectInputStream );
-
-		return new SpotEllipsoidAspectRatiosFeature( aspectRatioAToBMap, aspectRatioAToCMap, aspectRatioBToCMap );
 	}
 }

@@ -28,7 +28,13 @@
  */
 package org.mastodon.mamut.feature;
 
-import org.mastodon.collection.RefCollection;
+import static org.mastodon.feature.FeatureProjectionKey.key;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
@@ -37,31 +43,16 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.io.FileIdToObjectMap;
-import org.mastodon.io.ObjectToFileIdMap;
-import org.mastodon.io.properties.DoublePropertyMapSerializer;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
-import static org.mastodon.feature.FeatureProjectionKey.key;
 
 /**
  * Feature that computes the 3 semi-axes and the volume from the covariance matrix of {@link Spot}s.
  * <p>
  * @author Stefan Hahmann
  */
-@Plugin( type = FeatureSerializer.class )
-public class SpotEllipsoidFeature implements Feature< Spot >, FeatureSerializer< SpotEllipsoidFeature, Spot >
+public class SpotEllipsoidFeature implements Feature< Spot >
 {
 
 	public static final String KEY = "Spot ellipsoid parameters";
@@ -154,48 +145,5 @@ public class SpotEllipsoidFeature implements Feature< Spot >, FeatureSerializer<
 		semiAxisB.remove( spot );
 		semiAxisC.remove( spot );
 		volume.remove( spot );
-	}
-
-	@Override
-	public FeatureSpec< SpotEllipsoidFeature, Spot > getFeatureSpec()
-	{
-		return SPOT_ELLIPSOID_FEATURE_SPEC;
-	}
-
-	@Override
-	public void serialize( SpotEllipsoidFeature feature, ObjectToFileIdMap< Spot > idMap,
-			ObjectOutputStream objectOutputStream )
-			throws IOException
-	{
-		final DoublePropertyMapSerializer< Spot > semiAxisAPropertySerializer =
-				new DoublePropertyMapSerializer<>( feature.semiAxisA );
-		final DoublePropertyMapSerializer< Spot > semiAxisBPropertySerializer =
-				new DoublePropertyMapSerializer<>( feature.semiAxisB );
-		final DoublePropertyMapSerializer< Spot > semiAxisCPropertySerializer =
-				new DoublePropertyMapSerializer<>( feature.semiAxisC );
-		final DoublePropertyMapSerializer< Spot > volumePropertySerializer =
-				new DoublePropertyMapSerializer<>( feature.volume );
-
-		semiAxisAPropertySerializer.writePropertyMap( idMap, objectOutputStream );
-		semiAxisBPropertySerializer.writePropertyMap( idMap, objectOutputStream );
-		semiAxisCPropertySerializer.writePropertyMap( idMap, objectOutputStream );
-		volumePropertySerializer.writePropertyMap( idMap, objectOutputStream );
-	}
-
-	@Override
-	public SpotEllipsoidFeature deserialize( FileIdToObjectMap< Spot > idMap, RefCollection< Spot > pool,
-			ObjectInputStream objectInputStream ) throws IOException, ClassNotFoundException
-	{
-		final DoublePropertyMap< Spot > semiAxisAMap = new DoublePropertyMap<>( pool, Double.NaN );
-		final DoublePropertyMap< Spot > semiAxisBMap = new DoublePropertyMap<>( pool, Double.NaN );
-		final DoublePropertyMap< Spot > semiAxisCMap = new DoublePropertyMap<>( pool, Double.NaN );
-		final DoublePropertyMap< Spot > volumeMap = new DoublePropertyMap<>( pool, Double.NaN );
-
-		new DoublePropertyMapSerializer<>( semiAxisAMap ).readPropertyMap( idMap, objectInputStream );
-		new DoublePropertyMapSerializer<>( semiAxisBMap ).readPropertyMap( idMap, objectInputStream );
-		new DoublePropertyMapSerializer<>( semiAxisCMap ).readPropertyMap( idMap, objectInputStream );
-		new DoublePropertyMapSerializer<>( volumeMap ).readPropertyMap( idMap, objectInputStream );
-
-		return new SpotEllipsoidFeature( semiAxisAMap, semiAxisBMap, semiAxisCMap, volumeMap );
 	}
 }
