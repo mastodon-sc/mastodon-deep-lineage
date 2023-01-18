@@ -17,6 +17,9 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
+/**
+ * De-/serializes the {@link BranchNSubBranchSpotsFeature}.
+ */
 @Plugin( type = FeatureSerializer.class )
 public class BranchNSubBranchSpotsFeatureSerializer
 		implements BranchFeatureSerializer< BranchNSubBranchSpotsFeature, BranchSpot, Spot >
