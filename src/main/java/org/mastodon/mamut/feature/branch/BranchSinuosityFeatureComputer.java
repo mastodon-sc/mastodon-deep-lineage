@@ -16,6 +16,9 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Computes {@link BranchNSubBranchSpotsFeature}
+ */
 @Plugin( type = MamutFeatureComputer.class )
 public class BranchSinuosityFeatureComputer implements MamutFeatureComputer
 {
@@ -67,29 +70,36 @@ public class BranchSinuosityFeatureComputer implements MamutFeatureComputer
 					{
 						if (isRoot)
 						{
-							branchStartCoordinates = Arrays.copyOf( currentSpotCoordinates, currentSpotCoordinates.length );	
+							branchStartCoordinates =
+									Arrays.copyOf( currentSpotCoordinates, currentSpotCoordinates.length );
 						}
 						else
 						{
 							for ( int d = 0; d < numDimensions; d++ )
 							{
-								branchStartCoordinates[ d ] = currentBranchSpot.incomingEdges().iterator().next().getSource().getDoublePosition( d );
+								branchStartCoordinates[ d ] =
+										currentBranchSpot.incomingEdges().iterator().next().getSource()
+												.getDoublePosition( d );
 							}
 						}
 						isBranchStartCoordinatesSet = true;
 					}
-					if (isPreviousCoordinatesSet)
-						totalDistanceDuringCellLifeCycle += GeometryUtil.getEuclideanDistance( currentSpotCoordinates, previousSpotCoordinates );
+					if ( isPreviousCoordinatesSet )
+						totalDistanceDuringCellLifeCycle +=
+								GeometryUtil.getEuclideanDistance( currentSpotCoordinates, previousSpotCoordinates );
 					else
-						totalDistanceDuringCellLifeCycle += GeometryUtil.getEuclideanDistance( currentSpotCoordinates, branchStartCoordinates );
+						totalDistanceDuringCellLifeCycle +=
+								GeometryUtil.getEuclideanDistance( currentSpotCoordinates, branchStartCoordinates );
 					previousSpotCoordinates = Arrays.copyOf( currentSpotCoordinates, currentSpotCoordinates.length );
 					isPreviousCoordinatesSet = true;
 				}
-				double directDistanceDuringCellLifeCycle = GeometryUtil.getEuclideanDistance( branchStartCoordinates, currentSpotCoordinates );
+				double directDistanceDuringCellLifeCycle =
+						GeometryUtil.getEuclideanDistance( branchStartCoordinates, currentSpotCoordinates );
 				double sinuosity = totalDistanceDuringCellLifeCycle / directDistanceDuringCellLifeCycle;
 				output.map.set( currentBranchSpot, sinuosity );
 				isRoot = false;
 			}
+
 		}
 	}
 }
