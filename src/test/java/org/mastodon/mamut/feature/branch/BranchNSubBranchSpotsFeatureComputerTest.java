@@ -14,27 +14,31 @@ public class BranchNSubBranchSpotsFeatureComputerTest
 	@Test
 	public void testComputeNumberOfSubtreeNodes1()
 	{
-		try(Context context = new Context())
+		try (Context context = new Context())
 		{
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph1, BranchNSubBranchSpotsFeature.SPEC, BranchNSubBranchSpotsFeature.PROJECTION_SPEC );
-			assertEquals(0, featureProjection.value( exampleGraph1.branchSpotA ), 0);
+			FeatureProjection< BranchSpot > featureProjection =
+					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph1,
+							BranchNSubBranchSpotsFeature.SPEC, BranchNSubBranchSpotsFeature.PROJECTION_SPEC );
+			assertEquals( 0, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
 		}
 	}
 
 	@Test
 	public void testComputeNumberOfSubtreeNodes2()
 	{
-		try(Context context = new Context())
+		try (Context context = new Context())
 		{
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph2, BranchNSubBranchSpotsFeature.SPEC, BranchNSubBranchSpotsFeature.PROJECTION_SPEC );
+			FeatureProjection< BranchSpot > featureProjection =
+					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph2,
+							BranchNSubBranchSpotsFeature.SPEC, BranchNSubBranchSpotsFeature.PROJECTION_SPEC );
 
-			assertEquals(4, featureProjection.value( exampleGraph2.branchSpotA ), 0);
-			assertEquals(2, featureProjection.value( exampleGraph2.branchSpotB ), 0);
-			assertEquals(0, featureProjection.value( exampleGraph2.branchSpotC ), 0);
-			assertEquals(0, featureProjection.value( exampleGraph2.branchSpotD ), 0);
-			assertEquals(0, featureProjection.value( exampleGraph2.branchSpotE ), 0);
+			assertEquals( 4, featureProjection.value( exampleGraph2.branchSpotA ), 0 );
+			assertEquals( 2, featureProjection.value( exampleGraph2.branchSpotB ), 0 );
+			assertEquals( 0, featureProjection.value( exampleGraph2.branchSpotC ), 0 );
+			assertEquals( 0, featureProjection.value( exampleGraph2.branchSpotD ), 0 );
+			assertEquals( 0, featureProjection.value( exampleGraph2.branchSpotE ), 0 );
 		}
 	}
 }

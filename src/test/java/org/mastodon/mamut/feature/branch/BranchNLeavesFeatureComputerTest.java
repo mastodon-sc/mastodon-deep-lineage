@@ -14,22 +14,26 @@ public class BranchNLeavesFeatureComputerTest
 	@Test
 	public void testComputeNumberOfSubtreeLeaves1()
 	{
-		try(Context context = new Context())
+		try (Context context = new Context())
 		{
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph1, BranchNLeavesFeature.SPEC, BranchNLeavesFeature.PROJECTION_SPEC );
+			FeatureProjection< BranchSpot > featureProjection =
+					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph1,
+							BranchNLeavesFeature.SPEC, BranchNLeavesFeature.PROJECTION_SPEC );
 
-			assertEquals(1, featureProjection.value( exampleGraph1.branchSpotA ), 0);
+			assertEquals( 1, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
 		}
 	}
 
 	@Test
 	public void testComputeNumberOfSubtreeLeaves3()
 	{
-		try(Context context = new Context())
+		try (Context context = new Context())
 		{
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph2, BranchNLeavesFeature.SPEC, BranchNLeavesFeature.PROJECTION_SPEC );
+			FeatureProjection< BranchSpot > featureProjection =
+					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph2,
+							BranchNLeavesFeature.SPEC, BranchNLeavesFeature.PROJECTION_SPEC );
 
 			assertEquals( 3, featureProjection.value( exampleGraph2.branchSpotA ), 0 );
 			assertEquals( 2, featureProjection.value( exampleGraph2.branchSpotB ), 0 );

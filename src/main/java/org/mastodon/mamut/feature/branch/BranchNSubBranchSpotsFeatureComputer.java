@@ -27,7 +27,8 @@ public class BranchNSubBranchSpotsFeatureComputer implements MamutFeatureCompute
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new BranchNSubBranchSpotsFeature( new IntPropertyMap<>( branchGraph.vertices().getRefPool(), -1 ) );
+			output =
+					new BranchNSubBranchSpotsFeature( new IntPropertyMap<>( branchGraph.vertices().getRefPool(), -1 ) );
 	}
 
 	@Override
@@ -49,23 +50,23 @@ public class BranchNSubBranchSpotsFeatureComputer implements MamutFeatureCompute
 		} );
 	}
 
-	private void numberOfNodes(BranchSpot branchSpot1, BranchSpot branchSpot2, BranchNSubBranchSpotsFeature output)
+	private void numberOfNodes( BranchSpot branchSpot1, BranchSpot branchSpot2, BranchNSubBranchSpotsFeature output )
 	{
 		output.map.set( branchSpot1, 1 );
 		BranchSpot branchSpot = branchGraph.vertexRef();
-		for ( BranchLink branchLink: branchSpot1.outgoingEdges() )
+		for ( BranchLink branchLink : branchSpot1.outgoingEdges() )
 		{
-			BranchSpot childBranchSpot = branchLink.getTarget(branchSpot);
+			BranchSpot childBranchSpot = branchLink.getTarget( branchSpot );
 
 			// condition to omit reverse path from children to parent
-			if(childBranchSpot.equals( branchSpot2 ))
+			if ( childBranchSpot.equals( branchSpot2 ) )
 				continue;
 
 			// recursive call
-			numberOfNodes(childBranchSpot, branchSpot1, output);
+			numberOfNodes( childBranchSpot, branchSpot1, output );
 
 			// update count value of parent using its children
-			output.map.set( branchSpot1, output.get( branchSpot1 ) + output.get(childBranchSpot) );
+			output.map.set( branchSpot1, output.get( branchSpot1 ) + output.get( childBranchSpot ) );
 		}
 		branchGraph.releaseRef( branchSpot );
 	}

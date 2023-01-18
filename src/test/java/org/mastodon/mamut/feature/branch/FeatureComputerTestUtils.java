@@ -17,18 +17,26 @@ import javax.annotation.Nonnull;
 public class FeatureComputerTestUtils
 {
 	@Nonnull
-	public static FeatureProjection< BranchSpot > getBranchSpotFeatureProjection( @Nonnull Context context, @Nonnull AbstractExampleGraph exampleGraph, @Nonnull FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > spec, @Nonnull FeatureProjectionSpec featureProjectionSpec )
+	public static FeatureProjection< BranchSpot > getBranchSpotFeatureProjection( @Nonnull Context context,
+			@Nonnull AbstractExampleGraph exampleGraph,
+			@Nonnull FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > spec,
+			@Nonnull FeatureProjectionSpec featureProjectionSpec )
 	{
-		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, exampleGraph );
+		final MamutFeatureComputerService featureComputerService =
+				getMamutFeatureComputerService( context, exampleGraph );
 		Feature< BranchSpot > feature = ( Feature< BranchSpot > ) featureComputerService.compute( spec ).get( spec );
 
 		return feature.project( FeatureProjectionKey.key( featureProjectionSpec ) );
 	}
 
 	@Nonnull
-	public static FeatureProjection< Spot > getSpotFeatureProjection( @Nonnull Context context, @Nonnull AbstractExampleGraph exampleGraph, @Nonnull FeatureSpec< ? extends Feature< Spot >, Spot > spec, @Nonnull FeatureProjectionSpec featureProjectionSpec, @Nonnull SharedBigDataViewerData sharedBigDataViewerData )
+	public static FeatureProjection< Spot > getSpotFeatureProjection( @Nonnull Context context,
+			@Nonnull AbstractExampleGraph exampleGraph, @Nonnull FeatureSpec< ? extends Feature< Spot >, Spot > spec,
+			@Nonnull FeatureProjectionSpec featureProjectionSpec,
+			@Nonnull SharedBigDataViewerData sharedBigDataViewerData )
 	{
-		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, exampleGraph );
+		final MamutFeatureComputerService featureComputerService =
+				getMamutFeatureComputerService( context, exampleGraph );
 		featureComputerService.setSharedBdvData( sharedBigDataViewerData );
 		Feature< Spot > feature = ( Feature< Spot > ) featureComputerService.compute( spec ).get( spec );
 
@@ -36,9 +44,11 @@ public class FeatureComputerTestUtils
 	}
 
 	@Nonnull
-	private static MamutFeatureComputerService getMamutFeatureComputerService( @Nonnull Context context, @Nonnull AbstractExampleGraph exampleGraph )
+	private static MamutFeatureComputerService getMamutFeatureComputerService( @Nonnull Context context,
+			@Nonnull AbstractExampleGraph exampleGraph )
 	{
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final MamutFeatureComputerService featureComputerService =
+				context.getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( exampleGraph.getModel() );
 		return featureComputerService;
 	}

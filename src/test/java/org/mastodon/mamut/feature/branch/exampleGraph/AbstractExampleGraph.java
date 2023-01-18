@@ -36,7 +36,7 @@ public abstract class AbstractExampleGraph
 		return model;
 	}
 
-	public BranchSpot getBranchSpot(@Nonnull Spot spot)
+	public BranchSpot getBranchSpot( @Nonnull Spot spot )
 	{
 		rebuiltGraphIfRequired();
 		return modelBranchGraph.getBranchVertex( spot, modelBranchGraph.vertexRef() );
@@ -44,7 +44,7 @@ public abstract class AbstractExampleGraph
 
 	private void rebuiltGraphIfRequired()
 	{
-		if ( ! branchGraphRequiresRebuild )
+		if ( !branchGraphRequiresRebuild )
 			return;
 		this.model.getBranchGraph().graphRebuilt();
 		branchGraphRequiresRebuild = false;

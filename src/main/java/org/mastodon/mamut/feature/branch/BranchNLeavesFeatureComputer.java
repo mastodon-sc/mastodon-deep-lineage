@@ -42,7 +42,8 @@ public class BranchNLeavesFeatureComputer implements MamutFeatureComputer
 		final RefSet< BranchSpot > leaves = LeafFinder.getLeaves( branchGraph );
 		for ( final BranchSpot leaf : leaves )
 		{
-			InverseDepthFirstIterator<BranchSpot, BranchLink > inverseDepthFirstIterator = new InverseDepthFirstIterator<>( branchGraph );
+			InverseDepthFirstIterator< BranchSpot, BranchLink > inverseDepthFirstIterator =
+					new InverseDepthFirstIterator<>( branchGraph );
 			inverseDepthFirstIterator.reset( leaf );
 			while ( inverseDepthFirstIterator.hasNext() )
 			{
