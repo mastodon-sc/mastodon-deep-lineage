@@ -46,7 +46,7 @@ public class BranchSinuosityFeature
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
 
-	public static final BranchSinuosityFeature.Spec SPEC = new BranchSinuosityFeature.Spec();
+	public static final BranchSinuosityFeature.Spec BRANCH_SINUOSITY_FEATURE_SPEC = new BranchSinuosityFeature.Spec();
 
 	final DoublePropertyMap< BranchSpot > map;
 
@@ -93,7 +93,7 @@ public class BranchSinuosityFeature
 	@Override
 	public BranchSinuosityFeature.Spec getSpec()
 	{
-		return SPEC;
+		return BRANCH_SINUOSITY_FEATURE_SPEC;
 	}
 
 	@Override

@@ -20,7 +20,8 @@ public class BranchSinuosityFeatureComputerTest
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
 			FeatureProjection< BranchSpot > featureProjection =
 					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph1,
-							BranchSinuosityFeature.SPEC, BranchSinuosityFeature.PROJECTION_SPEC );
+							BranchSinuosityFeature.BRANCH_SINUOSITY_FEATURE_SPEC,
+							BranchSinuosityFeature.PROJECTION_SPEC );
 			assertEquals( 1d, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
 		}
 	}
@@ -33,7 +34,8 @@ public class BranchSinuosityFeatureComputerTest
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
 			FeatureProjection< BranchSpot > featureProjection =
 					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph2,
-							BranchSinuosityFeature.SPEC, BranchSinuosityFeature.PROJECTION_SPEC );
+							BranchSinuosityFeature.BRANCH_SINUOSITY_FEATURE_SPEC,
+							BranchSinuosityFeature.PROJECTION_SPEC );
 
 			assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 9 + 36 + 81 ) ) / Math.sqrt( 4 + 16 + 36 ),
 					featureProjection.value( exampleGraph2.branchSpotA ), 0 );
