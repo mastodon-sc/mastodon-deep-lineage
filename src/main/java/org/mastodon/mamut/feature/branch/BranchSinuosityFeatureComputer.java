@@ -44,8 +44,8 @@ public class BranchSinuosityFeatureComputer implements MamutFeatureComputer
 
 	private void computeBranchSinuosity()
 	{
-		DepthFirstIterator<BranchSpot, BranchLink > depthFirstIterator = new DepthFirstIterator<>( branchGraph );
-		for (BranchSpot root : RootFinder.getRoots( branchGraph ))
+		DepthFirstIterator< BranchSpot, BranchLink > depthFirstIterator = new DepthFirstIterator<>( branchGraph );
+		for ( BranchSpot root : RootFinder.getRoots( branchGraph ) )
 		{
 			int numDimensions = root.numDimensions();
 			final double[] currentSpotCoordinates = new double[ numDimensions ];
@@ -56,19 +56,19 @@ public class BranchSinuosityFeatureComputer implements MamutFeatureComputer
 			while ( depthFirstIterator.hasNext() )
 			{
 				BranchSpot currentBranchSpot = depthFirstIterator.next();
-				double[] branchStartCoordinates = new double[3];
+				double[] branchStartCoordinates = new double[ 3 ];
 				boolean isBranchStartCoordinatesSet = false;
 				boolean isPreviousCoordinatesSet = false;
 				Spot currentSpot;
-				double  totalDistanceDuringCellLifeCycle = 0d;
+				double totalDistanceDuringCellLifeCycle = 0d;
 				final Iterator< Spot > it = branchGraph.vertexBranchIterator( currentBranchSpot );
 				while ( it.hasNext() )
 				{
 					currentSpot = it.next();
 					currentSpot.localize( currentSpotCoordinates );
-					if (!isBranchStartCoordinatesSet)
+					if ( !isBranchStartCoordinatesSet )
 					{
-						if (isRoot)
+						if ( isRoot )
 						{
 							branchStartCoordinates =
 									Arrays.copyOf( currentSpotCoordinates, currentSpotCoordinates.length );

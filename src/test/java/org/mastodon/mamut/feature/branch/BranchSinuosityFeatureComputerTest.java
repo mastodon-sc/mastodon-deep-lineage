@@ -15,11 +15,13 @@ public class BranchSinuosityFeatureComputerTest
 	@Test
 	public void testComputeNumberOfSubtreeNodes1()
 	{
-		try(Context context = new Context())
+		try (Context context = new Context())
 		{
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph1, BranchSinuosityFeature.SPEC, BranchSinuosityFeature.PROJECTION_SPEC );
-			assertEquals(1d, featureProjection.value( exampleGraph1.branchSpotA ), 0);
+			FeatureProjection< BranchSpot > featureProjection =
+					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph1,
+							BranchSinuosityFeature.SPEC, BranchSinuosityFeature.PROJECTION_SPEC );
+			assertEquals( 1d, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
 		}
 	}
 
@@ -29,12 +31,19 @@ public class BranchSinuosityFeatureComputerTest
 		try (Context context = new Context())
 		{
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
-			FeatureProjection< BranchSpot > featureProjection = FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph2, BranchSinuosityFeature.SPEC, BranchSinuosityFeature.PROJECTION_SPEC );
+			FeatureProjection< BranchSpot > featureProjection =
+					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph2,
+							BranchSinuosityFeature.SPEC, BranchSinuosityFeature.PROJECTION_SPEC );
 
-			assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 9 + 36 + 81 ) ) / Math.sqrt( 4 + 16 + 36 ), featureProjection.value( exampleGraph2.branchSpotA ), 0 );
-			assertEquals( ( Math.sqrt( 81 + 324 + 729 ) + Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 1 + 4 + 9 ) ) / Math.sqrt( 121 + 484 + 1089 ), featureProjection.value( exampleGraph2.branchSpotC ), 0.0000000001 );
-			assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 1 + 4 + 9 ) ) / Math.sqrt( 4 + 16 + 36 ), featureProjection.value( exampleGraph2.branchSpotB ), 0 );
-			assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 36 + 144 + 324 ) + Math.sqrt( 64 + 256 + 576 ) ) / Math.sqrt( 9 + 36 + 81 ), featureProjection.value( exampleGraph2.branchSpotD ), 0 );
+			assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 9 + 36 + 81 ) ) / Math.sqrt( 4 + 16 + 36 ),
+					featureProjection.value( exampleGraph2.branchSpotA ), 0 );
+			assertEquals( ( Math.sqrt( 81 + 324 + 729 ) + Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 1 + 4 + 9 ) ) / Math.sqrt(
+					121 + 484 + 1089 ), featureProjection.value( exampleGraph2.branchSpotC ), 0.0000000001 );
+			assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 1 + 4 + 9 ) ) / Math.sqrt( 4 + 16 + 36 ),
+					featureProjection.value( exampleGraph2.branchSpotB ), 0 );
+			assertEquals(
+					( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 36 + 144 + 324 ) + Math.sqrt( 64 + 256 + 576 ) ) / Math.sqrt(
+							9 + 36 + 81 ), featureProjection.value( exampleGraph2.branchSpotD ), 0 );
 			assertEquals( 1d, featureProjection.value( exampleGraph2.branchSpotE ), 0 );
 		}
 	}
