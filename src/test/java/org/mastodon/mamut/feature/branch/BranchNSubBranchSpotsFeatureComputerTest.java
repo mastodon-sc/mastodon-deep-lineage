@@ -19,7 +19,8 @@ public class BranchNSubBranchSpotsFeatureComputerTest
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
 			FeatureProjection< BranchSpot > featureProjection =
 					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph1,
-							BranchNSubBranchSpotsFeature.SPEC, BranchNSubBranchSpotsFeature.PROJECTION_SPEC );
+							BranchNSubBranchSpotsFeature.BRANCH_N_SUB_BRANCH_SPOTS_FEATURE,
+							BranchNSubBranchSpotsFeature.PROJECTION_SPEC );
 			assertEquals( 0, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
 		}
 	}
@@ -32,7 +33,8 @@ public class BranchNSubBranchSpotsFeatureComputerTest
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
 			FeatureProjection< BranchSpot > featureProjection =
 					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph2,
-							BranchNSubBranchSpotsFeature.SPEC, BranchNSubBranchSpotsFeature.PROJECTION_SPEC );
+							BranchNSubBranchSpotsFeature.BRANCH_N_SUB_BRANCH_SPOTS_FEATURE,
+							BranchNSubBranchSpotsFeature.PROJECTION_SPEC );
 
 			assertEquals( 4, featureProjection.value( exampleGraph2.branchSpotA ), 0 );
 			assertEquals( 2, featureProjection.value( exampleGraph2.branchSpotB ), 0 );

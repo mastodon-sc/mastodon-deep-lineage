@@ -1,6 +1,6 @@
 package org.mastodon.mamut.feature.branch;
 
-import static org.mastodon.mamut.feature.branch.BranchNSubBranchSpotsFeature.SPEC;
+import static org.mastodon.mamut.feature.branch.BranchNSubBranchSpotsFeature.BRANCH_N_SUB_BRANCH_SPOTS_FEATURE;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,7 +24,7 @@ public class BranchNSubBranchSpotsFeatureSerializer
 	@Override
 	public BranchNSubBranchSpotsFeature.Spec getFeatureSpec()
 	{
-		return SPEC;
+		return BRANCH_N_SUB_BRANCH_SPOTS_FEATURE;
 	}
 
 	@Override

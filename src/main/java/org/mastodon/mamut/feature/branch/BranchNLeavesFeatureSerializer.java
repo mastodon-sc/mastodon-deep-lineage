@@ -1,6 +1,6 @@
 package org.mastodon.mamut.feature.branch;
 
-import static org.mastodon.mamut.feature.branch.BranchNLeavesFeature.SPEC;
+import static org.mastodon.mamut.feature.branch.BranchNLeavesFeature.BRANCH_N_LEAVES_FEATURE_SPEC;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,7 +23,7 @@ public class BranchNLeavesFeatureSerializer implements BranchFeatureSerializer< 
 	@Override
 	public BranchNLeavesFeature.Spec getFeatureSpec()
 	{
-		return SPEC;
+		return BRANCH_N_LEAVES_FEATURE_SPEC;
 	}
 
 	@Override

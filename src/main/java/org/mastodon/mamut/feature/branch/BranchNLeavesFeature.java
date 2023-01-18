@@ -2,9 +2,6 @@ package org.mastodon.mamut.feature.branch;
 
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.Set;
 
@@ -17,14 +14,7 @@ import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.io.FileIdToObjectMap;
-import org.mastodon.io.ObjectToFileIdMap;
-import org.mastodon.io.properties.IntPropertyMapSerializer;
-import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
@@ -62,7 +52,7 @@ public class BranchNLeavesFeature
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
 
-	public static final BranchNLeavesFeature.Spec SPEC = new BranchNLeavesFeature.Spec();
+	public static final BranchNLeavesFeature.Spec BRANCH_N_LEAVES_FEATURE_SPEC = new BranchNLeavesFeature.Spec();
 
 	final IntPropertyMap< BranchSpot > map;
 
@@ -109,7 +99,7 @@ public class BranchNLeavesFeature
 	@Override
 	public BranchNLeavesFeature.Spec getSpec()
 	{
-		return SPEC;
+		return BRANCH_N_LEAVES_FEATURE_SPEC;
 	}
 
 	@Override
