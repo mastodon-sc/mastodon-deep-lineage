@@ -14,14 +14,14 @@ import java.util.Set;
 
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
-public abstract class IntPropertyFeature< T > implements Feature< T >
+public abstract class BranchSpotIntPropertyFeature< T > implements Feature< T >
 {
 
 	public final IntPropertyMap< T > map;
 
 	protected final IntFeatureProjection< T > projection;
 
-	public IntPropertyFeature( IntPropertyMap< T > map )
+	public BranchSpotIntPropertyFeature( IntPropertyMap< T > map )
 	{
 		this.map = map;
 		this.projection = FeatureProjections.project( key( getFeatureProjectionSpec() ), map, Dimension.NONE_UNITS );
