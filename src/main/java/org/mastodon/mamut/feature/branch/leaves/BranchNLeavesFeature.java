@@ -9,7 +9,7 @@ import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
 /**
- * Represents the total number of leaves of a branch spot in the whole track sub-tree of this branch spot.
+ * Represents the total number of leaves of a branch spot in the whole track subtree of this branch spot.
  * <p>
  * In the following example this number would equal to following branchSpots as
  * follows:
@@ -32,7 +32,7 @@ import org.scijava.plugin.Plugin;
  * <li>{@code branchSpot4 = 1}</li>
  * </ul>
  */
-public class BranchNLeavesFeature extends IntPropertyFeature
+public class BranchNLeavesFeature extends IntPropertyFeature< BranchSpot >
 {
 	public static final String KEY = "Branch N leaves";
 
