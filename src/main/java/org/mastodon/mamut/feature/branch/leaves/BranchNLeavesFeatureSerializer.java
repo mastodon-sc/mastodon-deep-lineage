@@ -2,7 +2,7 @@ package org.mastodon.mamut.feature.branch.leaves;
 
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.mamut.feature.branch.IntPropertyFeatureSerializer;
+import org.mastodon.mamut.feature.branch.BranchSpotIntPropertyFeatureSerializer;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
@@ -11,7 +11,7 @@ import org.scijava.plugin.Plugin;
  * De-/serializes the {@link BranchNLeavesFeature}.
  */
 @Plugin( type = FeatureSerializer.class )
-public class BranchNLeavesFeatureSerializer extends IntPropertyFeatureSerializer< BranchNLeavesFeature >
+public class BranchNLeavesFeatureSerializer extends BranchSpotIntPropertyFeatureSerializer< BranchNLeavesFeature >
 {
 	@Override
 	public FeatureSpec< BranchNLeavesFeature, BranchSpot > getFeatureSpec()

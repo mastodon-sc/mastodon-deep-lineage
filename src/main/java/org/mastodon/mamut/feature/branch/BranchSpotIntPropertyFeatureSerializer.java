@@ -14,7 +14,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.IntPropertyMap;
 
-public abstract class IntPropertyFeatureSerializer< T extends IntPropertyFeature >
+public abstract class BranchSpotIntPropertyFeatureSerializer< T extends IntPropertyFeature< BranchSpot > >
 		implements BranchFeatureSerializer< T, BranchSpot, Spot >
 {
 	@Override
@@ -22,9 +22,11 @@ public abstract class IntPropertyFeatureSerializer< T extends IntPropertyFeature
 
 	protected abstract T createFeature( IntPropertyMap< BranchSpot > map );
 
-	protected abstract IntPropertyMap< BranchSpot> extractPropertyMap( T feature );
+	protected abstract IntPropertyMap< BranchSpot > extractPropertyMap( T feature );
+
 	@Override
-	public T deserialize( FileIdToObjectMap< Spot > idmap, ObjectInputStream ois, ModelBranchGraph branchGraph, ModelGraph graph ) throws ClassNotFoundException, IOException
+	public T deserialize( FileIdToObjectMap< Spot > idmap, ObjectInputStream ois, ModelBranchGraph branchGraph, ModelGraph graph )
+			throws ClassNotFoundException, IOException
 	{
 		// Read the map link -> value
 		final IntPropertyMap< Spot > spotPropertyMap = new IntPropertyMap<>( graph.vertices(), -1 );
@@ -37,7 +39,8 @@ public abstract class IntPropertyFeatureSerializer< T extends IntPropertyFeature
 	}
 
 	@Override
-	public void serialize( T feature, ObjectToFileIdMap< Spot > idmap, ObjectOutputStream oos, ModelBranchGraph branchGraph, ModelGraph graph ) throws IOException
+	public void serialize( T feature, ObjectToFileIdMap< Spot > idmap, ObjectOutputStream oos, ModelBranchGraph branchGraph,
+			ModelGraph graph ) throws IOException
 	{
 		IntPropertyMap< BranchSpot > branchSpotMap = extractPropertyMap( feature );
 		final IntPropertyMap< Spot > spotMap =

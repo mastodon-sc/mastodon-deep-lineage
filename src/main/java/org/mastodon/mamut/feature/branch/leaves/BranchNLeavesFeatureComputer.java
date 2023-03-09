@@ -1,8 +1,7 @@
 package org.mastodon.mamut.feature.branch.leaves;
 
 import org.mastodon.mamut.feature.MamutFeatureComputer;
-import org.mastodon.mamut.feature.branch.IntPropertyFeature;
-import org.mastodon.mamut.feature.branch.IntPropertyFeatureComputer;
+import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
@@ -17,8 +16,11 @@ import javax.annotation.Nonnull;
  * Computes {@link BranchNLeavesFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchNLeavesFeatureComputer extends IntPropertyFeatureComputer< BranchNLeavesFeature >
+public class BranchNLeavesFeatureComputer implements MamutFeatureComputer
 {
+	@Parameter
+	protected ModelBranchGraph branchGraph;
+
 	@Parameter( type = ItemIO.OUTPUT )
 	private BranchNLeavesFeature output;
 
@@ -30,9 +32,9 @@ public class BranchNLeavesFeatureComputer extends IntPropertyFeatureComputer< Br
 	}
 
 	@Override
-	protected void computeIntProperty( @Nonnull BranchSpot vertex )
+	public void run()
 	{
-		computeLeaves( vertex );
+		LineageTreeUtils.callDepthFirst( branchGraph, this::computeLeaves );
 	}
 
 	private void computeLeaves( @Nonnull BranchSpot vertex )
