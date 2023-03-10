@@ -40,13 +40,9 @@ public class BranchSinuosityFeatureComputerTest
 
 			assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 9 + 36 + 81 ) ) / Math.sqrt( 4 + 16 + 36 ),
 					featureProjection.value( exampleGraph2.branchSpotA ), 0 );
-			assertEquals( ( Math.sqrt( 81 + 324 + 729 ) + Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 1 + 4 + 9 ) ) / Math.sqrt(
-					121 + 484 + 1089 ), featureProjection.value( exampleGraph2.branchSpotC ), 0.0000000001 );
-			assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 1 + 4 + 9 ) ) / Math.sqrt( 4 + 16 + 36 ),
-					featureProjection.value( exampleGraph2.branchSpotB ), 0 );
-			assertEquals(
-					( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 36 + 144 + 324 ) + Math.sqrt( 64 + 256 + 576 ) ) / Math.sqrt(
-							9 + 36 + 81 ),
+			assertEquals( 1d, featureProjection.value( exampleGraph2.branchSpotC ), 0 );
+			assertEquals( 1d, featureProjection.value( exampleGraph2.branchSpotB ), 0 );
+			assertEquals( ( Math.sqrt( 36 + 144 + 324 ) + Math.sqrt( 64 + 256 + 576 ) ) / Math.sqrt( 4 + 16 + 36 ),
 					featureProjection.value( exampleGraph2.branchSpotD ), 0 );
 			assertEquals( 1d, featureProjection.value( exampleGraph2.branchSpotE ), 0 );
 		}

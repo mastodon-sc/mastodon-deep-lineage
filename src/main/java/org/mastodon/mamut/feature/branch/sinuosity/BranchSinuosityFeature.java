@@ -13,7 +13,7 @@ import org.scijava.plugin.Plugin;
  * <p>
  *     <ul>
  *          <li>A sinuosity of 1 means that the cell moved in a straight line</li>
- *          <li> sinuosity of {@link Double#NaN} means that the cell did not move at all.</li>
+ *          <li>A sinuosity of {@link Double#NaN} means that the cell did not move at all.</li>
  *          <li>A sinuosity > 1 means that the cell moved in a curved line. The higher, this value is, the "curvier" the cell has moved</li>
  *     </ul>
  */
