@@ -36,7 +36,7 @@ public class LineageTreeUtils
 	private static final String GRAPHML_VERTEX_LIFESPAN_ATTRIBUTE_NAME = "lifespan";
 
 	/**
-	 * Gets the first time point with the given number of spots ({@code numberOfSpots})
+	 * Gets the first time point with the given number (or more) of spots ({@code numberOfSpots})
 	 * by iterating through the given spatio-temporal index ({@code spotSpatioTemporalIndex})
 	 * from the given minimum time point ({@code minTimePoint}) to the given maximum time point ({@code maxTimePoint}).
 	 *
@@ -51,7 +51,7 @@ public class LineageTreeUtils
 	{
 		for ( int timePoint = minTimePoint; timePoint <= maxTimePoint;
 				timePoint++ )
-			if ( spotSpatioTemporalIndex.getSpatialIndex( timePoint ).size() == numberOfSpots )
+			if ( spotSpatioTemporalIndex.getSpatialIndex( timePoint ).size() >= numberOfSpots )
 				return timePoint;
 		return -1;
 	}
