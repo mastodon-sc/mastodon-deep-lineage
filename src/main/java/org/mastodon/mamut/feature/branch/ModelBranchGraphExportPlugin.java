@@ -47,7 +47,7 @@ public class ModelBranchGraphExportPlugin implements MamutPlugin
 
 	private final AbstractNamedAction exportRootNodesAction;
 
-	private final static int NUMBER_OF_SPOTS = 250;
+	private final static int NUMBER_OF_SPOTS = 400;
 
 	public ModelBranchGraphExportPlugin()
 	{
