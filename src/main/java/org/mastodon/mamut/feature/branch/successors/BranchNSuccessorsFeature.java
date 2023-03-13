@@ -3,13 +3,13 @@ package org.mastodon.mamut.feature.branch.successors;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.feature.branch.BranchSpotIntPropertyFeature;
+import org.mastodon.mamut.feature.branch.IntPropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
 /**
- * Represents the total number of successors of a branch spot in the whole track sub-tree of this branch spot.
+ * Represents the total number of successors of a branch spot in the whole track subtree of this branch spot.
  * <p>
  * In the following example this number would equal to following branchSpots as
  * follows:
@@ -32,7 +32,7 @@ import org.scijava.plugin.Plugin;
  * <li>{@code branchSpot4 = 0}</li>
  * </ul>
  */
-public class BranchNSuccessorsFeature extends BranchSpotIntPropertyFeature< BranchSpot >
+public class BranchNSuccessorsFeature extends IntPropertyFeature< BranchSpot >
 {
 	public static final String KEY = "Branch N sub branch spots";
 
