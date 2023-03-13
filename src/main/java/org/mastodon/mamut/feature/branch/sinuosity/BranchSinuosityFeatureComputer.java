@@ -46,10 +46,11 @@ public class BranchSinuosityFeatureComputer implements MamutFeatureComputer
 
 	private double computeSinuosity( final BranchSpot branchSpot )
 	{
-		final double[] currentSpotCoordinates = new double[ branchSpot.numDimensions() ];
+		final double[] currentCoordinates = new double[ branchSpot.numDimensions() ];
 
 		Spot spot;
-		double accumulatedLifeCycleDistance = 0d;
+		// accumulated distance during the life cycle of the branch
+		double accumulatedDistance = 0d;
 
 		final Iterator< Spot > spotIterator = branchGraph.vertexBranchIterator( branchSpot );
 		if ( !spotIterator.hasNext() )
@@ -58,18 +59,18 @@ public class BranchSinuosityFeatureComputer implements MamutFeatureComputer
 		if ( !spotIterator.hasNext() )
 			return Double.NaN;
 
-		spot.localize( currentSpotCoordinates );
-		double[] previousSpotCoordinates = Arrays.copyOf( currentSpotCoordinates, currentSpotCoordinates.length );
-		double[] branchStartCoordinates = Arrays.copyOf( currentSpotCoordinates, currentSpotCoordinates.length );
+		spot.localize( currentCoordinates );
+		double[] previousCoordinates = Arrays.copyOf( currentCoordinates, currentCoordinates.length );
+		double[] startCoordinates = Arrays.copyOf( currentCoordinates, currentCoordinates.length );
 
 		while ( spotIterator.hasNext() )
 		{
 			spot = spotIterator.next();
-			spot.localize( currentSpotCoordinates );
-			accumulatedLifeCycleDistance += LinAlgHelpers.distance( currentSpotCoordinates, previousSpotCoordinates );
-			previousSpotCoordinates = Arrays.copyOf( currentSpotCoordinates, currentSpotCoordinates.length );
+			spot.localize( currentCoordinates );
+			accumulatedDistance += LinAlgHelpers.distance( currentCoordinates, previousCoordinates );
+			previousCoordinates = Arrays.copyOf( currentCoordinates, currentCoordinates.length );
 		}
-		double directLifeCycleDistance = LinAlgHelpers.distance( currentSpotCoordinates, branchStartCoordinates );
-		return accumulatedLifeCycleDistance / directLifeCycleDistance;
+		double directDistance = LinAlgHelpers.distance( currentCoordinates, startCoordinates );
+		return accumulatedDistance / directDistance;
 	}
 }
