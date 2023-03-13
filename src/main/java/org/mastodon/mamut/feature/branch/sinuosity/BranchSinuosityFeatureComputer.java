@@ -68,7 +68,7 @@ public class BranchSinuosityFeatureComputer implements MamutFeatureComputer
 			spot = spotIterator.next();
 			spot.localize( currentCoordinates );
 			accumulatedDistance += LinAlgHelpers.distance( currentCoordinates, previousCoordinates );
-			previousCoordinates = Arrays.copyOf( currentCoordinates, currentCoordinates.length );
+			System.arraycopy( currentCoordinates, 0, previousCoordinates, 0, currentCoordinates.length );
 		}
 		double directDistance = LinAlgHelpers.distance( currentCoordinates, startCoordinates );
 		return accumulatedDistance / directDistance;
