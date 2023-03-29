@@ -19,6 +19,7 @@
         <license.organizationName>Mastodon authors</license.organizationName>
 
         <mastodon.version>1.0.0-beta-27-SNAPSHOT</mastodon.version>
+        <jgrapht.version>1.5.1</jgrapht.version>
 
         <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
@@ -88,6 +89,18 @@
             <groupId>org.scijava</groupId>
             <artifactId>ui-behaviour</artifactId>
         </dependency>
+        <!-- tree edit distance -->
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+            <version>${jgrapht.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-io</artifactId>
+            <version>${jgrapht.version}</version>
+        </dependency>
+
 
         <!-- Test dependencies -->
         <dependency>
