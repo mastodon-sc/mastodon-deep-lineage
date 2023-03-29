@@ -60,6 +60,26 @@
             <artifactId>mastodon</artifactId>
             <version>${mastodon.version}</version>
         </dependency>
+
+        <!-- include simple logging facade for logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- include logback-classic at test runtime -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- include logback-core at test runtime -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>sc.fiji</groupId>
             <artifactId>spim_data</artifactId>
@@ -126,7 +146,7 @@
             <url>https://maven.scijava.org/content/groups/public</url>
         </repository>
     </repositories>
-    
+
     <profiles>
         <profile>
             <id>coverage</id>
