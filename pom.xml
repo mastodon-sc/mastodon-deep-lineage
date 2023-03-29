@@ -120,7 +120,7 @@
         </repository>
     </repositories>
     
-        <profiles>
+    <profiles>
         <profile>
             <id>coverage</id>
             <build>
