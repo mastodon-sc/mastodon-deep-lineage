@@ -50,7 +50,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Jacoco Test Report
-        run: mvn -B sonar:sonar --file pom.xml -Pcoverage
+        run: mvn -B test --file pom.xml -Pcoverage
 
       - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
