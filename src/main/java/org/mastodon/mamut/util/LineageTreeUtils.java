@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,7 @@ public class LineageTreeUtils
 	private static final String GRAPHML_VERTEX_LIFESPAN_ATTRIBUTE_NAME = "lifespan";
 
 	/**
-	 * Gets the first time point with the given number of spots ({@code numberOfSpots})
+	 * Gets the first time point that has at least the given number of spots ({@code numberOfSpots})
 	 * by iterating through the given spatio-temporal index ({@code spotSpatioTemporalIndex})
 	 * from the given minimum time point ({@code minTimePoint}) to the given maximum time point ({@code maxTimePoint}).
 	 *
@@ -98,16 +99,18 @@ public class LineageTreeUtils
 	 * @param minTimePoint the minimum time point to search in (inclusive)
 	 * @param maxTimePoint the maximum time point to search in (inclusive)
 	 * @param numberOfSpots the number of spots to search for
-	 * @return the first time point with the given number of spots or -1 if no such time point exists
+	 * @return the first time point with the given number of spots (or more)
+	 * @throws NoSuchElementException if no time point with the given number of spots (or more) exists
 	 */
 	public static int getTimePointWithNSpots( @Nonnull SpatioTemporalIndex< Spot > spotSpatioTemporalIndex,
 			int minTimePoint, int maxTimePoint, int numberOfSpots )
 	{
 		for ( int timePoint = minTimePoint; timePoint <= maxTimePoint;
 				timePoint++ )
-			if ( spotSpatioTemporalIndex.getSpatialIndex( timePoint ).size() == numberOfSpots )
+			if ( spotSpatioTemporalIndex.getSpatialIndex( timePoint ).size() >= numberOfSpots )
 				return timePoint;
-		return -1;
+		throw new NoSuchElementException(
+				"No time point with at least " + numberOfSpots + " spots in the range [" + minTimePoint + ", " + maxTimePoint + "]." );
 	}
 
 	/**

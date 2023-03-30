@@ -6,14 +6,18 @@ import org.jgrapht.graph.DefaultEdge;
 import org.junit.Test;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.spatial.SpatioTemporalIndex;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public class LineageTreeUtilsTest
@@ -26,7 +30,12 @@ public class LineageTreeUtilsTest
 		assertEquals( 5, LineageTreeUtils.getTimePointWithNSpots( exampleGraph2.getModel().getSpatioTemporalIndex(), 0, 7, 3 ) );
 		assertEquals( 3, LineageTreeUtils.getTimePointWithNSpots( exampleGraph2.getModel().getSpatioTemporalIndex(), 0, 7, 2 ) );
 		assertEquals( 3, LineageTreeUtils.getTimePointWithNSpots( exampleGraph2.getModel().getSpatioTemporalIndex(), -1, 10, 2 ) );
-		assertEquals( -1, LineageTreeUtils.getTimePointWithNSpots( exampleGraph2.getModel().getSpatioTemporalIndex(), 0, 7, 5 ) );
+		SpatioTemporalIndex< Spot > index = exampleGraph2.getModel().getSpatioTemporalIndex();
+		NoSuchElementException exception =
+				assertThrows( NoSuchElementException.class, () -> LineageTreeUtils.getTimePointWithNSpots( index, 0, 7, 5 ) );
+		String expectedMessage = "No time point with at least 5 spots in the range [0, 7].";
+		String actualMessage = exception.getMessage();
+		assertTrue( actualMessage.contains( expectedMessage ) );
 	}
 
 	@Test
