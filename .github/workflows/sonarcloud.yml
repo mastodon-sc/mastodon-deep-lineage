@@ -49,9 +49,13 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
+      
+      - name: JUnit Report Action
+        uses: mikepenz/action-junit-report@v3.7.5
+    
       - name: Jacoco Test Report
         run: mvn -B test --file pom.xml -Pcoverage
-
+      
       - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
         uses: SonarSource/sonarcloud-github-action@master
