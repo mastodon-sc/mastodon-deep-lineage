@@ -105,8 +105,7 @@ public class LineageTreeUtils
 	public static int getTimePointWithNSpots( @Nonnull SpatioTemporalIndex< Spot > spotSpatioTemporalIndex,
 			int minTimePoint, int maxTimePoint, int numberOfSpots )
 	{
-		for ( int timePoint = minTimePoint; timePoint <= maxTimePoint;
-				timePoint++ )
+		for ( int timePoint = minTimePoint; timePoint <= maxTimePoint; timePoint++ )
 			if ( spotSpatioTemporalIndex.getSpatialIndex( timePoint ).size() >= numberOfSpots )
 				return timePoint;
 		throw new NoSuchElementException(
