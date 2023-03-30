@@ -66,19 +66,19 @@ public class LineageTreeUtils
 			@Override
 			public void processVertexEarly( BranchSpot vertex, DepthFirstSearch< BranchSpot, BranchLink > search )
 			{
-				throw new UnsupportedOperationException();
+				// Do nothing here. We only care about the vertices after all their descendants have been processed (see processVertexLate).
 			}
 
 			@Override
 			public void processEdge( BranchLink edge, BranchSpot from, BranchSpot to, DepthFirstSearch< BranchSpot, BranchLink > search )
 			{
-				throw new UnsupportedOperationException();
+				// Do nothing here. We only care about the vertices after all their descendants have been processed (see processVertexLate).
 			}
 
 			@Override
 			public void crossComponent( BranchSpot from, BranchSpot to, DepthFirstSearch< BranchSpot, BranchLink > search )
 			{
-				throw new UnsupportedOperationException();
+				// Do nothing here. We only care about the vertices after all their descendants have been processed (see processVertexLate).
 			}
 		} );
 		final RefSet< BranchSpot > roots = RootFinder.getRoots( branchGraph );
