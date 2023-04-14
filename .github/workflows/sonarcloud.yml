@@ -54,7 +54,7 @@ jobs:
           report_paths: '**/build/test-results/test/TEST-*.xml'
           token: ${{ secrets.GITHUB_TOKEN }}
           
-  Sonar-Analysis:
+  Sonar-Analysis-and-Report:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
