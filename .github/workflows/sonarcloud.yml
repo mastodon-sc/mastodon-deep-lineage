@@ -69,19 +69,19 @@ jobs:
         # run: mvn -B clean install --file pom.xml -Pcoverage
         run: mvn clean install --file pom.xml -Pcoverage -e -X sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=mastodon-sc_mastodon-deep-lineage -Dsonar.organization=mastodon-sc
       
-      - name: Analyze with SonarCloud
+      # - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
-        with:
+        # uses: SonarSource/sonarcloud-github-action@master
+        # env:
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
+          # SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
+        # with:
           # Additional arguments for the sonarcloud scanner
-          args:
+          # args:
             # Unique keys of your project and organization. You can find them in SonarCloud > Information (bottom-left menu)
             # mandatory
-            -Dsonar.projectKey=mastodon-sc_mastodon-deep-lineage
-            -Dsonar.organization=mastodon-sc
+            # -Dsonar.projectKey=mastodon-sc_mastodon-deep-lineage
+            # -Dsonar.organization=mastodon-sc
             # Comma-separated paths to directories containing main source files.
             #-Dsonar.sources= # optional, default is project base directory
             # When you need the analysis to take place in a directory other than the one from which it was launched
