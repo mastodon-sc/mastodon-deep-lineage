@@ -39,7 +39,7 @@ permissions:
   pull-requests: read # allows SonarCloud to decorate PRs with analysis results
 
 jobs:
-  build:
+  Build-and-Test:
     name: Build and Run Tests
     runs-on: ubuntu-latest
     steps:
@@ -54,7 +54,7 @@ jobs:
           report_paths: '**/build/test-results/test/TEST-*.xml'
           token: ${{ secrets.GITHUB_TOKEN }}
           
-  Analysis:
+  Sonar-Analysis:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -65,8 +65,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
     
-      - name: Jacoco Test Report
-        run: mvn -B test --file pom.xml -Pcoverage
+      - name: Jacoco Test Report and SonarCloud Analysis
+        # run: mvn -B clean install --file pom.xml -Pcoverage
+        run: mvn clean install --file pom.xml -Pcoverage -e -X sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=mastodon-sc_mastodon-deep-lineage -Dsonar.organization=mastodon-sc
       
       - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
