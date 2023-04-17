@@ -24,7 +24,7 @@
 
         <enforcer.skip>true</enforcer.skip>
 
-        <sonar.organization>siemens</sonar.organization>
+        <sonar.organization>mastodon-sc</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
