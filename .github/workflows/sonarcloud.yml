@@ -1,8 +1,3 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 # This workflow helps you trigger a SonarCloud analysis of your code and populates
 # GitHub Code Scanning alerts with the vulnerabilities found.
 # Free for open source project.
@@ -41,14 +36,15 @@ permissions:
 jobs:
   Sonar-Analysis-and-Report:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v2
         with:
           java-version: '11'
-          distribution: 'temurin'
-          cache: maven
+          distribution: 'zulu'
+          cache: 'maven'
 
       - name: Jacoco Report and SonarCloud Analysis
         env:
