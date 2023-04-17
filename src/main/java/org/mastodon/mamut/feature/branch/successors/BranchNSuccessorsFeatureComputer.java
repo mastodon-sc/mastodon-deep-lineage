@@ -55,9 +55,4 @@ public class BranchNSuccessorsFeatureComputer implements MamutFeatureComputer
 			branchGraph.releaseRef( ref );
 		}
 	}
-
-	private void doNothing()
-	{
-
-	}
 }
