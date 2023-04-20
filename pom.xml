@@ -63,10 +63,11 @@
             <version>${mastodon.version}</version>
         </dependency>
 
+        <!-- the ellipsoid fitting plugin, a pre-condition to compute ellipsoid features -->
         <dependency>
             <groupId>${mastodon.group}</groupId>
             <artifactId>mastodon-ellipsoid-fitting</artifactId>
-            <version>0.3.4-SNAPSHOT</version>
+            <version>${mastodon-ellipsoid-fitting.version}</version>
         </dependency>
 
         <!-- include simple logging facade for logging -->
