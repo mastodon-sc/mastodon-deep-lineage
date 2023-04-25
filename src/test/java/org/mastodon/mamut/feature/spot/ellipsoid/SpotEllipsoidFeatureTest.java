@@ -38,7 +38,7 @@ public class SpotEllipsoidFeatureTest
 
 	// eigenvalues for given covariance matrix
 	// cf. https://matrixcalc.org/de/vectors.html#eigenvectors({{6, 2, 3}, {2, 7, 4}, {3, 4, 8}})
-	private final double[] eigenValues = new double[] { 3.270d, 4.442d, 13.288d };
+	private final double[] eigenValues = new double[] { 3.2695842d, 4.4422001d, 13.2882158d };
 
 	// compute semi-axes from eigenvalues
 	private final double expectedShortAxis = Math.sqrt( eigenValues[ 0 ] );
@@ -66,16 +66,16 @@ public class SpotEllipsoidFeatureTest
 		// check that the features are computed correctly
 		FeatureProjection< Spot > shortProjection =
 				getProjection( ellipsoidFeature, SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC );
-		assertEquals( expectedShortAxis, shortProjection.value( spot ), 0.001d );
+		assertEquals( expectedShortAxis, shortProjection.value( spot ), 0.00001d );
 		FeatureProjection< Spot > middleProjection =
 				getProjection( ellipsoidFeature, SpotEllipsoidFeature.MIDDLE_SEMI_AXIS_PROJECTION_SPEC );
-		assertEquals( expectedMiddleAxis, middleProjection.value( spot ), 0.001d );
+		assertEquals( expectedMiddleAxis, middleProjection.value( spot ), 0.00001d );
 		FeatureProjection< Spot > longProjection =
 				getProjection( ellipsoidFeature, SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC );
-		assertEquals( expectedLongAxis, longProjection.value( spot ), 0.001d );
+		assertEquals( expectedLongAxis, longProjection.value( spot ), 0.00001d );
 		FeatureProjection< Spot > volumeProjection = getProjection( ellipsoidFeature, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC );
 		// volume of ellipsoid https://en.wikipedia.org/wiki/Ellipsoid#Volume
-		assertEquals( expectedVolume, volumeProjection.value( spot ), 0.01d );
+		assertEquals( expectedVolume, volumeProjection.value( spot ), 0.0001d );
 	}
 
 	@Test
@@ -97,14 +97,15 @@ public class SpotEllipsoidFeatureTest
 
 			assertEquals( expectedShortAxis,
 					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC ).value( spot ),
-					0.01d );
+					0.00001d );
 			assertEquals( expectedMiddleAxis,
 					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.MIDDLE_SEMI_AXIS_PROJECTION_SPEC ).value( spot ),
-					0.01d );
+					0.00001d );
 			assertEquals( expectedLongAxis,
-					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC ).value( spot ), 0.01d );
+					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC ).value( spot ),
+					0.00001d );
 			assertEquals( expectedVolume,
-					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC ).value( spot ), 0.01d );
+					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC ).value( spot ), 0.0001d );
 		}
 	}
 
