@@ -2,6 +2,7 @@ package org.mastodon.mamut.feature.spot.ellipsoid;
 
 import org.junit.Test;
 import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.mamut.feature.FeatureSerializerTestUtils;
 import org.mastodon.mamut.feature.branch.FeatureComputerTestUtils;
@@ -49,22 +50,19 @@ public class SpotEllipsoidFeatureTest
 			double expectedVolume = expectedShortAxis * expectedMiddleAxis * expectedLongAxis * 4d / 3d * Math.PI;
 
 			// check that the features are computed correctly
-			assertEquals( expectedShortAxis,
-					ellipsoidFeature.project( FeatureProjectionKey.key( SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC ) )
-							.value( spot ),
-					0.001d );
-			assertEquals( expectedMiddleAxis,
-					ellipsoidFeature.project( FeatureProjectionKey.key( SpotEllipsoidFeature.MIDDLE_SEMI_AXIS_PROJECTION_SPEC ) )
-							.value( spot ),
-					0.001d );
-			assertEquals( expectedLongAxis,
-					ellipsoidFeature.project( FeatureProjectionKey.key( SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC ) )
-							.value( spot ),
-					0.001d );
+			FeatureProjection< Spot > shortProjection =
+					ellipsoidFeature.project( FeatureProjectionKey.key( SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC ) );
+			assertEquals( expectedShortAxis, shortProjection.value( spot ), 0.001d );
+			FeatureProjection< Spot > middleProjection =
+					ellipsoidFeature.project( FeatureProjectionKey.key( SpotEllipsoidFeature.MIDDLE_SEMI_AXIS_PROJECTION_SPEC ) );
+			assertEquals( expectedMiddleAxis, middleProjection.value( spot ), 0.001d );
+			FeatureProjection< Spot > longProjection =
+					ellipsoidFeature.project( FeatureProjectionKey.key( SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC ) );
+			assertEquals( expectedLongAxis, longProjection.value( spot ), 0.001d );
+			FeatureProjection< Spot > volumeProjection =
+					ellipsoidFeature.project( FeatureProjectionKey.key( SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC ) );
 			// volume of ellipsoid https://en.wikipedia.org/wiki/Ellipsoid#Volume
-			assertEquals( expectedVolume, ellipsoidFeature
-					.project( FeatureProjectionKey.key( SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC ) ).value( spot ),
-					0.01d );
+			assertEquals( expectedVolume, volumeProjection.value( spot ), 0.01d );
 
 			FeatureSerializerTestUtils.saveAndReload( context, model, ellipsoidFeature );
 
