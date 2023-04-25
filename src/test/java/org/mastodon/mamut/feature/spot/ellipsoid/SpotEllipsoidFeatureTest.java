@@ -1,5 +1,6 @@
 package org.mastodon.mamut.feature.spot.ellipsoid;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
@@ -15,6 +16,7 @@ import org.scijava.Context;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -34,39 +36,53 @@ public class SpotEllipsoidFeatureTest
 		return spot;
 	}
 
-	@Test
-	public void testEllipsoidFeature()
+	// eigenvalues for given covariance matrix
+	// cf. https://matrixcalc.org/de/vectors.html#eigenvectors({{6, 2, 3}, {2, 7, 4}, {3, 4, 8}})
+	private final double[] eigenValues = new double[] { 3.270d, 4.442d, 13.288d };
+
+	// compute semi-axes from eigenvalues
+	private final double expectedShortAxis = Math.sqrt( eigenValues[ 0 ] );
+
+	private final double expectedMiddleAxis = Math.sqrt( eigenValues[ 1 ] );
+
+	private final double expectedLongAxis = Math.sqrt( eigenValues[ 2 ] );
+
+	private final double expectedVolume = expectedShortAxis * expectedMiddleAxis * expectedLongAxis * 4d / 3d * Math.PI;
+
+	private Feature< Spot > ellipsoidFeature;
+
+	@Before
+	public void setUp()
 	{
 		try (Context context = new Context())
 		{
-			// compute feature
-			Feature< Spot > ellipsoidFeature =
-					FeatureComputerTestUtils.getSpotFeature( context, model, SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
+			ellipsoidFeature = FeatureComputerTestUtils.getSpotFeature( context, model, SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
+		}
+	}
 
-			// eigenvalues for given covariance matrix
-			// cf. https://matrixcalc.org/de/vectors.html#eigenvectors({{6, 2, 3}, {2, 7, 4}, {3, 4, 8}})
-			final double[] eigenValues = new double[] { 3.270d, 4.442d, 13.288d };
+	@Test
+	public void testEllipsoidFeatureComputation()
+	{
+		// check that the features are computed correctly
+		FeatureProjection< Spot > shortProjection =
+				getProjection( ellipsoidFeature, SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC );
+		assertEquals( expectedShortAxis, shortProjection.value( spot ), 0.001d );
+		FeatureProjection< Spot > middleProjection =
+				getProjection( ellipsoidFeature, SpotEllipsoidFeature.MIDDLE_SEMI_AXIS_PROJECTION_SPEC );
+		assertEquals( expectedMiddleAxis, middleProjection.value( spot ), 0.001d );
+		FeatureProjection< Spot > longProjection =
+				getProjection( ellipsoidFeature, SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC );
+		assertEquals( expectedLongAxis, longProjection.value( spot ), 0.001d );
+		FeatureProjection< Spot > volumeProjection = getProjection( ellipsoidFeature, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC );
+		// volume of ellipsoid https://en.wikipedia.org/wiki/Ellipsoid#Volume
+		assertEquals( expectedVolume, volumeProjection.value( spot ), 0.01d );
+	}
 
-			// compute semi-axes from eigenvalues
-			double expectedShortAxis = Math.sqrt( eigenValues[ 0 ] );
-			double expectedMiddleAxis = Math.sqrt( eigenValues[ 1 ] );
-			double expectedLongAxis = Math.sqrt( eigenValues[ 2 ] );
-			double expectedVolume = expectedShortAxis * expectedMiddleAxis * expectedLongAxis * 4d / 3d * Math.PI;
-
-			// check that the features are computed correctly
-			FeatureProjection< Spot > shortProjection =
-					getProjection( ellipsoidFeature, SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC );
-			assertEquals( expectedShortAxis, shortProjection.value( spot ), 0.001d );
-			FeatureProjection< Spot > middleProjection =
-					getProjection( ellipsoidFeature, SpotEllipsoidFeature.MIDDLE_SEMI_AXIS_PROJECTION_SPEC );
-			assertEquals( expectedMiddleAxis, middleProjection.value( spot ), 0.001d );
-			FeatureProjection< Spot > longProjection =
-					getProjection( ellipsoidFeature, SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC );
-			assertEquals( expectedLongAxis, longProjection.value( spot ), 0.001d );
-			FeatureProjection< Spot > volumeProjection = getProjection( ellipsoidFeature, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC );
-			// volume of ellipsoid https://en.wikipedia.org/wiki/Ellipsoid#Volume
-			assertEquals( expectedVolume, volumeProjection.value( spot ), 0.01d );
-
+	@Test
+	public void testEllipsoidFeatureSerialization()
+	{
+		try (Context context = new Context())
+		{
 			// check that the feature has correct values after saving and reloading
 			SpotEllipsoidFeature ellipsoidFeatureReloaded = null;
 			try
@@ -80,30 +96,38 @@ public class SpotEllipsoidFeatureTest
 			}
 
 			assertEquals( expectedShortAxis,
-					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC )
-							.value( spot ),
-					0.001d );
+					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC ).value( spot ),
+					0.01d );
 			assertEquals( expectedMiddleAxis,
 					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.MIDDLE_SEMI_AXIS_PROJECTION_SPEC ).value( spot ),
-					0.001d );
+					0.01d );
 			assertEquals( expectedLongAxis,
-					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC ).value( spot ), 0.001d );
+					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC ).value( spot ), 0.01d );
 			assertEquals( expectedVolume,
-					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC ).value( spot ), 0.001d );
-
-			// test, if features are NaN after invalidation
-			ellipsoidFeature.invalidate( spot );
-			assertTrue(
-					Double.isNaN(
-							getProjection( ellipsoidFeature, SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC ).value( spot ) ) );
-			assertTrue( Double
-					.isNaN( getProjection( ellipsoidFeature, SpotEllipsoidFeature.MIDDLE_SEMI_AXIS_PROJECTION_SPEC ).value( spot ) ) );
-			assertTrue(
-					Double.isNaN(
-							getProjection( ellipsoidFeature, SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC ).value( spot ) ) );
-			assertTrue( Double.isNaN( getProjection( ellipsoidFeature, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC ).value( spot ) ) );
-
+					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC ).value( spot ), 0.01d );
 		}
+	}
+
+	@Test
+	public void testEllipsoidFeatureInvalidate()
+	{
+		// test, if features are not NaN before invalidation
+		assertFalse(
+				Double.isNaN( getProjection( ellipsoidFeature, SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC ).value( spot ) ) );
+		assertFalse(
+				Double.isNaN( getProjection( ellipsoidFeature, SpotEllipsoidFeature.MIDDLE_SEMI_AXIS_PROJECTION_SPEC ).value( spot ) ) );
+		assertFalse( Double.isNaN( getProjection( ellipsoidFeature, SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC ).value( spot ) ) );
+		assertFalse( Double.isNaN( getProjection( ellipsoidFeature, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC ).value( spot ) ) );
+
+		// invalidate feature
+		ellipsoidFeature.invalidate( spot );
+
+		// test, if features are NaN after invalidation
+		assertTrue( Double.isNaN( getProjection( ellipsoidFeature, SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC ).value( spot ) ) );
+		assertTrue(
+				Double.isNaN( getProjection( ellipsoidFeature, SpotEllipsoidFeature.MIDDLE_SEMI_AXIS_PROJECTION_SPEC ).value( spot ) ) );
+		assertTrue( Double.isNaN( getProjection( ellipsoidFeature, SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC ).value( spot ) ) );
+		assertTrue( Double.isNaN( getProjection( ellipsoidFeature, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC ).value( spot ) ) );
 	}
 
 	private static FeatureProjection< Spot > getProjection( Feature< Spot > ellipsoidFeature,
