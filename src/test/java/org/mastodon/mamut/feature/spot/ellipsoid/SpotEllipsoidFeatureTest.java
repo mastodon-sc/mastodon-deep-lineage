@@ -80,7 +80,6 @@ public class SpotEllipsoidFeatureTest
 	{
 		try (Context context = new Context())
 		{
-			// check that the feature has correct values after saving and reloading
 			SpotEllipsoidFeature ellipsoidFeatureReloaded = null;
 			try
 			{
@@ -90,19 +89,10 @@ public class SpotEllipsoidFeatureTest
 			catch ( IOException e )
 			{
 				fail( "Could not save and reload feature: " + e.getMessage() );
-			}
 
-			assertEquals( expectedShortAxis,
-					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC ).value( spot ),
-					0.00001d );
-			assertEquals( expectedMiddleAxis,
-					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.MIDDLE_SEMI_AXIS_PROJECTION_SPEC ).value( spot ),
-					0.00001d );
-			assertEquals( expectedLongAxis,
-					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.LONG_SEMI_AXIS_PROJECTION_SPEC ).value( spot ),
-					0.00001d );
-			assertEquals( expectedVolume,
-					getProjection( ellipsoidFeatureReloaded, SpotEllipsoidFeature.VOLUME_PROJECTION_SPEC ).value( spot ), 0.0001d );
+			}
+			// check that the feature has correct values after saving and reloading
+			assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( ellipsoidFeature, ellipsoidFeatureReloaded, spot ) );
 		}
 	}
 
