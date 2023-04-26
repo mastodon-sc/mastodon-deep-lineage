@@ -36,19 +36,6 @@ public class SpotEllipsoidFeatureTest
 		return spot;
 	}
 
-	// eigenvalues for given covariance matrix
-	// cf. https://matrixcalc.org/de/vectors.html#eigenvectors({{6, 2, 3}, {2, 7, 4}, {3, 4, 8}})
-	private final double[] eigenValues = new double[] { 3.2695842d, 4.4422001d, 13.2882158d };
-
-	// compute semi-axes from eigenvalues
-	private final double expectedShortAxis = Math.sqrt( eigenValues[ 0 ] );
-
-	private final double expectedMiddleAxis = Math.sqrt( eigenValues[ 1 ] );
-
-	private final double expectedLongAxis = Math.sqrt( eigenValues[ 2 ] );
-
-	private final double expectedVolume = expectedShortAxis * expectedMiddleAxis * expectedLongAxis * 4d / 3d * Math.PI;
-
 	private Feature< Spot > ellipsoidFeature;
 
 	@Before
@@ -63,6 +50,16 @@ public class SpotEllipsoidFeatureTest
 	@Test
 	public void testEllipsoidFeatureComputation()
 	{
+		// eigenvalues for given covariance matrix
+		// cf. https://matrixcalc.org/de/vectors.html#eigenvectors({{6, 2, 3}, {2, 7, 4}, {3, 4, 8}})
+		final double[] eigenValues = new double[] { 3.2695842d, 4.4422001d, 13.2882158d };
+
+		// compute semi-axes from eigenvalues
+		final double expectedShortAxis = Math.sqrt( eigenValues[ 0 ] );
+		final double expectedMiddleAxis = Math.sqrt( eigenValues[ 1 ] );
+		final double expectedLongAxis = Math.sqrt( eigenValues[ 2 ] );
+		final double expectedVolume = expectedShortAxis * expectedMiddleAxis * expectedLongAxis * 4d / 3d * Math.PI;
+
 		// check that the features are computed correctly
 		FeatureProjection< Spot > shortProjection =
 				getProjection( ellipsoidFeature, SpotEllipsoidFeature.SHORT_SEMI_AXIS_PROJECTION_SPEC );
