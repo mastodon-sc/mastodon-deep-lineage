@@ -61,35 +61,31 @@ public class SpotEllipsoidFeatureSerializer implements FeatureSerializer< SpotEl
 			ObjectOutputStream objectOutputStream )
 			throws IOException
 	{
-		final DoublePropertyMapSerializer<Spot> semiAxisAPropertySerializer =
-				new DoublePropertyMapSerializer<>(feature.shortSemiAxis);
-		final DoublePropertyMapSerializer<Spot> semiAxisBPropertySerializer =
-				new DoublePropertyMapSerializer<>(feature.middleSemiAxis);
-		final DoublePropertyMapSerializer<Spot> semiAxisCPropertySerializer =
-				new DoublePropertyMapSerializer<>(feature.longSemiAxis);
-		final DoublePropertyMapSerializer<Spot> volumePropertySerializer =
-				new DoublePropertyMapSerializer<>(feature.volume);
+		final DoublePropertyMapSerializer< Spot > shortAxisSerializer = new DoublePropertyMapSerializer<>( feature.shortSemiAxis );
+		final DoublePropertyMapSerializer< Spot > middleAxisSerializer = new DoublePropertyMapSerializer<>( feature.middleSemiAxis );
+		final DoublePropertyMapSerializer< Spot > longAxisSerializer = new DoublePropertyMapSerializer<>( feature.longSemiAxis );
+		final DoublePropertyMapSerializer< Spot > volumeSerializer = new DoublePropertyMapSerializer<>( feature.volume );
 
-		semiAxisAPropertySerializer.writePropertyMap( idMap, objectOutputStream );
-		semiAxisBPropertySerializer.writePropertyMap( idMap, objectOutputStream );
-		semiAxisCPropertySerializer.writePropertyMap( idMap, objectOutputStream );
-		volumePropertySerializer.writePropertyMap( idMap, objectOutputStream );
+		shortAxisSerializer.writePropertyMap( idMap, objectOutputStream );
+		middleAxisSerializer.writePropertyMap( idMap, objectOutputStream );
+		longAxisSerializer.writePropertyMap( idMap, objectOutputStream );
+		volumeSerializer.writePropertyMap( idMap, objectOutputStream );
 	}
 
 	@Override
 	public SpotEllipsoidFeature deserialize( FileIdToObjectMap< Spot > idMap, RefCollection< Spot > pool,
 			ObjectInputStream objectInputStream ) throws IOException, ClassNotFoundException
 	{
-		final DoublePropertyMap< Spot > semiAxisAMap = new DoublePropertyMap<>( pool, Double.NaN );
-		final DoublePropertyMap< Spot > semiAxisBMap = new DoublePropertyMap<>( pool, Double.NaN );
-		final DoublePropertyMap< Spot > semiAxisCMap = new DoublePropertyMap<>( pool, Double.NaN );
+		final DoublePropertyMap< Spot > shortAxisMap = new DoublePropertyMap<>( pool, Double.NaN );
+		final DoublePropertyMap< Spot > middleAxisMap = new DoublePropertyMap<>( pool, Double.NaN );
+		final DoublePropertyMap< Spot > longAxisMap = new DoublePropertyMap<>( pool, Double.NaN );
 		final DoublePropertyMap< Spot > volumeMap = new DoublePropertyMap<>( pool, Double.NaN );
 
-		new DoublePropertyMapSerializer<>( semiAxisAMap ).readPropertyMap( idMap, objectInputStream );
-		new DoublePropertyMapSerializer<>( semiAxisBMap ).readPropertyMap( idMap, objectInputStream );
-		new DoublePropertyMapSerializer<>( semiAxisCMap ).readPropertyMap( idMap, objectInputStream );
+		new DoublePropertyMapSerializer<>( shortAxisMap ).readPropertyMap( idMap, objectInputStream );
+		new DoublePropertyMapSerializer<>( middleAxisMap ).readPropertyMap( idMap, objectInputStream );
+		new DoublePropertyMapSerializer<>( longAxisMap ).readPropertyMap( idMap, objectInputStream );
 		new DoublePropertyMapSerializer<>( volumeMap ).readPropertyMap( idMap, objectInputStream );
 
-		return new SpotEllipsoidFeature( semiAxisAMap, semiAxisBMap, semiAxisCMap, volumeMap );
+		return new SpotEllipsoidFeature( shortAxisMap, middleAxisMap, longAxisMap, volumeMap );
 	}
 }
