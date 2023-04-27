@@ -50,8 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *  Computes {@link SpotEllipsoidFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class SpotEllipsoidAspectRatiosFeatureComputer
-		implements MamutFeatureComputer, Cancelable
+public class SpotEllipsoidAspectRatiosFeatureComputer implements MamutFeatureComputer, Cancelable
 {
 	@Parameter
 	private SharedBigDataViewerData bdvData;
@@ -95,14 +94,12 @@ public class SpotEllipsoidAspectRatiosFeatureComputer
 					new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 
 			// Create a new output.
-			output = new SpotEllipsoidAspectRatiosFeature( aspectRatioShortToMiddle,
-					aspectRatioShortToLong, aspectRatioMiddleToLong );
+			output = new SpotEllipsoidAspectRatiosFeature( aspectRatioShortToMiddle, aspectRatioShortToLong, aspectRatioMiddleToLong );
 		}
 		if ( null == input )
 		{
 			// Try to get it from the FeatureModel, if we deserialized a model.
-			final Feature< ? > feature = model.getFeatureModel().getFeature(
-					SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
+			final Feature< ? > feature = model.getFeatureModel().getFeature( SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
 			if ( null != feature )
 				input = ( SpotEllipsoidFeature ) feature;
 		}

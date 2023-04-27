@@ -28,8 +28,6 @@
  */
 package org.mastodon.mamut.feature.spot.ellipsoid;
 
-import static org.mastodon.feature.FeatureProjectionKey.key;
-
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
@@ -47,32 +45,29 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.mastodon.feature.FeatureProjectionKey.key;
+
 /**
  * Feature that computes the aspect ratios between the three semi-axes of the ellipsoid that best fits the spot.
+ * @author Stefan Hahmann
  */
-public class SpotEllipsoidAspectRatiosFeature
-		implements Feature< Spot >
+public class SpotEllipsoidAspectRatiosFeature implements Feature< Spot >
 {
 
 	public static final String KEY = "Spot ellipsoid aspect ratios";
 
-	private static final String HELP_STRING =
-			"Computes the aspect ratios between the spot ellipsoid semi axes.";
+	private static final String HELP_STRING = "Computes the aspect ratios between the spot ellipsoid semi axes.";
 
-	private final Map< FeatureProjectionKey,
-			FeatureProjection< Spot > > projectionMap;
+	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
 
 	public static final FeatureProjectionSpec ASPECT_RATIO_SHORT_TO_MIDDLE_SPEC =
-			new FeatureProjectionSpec( "Aspect ratio between short and middle semi-axes",
-					Dimension.NONE );
+			new FeatureProjectionSpec( "Aspect ratio between short and middle semi-axes", Dimension.NONE );
 
 	public static final FeatureProjectionSpec ASPECT_RATIO_SHORT_TO_LONG_SPEC =
-			new FeatureProjectionSpec( "Aspect ratio between short and long semi-axes",
-					Dimension.NONE );
+			new FeatureProjectionSpec( "Aspect ratio between short and long semi-axes", Dimension.NONE );
 
 	public static final FeatureProjectionSpec ASPECT_RATIO_MIDDLE_TO_LONG_SPEC =
-			new FeatureProjectionSpec( "Aspect ratio between middle and long semi-axes",
-					Dimension.NONE );
+			new FeatureProjectionSpec( "Aspect ratio between middle and long semi-axes", Dimension.NONE );
 
 	final DoublePropertyMap< Spot > aspectRatioShortToMiddle;
 
@@ -81,14 +76,12 @@ public class SpotEllipsoidAspectRatiosFeature
 	final DoublePropertyMap< Spot > aspectRatioMiddleToLong;
 
 	@Plugin( type = FeatureSpec.class )
-	public static class SpotEllipsoidAspectRatiosFeatureSpec
-			extends FeatureSpec< SpotEllipsoidAspectRatiosFeature, Spot >
+	public static class SpotEllipsoidAspectRatiosFeatureSpec extends FeatureSpec< SpotEllipsoidAspectRatiosFeature, Spot >
 	{
 		public SpotEllipsoidAspectRatiosFeatureSpec()
 		{
-			super( KEY, HELP_STRING, SpotEllipsoidAspectRatiosFeature.class,
-					Spot.class, Multiplicity.SINGLE, ASPECT_RATIO_SHORT_TO_MIDDLE_SPEC,
-					ASPECT_RATIO_SHORT_TO_LONG_SPEC, ASPECT_RATIO_MIDDLE_TO_LONG_SPEC );
+			super( KEY, HELP_STRING, SpotEllipsoidAspectRatiosFeature.class, Spot.class, Multiplicity.SINGLE,
+					ASPECT_RATIO_SHORT_TO_MIDDLE_SPEC, ASPECT_RATIO_SHORT_TO_LONG_SPEC, ASPECT_RATIO_MIDDLE_TO_LONG_SPEC );
 		}
 	}
 

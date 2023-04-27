@@ -20,8 +20,7 @@ import org.scijava.plugin.Plugin;
  * De-/serializes {@link SpotEllipsoidAspectRatiosFeature}
  */
 @Plugin( type = FeatureSerializer.class )
-public class SpotEllipsoidAspectRatiosFeatureSerializer
-		implements FeatureSerializer< SpotEllipsoidAspectRatiosFeature, Spot >
+public class SpotEllipsoidAspectRatiosFeatureSerializer implements FeatureSerializer< SpotEllipsoidAspectRatiosFeature, Spot >
 {
 	@Override
 	public FeatureSpec< SpotEllipsoidAspectRatiosFeature, Spot > getFeatureSpec()
