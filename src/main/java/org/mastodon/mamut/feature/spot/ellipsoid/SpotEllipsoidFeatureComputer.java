@@ -76,8 +76,7 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 		if ( null == output )
 		{
 			// Try to get output from the FeatureModel, if we deserialized a model.
-			final Feature< ? > feature =
-					model.getFeatureModel().getFeature( SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
+			final Feature< ? > feature = model.getFeatureModel().getFeature( SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
 			if ( null != feature )
 			{
 				output = ( SpotEllipsoidFeature ) feature;
