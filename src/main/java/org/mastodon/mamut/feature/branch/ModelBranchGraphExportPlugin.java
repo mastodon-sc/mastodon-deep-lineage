@@ -15,10 +15,13 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +34,8 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 @Plugin( type = MamutPlugin.class )
 public class ModelBranchGraphExportPlugin implements MamutPlugin
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	@Nullable
 	private MamutPluginAppModel pluginAppModel;
 
@@ -47,7 +52,7 @@ public class ModelBranchGraphExportPlugin implements MamutPlugin
 
 	private final AbstractNamedAction exportRootNodesAction;
 
-	private static final int NUMBER_OF_SPOTS = 250;
+	private static final int NUMBER_OF_SPOTS = 150;
 
 	public ModelBranchGraphExportPlugin()
 	{
@@ -62,7 +67,7 @@ public class ModelBranchGraphExportPlugin implements MamutPlugin
 							LineageTreeUtils.getTimePointWithNSpots( pluginAppModel.getAppModel().getModel().getSpatioTemporalIndex(),
 									pluginAppModel.getAppModel().getMinTimepoint(), pluginAppModel.getAppModel().getMaxTimepoint(),
 									NUMBER_OF_SPOTS );
-					System.out.println( "Number of spots: " + NUMBER_OF_SPOTS + ", cutoffTimePoint: " + cutoffTimePoint );
+					logger.info( "Number of spots: {}, cutoffTimePoint: {}", NUMBER_OF_SPOTS, cutoffTimePoint );
 					LineageTreeUtils.exportAllModelBranchGraphsPerRootNode( pluginAppModel.getAppModel().getModel().getBranchGraph(),
 							cutoffTimePoint, new File( System.getProperty( "user.dir" ) ), projectName );
 				} );
@@ -123,7 +128,7 @@ public class ModelBranchGraphExportPlugin implements MamutPlugin
 			} );
 		}
 
-		System.out.println( selectedSpots.size() + " spots are selected" );
+		logger.info( "Select spots: {}", selectedSpots.size() );
 
 		// Export the selected spots and their links to a GraphML file
 		LineageTreeUtils.writeModelBranchGraphOfBranchSpotsToFile( pluginAppModel.getAppModel().getModel().getBranchGraph(),
@@ -146,7 +151,7 @@ public class ModelBranchGraphExportPlugin implements MamutPlugin
 		}
 		else
 		{
-			System.out.println( "No file selected." );
+			logger.debug( "No file selected." );
 		}
 	}
 }
