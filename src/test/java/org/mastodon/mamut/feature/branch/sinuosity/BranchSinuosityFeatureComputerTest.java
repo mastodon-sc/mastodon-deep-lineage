@@ -2,7 +2,7 @@ package org.mastodon.mamut.feature.branch.sinuosity;
 
 import org.junit.Test;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.mamut.feature.branch.FeatureComputerTestUtils;
+import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.model.branch.BranchSpot;
@@ -20,7 +20,7 @@ public class BranchSinuosityFeatureComputerTest
 		{
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
 			FeatureProjection< BranchSpot > featureProjection =
-					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph1,
+					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph1,
 							BranchSinuosityFeature.BRANCH_SINUOSITY_FEATURE_SPEC,
 							BranchSinuosityFeature.PROJECTION_SPEC );
 			assertEquals( 1d, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
@@ -34,7 +34,7 @@ public class BranchSinuosityFeatureComputerTest
 		{
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
 			FeatureProjection< BranchSpot > featureProjection =
-					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph2,
+					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph2,
 							BranchSinuosityFeature.BRANCH_SINUOSITY_FEATURE_SPEC,
 							BranchSinuosityFeature.PROJECTION_SPEC );
 
