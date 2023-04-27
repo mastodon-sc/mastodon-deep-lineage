@@ -56,8 +56,7 @@ public class SpotEllipsoidFeature implements Feature< Spot >
 {
 	public static final String KEY = "Spot ellipsoid properties";
 
-	private static final String HELP_STRING =
-			"Computes spot ellipsoid parameters, i.e. the 3 semi axes and the volume. ";
+	private static final String HELP_STRING = "Computes spot ellipsoid parameters, i.e. the 3 semi axes and the volume. ";
 
 	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
 
