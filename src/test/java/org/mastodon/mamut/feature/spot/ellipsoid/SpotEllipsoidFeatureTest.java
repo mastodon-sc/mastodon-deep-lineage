@@ -7,7 +7,7 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.mamut.feature.FeatureSerializerTestUtils;
-import org.mastodon.mamut.feature.branch.FeatureComputerTestUtils;
+import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
