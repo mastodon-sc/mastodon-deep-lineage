@@ -25,7 +25,7 @@ public class SpotEllipsoidAspectRatioFeatureTest extends AbstractEllipsoidFeatur
 	{
 		try (Context context = new Context())
 		{
-			ellipsoidAspectRatioFeature = FeatureComputerTestUtils.getSpotFeature( context, model,
+			ellipsoidAspectRatioFeature = FeatureComputerTestUtils.getFeature( context, model,
 					SpotEllipsoidAspectRatiosFeature.SPOT_ELLIPSOID_ASPECT_RATIOS_FEATURE_SPEC );
 		}
 	}
