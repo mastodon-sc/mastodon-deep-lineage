@@ -2,7 +2,7 @@
  * #%L
  * Mastodon
  * %%
- * Copyright (C) 2014 - 2023 Stefan Hahmann
+ * Copyright (C) 2022 - 2023 Stefan Hahmann
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -75,7 +75,7 @@ public class SpotEllipsoidAspectRatiosFeatureComputer implements MamutFeatureCom
 	{
 		if ( null == output )
 		{
-			// Try to get it from the FeatureModel, if we deserialized a model.
+			// Try to get output from the FeatureModel, if we deserialized a model.
 			final Feature< ? > feature = model.getFeatureModel().getFeature(
 					SpotEllipsoidAspectRatiosFeature.SPOT_ELLIPSOID_ASPECT_RATIOS_FEATURE_SPEC );
 			if ( null != feature )
@@ -111,6 +111,7 @@ public class SpotEllipsoidAspectRatiosFeatureComputer implements MamutFeatureCom
 
 		if ( recomputeAll )
 		{
+			// Clear all
 			output.aspectRatioShortToMiddle.beforeClearPool();
 			output.aspectRatioShortToLong.beforeClearPool();
 			output.aspectRatioMiddleToLong.beforeClearPool();
@@ -127,7 +128,7 @@ public class SpotEllipsoidAspectRatiosFeatureComputer implements MamutFeatureCom
 			// Limit overhead by only update progress every 1000th spot.
 			if ( done++ % 1000 == 0 )
 				status.notifyProgress( ( double ) done / numSpots );
-
+			// Skip if we are not forced to recompute all and if a value is already computed.
 			if ( !recomputeAll && output.aspectRatioShortToMiddle.isSet( spot ) )
 				continue;
 
