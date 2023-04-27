@@ -43,7 +43,7 @@ public class SpotEllipsoidFeatureTest
 	{
 		try (Context context = new Context())
 		{
-			ellipsoidFeature = FeatureComputerTestUtils.getSpotFeature( context, model, SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
+			ellipsoidFeature = FeatureComputerTestUtils.getFeature( context, model, SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
 		}
 	}
 
