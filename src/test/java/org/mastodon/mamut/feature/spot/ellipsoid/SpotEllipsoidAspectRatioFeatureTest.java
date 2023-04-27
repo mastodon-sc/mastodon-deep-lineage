@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.mamut.feature.FeatureSerializerTestUtils;
-import org.mastodon.mamut.feature.branch.FeatureComputerTestUtils;
+import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.model.Spot;
 import org.scijava.Context;
 
