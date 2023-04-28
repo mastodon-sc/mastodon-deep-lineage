@@ -253,7 +253,7 @@ public class LineageTreeUtils
 			e.printStackTrace();
 		}
 
-		logger.debug( "Exported {} branch spots to {}", graph.vertexSet().size(), file.getAbsolutePath() );
+		logger.info( "Exported {} branch spot(s) to {}", graph.vertexSet().size(), file.getAbsolutePath() );
 	}
 
 	private static void addBranchSpotToGraph( @Nonnull Graph< String, DefaultEdge > graph, @Nonnull BranchSpot branchSpot,
@@ -271,7 +271,7 @@ public class LineageTreeUtils
 		int endTimePoint = maxTimePoint != null && branchSpot.getTimepoint() > maxTimePoint ? maxTimePoint
 				: branchSpot.getTimepoint();
 		branchSpotNameToLifeSpanMap.put( branchSpotName, endTimePoint - branchSpot.getFirstTimePoint() );
-		logger.debug( "Adding branch spot {} with lifespan {} ({}-{}) to graph.", branchSpotName,
+		logger.trace( "Adding branch spot {} with lifespan {} ({}-{}) to graph.", branchSpotName,
 				( endTimePoint - branchSpot.getFirstTimePoint() ), branchSpot.getFirstTimePoint(), endTimePoint );
 
 		// Add the outgoing links of the branch spot to the graph
