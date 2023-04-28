@@ -288,7 +288,17 @@ public class LineageTreeUtils
 				graph.addVertex( targetLabel );
 			// Add the branch link to the graph
 			if ( !graph.containsEdge( branchSpotName, targetLabel ) )
-				graph.addEdge( branchSpotName, targetLabel );
+			{
+				try
+				{
+					graph.addEdge( branchSpotName, targetLabel );
+				}
+				catch ( IllegalArgumentException e )
+				{
+					logger.info( "Could not add branch link from {} to {} to graph. Reason: {}", branchSpotName, targetLabel,
+							e.getMessage() );
+				}
+			}
 		} );
 	}
 
