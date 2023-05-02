@@ -18,7 +18,6 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class SpotEllipsoidFeatureTest
 {
@@ -76,24 +75,16 @@ public class SpotEllipsoidFeatureTest
 	}
 
 	@Test
-	public void testEllipsoidFeatureSerialization()
+	public void testEllipsoidFeatureSerialization() throws IOException
 	{
+		SpotEllipsoidFeature ellipsoidFeatureReloaded;
 		try (Context context = new Context())
 		{
-			SpotEllipsoidFeature ellipsoidFeatureReloaded = null;
-			try
-			{
-				ellipsoidFeatureReloaded =
-						( SpotEllipsoidFeature ) FeatureSerializerTestUtils.saveAndReload( context, model, ellipsoidFeature );
-			}
-			catch ( IOException e )
-			{
-				fail( "Could not save and reload feature: " + e.getMessage() );
-
-			}
-			// check that the feature has correct values after saving and reloading
-			assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( ellipsoidFeature, ellipsoidFeatureReloaded, spot ) );
+			ellipsoidFeatureReloaded =
+					( SpotEllipsoidFeature ) FeatureSerializerTestUtils.saveAndReload( context, model, ellipsoidFeature );
 		}
+		// check that the feature has correct values after saving and reloading
+		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( ellipsoidFeature, ellipsoidFeatureReloaded, spot ) );
 	}
 
 	@Test
