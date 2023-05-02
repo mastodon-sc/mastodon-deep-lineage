@@ -46,25 +46,17 @@ public class SpotEllipsoidAspectRatioFeatureTest extends AbstractEllipsoidFeatur
 	}
 
 	@Test
-	public void testFeatureSerialization()
+	public void testFeatureSerialization() throws IOException
 	{
+		SpotEllipsoidAspectRatiosFeature ellipsoidAspectRatiosFeatureReloaded;
 		try (Context context = new Context())
 		{
-			SpotEllipsoidAspectRatiosFeature ellipsoidAspectRatiosFeatureReloaded = null;
-			try
-			{
-				ellipsoidAspectRatiosFeatureReloaded = ( SpotEllipsoidAspectRatiosFeature ) FeatureSerializerTestUtils
-						.saveAndReload( context, model, ellipsoidAspectRatioFeature );
-			}
-			catch ( IOException e )
-			{
-				fail( "Could not save and reload feature: " + e.getMessage() );
-
-			}
-			// check that the feature has correct values after saving and reloading
-			assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( ellipsoidAspectRatioFeature,
-					ellipsoidAspectRatiosFeatureReloaded, spot ) );
+			ellipsoidAspectRatiosFeatureReloaded = ( SpotEllipsoidAspectRatiosFeature ) FeatureSerializerTestUtils.saveAndReload( context,
+					model, ellipsoidAspectRatioFeature );
 		}
+		// check that the feature has correct values after saving and reloading
+		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( ellipsoidAspectRatioFeature,
+				ellipsoidAspectRatiosFeatureReloaded, spot ) );
 	}
 
 	@Test

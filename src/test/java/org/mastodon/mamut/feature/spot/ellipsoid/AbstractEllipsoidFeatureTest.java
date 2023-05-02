@@ -8,6 +8,8 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 
+import java.io.IOException;
+
 public abstract class AbstractEllipsoidFeatureTest
 {
 	protected final Model model = new Model();
@@ -43,7 +45,7 @@ public abstract class AbstractEllipsoidFeatureTest
 
 	abstract void testFeatureComputation();
 
-	abstract void testFeatureSerialization();
+	abstract void testFeatureSerialization() throws IOException;
 
 	abstract void testFeatureInvalidate();
 }
