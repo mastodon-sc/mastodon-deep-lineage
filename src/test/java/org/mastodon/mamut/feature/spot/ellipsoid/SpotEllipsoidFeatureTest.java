@@ -50,7 +50,7 @@ public class SpotEllipsoidFeatureTest extends AbstractEllipsoidFeatureTest
 
 	@Override
 	@Test
-	public void testEllipsoidFeatureSerialization() throws IOException
+	public void testFeatureSerialization() throws IOException
 	{
 		SpotEllipsoidFeature ellipsoidFeatureReloaded;
 		try (Context context = new Context())
