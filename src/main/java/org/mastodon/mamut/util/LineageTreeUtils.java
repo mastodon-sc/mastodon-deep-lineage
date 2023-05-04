@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.nio.Attribute;
 import org.jgrapht.nio.AttributeType;
 import org.jgrapht.nio.DefaultAttribute;
@@ -188,7 +188,7 @@ public class LineageTreeUtils
 			@Nullable Integer maxTimePoint, @Nullable String rootName, @Nullable String branchSpotNamePrefix )
 	{
 		// Create a new directed graph
-		Graph< String, DefaultEdge > graph = new SimpleGraph<>( DefaultEdge.class );
+		Graph< String, DefaultEdge > graph = new SimpleDirectedGraph<>( DefaultEdge.class );
 		Map< String, Integer > branchSpotNameToLifeSpanMap = new HashMap<>();
 
 		// Add the selected spots and their links to the graph
