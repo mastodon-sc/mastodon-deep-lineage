@@ -265,7 +265,7 @@ public class LineageTreeUtils
 			return;
 
 		String prefix = branchSpotNamePrefix == null ? "" : branchSpotNamePrefix;
-		String branchSpotName = rootLabel == null ? prefix + branchSpot.getLabel() : prefix + rootLabel;
+		String branchSpotName = rootLabel == null ? prefix + branchSpot.getInternalPoolIndex() : prefix + rootLabel;
 
 		graph.addVertex( branchSpotName );
 		int endTimePoint = maxTimePoint != null && branchSpot.getTimepoint() > maxTimePoint ? maxTimePoint
@@ -276,7 +276,7 @@ public class LineageTreeUtils
 
 		// Add the outgoing links of the branch spot to the graph
 		branchSpot.outgoingEdges().forEach( branchLink -> {
-			String targetLabel = branchLink.getTarget().getLabel();
+			String targetLabel = String.valueOf( branchLink.getTarget().getInternalPoolIndex() );
 			targetLabel = prefix + targetLabel;
 			if ( maxTimePoint != null && branchLink.getTarget().getFirstTimePoint() > maxTimePoint )
 				return;
