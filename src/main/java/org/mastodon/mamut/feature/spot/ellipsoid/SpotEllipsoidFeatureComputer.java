@@ -36,7 +36,6 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
-import org.scijava.Cancelable;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -50,7 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Computes {@link SpotEllipsoidFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cancelable
+public class SpotEllipsoidFeatureComputer extends CancelableImpl implements MamutFeatureComputer
 {
 
 	@Parameter
@@ -67,8 +66,6 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 
 	@Parameter( type = ItemIO.OUTPUT )
 	private SpotEllipsoidFeature output;
-
-	private String cancelReason;
 
 	@Override
 	public void createOutput()
@@ -96,7 +93,7 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 	@Override
 	public void run()
 	{
-		cancelReason = null;
+		super.run();
 		final boolean recomputeAll = forceComputeAll.get();
 
 		if ( recomputeAll )
@@ -143,23 +140,4 @@ public class SpotEllipsoidFeatureComputer implements MamutFeatureComputer, Cance
 		}
 		status.notifyProgress( 1.0 );
 	}
-
-	@Override
-	public boolean isCanceled()
-	{
-		return null != cancelReason;
-	}
-
-	@Override
-	public void cancel( final String reason )
-	{
-		cancelReason = reason;
-	}
-
-	@Override
-	public String getCancelReason()
-	{
-		return cancelReason;
-	}
-
 }
