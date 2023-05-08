@@ -19,7 +19,7 @@ public class BranchNSuccessorsFeatureComputerTest
 		{
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
 			FeatureProjection< BranchSpot > featureProjection =
-					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph1,
+					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph1.getModel(),
 							BranchNSuccessorsFeature.BRANCH_N_SUCCESSORS_FEATURE,
 							BranchNSuccessorsFeature.PROJECTION_SPEC );
 			assertEquals( 0, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
@@ -33,7 +33,7 @@ public class BranchNSuccessorsFeatureComputerTest
 		{
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
 			FeatureProjection< BranchSpot > featureProjection =
-					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph2,
+					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph2.getModel(),
 							BranchNSuccessorsFeature.BRANCH_N_SUCCESSORS_FEATURE,
 							BranchNSuccessorsFeature.PROJECTION_SPEC );
 
