@@ -10,6 +10,7 @@ import org.mastodon.mamut.model.Spot;
 import org.scijava.Context;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -59,7 +60,8 @@ public class SpotEllipsoidFeatureTest extends AbstractEllipsoidFeatureTest
 					( SpotEllipsoidFeature ) FeatureSerializerTestUtils.saveAndReload( context, model, ellipsoidFeature );
 		}
 		// check that the feature has correct values after saving and reloading
-		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( ellipsoidFeature, ellipsoidFeatureReloaded, spot ) );
+		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( ellipsoidFeature, ellipsoidFeatureReloaded,
+				Collections.singleton( spot ) ) );
 	}
 
 	@Override

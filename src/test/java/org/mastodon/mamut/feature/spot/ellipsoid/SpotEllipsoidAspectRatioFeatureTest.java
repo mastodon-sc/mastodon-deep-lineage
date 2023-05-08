@@ -10,11 +10,11 @@ import org.mastodon.mamut.model.Spot;
 import org.scijava.Context;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class SpotEllipsoidAspectRatioFeatureTest extends AbstractEllipsoidFeatureTest
 {
@@ -56,7 +56,7 @@ public class SpotEllipsoidAspectRatioFeatureTest extends AbstractEllipsoidFeatur
 		}
 		// check that the feature has correct values after saving and reloading
 		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( ellipsoidAspectRatioFeature,
-				ellipsoidAspectRatiosFeatureReloaded, spot ) );
+				ellipsoidAspectRatiosFeatureReloaded, Collections.singleton( spot ) ) );
 	}
 
 	@Test
