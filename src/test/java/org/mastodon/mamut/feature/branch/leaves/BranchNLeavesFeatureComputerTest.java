@@ -2,10 +2,9 @@ package org.mastodon.mamut.feature.branch.leaves;
 
 import org.junit.Test;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.mamut.feature.branch.FeatureComputerTestUtils;
+import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
-import org.mastodon.mamut.feature.branch.leaves.BranchNLeavesFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
@@ -20,7 +19,7 @@ public class BranchNLeavesFeatureComputerTest
 		{
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
 			FeatureProjection< BranchSpot > featureProjection =
-					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph1,
+					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph1.getModel(),
 							BranchNLeavesFeature.BRANCH_N_LEAVES_FEATURE_SPEC, BranchNLeavesFeature.PROJECTION_SPEC );
 
 			assertEquals( 1, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
@@ -34,7 +33,7 @@ public class BranchNLeavesFeatureComputerTest
 		{
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
 			FeatureProjection< BranchSpot > featureProjection =
-					FeatureComputerTestUtils.getBranchSpotFeatureProjection( context, exampleGraph2,
+					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph2.getModel(),
 							BranchNLeavesFeature.BRANCH_N_LEAVES_FEATURE_SPEC, BranchNLeavesFeature.PROJECTION_SPEC );
 
 			assertEquals( 3, featureProjection.value( exampleGraph2.branchSpotA ), 0 );
