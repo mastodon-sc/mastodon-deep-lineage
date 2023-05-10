@@ -2,12 +2,11 @@ package org.mastodon.mamut.feature.spot.ellipsoid;
 
 import org.scijava.Cancelable;
 
-public class CancelableImpl implements Cancelable, Runnable
+public class CancelableImpl implements Cancelable
 {
 	private String cancelReason;
 
-	@Override
-	public void run()
+	public void deleteCancelReason()
 	{
 		cancelReason = null;
 	}

@@ -100,7 +100,7 @@ public class SpotEllipsoidAspectRatiosFeatureComputer extends CancelableImpl imp
 	@Override
 	public void run()
 	{
-		super.run();
+		super.deleteCancelReason();
 		final boolean recomputeAll = forceComputeAll.get();
 
 		if ( recomputeAll )

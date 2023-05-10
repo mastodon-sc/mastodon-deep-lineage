@@ -93,7 +93,7 @@ public class SpotEllipsoidFeatureComputer extends CancelableImpl implements Mamu
 	@Override
 	public void run()
 	{
-		super.run();
+		super.deleteCancelReason();
 		final boolean recomputeAll = forceComputeAll.get();
 
 		if ( recomputeAll )

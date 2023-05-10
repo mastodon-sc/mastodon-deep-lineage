@@ -37,7 +37,7 @@ public class BranchSinuosityFeatureComputer extends CancelableImpl implements Ma
 	@Override
 	public void run()
 	{
-		super.run();
+		super.deleteCancelReason();
 		computeBranchSinuosity();
 	}
 
