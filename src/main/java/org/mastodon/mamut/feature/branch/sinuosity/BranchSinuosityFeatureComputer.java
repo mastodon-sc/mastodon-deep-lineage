@@ -2,7 +2,7 @@ package org.mastodon.mamut.feature.branch.sinuosity;
 
 import net.imglib2.util.LinAlgHelpers;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
-import org.mastodon.mamut.feature.spot.ellipsoid.CancelableImpl;
+import org.mastodon.mamut.feature.CancelableImpl;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;

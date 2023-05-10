@@ -1,4 +1,4 @@
-package org.mastodon.mamut.feature.spot.ellipsoid;
+package org.mastodon.mamut.feature;
 
 import org.scijava.Cancelable;
 

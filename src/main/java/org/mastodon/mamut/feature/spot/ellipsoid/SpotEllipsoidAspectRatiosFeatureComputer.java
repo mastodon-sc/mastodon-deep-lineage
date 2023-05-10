@@ -30,6 +30,7 @@ package org.mastodon.mamut.feature.spot.ellipsoid;
 
 import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatus;
 import org.mastodon.feature.Feature;
+import org.mastodon.mamut.feature.CancelableImpl;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
