@@ -36,23 +36,20 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
-import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Computes {@link SpotEllipsoidFeature}
+ *  Computes {@link SpotEllipsoidFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class SpotEllipsoidFeatureComputer extends CancelableImpl implements MamutFeatureComputer
+public class SpotEllipsoidAspectRatiosFeatureComputer extends CancelableImpl implements MamutFeatureComputer
 {
-
 	@Parameter
 	private SharedBigDataViewerData bdvData;
 
@@ -66,7 +63,10 @@ public class SpotEllipsoidFeatureComputer extends CancelableImpl implements Mamu
 	private FeatureComputationStatus status;
 
 	@Parameter( type = ItemIO.OUTPUT )
-	private SpotEllipsoidFeature output;
+	private SpotEllipsoidAspectRatiosFeature output;
+
+	@Parameter( type = ItemIO.INPUT )
+	private SpotEllipsoidFeature input;
 
 	@Override
 	public void createOutput()
@@ -74,20 +74,27 @@ public class SpotEllipsoidFeatureComputer extends CancelableImpl implements Mamu
 		if ( null == output )
 		{
 			// Try to get output from the FeatureModel, if we deserialized a model.
-			final Feature< ? > feature = model.getFeatureModel().getFeature( SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
+			final Feature< ? > feature = model.getFeatureModel().getFeature(
+					SpotEllipsoidAspectRatiosFeature.SPOT_ELLIPSOID_ASPECT_RATIOS_FEATURE_SPEC );
 			if ( null != feature )
 			{
-				output = ( SpotEllipsoidFeature ) feature;
+				output = ( SpotEllipsoidAspectRatiosFeature ) feature;
 				return;
 			}
 
-			final DoublePropertyMap< Spot > shortSemiAxis = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
-			final DoublePropertyMap< Spot > middleSemiAxis =
-					new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
-			final DoublePropertyMap< Spot > longSemiAxis = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
-			final DoublePropertyMap< Spot > volume = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > shortToMiddle = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > shortToLong = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+			final DoublePropertyMap< Spot > middleToLong = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+
 			// Create a new output.
-			output = new SpotEllipsoidFeature( shortSemiAxis, middleSemiAxis, longSemiAxis, volume );
+			output = new SpotEllipsoidAspectRatiosFeature( shortToMiddle, shortToLong, middleToLong );
+		}
+		if ( null == input )
+		{
+			// Try to get it from the FeatureModel, if we deserialized a model.
+			final Feature< ? > feature = model.getFeatureModel().getFeature( SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC );
+			if ( null != feature )
+				input = ( SpotEllipsoidFeature ) feature;
 		}
 	}
 
@@ -99,18 +106,13 @@ public class SpotEllipsoidFeatureComputer extends CancelableImpl implements Mamu
 
 		if ( recomputeAll )
 		{
-			// Clear all.
-			output.shortSemiAxis.beforeClearPool();
-			output.middleSemiAxis.beforeClearPool();
-			output.longSemiAxis.beforeClearPool();
-			output.volume.beforeClearPool();
+			// Clear all
+			output.aspectRatioShortToMiddle.beforeClearPool();
+			output.aspectRatioShortToLong.beforeClearPool();
+			output.aspectRatioMiddleToLong.beforeClearPool();
 		}
 
 		int done = 0;
-
-		final double[][] covarianceMatrix = new double[ 3 ][ 3 ];
-
-		final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
 
 		Collection< Spot > spots = model.getGraph().vertices();
 		final int numSpots = spots.size();
@@ -122,22 +124,12 @@ public class SpotEllipsoidFeatureComputer extends CancelableImpl implements Mamu
 			if ( done++ % 1000 == 0 )
 				status.notifyProgress( ( double ) done / numSpots );
 			// Skip if we are not forced to recompute all and if a value is already computed.
-			if ( !recomputeAll && output.shortSemiAxis.isSet( spot ) )
+			if ( !recomputeAll && output.aspectRatioShortToMiddle.isSet( spot ) )
 				continue;
 
-			spot.getCovariance( covarianceMatrix );
-			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
-			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
-			// sort axes lengths in ascending order
-			Arrays.sort( eigenValues );
-			double a = Math.sqrt( eigenValues[ 0 ] );
-			double b = Math.sqrt( eigenValues[ 1 ] );
-			double c = Math.sqrt( eigenValues[ 2 ] );
-			double volume = 4d / 3d * Math.PI * a * b * c;
-			output.shortSemiAxis.set( spot, a );
-			output.middleSemiAxis.set( spot, b );
-			output.longSemiAxis.set( spot, c );
-			output.volume.set( spot, volume );
+			output.aspectRatioShortToMiddle.set( spot, input.shortSemiAxis.get( spot ) / input.middleSemiAxis.get( spot ) );
+			output.aspectRatioShortToLong.set( spot, input.shortSemiAxis.get( spot ) / input.longSemiAxis.get( spot ) );
+			output.aspectRatioMiddleToLong.set( spot, input.middleSemiAxis.get( spot ) / input.longSemiAxis.get( spot ) );
 		}
 		status.notifyProgress( 1.0 );
 	}

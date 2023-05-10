@@ -1,5 +1,6 @@
 package org.mastodon.mamut.feature.branch.successors;
 
+import org.mastodon.mamut.feature.CancelableImpl;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.mamut.model.branch.BranchLink;
@@ -16,7 +17,7 @@ import javax.annotation.Nonnull;
  * Computes {@link BranchNSuccessorsFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchNSuccessorsFeatureComputer implements MamutFeatureComputer
+public class BranchNSuccessorsFeatureComputer extends CancelableImpl implements MamutFeatureComputer
 {
 	@Parameter
 	protected ModelBranchGraph branchGraph;
@@ -34,7 +35,7 @@ public class BranchNSuccessorsFeatureComputer implements MamutFeatureComputer
 	@Override
 	public void run()
 	{
-		LineageTreeUtils.callDepthFirst( branchGraph, this::computeSuccessors );
+		LineageTreeUtils.callDepthFirst( branchGraph, this::computeSuccessors, this::isCanceled );
 	}
 
 	private void computeSuccessors( @Nonnull BranchSpot vertex )

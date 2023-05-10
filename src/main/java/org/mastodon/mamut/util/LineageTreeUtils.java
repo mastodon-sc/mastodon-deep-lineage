@@ -10,6 +10,8 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public class LineageTreeUtils {
@@ -21,8 +23,11 @@ public class LineageTreeUtils {
 	 *
 	 * @param branchGraph the graph to iterate through.
 	 * @param action      the action to perform on each vertex.
+	 * @param stopCondition optional condition that, when supplies true, stops the iteration before the next root is processed.
 	 */
-	public static void callDepthFirst(@Nonnull ModelBranchGraph branchGraph, @Nonnull Consumer<BranchSpot> action) {
+	public static void callDepthFirst( @Nonnull ModelBranchGraph branchGraph, @Nonnull Consumer< BranchSpot > action,
+			@Nullable BooleanSupplier stopCondition )
+	{
 		DepthFirstSearch<BranchSpot, BranchLink> search = new DepthFirstSearch<>(branchGraph, GraphSearch.SearchDirection.DIRECTED);
 		search.setTraversalListener(new SearchListener<BranchSpot, BranchLink, DepthFirstSearch<BranchSpot, BranchLink>>() {
 			@Override
@@ -43,6 +48,11 @@ public class LineageTreeUtils {
 			{}
 		} );
 		final RefSet< BranchSpot > roots = RootFinder.getRoots( branchGraph );
-		roots.forEach( search::start );
+		for ( BranchSpot root : roots )
+		{
+			if ( stopCondition != null && stopCondition.getAsBoolean() )
+				break;
+			search.start( root );
+		}
 	}
 }
