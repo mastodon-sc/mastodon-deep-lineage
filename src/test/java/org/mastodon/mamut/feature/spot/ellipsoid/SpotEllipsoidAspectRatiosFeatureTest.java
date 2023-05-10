@@ -16,16 +16,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class SpotEllipsoidAspectRatioFeatureTest extends AbstractEllipsoidFeatureTest
+public class SpotEllipsoidAspectRatiosFeatureTest extends AbstractEllipsoidFeatureTest
 {
-	protected Feature< Spot > ellipsoidAspectRatioFeature;
+	protected Feature< Spot > ellipsoidAspectRatiosFeature;
 
 	@Before
 	public void setUp()
 	{
 		try (Context context = new Context())
 		{
-			ellipsoidAspectRatioFeature = FeatureComputerTestUtils.getFeature( context, model,
+			ellipsoidAspectRatiosFeature = FeatureComputerTestUtils.getFeature( context, model,
 					SpotEllipsoidAspectRatiosFeature.SPOT_ELLIPSOID_ASPECT_RATIOS_FEATURE_SPEC );
 		}
 	}
@@ -35,13 +35,13 @@ public class SpotEllipsoidAspectRatioFeatureTest extends AbstractEllipsoidFeatur
 	{
 		// check that the features are computed correctly
 		FeatureProjection< Spot > shortToMiddleProjection =
-				getProjection( ellipsoidAspectRatioFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_MIDDLE_SPEC );
+				getProjection( ellipsoidAspectRatiosFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_MIDDLE_SPEC );
 		assertEquals( expectedShortAxis / expectedMiddleAxis, shortToMiddleProjection.value( spot ), 0.00001d );
 		FeatureProjection< Spot > shortToLongProjection =
-				getProjection( ellipsoidAspectRatioFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_LONG_SPEC );
+				getProjection( ellipsoidAspectRatiosFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_LONG_SPEC );
 		assertEquals( expectedShortAxis / expectedLongAxis, shortToLongProjection.value( spot ), 0.00001d );
 		FeatureProjection< Spot > middleToLongProjection =
-				getProjection( ellipsoidAspectRatioFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_MIDDLE_TO_LONG_SPEC );
+				getProjection( ellipsoidAspectRatiosFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_MIDDLE_TO_LONG_SPEC );
 		assertEquals( expectedMiddleAxis / expectedLongAxis, middleToLongProjection.value( spot ), 0.00001d );
 	}
 
@@ -52,10 +52,10 @@ public class SpotEllipsoidAspectRatioFeatureTest extends AbstractEllipsoidFeatur
 		try (Context context = new Context())
 		{
 			ellipsoidAspectRatiosFeatureReloaded = ( SpotEllipsoidAspectRatiosFeature ) FeatureSerializerTestUtils.saveAndReload( context,
-					model, ellipsoidAspectRatioFeature );
+					model, ellipsoidAspectRatiosFeature );
 		}
 		// check that the feature has correct values after saving and reloading
-		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( ellipsoidAspectRatioFeature,
+		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( ellipsoidAspectRatiosFeature,
 				ellipsoidAspectRatiosFeatureReloaded, Collections.singleton( spot ) ) );
 	}
 
@@ -64,27 +64,27 @@ public class SpotEllipsoidAspectRatioFeatureTest extends AbstractEllipsoidFeatur
 	{
 		// test, if features are not NaN before invalidation
 		assertFalse( Double
-				.isNaN( getProjection( ellipsoidAspectRatioFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_MIDDLE_SPEC )
+				.isNaN( getProjection( ellipsoidAspectRatiosFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_MIDDLE_SPEC )
 						.value( spot ) ) );
 		assertFalse( Double
-				.isNaN( getProjection( ellipsoidAspectRatioFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_LONG_SPEC )
+				.isNaN( getProjection( ellipsoidAspectRatiosFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_LONG_SPEC )
 						.value( spot ) ) );
 		assertFalse( Double
-				.isNaN( getProjection( ellipsoidAspectRatioFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_MIDDLE_TO_LONG_SPEC )
+				.isNaN( getProjection( ellipsoidAspectRatiosFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_MIDDLE_TO_LONG_SPEC )
 						.value( spot ) ) );
 
 		// invalidate feature
-		ellipsoidAspectRatioFeature.invalidate( spot );
+		ellipsoidAspectRatiosFeature.invalidate( spot );
 
 		// test, if features are NaN after invalidation
 		assertTrue( Double
-				.isNaN( getProjection( ellipsoidAspectRatioFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_MIDDLE_SPEC )
+				.isNaN( getProjection( ellipsoidAspectRatiosFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_MIDDLE_SPEC )
 						.value( spot ) ) );
 		assertTrue( Double
-				.isNaN( getProjection( ellipsoidAspectRatioFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_LONG_SPEC )
+				.isNaN( getProjection( ellipsoidAspectRatiosFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_SHORT_TO_LONG_SPEC )
 						.value( spot ) ) );
 		assertTrue( Double
-				.isNaN( getProjection( ellipsoidAspectRatioFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_MIDDLE_TO_LONG_SPEC )
+				.isNaN( getProjection( ellipsoidAspectRatiosFeature, SpotEllipsoidAspectRatiosFeature.ASPECT_RATIO_MIDDLE_TO_LONG_SPEC )
 						.value( spot ) ) );
 	}
 }
