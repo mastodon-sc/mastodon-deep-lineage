@@ -2,6 +2,7 @@ package org.mastodon.mamut.feature.branch.sinuosity;
 
 import net.imglib2.util.LinAlgHelpers;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
+import org.mastodon.mamut.feature.spot.ellipsoid.CancelableImpl;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
@@ -17,7 +18,7 @@ import java.util.Iterator;
  * Computes {@link BranchSinuosityFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchSinuosityFeatureComputer implements MamutFeatureComputer
+public class BranchSinuosityFeatureComputer extends CancelableImpl implements MamutFeatureComputer
 {
 
 	@Parameter
@@ -36,12 +37,18 @@ public class BranchSinuosityFeatureComputer implements MamutFeatureComputer
 	@Override
 	public void run()
 	{
+		super.run();
 		computeBranchSinuosity();
 	}
 
 	private void computeBranchSinuosity()
 	{
-		branchGraph.vertices().forEach( branchSpot -> output.map.set( branchSpot, computeSinuosity( branchSpot ) ) );
+		for ( BranchSpot branchSpot : branchGraph.vertices() )
+		{
+			if ( isCanceled() )
+				break;
+			output.map.set( branchSpot, computeSinuosity( branchSpot ) );
+		}
 	}
 
 	private double computeSinuosity( final BranchSpot branchSpot )
