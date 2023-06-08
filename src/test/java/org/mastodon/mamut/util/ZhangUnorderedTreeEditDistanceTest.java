@@ -11,21 +11,17 @@ public class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	public void testzhang_edit_distance()
 	{
+		BiFunction< Object, Object, Integer > costFunction = ( o1, o2 ) -> {
+			if ( o2 == null )
+				return ( Integer ) o1;
+			else
+				return Math.abs( ( Integer ) o1 - ( Integer ) o2 );
+		};
+
 		Tree tree2 = getExampleTree2();
 		Tree tree5 = getExampleTree5();
 
-		int distance =
-				ZhangUnorderedTreeEditDistance.zhang_edit_distance( tree2, tree5, "node_weight", new BiFunction< Object, Object, Integer >()
-				{
-					@Override
-					public Integer apply( Object o1, Object o2 )
-					{
-						if ( o2 == null )
-							return ( Integer ) o1;
-						else
-							return Math.abs( ( Integer ) o1 - ( Integer ) o2 );
-					}
-				}, false );
+		int distance = ZhangUnorderedTreeEditDistance.zhang_edit_distance( tree2, tree5, "node_weight", costFunction, false );
 		assertEquals( 20, distance );
 	}
 
