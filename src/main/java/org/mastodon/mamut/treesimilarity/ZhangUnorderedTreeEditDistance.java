@@ -64,7 +64,7 @@ public class ZhangUnorderedTreeEditDistance
 			supertree.getMyChildren().add( tree1 );
 			supertree.getMyChildren().add( tree2 );
 
-			Map< UUID, Integer > dic_class = get_dic_class( supertree, label_attribute );
+			Map< UUID, Integer > dic_class = getUnorderedEquivalenceClassWithAttribute( supertree, label_attribute );
 
 			// list of nodes of tree1
 			List< Tree > l1 = tree1.listOfSubtrees();
@@ -509,7 +509,7 @@ public class ZhangUnorderedTreeEditDistance
 		return depth + 1;
 	}
 
-	private static Map< UUID, Integer > get_dic_class( Tree tree, String attribute )
+	private static Map< UUID, Integer > getUnorderedEquivalenceClassWithAttribute( Tree tree, String attribute )
 	{
 		Map< UUID, Integer > dicClass = new HashMap<>();
 		Map< Integer, Map< Object, List< Tree > > > graphDepthToClassifiedTrees = new LinkedHashMap<>();
