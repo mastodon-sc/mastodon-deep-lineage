@@ -1,4 +1,4 @@
-package org.mastodon.mamut.util;
+package org.mastodon.mamut.treesimilarity;
 
 import org.jgrapht.alg.flow.PushRelabelMFImpl;
 import org.jgrapht.alg.flow.mincost.CapacityScalingMinimumCostFlow;

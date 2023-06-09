@@ -1,4 +1,4 @@
-package org.mastodon.mamut.util;
+package org.mastodon.mamut.treesimilarity;
 
 import java.util.ArrayList;
 import java.util.HashMap;

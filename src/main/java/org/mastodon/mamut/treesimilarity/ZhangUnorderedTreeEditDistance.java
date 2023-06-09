@@ -1,4 +1,4 @@
-package org.mastodon.mamut.util;
+package org.mastodon.mamut.treesimilarity;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.graph.DefaultWeightedEdge;
