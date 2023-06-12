@@ -58,7 +58,7 @@ public class Tree
 	 * @param attributeName The name of the new attribute.
 	 * @param attributeValue The value of the new attribute.
 	 */
-	public void addAttribute( String attributeName, Number attributeValue )
+	public void addAttribute( String attributeName, Object attributeValue )
 	{
 		attributes.put( attributeName, attributeValue );
 	}
