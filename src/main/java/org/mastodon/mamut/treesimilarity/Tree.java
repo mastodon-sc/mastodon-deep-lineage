@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class Tree
+public class Tree< T >
 {
 
 	private final UUID id;
 
-	private final List< Tree > children;
+	private final List< Tree< T > > children;
 
-	private final Map< String, Object > attributes;
+	private final Map< String, T > attributes;
 
 	public Tree()
 	{
@@ -37,7 +37,7 @@ public class Tree
 	 *
 	 * @return The list of child Tree objects.
 	 */
-	public List< Tree > getChildren()
+	public List< Tree< T > > getChildren()
 	{
 		return children;
 	}
@@ -47,7 +47,7 @@ public class Tree
 	 *
 	 * @return The map of attributes.
 	 */
-	public Map< String, Object > getAttributes()
+	public Map< String, T > getAttributes()
 	{
 		return attributes;
 	}
@@ -58,7 +58,7 @@ public class Tree
 	 * @param attributeName The name of the new attribute.
 	 * @param attributeValue The value of the new attribute.
 	 */
-	public void addAttribute( String attributeName, Object attributeValue )
+	public void addAttribute( String attributeName, T attributeValue )
 	{
 		attributes.put( attributeName, attributeValue );
 	}
@@ -68,11 +68,11 @@ public class Tree
 	 *
 	 * @return The list of subtrees.
 	 */
-	public List< Tree > listOfSubtrees()
+	public List< Tree< T > > listOfSubtrees()
 	{
-		List< Tree > list = new ArrayList<>();
+		List< Tree< T > > list = new ArrayList<>();
 		list.add( this );
-		for ( Tree child : children )
+		for ( Tree< T > child : children )
 		{
 			list.addAll( child.listOfSubtrees() );
 		}
@@ -83,7 +83,7 @@ public class Tree
 	 * Add the given tree as a child of the main tree
 	 * @param subtree the tree to add as a child
 	 */
-	public void addSubtree( Tree subtree )
+	public void addSubtree( Tree< T > subtree )
 	{
 		this.children.add( subtree );
 	}
