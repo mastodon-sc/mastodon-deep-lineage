@@ -59,10 +59,10 @@ public class ZhangUnorderedTreeEditDistance
 		if ( local_distance != null )
 		{
 			Tree supertree = new Tree();
-			supertree.addAttributeToId( label_attribute, 1 );
+			supertree.addAttribute( label_attribute, 1 );
 
-			supertree.getMyChildren().add( tree1 );
-			supertree.getMyChildren().add( tree2 );
+			supertree.getChildren().add( tree1 );
+			supertree.getChildren().add( tree2 );
 
 			Map< UUID, Integer > dic_class = getUnorderedEquivalenceClassWithAttribute( supertree, label_attribute );
 
@@ -73,17 +73,17 @@ public class ZhangUnorderedTreeEditDistance
 
 			for ( Tree st : l1 )
 			{
-				cost_tree_to_none.put( st.getMyId(), cost_function( st, null, label_attribute, local_distance ) );
+				cost_tree_to_none.put( st.getId(), cost_function( st, null, label_attribute, local_distance ) );
 			}
 			for ( Tree st : l2 )
 			{
-				cost_tree_to_none.put( st.getMyId(), cost_function( st, null, label_attribute, local_distance ) );
+				cost_tree_to_none.put( st.getId(), cost_function( st, null, label_attribute, local_distance ) );
 			}
 			for ( Tree st : l1 )
 			{
 				for ( Tree st2 : l2 )
 				{
-					cost_tree_to_tree.put( Pair.of( st.getMyId(), st2.getMyId() ),
+					cost_tree_to_tree.put( Pair.of( st.getId(), st2.getId() ),
 							cost_function( st, st2, label_attribute, local_distance ) );
 				}
 			}
@@ -121,11 +121,11 @@ public class ZhangUnorderedTreeEditDistance
 	private static int cost_function( Tree tree1, Tree tree2, String label_attribute, BiFunction< Object, Object, Integer > local_distance )
 	{
 		if ( tree2 == null )
-			return local_distance.apply( tree1.getMyAttributes().get( label_attribute ), null );
+			return local_distance.apply( tree1.getAttributes().get( label_attribute ), null );
 		else
 		{
-			Object v1 = tree1.getMyAttributes().get( label_attribute );
-			Object v2 = tree2.getMyAttributes().get( label_attribute );
+			Object v1 = tree1.getAttributes().get( label_attribute );
+			Object v2 = tree2.getAttributes().get( label_attribute );
 			return local_distance.apply( v1, v2 );
 		}
 	}
@@ -139,7 +139,7 @@ public class ZhangUnorderedTreeEditDistance
 			@Nullable Map< Tree, Integer > dsf, @Nullable Map< UUID, Integer > dic_class, boolean verbose,
 			Map< Pair< UUID, UUID >, Integer > cost_tree_to_tree )
 	{
-		if ( dic_class != null && Objects.equals( dic_class.get( tree1.getMyId() ), dic_class.get( tree2.getMyId() ) ) && !verbose )
+		if ( dic_class != null && Objects.equals( dic_class.get( tree1.getId() ), dic_class.get( tree2.getId() ) ) && !verbose )
 		{
 			mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = 0;
 			mf[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = 0;
@@ -150,12 +150,12 @@ public class ZhangUnorderedTreeEditDistance
 			return mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ];
 		}
 
-		if ( tree1.getMyChildren().size() == 0 && tree2.getMyChildren().size() == 0 )
+		if ( tree1.getChildren().size() == 0 && tree2.getChildren().size() == 0 )
 		{
 			// TODO implementation missing for the case local_distance == null
 			if ( local_distance != null )
 			{
-				int value = cost_tree_to_tree.get( Pair.of( tree1.getMyId(), tree2.getMyId() ) );
+				int value = cost_tree_to_tree.get( Pair.of( tree1.getId(), tree2.getId() ) );
 				mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = value;
 				return value;
 			}
@@ -167,9 +167,9 @@ public class ZhangUnorderedTreeEditDistance
 			{
 				a = dit.get( tree2 );
 				List< Integer > l = new ArrayList<>();
-				if ( tree2.getMyChildren().size() > 0 )
+				if ( tree2.getChildren().size() > 0 )
 				{
-					for ( Tree child : tree2.getMyChildren() )
+					for ( Tree child : tree2.getChildren() )
 					{
 						int distance_zhang_tree =
 								distance_zhang_tree( tree1, child, local_distance, l1, l2, mt, mf, dit, dif, dst, dsf, dic_class, verbose,
@@ -184,9 +184,9 @@ public class ZhangUnorderedTreeEditDistance
 			{
 				b = dst.get( tree1 );
 				List< Integer > l = new ArrayList<>();
-				if ( tree1.getMyChildren().size() > 0 )
+				if ( tree1.getChildren().size() > 0 )
 				{
-					for ( Tree child : tree1.getMyChildren() )
+					for ( Tree child : tree1.getChildren() )
 					{
 						l.add( distance_zhang_tree( child, tree2, local_distance, l1, l2, mt, mf, dit, dif, dst, dsf, dic_class, verbose,
 								cost_tree_to_tree ) - dst.get( child ) );
@@ -199,10 +199,10 @@ public class ZhangUnorderedTreeEditDistance
 			if ( local_distance != null )
 			{
 				c += distance_zhang_forest( tree1, tree2, local_distance, l1, l2, mf, mt, dif, dsf, dit, dst );
-				c += cost_tree_to_tree.get( Pair.of( tree1.getMyId(), tree2.getMyId() ) );
+				c += cost_tree_to_tree.get( Pair.of( tree1.getId(), tree2.getId() ) );
 			}
 
-			if ( tree1.getMyChildren().size() == 0 || tree2.getMyChildren().size() == 0 )
+			if ( tree1.getChildren().size() == 0 || tree2.getChildren().size() == 0 )
 			{
 				mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = c;
 				return c;
@@ -229,25 +229,25 @@ public class ZhangUnorderedTreeEditDistance
 		}
 		else
 		{
-			if ( dsf != null && forest1.getMyChildren().size() > 0 && forest2.getMyChildren().size() == 0 )
+			if ( dsf != null && forest1.getChildren().size() > 0 && forest2.getChildren().size() == 0 )
 			{
 				mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = dsf.get( forest1 );
 				return dsf.get( forest1 );
 			}
 
-			if ( dif != null && forest2.getMyChildren().size() > 0 && forest1.getMyChildren().size() == 0 )
+			if ( dif != null && forest2.getChildren().size() > 0 && forest1.getChildren().size() == 0 )
 			{
 				mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = dif.get( forest2 );
 				return dif.get( forest2 );
 			}
 
-			if ( dif != null && dsf != null && forest2.getMyChildren().size() > 0 && forest1.getMyChildren().size() > 0 )
+			if ( dif != null && dsf != null && forest2.getChildren().size() > 0 && forest1.getChildren().size() > 0 )
 			{
 				int a = dif.get( forest2 );
 				List< Integer > l = new ArrayList<>();
-				if ( forest2.getMyChildren().size() > 0 )
+				if ( forest2.getChildren().size() > 0 )
 				{
-					for ( Tree child : forest2.getMyChildren() )
+					for ( Tree child : forest2.getChildren() )
 					{
 						l.add( distance_zhang_forest( forest1, child, local_distance, l1, l2, mf, mt, dif, dsf, dit, dst )
 								- dif.get( child ) );
@@ -256,9 +256,9 @@ public class ZhangUnorderedTreeEditDistance
 				}
 				int b = dsf.get( forest1 );
 				l = new ArrayList<>();
-				if ( forest1.getMyChildren().size() > 0 )
+				if ( forest1.getChildren().size() > 0 )
 				{
-					for ( Tree child : forest1.getMyChildren() )
+					for ( Tree child : forest1.getChildren() )
 					{
 						l.add( distance_zhang_forest( child, forest2, local_distance, l1, l2, mf, mt, dif, dsf, dit, dst )
 								- dsf.get( child ) );
@@ -277,18 +277,18 @@ public class ZhangUnorderedTreeEditDistance
 			int[][] mt,
 			@Nullable List< Tree > l1, @Nullable List< Tree > l2, @Nullable Map< Tree, Integer > dst, @Nullable Map< Tree, Integer > dit )
 	{
-		int n1 = forest1.getMyChildren().size();
-		int n2 = forest2.getMyChildren().size();
+		int n1 = forest1.getChildren().size();
+		int n2 = forest2.getChildren().size();
 		Map< Object, List< Tree > > dico1 = new LinkedHashMap<>();
 		Map< Object, List< Tree > > dico2 = new LinkedHashMap<>();
 
 		// TODO add implementation for the case local_distance == null
 		if ( local_distance != null )
 		{
-			for ( Tree tree1 : forest1.getMyChildren() )
+			for ( Tree tree1 : forest1.getChildren() )
 			{
 				int unordered_equivalence_class_with_attribute =
-						( int ) tree1.getMyAttributes().get( "unordered_equivalence_class_with_attribute" );
+						( int ) tree1.getAttributes().get( "unordered_equivalence_class_with_attribute" );
 				if ( dico1.containsKey( unordered_equivalence_class_with_attribute ) )
 				{
 					List< Tree > trees = dico1.get( unordered_equivalence_class_with_attribute );
@@ -302,10 +302,10 @@ public class ZhangUnorderedTreeEditDistance
 				}
 			}
 
-			for ( Tree tree2 : forest2.getMyChildren() )
+			for ( Tree tree2 : forest2.getChildren() )
 			{
 				int unordered_equivalence_class_with_attribute =
-						( int ) tree2.getMyAttributes().get( "unordered_equivalence_class_with_attribute" );
+						( int ) tree2.getAttributes().get( "unordered_equivalence_class_with_attribute" );
 				if ( dico2.containsKey( unordered_equivalence_class_with_attribute ) )
 				{
 					List< Tree > trees = dico2.get( unordered_equivalence_class_with_attribute );
@@ -443,7 +443,7 @@ public class ZhangUnorderedTreeEditDistance
 		Map< Tree, Integer > df = new HashMap<>();
 		Map< Tree, Integer > dt = new HashMap<>();
 
-		if ( s.getMyChildren().isEmpty() )
+		if ( s.getChildren().isEmpty() )
 		{
 			df.put( s, 0 );
 			if ( costTreeToNone == null )
@@ -452,13 +452,13 @@ public class ZhangUnorderedTreeEditDistance
 			}
 			else
 			{
-				dt.put( s, costTreeToNone.get( s.getMyId() ) );
+				dt.put( s, costTreeToNone.get( s.getId() ) );
 			}
 		}
 		else
 		{
 			int v = 0;
-			for ( Tree child : s.getMyChildren() )
+			for ( Tree child : s.getChildren() )
 			{
 				Map< Tree, Integer > dfi;
 				Map< Tree, Integer > dti;
@@ -477,7 +477,7 @@ public class ZhangUnorderedTreeEditDistance
 			}
 			else
 			{
-				dt.put( s, v + costTreeToNone.get( s.getMyId() ) );
+				dt.put( s, v + costTreeToNone.get( s.getId() ) );
 			}
 		}
 		return Pair.of( df, dt );
@@ -487,7 +487,7 @@ public class ZhangUnorderedTreeEditDistance
 	{
 		int depth = 0;
 		List< Integer > depths = new ArrayList<>();
-		for ( Tree child : tree.getMyChildren() )
+		for ( Tree child : tree.getChildren() )
 		{
 			int d = post_order( child, attribute, graphDepthToClassifiedTrees );
 			depths.add( d );
@@ -495,7 +495,7 @@ public class ZhangUnorderedTreeEditDistance
 		}
 
 		Map< Object, List< Tree > > attributeToTrees = graphDepthToClassifiedTrees.computeIfAbsent( depth, k -> new HashMap<>() );
-		Object value = tree.getMyAttributes().get( attribute );
+		Object value = tree.getAttributes().get( attribute );
 		List< Tree > treesWithSameAttribute = attributeToTrees.get( value );
 		if ( treesWithSameAttribute == null )
 		{
@@ -504,7 +504,7 @@ public class ZhangUnorderedTreeEditDistance
 		treesWithSameAttribute.add( tree );
 		attributeToTrees.put( value, treesWithSameAttribute );
 		graphDepthToClassifiedTrees.put( depth, attributeToTrees );
-		tree.addAttributeToId( "height", depth );
+		tree.addAttribute( "height", depth );
 
 		return depth + 1;
 	}
@@ -517,8 +517,8 @@ public class ZhangUnorderedTreeEditDistance
 		post_order( tree, attribute, graphDepthToClassifiedTrees );
 
 		boolean ensureDifferentClassNumber = false;
-		Tree tree1 = tree.getMyChildren().get( 0 );
-		Tree tree2 = tree.getMyChildren().get( 1 );
+		Tree tree1 = tree.getChildren().get( 0 );
+		Tree tree2 = tree.getChildren().get( 1 );
 
 		int classNumber = 0;
 		for ( Map.Entry< Integer, Map< Object, List< Tree > > > graphDepth : graphDepthToClassifiedTrees.entrySet() )
@@ -528,10 +528,10 @@ public class ZhangUnorderedTreeEditDistance
 				for ( Tree t : treesWithSameAttributeAtGraphDepth.getValue() )
 				{
 					// NB: we do not add the class number to the tree itself
-					if ( tree.getMyId().equals( t.getMyId() ) )
+					if ( tree.getId().equals( t.getId() ) )
 						continue;
-					dicClass.put( t.getMyId(), classNumber );
-					t.addAttributeToId( "unordered_equivalence_class_with_attribute", classNumber );
+					dicClass.put( t.getId(), classNumber );
+					t.addAttribute( "unordered_equivalence_class_with_attribute", classNumber );
 					if ( t.equals( tree1 ) || t.equals( tree2 ) && !ensureDifferentClassNumber )
 					{
 						classNumber++;

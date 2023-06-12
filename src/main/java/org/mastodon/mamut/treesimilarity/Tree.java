@@ -5,33 +5,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Tree
 {
-	/**
-	 * The main structure of the treex library.
-	 */
 
-	private static final AtomicInteger idCounter = new AtomicInteger( 0 );
+	private final UUID id;
 
-	private final UUID myId;
+	private final List< Tree > children;
 
-	private final List< Tree > myChildren;
-
-	private final Map< String, Object > myProperties;
-
-	private final Map< String, Object > myAttributes;
-
-	private Tree myParent;
+	private final Map< String, Object > attributes;
 
 	public Tree()
 	{
-		myId = UUID.randomUUID();
-		myChildren = new ArrayList<>();
-		myProperties = new HashMap<>();
-		myAttributes = new HashMap<>();
-		myParent = null;
+		id = UUID.randomUUID();
+		children = new ArrayList<>();
+		attributes = new HashMap<>();
 	}
 
 	/**
@@ -39,9 +27,9 @@ public class Tree
 	 *
 	 * @return The unique id of the tree.
 	 */
-	public UUID getMyId()
+	public UUID getId()
 	{
-		return myId;
+		return id;
 	}
 
 	/**
@@ -49,19 +37,9 @@ public class Tree
 	 *
 	 * @return The list of child Tree objects.
 	 */
-	public List< Tree > getMyChildren()
+	public List< Tree > getChildren()
 	{
-		return myChildren;
-	}
-
-	/**
-	 * Get the properties of the tree.
-	 *
-	 * @return The map of properties.
-	 */
-	public Map< String, Object > getMyProperties()
-	{
-		return myProperties;
+		return children;
 	}
 
 	/**
@@ -69,29 +47,9 @@ public class Tree
 	 *
 	 * @return The map of attributes.
 	 */
-	public Map< String, Object > getMyAttributes()
+	public Map< String, Object > getAttributes()
 	{
-		return myAttributes;
-	}
-
-	/**
-	 * Get the parent tree.
-	 *
-	 * @return The parent Tree object.
-	 */
-	public Tree getMyParent()
-	{
-		return myParent;
-	}
-
-	/**
-	 * Set the parent tree.
-	 *
-	 * @param parent The parent Tree object.
-	 */
-	public void setMyParent( Tree parent )
-	{
-		myParent = parent;
+		return attributes;
 	}
 
 	/**
@@ -100,9 +58,9 @@ public class Tree
 	 * @param attributeName The name of the new attribute.
 	 * @param attributeValue The value of the new attribute.
 	 */
-	public void addAttributeToId( String attributeName, Number attributeValue )
+	public void addAttribute( String attributeName, Number attributeValue )
 	{
-		myAttributes.put( attributeName, attributeValue );
+		attributes.put( attributeName, attributeValue );
 	}
 
 	/**
@@ -114,7 +72,7 @@ public class Tree
 	{
 		List< Tree > list = new ArrayList<>();
 		list.add( this );
-		for ( Tree child : myChildren )
+		for ( Tree child : children )
 		{
 			list.addAll( child.listOfSubtrees() );
 		}
@@ -127,7 +85,6 @@ public class Tree
 	 */
 	public void addSubtree( Tree subtree )
 	{
-		this.myChildren.add( subtree );
-		subtree.setMyParent( this );
+		this.children.add( subtree );
 	}
 }
