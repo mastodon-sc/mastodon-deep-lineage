@@ -61,21 +61,34 @@ public class ZhangUnorderedTreeEditDistance
 		Map< Tree< Number >, Integer > costTreeToNone = new HashMap<>();
 		Map< Pair< Tree< Number >, Tree< Number > >, Integer > costTreeToTree = new HashMap<>();
 
-		// TODO implementation missing for the case costFunction == null
-		if ( costFunction != null )
+		SimpleTree< Number > supertree = new SimpleTree<>( 0 );
+
+		supertree.getChildren().add( tree1 );
+		supertree.getChildren().add( tree2 );
+
+		Map< Tree< Number >, Integer > equivalenceClasses;
+
+		// list of nodes of tree1
+		List< Tree< Number > > subtrees1 = tree1.listOfSubtrees();
+		// list of nodes of tree2
+		List< Tree< Number > > subtrees2 = tree2.listOfSubtrees();
+
+		if ( costFunction == null )
 		{
-			SimpleTree< Number > supertree = new SimpleTree<>( 0 );
+			equivalenceClasses = getEquivalenceClasses( supertree, false );
+			Pair< Map< Tree< Number >, Integer >, Map< Tree< Number >, Integer > > p1 =
+					computeDeleteInsertCostsForestTree( tree1, null );
+			forestDeleteMap = p1.getKey();
+			treeDeleteMap = p1.getValue();
 
-			supertree.getChildren().add( tree1 );
-			supertree.getChildren().add( tree2 );
-
-			Map< Tree< Number >, Integer > equivalenceClasses = getEquivalenceClasses( supertree );
-
-			// list of nodes of tree1
-			List< Tree< Number > > subtrees1 = tree1.listOfSubtrees();
-			// list of nodes of tree2
-			List< Tree< Number > > subtrees2 = tree2.listOfSubtrees();
-
+			Pair< Map< Tree< Number >, Integer >, Map< Tree< Number >, Integer > > p2 =
+					computeDeleteInsertCostsForestTree( tree2, null );
+			forestInsertMap = p2.getKey();
+			treeInsertMap = p2.getValue();
+		}
+		else
+		{
+			equivalenceClasses = getEquivalenceClasses( supertree, true );
 			subtrees1.forEach( tree -> costTreeToNone.put( tree, getCosts( tree, null, costFunction ) ) );
 			subtrees2.forEach( tree -> costTreeToNone.put( tree, getCosts( tree, null, costFunction ) ) );
 			for ( Tree< Number > subtree1 : subtrees1 )
@@ -96,25 +109,22 @@ public class ZhangUnorderedTreeEditDistance
 					computeDeleteInsertCostsForestTree( tree2, costTreeToNone );
 			forestInsertMap = p2.getKey();
 			treeInsertMap = p2.getValue();
-
-			int[][] gridf = new int[ subtrees1.size() ][ subtrees2.size() ];
-			int[][] gridt = new int[ subtrees1.size() ][ subtrees2.size() ];
-
-			for ( int[] row : gridf )
-				Arrays.fill( row, -1 );
-			for ( int[] row : gridt )
-				Arrays.fill( row, -1 );
-
-			// TODO add verbose == true
-			if ( treeInsertMap == null || forestInsertMap == null || treeDeleteMap == null || forestDeleteMap == null )
-			{
-				throw new IllegalArgumentException( "One of the maps is null" );
-			}
-			return distanceZhangTree( tree1, tree2, costFunction, subtrees1, subtrees2, gridt, gridf, treeInsertMap, forestInsertMap,
-					treeDeleteMap,
-					forestDeleteMap, equivalenceClasses, verbose, costTreeToTree );
 		}
-		return 0;
+		int[][] gridf = new int[ subtrees1.size() ][ subtrees2.size() ];
+		int[][] gridt = new int[ subtrees1.size() ][ subtrees2.size() ];
+
+		for ( int[] row : gridf )
+			Arrays.fill( row, -1 );
+		for ( int[] row : gridt )
+			Arrays.fill( row, -1 );
+
+		// TODO add verbose == true
+		if ( treeInsertMap == null || forestInsertMap == null || treeDeleteMap == null || forestDeleteMap == null )
+		{
+			throw new IllegalArgumentException( "One of the maps is null" );
+		}
+		return distanceZhangTree( tree1, tree2, costFunction, subtrees1, subtrees2, gridt, gridf, treeInsertMap, forestInsertMap,
+				treeDeleteMap, forestDeleteMap, equivalenceClasses, verbose, costTreeToTree );
 	}
 
 	private static int getCosts( Tree< Number > tree1, Tree< Number > tree2, BiFunction< Number, Number, Integer > costFunction )
@@ -133,7 +143,7 @@ public class ZhangUnorderedTreeEditDistance
 	 * Calculate the zhang edit distance between two sub-trees
 	 */
 	private static int distanceZhangTree( Tree< Number > tree1, Tree< Number > tree2,
-			BiFunction< Number, Number, Integer > costFunction, List< Tree< Number > > l1,
+			@Nullable BiFunction< Number, Number, Integer > costFunction, List< Tree< Number > > l1,
 			List< Tree< Number > > l2, int[][] mt, int[][] mf,
 			@Nullable Map< Tree< Number >, Integer > dit, @Nullable Map< Tree< Number >, Integer > dif,
 			@Nullable Map< Tree< Number >, Integer > dst,
@@ -153,8 +163,13 @@ public class ZhangUnorderedTreeEditDistance
 
 		if ( tree1.isLeaf() && tree2.isLeaf() )
 		{
-			// TODO implementation missing for the case costFunction == null
-			if ( costFunction != null )
+			if ( costFunction == null )
+			{
+				mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = 0;
+				mf[ l2.indexOf( tree2 ) ][ l1.indexOf( tree1 ) ] = 0;
+				return 0;
+			}
+			else
 			{
 				int value = costTreeToTree.get( Pair.of( tree1, tree2 ) );
 				mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = value;
@@ -197,11 +212,14 @@ public class ZhangUnorderedTreeEditDistance
 					b += Collections.min( l );
 				}
 			}
-			int c = 0;
-			// TODO implementation missing for the case costFunction == null
-			if ( costFunction != null )
+			int c;
+			if ( costFunction == null )
 			{
-				c += distanceZhangForest( tree1, tree2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
+				c = distanceZhangForest( tree1, tree2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
+			}
+			else
+			{
+				c = distanceZhangForest( tree1, tree2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
 				c += costTreeToTree.get( Pair.of( tree1, tree2 ) );
 			}
 
@@ -213,10 +231,9 @@ public class ZhangUnorderedTreeEditDistance
 			else
 			{
 				mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = min( a, b, c );
+				return min( a, b, c );
 			}
-			return min( a, b, c );
 		}
-		return 0;
 	}
 
 	private static int distanceZhangForest( Tree< Number > forest1, Tree< Number > forest2,
@@ -289,38 +306,37 @@ public class ZhangUnorderedTreeEditDistance
 		Map< Object, List< Tree< Number > > > dico1 = new LinkedHashMap<>();
 		Map< Object, List< Tree< Number > > > dico2 = new LinkedHashMap<>();
 
-		// TODO add implementation for the case costFunction == null
-		if ( costFunction != null && equivalenceClasses != null )
+		if ( equivalenceClasses != null )
 		{
 			for ( Tree< Number > tree1 : forest1.getChildren() )
 			{
-				int unorderedEquivalenceClassWithAttribute = equivalenceClasses.get( tree1 );
-				if ( dico1.containsKey( unorderedEquivalenceClassWithAttribute ) )
+				int equivalenceClass = equivalenceClasses.get( tree1 );
+				if ( dico1.containsKey( equivalenceClass ) )
 				{
-					List< Tree< Number > > trees = dico1.get( unorderedEquivalenceClassWithAttribute );
+					List< Tree< Number > > trees = dico1.get( equivalenceClass );
 					trees.add( tree1 );
 				}
 				else
 				{
 					List< Tree< Number > > list = new ArrayList<>();
 					list.add( tree1 );
-					dico1.put( unorderedEquivalenceClassWithAttribute, list );
+					dico1.put( equivalenceClass, list );
 				}
 			}
 
 			for ( Tree< Number > tree2 : forest2.getChildren() )
 			{
-				int unorderedEquivalenceClassWithAttribute = equivalenceClasses.get( tree2 );
-				if ( dico2.containsKey( unorderedEquivalenceClassWithAttribute ) )
+				int equivalenceClass = equivalenceClasses.get( tree2 );
+				if ( dico2.containsKey( equivalenceClass ) )
 				{
-					List< Tree< Number > > trees = dico2.get( unorderedEquivalenceClassWithAttribute );
+					List< Tree< Number > > trees = dico2.get( equivalenceClass );
 					trees.add( tree2 );
 				}
 				else
 				{
 					List< Tree< Number > > list = new ArrayList<>();
 					list.add( tree2 );
-					dico2.put( unorderedEquivalenceClassWithAttribute, list );
+					dico2.put( equivalenceClass, list );
 				}
 			}
 		}
@@ -435,34 +451,33 @@ public class ZhangUnorderedTreeEditDistance
 	 * <li>+ the cost of deleting/inserting the forest associated with that source
 	 * <p>
 	 * The cost of deleting/inserting a forest is the cost of deleting/inserting all trees belonging to it
-	 * @param s
+	 * @param tree
 	 * @param costTreeToNone
 	 * @return
 	 */
 	private static Pair< Map< Tree< Number >, Integer >, Map< Tree< Number >, Integer > > computeDeleteInsertCostsForestTree(
-			Tree< Number > s,
-			Map< Tree< Number >, Integer > costTreeToNone )
+			Tree< Number > tree, @Nullable Map< Tree< Number >, Integer > costTreeToNone )
 	{
 
 		Map< Tree< Number >, Integer > df = new HashMap<>();
 		Map< Tree< Number >, Integer > dt = new HashMap<>();
 
-		if ( s.isLeaf() )
+		if ( tree.isLeaf() )
 		{
-			df.put( s, 0 );
+			df.put( tree, 0 );
 			if ( costTreeToNone == null )
 			{
-				dt.put( s, 1 );
+				dt.put( tree, 1 );
 			}
 			else
 			{
-				dt.put( s, costTreeToNone.get( s ) );
+				dt.put( tree, costTreeToNone.get( tree ) );
 			}
 		}
 		else
 		{
 			int v = 0;
-			for ( Tree< Number > child : s.getChildren() )
+			for ( Tree< Number > child : tree.getChildren() )
 			{
 				Map< Tree< Number >, Integer > dfi;
 				Map< Tree< Number >, Integer > dti;
@@ -475,32 +490,33 @@ public class ZhangUnorderedTreeEditDistance
 				dt.putAll( dti );
 			}
 
-			df.put( s, v );
+			df.put( tree, v );
 			if ( costTreeToNone == null )
 			{
-				dt.put( s, v + 1 );
+				dt.put( tree, v + 1 );
 			}
 			else
 			{
-				dt.put( s, v + costTreeToNone.get( s ) );
+				dt.put( tree, v + costTreeToNone.get( tree ) );
 			}
 		}
 		return Pair.of( df, dt );
 	}
 
-	private static int postOrder( Tree< Number > tree, Map< Integer, Map< Number, List< Tree< Number > > > > graphDepthToClassifiedTrees )
+	private static int postOrder( Tree< Number > tree, Map< Integer, Map< Number, List< Tree< Number > > > > graphDepthToClassifiedTrees,
+			boolean useAttribute )
 	{
 		int depth = 0;
 		List< Integer > depths = new ArrayList<>();
 		for ( Tree< Number > child : tree.getChildren() )
 		{
-			int d = postOrder( child, graphDepthToClassifiedTrees );
+			int d = postOrder( child, graphDepthToClassifiedTrees, useAttribute );
 			depths.add( d );
 			depth = Collections.max( depths );
 		}
 
 		Map< Number, List< Tree< Number > > > attributeToTrees = graphDepthToClassifiedTrees.computeIfAbsent( depth, k -> new HashMap<>() );
-		Number value = tree.getAttribute();
+		Number value = useAttribute ? tree.getAttribute() : null;
 		List< Tree< Number > > treesWithSameAttribute = attributeToTrees.get( value );
 		if ( treesWithSameAttribute == null )
 		{
@@ -513,12 +529,12 @@ public class ZhangUnorderedTreeEditDistance
 		return depth + 1;
 	}
 
-	private static Map< Tree< Number >, Integer > getEquivalenceClasses( Tree< Number > tree )
+	private static Map< Tree< Number >, Integer > getEquivalenceClasses( Tree< Number > tree, boolean useAttribute )
 	{
 		Map< Tree< Number >, Integer > equivalenceClasses = new HashMap<>();
 		Map< Integer, Map< Number, List< Tree< Number > > > > graphDepthToClassifiedTrees = new LinkedHashMap<>();
 
-		postOrder( tree, graphDepthToClassifiedTrees );
+		postOrder( tree, graphDepthToClassifiedTrees, useAttribute );
 
 		boolean ensureDifferentClassNumber = false;
 		Iterator< Tree< Number > > iterator = tree.getChildren().iterator();
@@ -532,11 +548,11 @@ public class ZhangUnorderedTreeEditDistance
 			{
 				for ( Tree< Number > t : treesWithSameAttributeAtGraphDepth.getValue() )
 				{
-					// NB: we do not add the class number to the tree itself
+					// NB: we do not add the class number of the given tree itself
 					if ( tree.equals( t ) )
 						continue;
 					equivalenceClasses.put( t, classNumber );
-					if ( t.equals( tree1 ) || t.equals( tree2 ) && !ensureDifferentClassNumber )
+					if ( ( t.equals( tree1 ) || t.equals( tree2 ) ) && !ensureDifferentClassNumber && useAttribute )
 					{
 						classNumber++;
 						ensureDifferentClassNumber = true;
@@ -545,7 +561,6 @@ public class ZhangUnorderedTreeEditDistance
 				classNumber++;
 			}
 		}
-
 		return equivalenceClasses;
 	}
 }

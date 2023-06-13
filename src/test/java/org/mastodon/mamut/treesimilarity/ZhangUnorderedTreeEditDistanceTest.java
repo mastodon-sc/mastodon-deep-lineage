@@ -10,25 +10,15 @@ public class ZhangUnorderedTreeEditDistanceTest
 {
 
 	@Test
-	public void testZhangEditDistance()
+	public void testZhangEditDistanceEmptyTrees()
 	{
-		BiFunction< Number, Number, Integer > costFunction = ( o1, o2 ) -> {
-			if ( o2 == null )
-				return ( Integer ) o1;
-			else
-				return Math.abs( ( Integer ) o1 - ( Integer ) o2 );
-		};
+		BiFunction< Number, Number, Integer > costFunction = getCostFunction();
 
 		SimpleTree< Number > emptyTree = emptyTree();
 		SimpleTree< Number > tree1 = tree1();
 		SimpleTree< Number > tree2 = tree2();
 		SimpleTree< Number > tree3 = tree3();
 		SimpleTree< Number > tree4 = tree4();
-		SimpleTree< Number > tree5 = tree5();
-		SimpleTree< Number > tree6 = tree6();
-		SimpleTree< Number > tree7 = tree7();
-
-		// similarities with empty trees
 
 		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
 		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( tree1, emptyTree, costFunction, false ) );
@@ -42,6 +32,20 @@ public class ZhangUnorderedTreeEditDistanceTest
 		// 104, because: 3 nodes with a total weight of 104 are added to the empty tree
 		assertEquals( 104, ZhangUnorderedTreeEditDistance.distance( tree4, emptyTree, costFunction, false ) );
 		assertEquals( 104, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree4, costFunction, false ) );
+	}
+
+	@Test
+	public void testZhangEditDistance()
+	{
+		BiFunction< Number, Number, Integer > costFunction = getCostFunction();
+
+		SimpleTree< Number > tree1 = tree1();
+		SimpleTree< Number > tree2 = tree2();
+		SimpleTree< Number > tree3 = tree3();
+		SimpleTree< Number > tree4 = tree4();
+		SimpleTree< Number > tree5 = tree5();
+		SimpleTree< Number > tree6 = tree6();
+		SimpleTree< Number > tree7 = tree7();
 
 		// similarity of trees against other trees
 
@@ -65,6 +69,46 @@ public class ZhangUnorderedTreeEditDistanceTest
 		// two extra nodes are added with a weight of 10 each
 		assertEquals( 69, ZhangUnorderedTreeEditDistance.distance( tree5, tree7, costFunction, false ) );
 		assertEquals( 69, ZhangUnorderedTreeEditDistance.distance( tree7, tree5, costFunction, false ) );
+	}
+
+	@Test
+	public void testZhangEditDistanceNullCostFunction()
+	{
+
+		SimpleTree< Number > tree1 = tree1();
+		SimpleTree< Number > tree2 = tree2();
+		SimpleTree< Number > tree3 = tree3();
+		SimpleTree< Number > tree4 = tree4();
+		SimpleTree< Number > tree5 = tree5();
+		SimpleTree< Number > tree6 = tree6();
+		SimpleTree< Number > tree7 = tree7();
+
+		// similarity of trees against other trees
+
+		// 0, because: the trees are topologically identical
+		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( tree1, tree2, null, false ) );
+		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( tree2, tree1, null, false ) );
+		// 0, because: the trees are topologically identical
+		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( tree3, tree4, null, false ) );
+		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( tree4, tree3, null, false ) );
+
+		// 0, because: the trees are topologically identical
+		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( tree5, tree6, null, false ) );
+		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( tree6, tree5, null, false ) );
+
+		// 2, because: two extra nodes are added
+		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( tree5, tree7, null, false ) );
+		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( tree7, tree5, null, false ) );
+	}
+
+	private static BiFunction< Number, Number, Integer > getCostFunction()
+	{
+		return ( o1, o2 ) -> {
+			if ( o2 == null )
+				return ( Integer ) o1;
+			else
+				return Math.abs( ( Integer ) o1 - ( Integer ) o2 );
+		};
 	}
 
 	private SimpleTree< Number > emptyTree()
