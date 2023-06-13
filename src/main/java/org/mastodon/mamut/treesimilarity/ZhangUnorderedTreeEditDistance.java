@@ -17,9 +17,6 @@ import java.util.function.BiFunction;
 
 public class ZhangUnorderedTreeEditDistance
 {
-
-	public static final String EQUIVALENCE_CLASS_NAME = "unordered_equivalence_class_with_attribute";
-
 	private ZhangUnorderedTreeEditDistance()
 	{
 		// prevent from instantiation
@@ -138,10 +135,10 @@ public class ZhangUnorderedTreeEditDistance
 			List< Tree< Number > > l2, int[][] mt, int[][] mf,
 			@Nullable Map< Tree< Number >, Integer > dit, @Nullable Map< Tree< Number >, Integer > dif,
 			@Nullable Map< Tree< Number >, Integer > dst,
-			@Nullable Map< Tree< Number >, Integer > dsf, @Nullable Map< Tree< Number >, Integer > dic_class, boolean verbose,
+			@Nullable Map< Tree< Number >, Integer > dsf, @Nullable Map< Tree< Number >, Integer > equivalenceClasses, boolean verbose,
 			Map< Pair< Tree< Number >, Tree< Number > >, Integer > costTreeToTree )
 	{
-		if ( dic_class != null && Objects.equals( dic_class.get( tree1 ), dic_class.get( tree2 ) ) && !verbose )
+		if ( equivalenceClasses != null && Objects.equals( equivalenceClasses.get( tree1 ), equivalenceClasses.get( tree2 ) ) && !verbose )
 		{
 			mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = 0;
 			mf[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = 0;
@@ -174,7 +171,8 @@ public class ZhangUnorderedTreeEditDistance
 					for ( Tree< Number > child : tree2.getChildren() )
 					{
 						int distanceZhangTree =
-								distanceZhangTree( tree1, child, costFunction, l1, l2, mt, mf, dit, dif, dst, dsf, dic_class, verbose,
+								distanceZhangTree( tree1, child, costFunction, l1, l2, mt, mf, dit, dif, dst, dsf, equivalenceClasses,
+										verbose,
 										costTreeToTree ) - dit.get( child );
 						l.add( distanceZhangTree );
 					}
@@ -190,7 +188,8 @@ public class ZhangUnorderedTreeEditDistance
 				{
 					for ( Tree< Number > child : tree1.getChildren() )
 					{
-						l.add( distanceZhangTree( child, tree2, costFunction, l1, l2, mt, mf, dit, dif, dst, dsf, dic_class, verbose,
+						l.add( distanceZhangTree( child, tree2, costFunction, l1, l2, mt, mf, dit, dif, dst, dsf, equivalenceClasses,
+								verbose,
 								costTreeToTree ) - dst.get( child ) );
 					}
 					b += Collections.min( l );
@@ -200,7 +199,7 @@ public class ZhangUnorderedTreeEditDistance
 			// TODO implementation missing for the case local_distance == null
 			if ( costFunction != null )
 			{
-				c += distanceZhangForest( tree1, tree2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst );
+				c += distanceZhangForest( tree1, tree2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
 				c += costTreeToTree.get( Pair.of( tree1, tree2 ) );
 			}
 
@@ -223,7 +222,8 @@ public class ZhangUnorderedTreeEditDistance
 			List< Tree< Number > > l1,
 			List< Tree< Number > > l2, int[][] mf, int[][] mt, @Nullable Map< Tree< Number >, Integer > dif,
 			@Nullable Map< Tree< Number >, Integer > dsf,
-			@Nullable Map< Tree< Number >, Integer > dit, @Nullable Map< Tree< Number >, Integer > dst )
+			@Nullable Map< Tree< Number >, Integer > dit, @Nullable Map< Tree< Number >, Integer > dst,
+			@Nullable Map< Tree< Number >, Integer > equivalenceClasses )
 	{
 		// Calculate the zhang edit distance between two subforests
 		if ( mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] != -1 )
@@ -252,7 +252,7 @@ public class ZhangUnorderedTreeEditDistance
 				{
 					for ( Tree< Number > child : forest2.getChildren() )
 					{
-						l.add( distanceZhangForest( forest1, child, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst )
+						l.add( distanceZhangForest( forest1, child, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
 								- dif.get( child ) );
 					}
 					a += Collections.min( l );
@@ -263,12 +263,12 @@ public class ZhangUnorderedTreeEditDistance
 				{
 					for ( Tree< Number > child : forest1.getChildren() )
 					{
-						l.add( distanceZhangForest( child, forest2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst )
+						l.add( distanceZhangForest( child, forest2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
 								- dsf.get( child ) );
 					}
 					b += Collections.min( l );
 				}
-				int c = minCostMaxFlow( forest1, forest2, costFunction, mt, l1, l2, dst, dit );
+				int c = minCostMaxFlow( forest1, forest2, costFunction, mt, l1, l2, dst, dit, equivalenceClasses );
 				mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = min( a, b, c );
 				return min( a, b, c );
 			}
@@ -280,7 +280,7 @@ public class ZhangUnorderedTreeEditDistance
 			@Nullable BiFunction< Number, Number, Integer > costFunction,
 			int[][] mt,
 			@Nullable List< Tree< Number > > l1, @Nullable List< Tree< Number > > l2, @Nullable Map< Tree< Number >, Integer > dst,
-			@Nullable Map< Tree< Number >, Integer > dit )
+			@Nullable Map< Tree< Number >, Integer > dit, @Nullable Map< Tree< Number >, Integer > equivalenceClasses )
 	{
 		int n1;
 		int n2;
@@ -288,12 +288,11 @@ public class ZhangUnorderedTreeEditDistance
 		Map< Object, List< Tree< Number > > > dico2 = new LinkedHashMap<>();
 
 		// TODO add implementation for the case local_distance == null
-		if ( costFunction != null )
+		if ( costFunction != null && equivalenceClasses != null )
 		{
 			for ( Tree< Number > tree1 : forest1.getChildren() )
 			{
-				int unorderedEquivalenceClassWithAttribute =
-						( int ) tree1.getAttributes().get( EQUIVALENCE_CLASS_NAME );
+				int unorderedEquivalenceClassWithAttribute = equivalenceClasses.get( tree1 );
 				if ( dico1.containsKey( unorderedEquivalenceClassWithAttribute ) )
 				{
 					List< Tree< Number > > trees = dico1.get( unorderedEquivalenceClassWithAttribute );
@@ -309,8 +308,7 @@ public class ZhangUnorderedTreeEditDistance
 
 			for ( Tree< Number > tree2 : forest2.getChildren() )
 			{
-				int unorderedEquivalenceClassWithAttribute =
-						( int ) tree2.getAttributes().get( EQUIVALENCE_CLASS_NAME );
+				int unorderedEquivalenceClassWithAttribute = equivalenceClasses.get( tree2 );
 				if ( dico2.containsKey( unorderedEquivalenceClassWithAttribute ) )
 				{
 					List< Tree< Number > > trees = dico2.get( unorderedEquivalenceClassWithAttribute );
@@ -536,7 +534,6 @@ public class ZhangUnorderedTreeEditDistance
 					if ( tree.equals( t ) )
 						continue;
 					dicClass.put( t, classNumber );
-					t.addAttribute( EQUIVALENCE_CLASS_NAME, classNumber );
 					if ( t.equals( tree1 ) || t.equals( tree2 ) && !ensureDifferentClassNumber )
 					{
 						classNumber++;
