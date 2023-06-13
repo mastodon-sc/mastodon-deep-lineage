@@ -62,4 +62,10 @@ public class SimpleTree< T > implements Tree< T >
 	{
 		this.children.add( subtree );
 	}
+
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName() + "@" + hashCode();
+	}
 }
