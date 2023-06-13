@@ -3,8 +3,11 @@ package org.mastodon.mamut.treesimilarity;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +21,8 @@ import java.util.function.BiFunction;
 
 public class ZhangUnorderedTreeEditDistance
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	private ZhangUnorderedTreeEditDistance()
 	{
 		// prevent from instantiation
@@ -118,13 +123,49 @@ public class ZhangUnorderedTreeEditDistance
 		for ( int[] row : gridt )
 			Arrays.fill( row, -1 );
 
-		// TODO add verbose == true
 		if ( treeInsertMap == null || forestInsertMap == null || treeDeleteMap == null || forestDeleteMap == null )
 		{
 			throw new IllegalArgumentException( "One of the maps is null" );
 		}
-		return distanceTree( tree1, tree2, costFunction, subtrees1, subtrees2, gridt, gridf, treeInsertMap, forestInsertMap,
+
+		int distance = distanceTree( tree1, tree2, costFunction, subtrees1, subtrees2, gridt, gridf, treeInsertMap, forestInsertMap,
 				treeDeleteMap, forestDeleteMap, equivalenceClasses, verbose, costTreeToTree );
+
+		logger.info( "matrix of tree distances:" );
+		for ( int i = 0; i < subtrees1.size(); i++ )
+		{
+			if ( logger.isInfoEnabled() )
+				logger.info( "tree distance[{}] = {}", i, Arrays.toString( gridt[ i ] ) );
+		}
+		logger.info( "matrix of forest distances:" );
+		for ( int i = 0; i < subtrees1.size(); i++ )
+		{
+			// TODO: there is a difference compared to the original python implementation
+			if ( logger.isInfoEnabled() )
+				logger.info( "forest distance[{}] = {}", i, Arrays.toString( gridf[ i ] ) );
+		}
+		logger.info( "tree deletion costs (tree1):" );
+		for ( Tree< Number > subtree : subtrees1 )
+		{
+			logger.info( "tree deletion[{}] = {}", subtree, treeDeleteMap.get( subtree ) );
+		}
+		logger.info( "forest deletion costs (tree1):" );
+		for ( Tree< Number > subtree : subtrees1 )
+		{
+			logger.info( "forest deletion[{}] = {}", subtree, forestDeleteMap.get( subtree ) );
+		}
+		logger.info( "tree insertion costs (tree2):" );
+		for ( Tree< Number > subtree : subtrees2 )
+		{
+			logger.info( "tree insertion[{}] = {}", subtree, treeInsertMap.get( subtree ) );
+		}
+		logger.info( "forest insertion costs (tree2):" );
+		for ( Tree< Number > subtree : subtrees2 )
+		{
+			logger.info( "forest insertion[{}] = {}", subtree, forestInsertMap.get( subtree ) );
+		}
+
+		return distance;
 	}
 
 	private static int getCosts( Tree< Number > tree1, Tree< Number > tree2, BiFunction< Number, Number, Integer > costFunction )
