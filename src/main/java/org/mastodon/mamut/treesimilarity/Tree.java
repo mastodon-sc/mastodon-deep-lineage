@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class Tree< T >
 {
-
-	private final UUID id;
 
 	private final List< Tree< T > > children;
 
@@ -17,19 +14,8 @@ public class Tree< T >
 
 	public Tree()
 	{
-		id = UUID.randomUUID();
 		children = new ArrayList<>();
 		attributes = new HashMap<>();
-	}
-
-	/**
-	 * Get the unique id attributed to the tree.
-	 *
-	 * @return The unique id of the tree.
-	 */
-	public UUID getId()
-	{
-		return id;
 	}
 
 	/**
