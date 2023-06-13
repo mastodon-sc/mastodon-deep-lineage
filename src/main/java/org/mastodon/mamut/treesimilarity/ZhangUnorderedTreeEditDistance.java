@@ -69,8 +69,7 @@ public class ZhangUnorderedTreeEditDistance
 			supertree.getChildren().add( tree1 );
 			supertree.getChildren().add( tree2 );
 
-			Map< Tree< Number >, Integer > unorderedEquivalenceClass =
-					getUnorderedEquivalenceClassWithAttribute( supertree, attributeName );
+			Map< Tree< Number >, Integer > equivalenceClasses = getEquivalenceClasses( supertree, attributeName );
 
 			// list of nodes of tree1
 			List< Tree< Number > > subtrees1 = tree1.listOfSubtrees();
@@ -113,7 +112,7 @@ public class ZhangUnorderedTreeEditDistance
 			}
 			return distanceZhangTree( tree1, tree2, costFunction, subtrees1, subtrees2, gridt, gridf, treeInsertMap, forestInsertMap,
 					treeDeleteMap,
-					forestDeleteMap, unorderedEquivalenceClass, verbose, costTreeToTree );
+					forestDeleteMap, equivalenceClasses, verbose, costTreeToTree );
 		}
 		return 0;
 	}
@@ -515,7 +514,7 @@ public class ZhangUnorderedTreeEditDistance
 		return depth + 1;
 	}
 
-	private static Map< Tree< Number >, Integer > getUnorderedEquivalenceClassWithAttribute( Tree< Number > tree, String attribute )
+	private static Map< Tree< Number >, Integer > getEquivalenceClasses( Tree< Number > tree, String attribute )
 	{
 		Map< Tree< Number >, Integer > dicClass = new HashMap<>();
 		Map< Integer, Map< Object, List< Tree< Number > > > > graphDepthToClassifiedTrees = new LinkedHashMap<>();
