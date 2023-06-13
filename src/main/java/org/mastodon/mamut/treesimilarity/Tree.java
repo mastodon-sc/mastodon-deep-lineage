@@ -39,17 +39,6 @@ public class Tree< T >
 	}
 
 	/**
-	 * Add an attribute to a node in the tree.
-	 *
-	 * @param attributeName The name of the new attribute.
-	 * @param attributeValue The value of the new attribute.
-	 */
-	public void addAttribute( String attributeName, T attributeValue )
-	{
-		attributes.put( attributeName, attributeValue );
-	}
-
-	/**
 	 * Returns the list of subtrees (as Tree class objects) of the tree and all of its descendants.
 	 *
 	 * @return The list of subtrees.
@@ -64,6 +53,18 @@ public class Tree< T >
 		}
 		return list;
 	}
+
+	/**
+	 * Add an attribute to a node in the tree.
+	 *
+	 * @param attributeName The name of the new attribute.
+	 * @param attributeValue The value of the new attribute.
+	 */
+	public void addAttribute( String attributeName, T attributeValue )
+	{
+		attributes.put( attributeName, attributeValue );
+	}
+
 
 	/**
 	 * Add the given tree as a child of the main tree
