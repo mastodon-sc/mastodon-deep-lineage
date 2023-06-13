@@ -212,14 +212,9 @@ public class ZhangUnorderedTreeEditDistance
 					b += Collections.min( l );
 				}
 			}
-			int c;
-			if ( costFunction == null )
+			int c = distanceZhangForest( tree1, tree2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
+			if ( costFunction != null )
 			{
-				c = distanceZhangForest( tree1, tree2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
-			}
-			else
-			{
-				c = distanceZhangForest( tree1, tree2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
 				c += costTreeToTree.get( Pair.of( tree1, tree2 ) );
 			}
 
