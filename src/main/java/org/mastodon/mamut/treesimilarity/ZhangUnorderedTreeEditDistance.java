@@ -212,7 +212,7 @@ public class ZhangUnorderedTreeEditDistance
 					b += Collections.min( l );
 				}
 			}
-			int c = distanceZhangForest( tree1, tree2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
+			int c = distanceZhangForest( tree1, tree2, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
 			if ( costFunction != null )
 			{
 				c += costTreeToTree.get( Pair.of( tree1, tree2 ) );
@@ -232,7 +232,6 @@ public class ZhangUnorderedTreeEditDistance
 	}
 
 	private static int distanceZhangForest( Tree< Number > forest1, Tree< Number > forest2,
-			BiFunction< Number, Number, Integer > costFunction,
 			List< Tree< Number > > l1,
 			List< Tree< Number > > l2, int[][] mf, int[][] mt, @Nullable Map< Tree< Number >, Integer > dif,
 			@Nullable Map< Tree< Number >, Integer > dsf,
@@ -266,7 +265,7 @@ public class ZhangUnorderedTreeEditDistance
 				{
 					for ( Tree< Number > child : forest2.getChildren() )
 					{
-						l.add( distanceZhangForest( forest1, child, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
+						l.add( distanceZhangForest( forest1, child, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
 								- dif.get( child ) );
 					}
 					a += Collections.min( l );
@@ -277,12 +276,12 @@ public class ZhangUnorderedTreeEditDistance
 				{
 					for ( Tree< Number > child : forest1.getChildren() )
 					{
-						l.add( distanceZhangForest( child, forest2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
+						l.add( distanceZhangForest( child, forest2, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
 								- dsf.get( child ) );
 					}
 					b += Collections.min( l );
 				}
-				int c = minCostMaxFlow( forest1, forest2, costFunction, mt, l1, l2, dst, dit, equivalenceClasses );
+				int c = minCostMaxFlow( forest1, forest2, mt, l1, l2, dst, dit, equivalenceClasses );
 				mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = min( a, b, c );
 				return min( a, b, c );
 			}
@@ -290,11 +289,9 @@ public class ZhangUnorderedTreeEditDistance
 		return 0;
 	}
 
-	private static int minCostMaxFlow( Tree< Number > forest1, Tree< Number > forest2,
-			@Nullable BiFunction< Number, Number, Integer > costFunction,
-			int[][] mt,
-			@Nullable List< Tree< Number > > l1, @Nullable List< Tree< Number > > l2, @Nullable Map< Tree< Number >, Integer > dst,
-			@Nullable Map< Tree< Number >, Integer > dit, @Nullable Map< Tree< Number >, Integer > equivalenceClasses )
+	private static int minCostMaxFlow( Tree< Number > forest1, Tree< Number > forest2, int[][] mt, @Nullable List< Tree< Number > > l1,
+			@Nullable List< Tree< Number > > l2, @Nullable Map< Tree< Number >, Integer > dst, @Nullable Map< Tree< Number >, Integer > dit,
+			@Nullable Map< Tree< Number >, Integer > equivalenceClasses )
 	{
 		int n1;
 		int n2;
