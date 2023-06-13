@@ -150,7 +150,7 @@ public class ZhangUnorderedTreeEditDistance
 
 		if ( tree1.isLeaf() && tree2.isLeaf() )
 		{
-			// TODO implementation missing for the case local_distance == null
+			// TODO implementation missing for the case costFunction == null
 			if ( costFunction != null )
 			{
 				int value = costTreeToTree.get( Pair.of( tree1, tree2 ) );
@@ -195,7 +195,7 @@ public class ZhangUnorderedTreeEditDistance
 				}
 			}
 			int c = 0;
-			// TODO implementation missing for the case local_distance == null
+			// TODO implementation missing for the case costFunction == null
 			if ( costFunction != null )
 			{
 				c += distanceZhangForest( tree1, tree2, costFunction, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
