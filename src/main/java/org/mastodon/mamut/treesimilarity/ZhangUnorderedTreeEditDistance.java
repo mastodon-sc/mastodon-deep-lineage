@@ -123,7 +123,7 @@ public class ZhangUnorderedTreeEditDistance
 		{
 			throw new IllegalArgumentException( "One of the maps is null" );
 		}
-		return distanceZhangTree( tree1, tree2, costFunction, subtrees1, subtrees2, gridt, gridf, treeInsertMap, forestInsertMap,
+		return distanceTree( tree1, tree2, costFunction, subtrees1, subtrees2, gridt, gridf, treeInsertMap, forestInsertMap,
 				treeDeleteMap, forestDeleteMap, equivalenceClasses, verbose, costTreeToTree );
 	}
 
@@ -142,7 +142,7 @@ public class ZhangUnorderedTreeEditDistance
 	/**
 	 * Calculate the zhang edit distance between two sub-trees
 	 */
-	private static int distanceZhangTree( Tree< Number > tree1, Tree< Number > tree2,
+	private static int distanceTree( Tree< Number > tree1, Tree< Number > tree2,
 			@Nullable BiFunction< Number, Number, Integer > costFunction, List< Tree< Number > > l1,
 			List< Tree< Number > > l2, int[][] mt, int[][] mf,
 			@Nullable Map< Tree< Number >, Integer > dit, @Nullable Map< Tree< Number >, Integer > dif,
@@ -188,7 +188,7 @@ public class ZhangUnorderedTreeEditDistance
 					for ( Tree< Number > child : tree2.getChildren() )
 					{
 						int distanceZhangTree =
-								distanceZhangTree( tree1, child, costFunction, l1, l2, mt, mf, dit, dif, dst, dsf, equivalenceClasses,
+								distanceTree( tree1, child, costFunction, l1, l2, mt, mf, dit, dif, dst, dsf, equivalenceClasses,
 										verbose,
 										costTreeToTree ) - dit.get( child );
 						l.add( distanceZhangTree );
@@ -205,14 +205,14 @@ public class ZhangUnorderedTreeEditDistance
 				{
 					for ( Tree< Number > child : tree1.getChildren() )
 					{
-						l.add( distanceZhangTree( child, tree2, costFunction, l1, l2, mt, mf, dit, dif, dst, dsf, equivalenceClasses,
+						l.add( distanceTree( child, tree2, costFunction, l1, l2, mt, mf, dit, dif, dst, dsf, equivalenceClasses,
 								verbose,
 								costTreeToTree ) - dst.get( child ) );
 					}
 					b += Collections.min( l );
 				}
 			}
-			int c = distanceZhangForest( tree1, tree2, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
+			int c = distanceForest( tree1, tree2, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
 			if ( costFunction != null )
 			{
 				c += costTreeToTree.get( Pair.of( tree1, tree2 ) );
@@ -240,7 +240,7 @@ public class ZhangUnorderedTreeEditDistance
 	 * Let F[i] be the unordered forest obtained by deleting t[i] from T[i]."
 	 * Algorithmica (1996) 15:208
 	 */
-	private static int distanceZhangForest( Tree< Number > forest1, Tree< Number > forest2, List< Tree< Number > > l1,
+	private static int distanceForest( Tree< Number > forest1, Tree< Number > forest2, List< Tree< Number > > l1,
 			List< Tree< Number > > l2, int[][] mf, int[][] mt, @Nullable Map< Tree< Number >, Integer > dif,
 			@Nullable Map< Tree< Number >, Integer > dsf, @Nullable Map< Tree< Number >, Integer > dit,
 			@Nullable Map< Tree< Number >, Integer > dst, @Nullable Map< Tree< Number >, Integer > equivalenceClasses )
@@ -272,7 +272,7 @@ public class ZhangUnorderedTreeEditDistance
 				{
 					for ( Tree< Number > child : forest2.getChildren() )
 					{
-						l.add( distanceZhangForest( forest1, child, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
+						l.add( distanceForest( forest1, child, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
 								- dif.get( child ) );
 					}
 					a += Collections.min( l );
@@ -283,7 +283,7 @@ public class ZhangUnorderedTreeEditDistance
 				{
 					for ( Tree< Number > child : forest1.getChildren() )
 					{
-						l.add( distanceZhangForest( child, forest2, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
+						l.add( distanceForest( child, forest2, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
 								- dsf.get( child ) );
 					}
 					b += Collections.min( l );
