@@ -38,8 +38,11 @@ public class ZhangUnorderedTreeEditDistance
 
 		if ( tree2 == null )
 		{
-			// TODO implementation missing for the case costFunction == null
-			if ( costFunction != null )
+			if ( costFunction == null )
+			{
+				return tree1.size();
+			}
+			else
 			{
 				int distance = 0;
 				for ( Tree< Number > subtree : tree1.listOfSubtrees() )
