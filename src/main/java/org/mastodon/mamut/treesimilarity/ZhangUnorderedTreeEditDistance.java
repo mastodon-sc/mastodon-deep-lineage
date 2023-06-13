@@ -231,12 +231,19 @@ public class ZhangUnorderedTreeEditDistance
 		}
 	}
 
-	private static int distanceZhangForest( Tree< Number > forest1, Tree< Number > forest2,
-			List< Tree< Number > > l1,
+	/**
+	 * Calculate the zhang edit distance between two forests.
+	 * What is a forest?
+	 * "Suppose that we have a numbering for each tree.
+	 * Let t[i] be the i<sup>th</sup> node of tree T in the given numbering.
+	 * Let T[i] be the subtree rooted at t[i]
+	 * Let F[i] be the unordered forest obtained by deleting t[i] from T[i]."
+	 * Algorithmica (1996) 15:208
+	 */
+	private static int distanceZhangForest( Tree< Number > forest1, Tree< Number > forest2, List< Tree< Number > > l1,
 			List< Tree< Number > > l2, int[][] mf, int[][] mt, @Nullable Map< Tree< Number >, Integer > dif,
-			@Nullable Map< Tree< Number >, Integer > dsf,
-			@Nullable Map< Tree< Number >, Integer > dit, @Nullable Map< Tree< Number >, Integer > dst,
-			@Nullable Map< Tree< Number >, Integer > equivalenceClasses )
+			@Nullable Map< Tree< Number >, Integer > dsf, @Nullable Map< Tree< Number >, Integer > dit,
+			@Nullable Map< Tree< Number >, Integer > dst, @Nullable Map< Tree< Number >, Integer > equivalenceClasses )
 	{
 		// Calculate the zhang edit distance between two subforests
 		if ( mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] != -1 )
