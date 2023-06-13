@@ -21,14 +21,14 @@ public class ZhangUnorderedTreeEditDistanceTest
 				return Math.abs( ( Integer ) o1 - ( Integer ) o2 );
 		};
 
-		Tree< Number > emptyTree = emptyTree();
-		Tree< Number > tree1 = tree1();
-		Tree< Number > tree2 = tree2();
-		Tree< Number > tree3 = tree3();
-		Tree< Number > tree4 = tree4();
-		Tree< Number > tree5 = tree5();
-		Tree< Number > tree6 = tree6();
-		Tree< Number > tree7 = tree7();
+		SimpleTree< Number > emptyTree = emptyTree();
+		SimpleTree< Number > tree1 = tree1();
+		SimpleTree< Number > tree2 = tree2();
+		SimpleTree< Number > tree3 = tree3();
+		SimpleTree< Number > tree4 = tree4();
+		SimpleTree< Number > tree5 = tree5();
+		SimpleTree< Number > tree6 = tree6();
+		SimpleTree< Number > tree7 = tree7();
 
 		// similarities with empty trees
 
@@ -69,55 +69,55 @@ public class ZhangUnorderedTreeEditDistanceTest
 		assertEquals( 69, ZhangUnorderedTreeEditDistance.distance( tree7, tree5, ATTRIBUTE, costFunction, false ) );
 	}
 
-	private Tree< Number > emptyTree()
+	private SimpleTree< Number > emptyTree()
 	{
-		Tree< Number > node1 = new Tree<>();
+		SimpleTree< Number > node1 = new SimpleTree<>();
 		node1.addAttribute( ATTRIBUTE, 0 );
 		return node1;
 	}
 
-	private Tree< Number > tree1()
+	private SimpleTree< Number > tree1()
 	{
 		//   					   node1(node_weight=20)
 		//                ┌-─────────┴─────────────┐
 		//                │                        │
 		//              node2(node_weight=10)    node3(node_weight=30)
-		Tree< Number > node1 = new Tree<>();
+		SimpleTree< Number > node1 = new SimpleTree<>();
 		node1.addAttribute( ATTRIBUTE, 20 );
 
-		Tree< Number > node2 = new Tree<>();
+		SimpleTree< Number > node2 = new SimpleTree<>();
 		node2.addAttribute( ATTRIBUTE, 10 );
 		node1.addSubtree( node2 );
 
-		Tree< Number > node3 = new Tree<>();
+		SimpleTree< Number > node3 = new SimpleTree<>();
 		node3.addAttribute( ATTRIBUTE, 30 );
 		node1.addSubtree( node3 );
 
 		return node1;
 	}
 
-	private Tree< Number > tree2()
+	private SimpleTree< Number > tree2()
 	{
 		//  				       node1(node_weight=30)
 		//                ┌-─────────┴─────────────┐
 		//                │                        │
 		//              node2(node_weight=10)    node3(node_weight=20)
 
-		Tree< Number > node1 = new Tree<>();
+		SimpleTree< Number > node1 = new SimpleTree<>();
 		node1.addAttribute( ATTRIBUTE, 30 );
 
-		Tree< Number > node2 = new Tree<>();
+		SimpleTree< Number > node2 = new SimpleTree<>();
 		node2.addAttribute( ATTRIBUTE, 10 );
 		node1.addSubtree( node2 );
 
-		Tree< Number > node3 = new Tree<>();
+		SimpleTree< Number > node3 = new SimpleTree<>();
 		node3.addAttribute( ATTRIBUTE, 20 );
 		node1.addSubtree( node3 );
 
 		return node1;
 	}
 
-	private Tree< Number > tree3()
+	private SimpleTree< Number > tree3()
 	{
 		//
 		//                        node1(node_weight=1)
@@ -128,29 +128,29 @@ public class ZhangUnorderedTreeEditDistanceTest
 		//    │                        │
 		//  node4(node_weight=1)     node5(node_weight=100)
 
-		Tree< Number > node1 = new Tree<>();
+		SimpleTree< Number > node1 = new SimpleTree<>();
 		node1.addAttribute( ATTRIBUTE, 1 );
 
-		Tree< Number > node2 = new Tree<>();
+		SimpleTree< Number > node2 = new SimpleTree<>();
 		node2.addAttribute( ATTRIBUTE, 1 );
 		node1.addSubtree( node2 );
 
-		Tree< Number > node3 = new Tree<>();
+		SimpleTree< Number > node3 = new SimpleTree<>();
 		node3.addAttribute( ATTRIBUTE, 1 );
 		node1.addSubtree( node3 );
 
-		Tree< Number > node4 = new Tree<>();
+		SimpleTree< Number > node4 = new SimpleTree<>();
 		node4.addAttribute( ATTRIBUTE, 1 );
 		node2.addSubtree( node4 );
 
-		Tree< Number > node5 = new Tree<>();
+		SimpleTree< Number > node5 = new SimpleTree<>();
 		node5.addAttribute( ATTRIBUTE, 100 );
 		node2.addSubtree( node5 );
 
 		return node1;
 	}
 
-	private Tree< Number > tree4()
+	private SimpleTree< Number > tree4()
 	{
 		//                       node1(node_weight=1)
 		//              ┌-─────────┴─────────────┐
@@ -160,29 +160,29 @@ public class ZhangUnorderedTreeEditDistanceTest
 		//   │                        │
 		// node4(node_weight=1)     node5(node_weight=1)
 
-		Tree< Number > node1 = new Tree<>();
+		SimpleTree< Number > node1 = new SimpleTree<>();
 		node1.addAttribute( ATTRIBUTE, 1 );
 
-		Tree< Number > node2 = new Tree<>();
+		SimpleTree< Number > node2 = new SimpleTree<>();
 		node2.addAttribute( ATTRIBUTE, 100 );
 		node1.addSubtree( node2 );
 
-		Tree< Number > node3 = new Tree<>();
+		SimpleTree< Number > node3 = new SimpleTree<>();
 		node3.addAttribute( ATTRIBUTE, 1 );
 		node1.addSubtree( node3 );
 
-		Tree< Number > node4 = new Tree<>();
+		SimpleTree< Number > node4 = new SimpleTree<>();
 		node4.addAttribute( ATTRIBUTE, 1 );
 		node2.addSubtree( node4 );
 
-		Tree< Number > node5 = new Tree<>();
+		SimpleTree< Number > node5 = new SimpleTree<>();
 		node5.addAttribute( ATTRIBUTE, 1 );
 		node2.addSubtree( node5 );
 
 		return node1;
 	}
 
-	private Tree< Number > tree5()
+	private SimpleTree< Number > tree5()
 	{
 		//
 		//                 node1(node_weight=13)
@@ -190,42 +190,42 @@ public class ZhangUnorderedTreeEditDistanceTest
 		//        │                        │
 		//      node2(node_weight=203)     node3(node_weight=203)
 
-		Tree< Number > node1 = new Tree<>();
+		SimpleTree< Number > node1 = new SimpleTree<>();
 		node1.addAttribute( ATTRIBUTE, 13 );
 
-		Tree< Number > node2 = new Tree<>();
+		SimpleTree< Number > node2 = new SimpleTree<>();
 		node2.addAttribute( ATTRIBUTE, 203 );
 		node1.addSubtree( node2 );
 
-		Tree< Number > node3 = new Tree<>();
+		SimpleTree< Number > node3 = new SimpleTree<>();
 		node3.addAttribute( ATTRIBUTE, 203 );
 		node1.addSubtree( node3 );
 
 		return node1;
 	}
 
-	private Tree< Number > tree6()
+	private SimpleTree< Number > tree6()
 	{
 		//                 node1(node_weight=12)
 		//        ┌-─────────┴─────────────┐
 		//        │                        │
 		//      node2(node_weight=227)     node3(node_weight=227)
 
-		Tree< Number > node1 = new Tree<>();
+		SimpleTree< Number > node1 = new SimpleTree<>();
 		node1.addAttribute( ATTRIBUTE, 12 );
 
-		Tree< Number > node2 = new Tree<>();
+		SimpleTree< Number > node2 = new SimpleTree<>();
 		node2.addAttribute( ATTRIBUTE, 227 );
 		node1.addSubtree( node2 );
 
-		Tree< Number > node3 = new Tree<>();
+		SimpleTree< Number > node3 = new SimpleTree<>();
 		node3.addAttribute( ATTRIBUTE, 227 );
 		node1.addSubtree( node3 );
 
 		return node1;
 	}
 
-	private Tree< Number > tree7()
+	private SimpleTree< Number > tree7()
 	{
 		//
 		//                 node1(node_weight=12)
@@ -235,22 +235,22 @@ public class ZhangUnorderedTreeEditDistanceTest
 		//                      ┌-─────────┴─────────────┐
 		//                    node4(node_weight=10)    node5(node_weight=10)
 
-		Tree< Number > node1 = new Tree<>();
+		SimpleTree< Number > node1 = new SimpleTree<>();
 		node1.addAttribute( ATTRIBUTE, 12 );
 
-		Tree< Number > node2 = new Tree<>();
+		SimpleTree< Number > node2 = new SimpleTree<>();
 		node2.addAttribute( ATTRIBUTE, 227 );
 		node1.addSubtree( node2 );
 
-		Tree< Number > node3 = new Tree<>();
+		SimpleTree< Number > node3 = new SimpleTree<>();
 		node3.addAttribute( ATTRIBUTE, 227 );
 		node1.addSubtree( node3 );
 
-		Tree< Number > node4 = new Tree<>();
+		SimpleTree< Number > node4 = new SimpleTree<>();
 		node4.addAttribute( ATTRIBUTE, 10 );
 		node3.addSubtree( node4 );
 
-		Tree< Number > node5 = new Tree<>();
+		SimpleTree< Number > node5 = new SimpleTree<>();
 		node5.addAttribute( ATTRIBUTE, 10 );
 		node3.addSubtree( node5 );
 

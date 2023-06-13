@@ -61,7 +61,7 @@ public class ZhangUnorderedTreeEditDistance
 		// TODO implementation missing for the case local_distance == null
 		if ( costFunction != null )
 		{
-			Tree< Number > supertree = new Tree<>();
+			SimpleTree< Number > supertree = new SimpleTree<>();
 
 			supertree.getChildren().add( tree1 );
 			supertree.getChildren().add( tree2 );
