@@ -64,7 +64,6 @@ public class ZhangUnorderedTreeEditDistance
 		if ( costFunction != null )
 		{
 			Tree< Number > supertree = new Tree<>();
-			supertree.addAttribute( attributeName, 1 );
 
 			supertree.getChildren().add( tree1 );
 			supertree.getChildren().add( tree2 );
