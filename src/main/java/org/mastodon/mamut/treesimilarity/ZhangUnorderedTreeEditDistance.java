@@ -398,7 +398,7 @@ public class ZhangUnorderedTreeEditDistance
 				List< Tree< Number > > trees2 = dico2.get( key2 );
 				Tree< Number > s2 = trees2.get( 0 );
 
-				int distance_a_calculer = mt[ l1.indexOf( s1 ) ][ l2.indexOf( s2 ) ];
+				int edgeWeight = mt[ l1.indexOf( s1 ) ][ l2.indexOf( s2 ) ];
 				Integer source = i + 1;
 				Integer target = n1 + j + 1;
 				if ( !graph.containsVertex( source ) )
@@ -406,7 +406,7 @@ public class ZhangUnorderedTreeEditDistance
 				if ( !graph.containsVertex( target ) )
 					graph.addVertex( target );
 				edge = graph.addEdge( ( i + 1 ), ( n1 + j + 1 ) );
-				graph.setEdgeWeight( edge, distance_a_calculer );
+				graph.setEdgeWeight( edge, edgeWeight );
 				capacities.put( edge, N1.get( i ) );
 			}
 			edge = graph.addEdge( ( i + 1 ), ( n1 + n2 + 3 ) );
@@ -524,33 +524,34 @@ public class ZhangUnorderedTreeEditDistance
 		return depth + 1;
 	}
 
-	private static Map< Tree< Number >, Integer > getEquivalenceClasses( Tree< Number > tree, boolean useAttribute )
+	private static Map< Tree< Number >, Integer > getEquivalenceClasses( Tree< Number > inputTree, boolean useAttribute )
 	{
 		Map< Tree< Number >, Integer > equivalenceClasses = new HashMap<>();
 		Map< Integer, Map< Number, List< Tree< Number > > > > graphDepthToClassifiedTrees = new LinkedHashMap<>();
 
-		postOrder( tree, graphDepthToClassifiedTrees, useAttribute );
+		postOrder( inputTree, graphDepthToClassifiedTrees, useAttribute );
 
-		boolean ensureDifferentClassNumber = false;
-		Iterator< Tree< Number > > iterator = tree.getChildren().iterator();
-		Tree< Number > tree1 = iterator.next();
-		Tree< Number > tree2 = iterator.next();
+		boolean subtreeClassNumberIncremented = false;
+		Iterator< Tree< Number > > iterator = inputTree.getChildren().iterator();
+		Tree< Number > subtree1 = iterator.next();
+		Tree< Number > subtree2 = iterator.next();
 
 		int classNumber = 0;
 		for ( Map.Entry< Integer, Map< Number, List< Tree< Number > > > > graphDepth : graphDepthToClassifiedTrees.entrySet() )
 		{
 			for ( Map.Entry< Number, List< Tree< Number > > > treesWithSameAttributeAtGraphDepth : graphDepth.getValue().entrySet() )
 			{
-				for ( Tree< Number > t : treesWithSameAttributeAtGraphDepth.getValue() )
+				List< Tree< Number > > treesWithSameAttribute = treesWithSameAttributeAtGraphDepth.getValue();
+				// NB: we do not add the given tree itself
+				treesWithSameAttribute.remove( inputTree );
+				for ( Tree< Number > tree : treesWithSameAttributeAtGraphDepth.getValue() )
 				{
-					// NB: we do not add the class number of the given tree itself
-					if ( tree.equals( t ) )
-						continue;
-					equivalenceClasses.put( t, classNumber );
-					if ( ( t.equals( tree1 ) || t.equals( tree2 ) ) && !ensureDifferentClassNumber && useAttribute )
+					equivalenceClasses.put( tree, classNumber );
+					// NB: ensure that the two subtrees of the given tree have different class numbers, if the attribute is used
+					if ( ( tree.equals( subtree1 ) || tree.equals( subtree2 ) ) && !subtreeClassNumberIncremented && useAttribute )
 					{
 						classNumber++;
-						ensureDifferentClassNumber = true;
+						subtreeClassNumberIncremented = true;
 					}
 				}
 				classNumber++;
