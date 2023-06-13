@@ -509,7 +509,6 @@ public class ZhangUnorderedTreeEditDistance
 		treesWithSameAttribute.add( tree );
 		attributeToTrees.put( value, treesWithSameAttribute );
 		graphDepthToClassifiedTrees.put( depth, attributeToTrees );
-		tree.addAttribute( "height", depth );
 
 		return depth + 1;
 	}
