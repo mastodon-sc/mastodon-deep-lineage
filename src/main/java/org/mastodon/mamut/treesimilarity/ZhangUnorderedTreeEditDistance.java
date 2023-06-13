@@ -39,15 +39,15 @@ public class ZhangUnorderedTreeEditDistance
 
 		if ( tree2 == null )
 		{
-			// TODO implementation missing for the case local_distance == null
+			// TODO implementation missing for the case costFunction == null
 			if ( costFunction != null )
 			{
-				int s = 0;
+				int distance = 0;
 				for ( Tree< Number > subtree : tree1.listOfSubtrees() )
 				{
-					s += getCosts( subtree, null, attributeName, costFunction );
+					distance += getCosts( subtree, null, attributeName, costFunction );
 				}
-				return s;
+				return distance;
 			}
 		}
 
@@ -59,7 +59,7 @@ public class ZhangUnorderedTreeEditDistance
 		Map< Tree< Number >, Integer > costTreeToNone = new HashMap<>();
 		Map< Pair< Tree< Number >, Tree< Number > >, Integer > costTreeToTree = new HashMap<>();
 
-		// TODO implementation missing for the case local_distance == null
+		// TODO implementation missing for the case costFunction == null
 		if ( costFunction != null )
 		{
 			SimpleTree< Number > supertree = new SimpleTree<>();
@@ -288,7 +288,7 @@ public class ZhangUnorderedTreeEditDistance
 		Map< Object, List< Tree< Number > > > dico1 = new LinkedHashMap<>();
 		Map< Object, List< Tree< Number > > > dico2 = new LinkedHashMap<>();
 
-		// TODO add implementation for the case local_distance == null
+		// TODO add implementation for the case costFunction == null
 		if ( costFunction != null && equivalenceClasses != null )
 		{
 			for ( Tree< Number > tree1 : forest1.getChildren() )
@@ -487,20 +487,20 @@ public class ZhangUnorderedTreeEditDistance
 		return Pair.of( df, dt );
 	}
 
-	private static int post_order( Tree< Number > tree, String attribute,
-			Map< Integer, Map< Object, List< Tree< Number > > > > graphDepthToClassifiedTrees )
+	private static int postOrder( Tree< Number > tree, String attribute,
+			Map< Integer, Map< Number, List< Tree< Number > > > > graphDepthToClassifiedTrees )
 	{
 		int depth = 0;
 		List< Integer > depths = new ArrayList<>();
 		for ( Tree< Number > child : tree.getChildren() )
 		{
-			int d = post_order( child, attribute, graphDepthToClassifiedTrees );
+			int d = postOrder( child, attribute, graphDepthToClassifiedTrees );
 			depths.add( d );
 			depth = Collections.max( depths );
 		}
 
-		Map< Object, List< Tree< Number > > > attributeToTrees = graphDepthToClassifiedTrees.computeIfAbsent( depth, k -> new HashMap<>() );
-		Object value = tree.getAttributes().get( attribute );
+		Map< Number, List< Tree< Number > > > attributeToTrees = graphDepthToClassifiedTrees.computeIfAbsent( depth, k -> new HashMap<>() );
+		Number value = tree.getAttributes().get( attribute );
 		List< Tree< Number > > treesWithSameAttribute = attributeToTrees.get( value );
 		if ( treesWithSameAttribute == null )
 		{
@@ -515,10 +515,10 @@ public class ZhangUnorderedTreeEditDistance
 
 	private static Map< Tree< Number >, Integer > getEquivalenceClasses( Tree< Number > tree, String attribute )
 	{
-		Map< Tree< Number >, Integer > dicClass = new HashMap<>();
-		Map< Integer, Map< Object, List< Tree< Number > > > > graphDepthToClassifiedTrees = new LinkedHashMap<>();
+		Map< Tree< Number >, Integer > equivalenceClasses = new HashMap<>();
+		Map< Integer, Map< Number, List< Tree< Number > > > > graphDepthToClassifiedTrees = new LinkedHashMap<>();
 
-		post_order( tree, attribute, graphDepthToClassifiedTrees );
+		postOrder( tree, attribute, graphDepthToClassifiedTrees );
 
 		boolean ensureDifferentClassNumber = false;
 		Iterator< Tree< Number > > iterator = tree.getChildren().iterator();
@@ -526,16 +526,16 @@ public class ZhangUnorderedTreeEditDistance
 		Tree< Number > tree2 = iterator.next();
 
 		int classNumber = 0;
-		for ( Map.Entry< Integer, Map< Object, List< Tree< Number > > > > graphDepth : graphDepthToClassifiedTrees.entrySet() )
+		for ( Map.Entry< Integer, Map< Number, List< Tree< Number > > > > graphDepth : graphDepthToClassifiedTrees.entrySet() )
 		{
-			for ( Map.Entry< Object, List< Tree< Number > > > treesWithSameAttributeAtGraphDepth : graphDepth.getValue().entrySet() )
+			for ( Map.Entry< Number, List< Tree< Number > > > treesWithSameAttributeAtGraphDepth : graphDepth.getValue().entrySet() )
 			{
 				for ( Tree< Number > t : treesWithSameAttributeAtGraphDepth.getValue() )
 				{
 					// NB: we do not add the class number to the tree itself
 					if ( tree.equals( t ) )
 						continue;
-					dicClass.put( t, classNumber );
+					equivalenceClasses.put( t, classNumber );
 					if ( t.equals( tree1 ) || t.equals( tree2 ) && !ensureDifferentClassNumber )
 					{
 						classNumber++;
@@ -546,6 +546,6 @@ public class ZhangUnorderedTreeEditDistance
 			}
 		}
 
-		return dicClass;
+		return equivalenceClasses;
 	}
 }
