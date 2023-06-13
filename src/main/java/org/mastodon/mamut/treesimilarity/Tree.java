@@ -21,7 +21,7 @@ public interface Tree< T >
 	Map< String, T > getAttributes();
 
 	/**
-	 * Returns the list of subtrees (as Tree class objects) of the tree and all of its descendants.
+	 * Returns a list of all descendant subtrees of this {@link Tree}.
 	 *
 	 * @return The list of subtrees.
 	 */
