@@ -1,10 +1,8 @@
 package org.mastodon.mamut.treesimilarity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class SimpleTree< T > implements Tree< T >
@@ -12,12 +10,12 @@ public class SimpleTree< T > implements Tree< T >
 
 	private final Set< Tree< T > > children;
 
-	private final Map< String, T > attributes;
+	private final T attribute;
 
-	public SimpleTree()
+	public SimpleTree( T attribute )
 	{
 		children = new HashSet<>();
-		attributes = new HashMap<>();
+		this.attribute = attribute;
 	}
 
 	/**
@@ -35,9 +33,9 @@ public class SimpleTree< T > implements Tree< T >
 	 *
 	 * @return The map of attributes.
 	 */
-	public Map< String, T > getAttributes()
+	public T getAttribute()
 	{
-		return attributes;
+		return attribute;
 	}
 
 	/**
@@ -54,17 +52,6 @@ public class SimpleTree< T > implements Tree< T >
 			list.addAll( child.listOfSubtrees() );
 		}
 		return list;
-	}
-
-	/**
-	 * Add an attribute to a node in the tree.
-	 *
-	 * @param attributeName The name of the new attribute.
-	 * @param attributeValue The value of the new attribute.
-	 */
-	public void addAttribute( String attributeName, T attributeValue )
-	{
-		attributes.put( attributeName, attributeValue );
 	}
 
 	/**

@@ -1,7 +1,6 @@
 package org.mastodon.mamut.treesimilarity;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public interface Tree< T >
@@ -18,7 +17,7 @@ public interface Tree< T >
 	 *
 	 * @return The map of attributes.
 	 */
-	Map< String, T > getAttributes();
+	T getAttribute();
 
 	/**
 	 * Returns a list of all descendant subtrees of this {@link Tree}.

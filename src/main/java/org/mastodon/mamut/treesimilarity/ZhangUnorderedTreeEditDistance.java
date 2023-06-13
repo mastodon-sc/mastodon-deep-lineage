@@ -28,12 +28,11 @@ public class ZhangUnorderedTreeEditDistance
 	 *
 	 * @param tree1 Tree object representing the first tree.
 	 * @param tree2 Tree object representing the second tree.
-	 * @param attributeName Tuple representing the label attribute.
 	 * @param costFunction Optional cost function.
 	 *
 	 * @return The Zhang edit distance between tree1 and tree2 as an integer.
 	 */
-	public static int distance( Tree< Number > tree1, @Nullable Tree< Number > tree2, String attributeName,
+	public static int distance( Tree< Number > tree1, @Nullable Tree< Number > tree2,
 			@Nullable BiFunction< Number, Number, Integer > costFunction, boolean verbose )
 	{
 
@@ -45,7 +44,7 @@ public class ZhangUnorderedTreeEditDistance
 				int distance = 0;
 				for ( Tree< Number > subtree : tree1.listOfSubtrees() )
 				{
-					distance += getCosts( subtree, null, attributeName, costFunction );
+					distance += getCosts( subtree, null, costFunction );
 				}
 				return distance;
 			}
@@ -62,26 +61,26 @@ public class ZhangUnorderedTreeEditDistance
 		// TODO implementation missing for the case costFunction == null
 		if ( costFunction != null )
 		{
-			SimpleTree< Number > supertree = new SimpleTree<>();
+			SimpleTree< Number > supertree = new SimpleTree<>( 0 );
 
 			supertree.getChildren().add( tree1 );
 			supertree.getChildren().add( tree2 );
 
-			Map< Tree< Number >, Integer > equivalenceClasses = getEquivalenceClasses( supertree, attributeName );
+			Map< Tree< Number >, Integer > equivalenceClasses = getEquivalenceClasses( supertree );
 
 			// list of nodes of tree1
 			List< Tree< Number > > subtrees1 = tree1.listOfSubtrees();
 			// list of nodes of tree2
 			List< Tree< Number > > subtrees2 = tree2.listOfSubtrees();
 
-			subtrees1.forEach( tree -> costTreeToNone.put( tree, getCosts( tree, null, attributeName, costFunction ) ) );
-			subtrees2.forEach( tree -> costTreeToNone.put( tree, getCosts( tree, null, attributeName, costFunction ) ) );
+			subtrees1.forEach( tree -> costTreeToNone.put( tree, getCosts( tree, null, costFunction ) ) );
+			subtrees2.forEach( tree -> costTreeToNone.put( tree, getCosts( tree, null, costFunction ) ) );
 			for ( Tree< Number > subtree1 : subtrees1 )
 			{
 				for ( Tree< Number > subtree2 : subtrees2 )
 				{
 					costTreeToTree.put( Pair.of( subtree1, subtree2 ),
-							getCosts( subtree1, subtree2, attributeName, costFunction ) );
+							getCosts( subtree1, subtree2, costFunction ) );
 				}
 			}
 
@@ -115,15 +114,14 @@ public class ZhangUnorderedTreeEditDistance
 		return 0;
 	}
 
-	private static int getCosts( Tree< Number > tree1, Tree< Number > tree2, String labelAttribute,
-			BiFunction< Number, Number, Integer > costFunction )
+	private static int getCosts( Tree< Number > tree1, Tree< Number > tree2, BiFunction< Number, Number, Integer > costFunction )
 	{
 		if ( tree2 == null )
-			return costFunction.apply( tree1.getAttributes().get( labelAttribute ), null );
+			return costFunction.apply( tree1.getAttribute(), null );
 		else
 		{
-			Number v1 = tree1.getAttributes().get( labelAttribute );
-			Number v2 = tree2.getAttributes().get( labelAttribute );
+			Number v1 = tree1.getAttribute();
+			Number v2 = tree2.getAttribute();
 			return costFunction.apply( v1, v2 );
 		}
 	}
@@ -487,20 +485,19 @@ public class ZhangUnorderedTreeEditDistance
 		return Pair.of( df, dt );
 	}
 
-	private static int postOrder( Tree< Number > tree, String attribute,
-			Map< Integer, Map< Number, List< Tree< Number > > > > graphDepthToClassifiedTrees )
+	private static int postOrder( Tree< Number > tree, Map< Integer, Map< Number, List< Tree< Number > > > > graphDepthToClassifiedTrees )
 	{
 		int depth = 0;
 		List< Integer > depths = new ArrayList<>();
 		for ( Tree< Number > child : tree.getChildren() )
 		{
-			int d = postOrder( child, attribute, graphDepthToClassifiedTrees );
+			int d = postOrder( child, graphDepthToClassifiedTrees );
 			depths.add( d );
 			depth = Collections.max( depths );
 		}
 
 		Map< Number, List< Tree< Number > > > attributeToTrees = graphDepthToClassifiedTrees.computeIfAbsent( depth, k -> new HashMap<>() );
-		Number value = tree.getAttributes().get( attribute );
+		Number value = tree.getAttribute();
 		List< Tree< Number > > treesWithSameAttribute = attributeToTrees.get( value );
 		if ( treesWithSameAttribute == null )
 		{
@@ -513,12 +510,12 @@ public class ZhangUnorderedTreeEditDistance
 		return depth + 1;
 	}
 
-	private static Map< Tree< Number >, Integer > getEquivalenceClasses( Tree< Number > tree, String attribute )
+	private static Map< Tree< Number >, Integer > getEquivalenceClasses( Tree< Number > tree )
 	{
 		Map< Tree< Number >, Integer > equivalenceClasses = new HashMap<>();
 		Map< Integer, Map< Number, List< Tree< Number > > > > graphDepthToClassifiedTrees = new LinkedHashMap<>();
 
-		postOrder( tree, attribute, graphDepthToClassifiedTrees );
+		postOrder( tree, graphDepthToClassifiedTrees );
 
 		boolean ensureDifferentClassNumber = false;
 		Iterator< Tree< Number > > iterator = tree.getChildren().iterator();
