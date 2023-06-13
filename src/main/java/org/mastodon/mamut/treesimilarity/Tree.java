@@ -25,4 +25,9 @@ public interface Tree< T >
 	 * @return The list of subtrees.
 	 */
 	List< Tree< T > > listOfSubtrees();
+
+	default boolean isLeaf()
+	{
+		return getChildren().isEmpty();
+	}
 }

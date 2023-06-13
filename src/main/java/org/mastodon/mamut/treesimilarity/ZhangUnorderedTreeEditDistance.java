@@ -149,7 +149,7 @@ public class ZhangUnorderedTreeEditDistance
 			return mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ];
 		}
 
-		if ( tree1.getChildren().isEmpty() && tree2.getChildren().isEmpty() )
+		if ( tree1.isLeaf() && tree2.isLeaf() )
 		{
 			// TODO implementation missing for the case local_distance == null
 			if ( costFunction != null )
@@ -166,7 +166,7 @@ public class ZhangUnorderedTreeEditDistance
 			{
 				a = dit.get( tree2 );
 				List< Integer > l = new ArrayList<>();
-				if ( !tree2.getChildren().isEmpty() )
+				if ( !tree2.isLeaf() )
 				{
 					for ( Tree< Number > child : tree2.getChildren() )
 					{
@@ -184,7 +184,7 @@ public class ZhangUnorderedTreeEditDistance
 			{
 				b = dst.get( tree1 );
 				List< Integer > l = new ArrayList<>();
-				if ( !tree1.getChildren().isEmpty() )
+				if ( !tree1.isLeaf() )
 				{
 					for ( Tree< Number > child : tree1.getChildren() )
 					{
@@ -203,7 +203,7 @@ public class ZhangUnorderedTreeEditDistance
 				c += costTreeToTree.get( Pair.of( tree1, tree2 ) );
 			}
 
-			if ( tree1.getChildren().isEmpty() || tree2.getChildren().isEmpty() )
+			if ( tree1.isLeaf() || tree2.isLeaf() )
 			{
 				mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = c;
 				return c;
@@ -232,23 +232,23 @@ public class ZhangUnorderedTreeEditDistance
 		}
 		else
 		{
-			if ( dsf != null && !forest1.getChildren().isEmpty() && forest2.getChildren().isEmpty() )
+			if ( dsf != null && !forest1.isLeaf() && forest2.isLeaf() )
 			{
 				mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = dsf.get( forest1 );
 				return dsf.get( forest1 );
 			}
 
-			if ( dif != null && !forest2.getChildren().isEmpty() && forest1.getChildren().isEmpty() )
+			if ( dif != null && !forest2.isLeaf() && forest1.isLeaf() )
 			{
 				mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = dif.get( forest2 );
 				return dif.get( forest2 );
 			}
 
-			if ( dif != null && dsf != null && !forest2.getChildren().isEmpty() && !forest1.getChildren().isEmpty() )
+			if ( dif != null && dsf != null && !forest2.isLeaf() && !forest1.isLeaf() )
 			{
 				int a = dif.get( forest2 );
 				List< Integer > l = new ArrayList<>();
-				if ( !forest2.getChildren().isEmpty() )
+				if ( !forest2.isLeaf() )
 				{
 					for ( Tree< Number > child : forest2.getChildren() )
 					{
@@ -259,7 +259,7 @@ public class ZhangUnorderedTreeEditDistance
 				}
 				int b = dsf.get( forest1 );
 				l = new ArrayList<>();
-				if ( !forest1.getChildren().isEmpty() )
+				if ( !forest1.isLeaf() )
 				{
 					for ( Tree< Number > child : forest1.getChildren() )
 					{
@@ -445,7 +445,7 @@ public class ZhangUnorderedTreeEditDistance
 		Map< Tree< Number >, Integer > df = new HashMap<>();
 		Map< Tree< Number >, Integer > dt = new HashMap<>();
 
-		if ( s.getChildren().isEmpty() )
+		if ( s.isLeaf() )
 		{
 			df.put( s, 0 );
 			if ( costTreeToNone == null )
