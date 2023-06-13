@@ -6,16 +6,16 @@ import java.util.Set;
 public interface Tree< T >
 {
 	/**
-	 * Get the children of the tree.
+	 * Get the children of this {@link Tree}.
 	 *
-	 * @return The list of child Tree objects.
+	 * @return The list of child {@link Tree} objects.
 	 */
 	Set< Tree< T > > getChildren();
 
 	/**
-	 * Get the attributes of the tree.
+	 * Get the attribute of this {@link Tree}.
 	 *
-	 * @return The map of attributes.
+	 * @return the attribute.
 	 */
 	T getAttribute();
 
