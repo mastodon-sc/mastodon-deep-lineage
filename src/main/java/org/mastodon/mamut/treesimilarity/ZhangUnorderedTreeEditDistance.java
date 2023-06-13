@@ -89,12 +89,12 @@ public class ZhangUnorderedTreeEditDistance
 			}
 
 			Pair< Map< Tree< Number >, Integer >, Map< Tree< Number >, Integer > > p1 =
-					calcul_cost_sup_ins_forest_tree( tree1, costTreeToNone );
+					computeDeleteInsertCostsForestTree( tree1, costTreeToNone );
 			forestDeleteMap = p1.getKey();
 			treeDeleteMap = p1.getValue();
 
 			Pair< Map< Tree< Number >, Integer >, Map< Tree< Number >, Integer > > p2 =
-					calcul_cost_sup_ins_forest_tree( tree2, costTreeToNone );
+					computeDeleteInsertCostsForestTree( tree2, costTreeToNone );
 			forestInsertMap = p2.getKey();
 			treeInsertMap = p2.getValue();
 
@@ -440,7 +440,8 @@ public class ZhangUnorderedTreeEditDistance
 	 * @param costTreeToNone
 	 * @return
 	 */
-	private static Pair< Map< Tree< Number >, Integer >, Map< Tree< Number >, Integer > > calcul_cost_sup_ins_forest_tree( Tree< Number > s,
+	private static Pair< Map< Tree< Number >, Integer >, Map< Tree< Number >, Integer > > computeDeleteInsertCostsForestTree(
+			Tree< Number > s,
 			Map< Tree< Number >, Integer > costTreeToNone )
 	{
 
@@ -467,7 +468,7 @@ public class ZhangUnorderedTreeEditDistance
 				Map< Tree< Number >, Integer > dfi;
 				Map< Tree< Number >, Integer > dti;
 				Pair< Map< Tree< Number >, Integer >, Map< Tree< Number >, Integer > > result =
-						calcul_cost_sup_ins_forest_tree( child, costTreeToNone );
+						computeDeleteInsertCostsForestTree( child, costTreeToNone );
 				dfi = result.getKey();
 				dti = result.getValue();
 				v += dti.get( child );
