@@ -13,11 +13,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.BiFunction;
 
 public class ZhangUnorderedTreeEditDistance
 {
+
+	public static final String EQUIVALENCE_CLASS_NAME = "unordered_equivalence_class_with_attribute";
 
 	private ZhangUnorderedTreeEditDistance()
 	{
@@ -293,7 +294,7 @@ public class ZhangUnorderedTreeEditDistance
 			for ( Tree< Number > tree1 : forest1.getChildren() )
 			{
 				int unorderedEquivalenceClassWithAttribute =
-						( int ) tree1.getAttributes().get( "unordered_equivalence_class_with_attribute" );
+						( int ) tree1.getAttributes().get( EQUIVALENCE_CLASS_NAME );
 				if ( dico1.containsKey( unorderedEquivalenceClassWithAttribute ) )
 				{
 					List< Tree< Number > > trees = dico1.get( unorderedEquivalenceClassWithAttribute );
@@ -310,7 +311,7 @@ public class ZhangUnorderedTreeEditDistance
 			for ( Tree< Number > tree2 : forest2.getChildren() )
 			{
 				int unorderedEquivalenceClassWithAttribute =
-						( int ) tree2.getAttributes().get( "unordered_equivalence_class_with_attribute" );
+						( int ) tree2.getAttributes().get( EQUIVALENCE_CLASS_NAME );
 				if ( dico2.containsKey( unorderedEquivalenceClassWithAttribute ) )
 				{
 					List< Tree< Number > > trees = dico2.get( unorderedEquivalenceClassWithAttribute );
@@ -535,7 +536,7 @@ public class ZhangUnorderedTreeEditDistance
 					if ( tree.equals( t ) )
 						continue;
 					dicClass.put( t, classNumber );
-					t.addAttribute( "unordered_equivalence_class_with_attribute", classNumber );
+					t.addAttribute( EQUIVALENCE_CLASS_NAME, classNumber );
 					if ( t.equals( tree1 ) || t.equals( tree2 ) && !ensureDifferentClassNumber )
 					{
 						classNumber++;
