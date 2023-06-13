@@ -2,19 +2,21 @@ package org.mastodon.mamut.treesimilarity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SimpleTree< T > implements Tree< T >
 {
 
-	private final List< Tree< T > > children;
+	private final Set< Tree< T > > children;
 
 	private final Map< String, T > attributes;
 
 	public SimpleTree()
 	{
-		children = new ArrayList<>();
+		children = new HashSet<>();
 		attributes = new HashMap<>();
 	}
 
@@ -23,7 +25,7 @@ public class SimpleTree< T > implements Tree< T >
 	 *
 	 * @return The list of child Tree objects.
 	 */
-	public List< Tree< T > > getChildren()
+	public Set< Tree< T > > getChildren()
 	{
 		return children;
 	}

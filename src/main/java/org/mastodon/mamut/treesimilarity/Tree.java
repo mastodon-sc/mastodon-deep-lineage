@@ -2,6 +2,7 @@ package org.mastodon.mamut.treesimilarity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface Tree< T >
 {
@@ -10,7 +11,7 @@ public interface Tree< T >
 	 *
 	 * @return The list of child Tree objects.
 	 */
-	List< Tree< T > > getChildren();
+	Set< Tree< T > > getChildren();
 
 	/**
 	 * Get the attributes of the tree.

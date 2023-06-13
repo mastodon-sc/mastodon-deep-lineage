@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -520,8 +521,9 @@ public class ZhangUnorderedTreeEditDistance
 		post_order( tree, attribute, graphDepthToClassifiedTrees );
 
 		boolean ensureDifferentClassNumber = false;
-		Tree< Number > tree1 = tree.getChildren().get( 0 );
-		Tree< Number > tree2 = tree.getChildren().get( 1 );
+		Iterator< Tree< Number > > iterator = tree.getChildren().iterator();
+		Tree< Number > tree1 = iterator.next();
+		Tree< Number > tree2 = iterator.next();
 
 		int classNumber = 0;
 		for ( Map.Entry< Integer, Map< Object, List< Tree< Number > > > > graphDepth : graphDepthToClassifiedTrees.entrySet() )
