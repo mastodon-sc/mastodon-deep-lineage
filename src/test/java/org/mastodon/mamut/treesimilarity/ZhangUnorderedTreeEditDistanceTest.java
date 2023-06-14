@@ -14,11 +14,11 @@ public class ZhangUnorderedTreeEditDistanceTest
 	{
 		BiFunction< Number, Number, Integer > costFunction = getCostFunction();
 
-		SimpleTree< Number > emptyTree = emptyTree();
-		SimpleTree< Number > tree1 = tree1();
-		SimpleTree< Number > tree2 = tree2();
-		SimpleTree< Number > tree3 = tree3();
-		SimpleTree< Number > tree4 = tree4();
+		SimpleTree< Number > emptyTree = SimpleTreeFactory.emptyTree();
+		SimpleTree< Number > tree1 = SimpleTreeFactory.tree1();
+		SimpleTree< Number > tree2 = SimpleTreeFactory.tree2();
+		SimpleTree< Number > tree3 = SimpleTreeFactory.tree3();
+		SimpleTree< Number > tree4 = SimpleTreeFactory.tree4();
 
 		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
 		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( tree1, emptyTree, costFunction, false ) );
@@ -39,13 +39,13 @@ public class ZhangUnorderedTreeEditDistanceTest
 	{
 		BiFunction< Number, Number, Integer > costFunction = getCostFunction();
 
-		SimpleTree< Number > tree1 = tree1();
-		SimpleTree< Number > tree2 = tree2();
-		SimpleTree< Number > tree3 = tree3();
-		SimpleTree< Number > tree4 = tree4();
-		SimpleTree< Number > tree5 = tree5();
-		SimpleTree< Number > tree6 = tree6();
-		SimpleTree< Number > tree7 = tree7();
+		SimpleTree< Number > tree1 = SimpleTreeFactory.tree1();
+		SimpleTree< Number > tree2 = SimpleTreeFactory.tree2();
+		SimpleTree< Number > tree3 = SimpleTreeFactory.tree3();
+		SimpleTree< Number > tree4 = SimpleTreeFactory.tree4();
+		SimpleTree< Number > tree5 = SimpleTreeFactory.tree5();
+		SimpleTree< Number > tree6 = SimpleTreeFactory.tree6();
+		SimpleTree< Number > tree7 = SimpleTreeFactory.tree7();
 
 		// similarity of trees against other trees
 
@@ -75,13 +75,13 @@ public class ZhangUnorderedTreeEditDistanceTest
 	public void testZhangEditDistanceNullCostFunction()
 	{
 
-		SimpleTree< Number > tree1 = tree1();
-		SimpleTree< Number > tree2 = tree2();
-		SimpleTree< Number > tree3 = tree3();
-		SimpleTree< Number > tree4 = tree4();
-		SimpleTree< Number > tree5 = tree5();
-		SimpleTree< Number > tree6 = tree6();
-		SimpleTree< Number > tree7 = tree7();
+		SimpleTree< Number > tree1 = SimpleTreeFactory.tree1();
+		SimpleTree< Number > tree2 = SimpleTreeFactory.tree2();
+		SimpleTree< Number > tree3 = SimpleTreeFactory.tree3();
+		SimpleTree< Number > tree4 = SimpleTreeFactory.tree4();
+		SimpleTree< Number > tree5 = SimpleTreeFactory.tree5();
+		SimpleTree< Number > tree6 = SimpleTreeFactory.tree6();
+		SimpleTree< Number > tree7 = SimpleTreeFactory.tree7();
 
 		// similarity of trees against other trees
 
@@ -109,164 +109,5 @@ public class ZhangUnorderedTreeEditDistanceTest
 			else
 				return Math.abs( ( Integer ) o1 - ( Integer ) o2 );
 		};
-	}
-
-	private SimpleTree< Number > emptyTree()
-	{
-		return new SimpleTree<>( 0 );
-	}
-
-	private SimpleTree< Number > tree1()
-	{
-		//   					   node1(node_weight=20)
-		//                ┌-─────────┴─────────────┐
-		//                │                        │
-		//              node2(node_weight=10)    node3(node_weight=30)
-		SimpleTree< Number > node1 = new SimpleTree<>( 20 );
-
-		SimpleTree< Number > node2 = new SimpleTree<>( 10 );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Number > node3 = new SimpleTree<>( 30 );
-		node1.addSubtree( node3 );
-
-		return node1;
-	}
-
-	private SimpleTree< Number > tree2()
-	{
-		//  				       node1(node_weight=30)
-		//                ┌-─────────┴─────────────┐
-		//                │                        │
-		//              node2(node_weight=10)    node3(node_weight=20)
-
-		SimpleTree< Number > node1 = new SimpleTree<>( 30 );
-
-		SimpleTree< Number > node2 = new SimpleTree<>( 10 );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Number > node3 = new SimpleTree<>( 20 );
-		node1.addSubtree( node3 );
-
-		return node1;
-	}
-
-	private SimpleTree< Number > tree3()
-	{
-		//
-		//                        node1(node_weight=1)
-		//               ┌-─────────┴─────────────┐
-		//               │                        │
-		//             node2(node_weight=1)     node3(node_weight=1)
-		//    ┌-─────────┴─────────────┐
-		//    │                        │
-		//  node4(node_weight=1)     node5(node_weight=100)
-
-		SimpleTree< Number > node1 = new SimpleTree<>( 1 );
-
-		SimpleTree< Number > node2 = new SimpleTree<>( 1 );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Number > node3 = new SimpleTree<>( 1 );
-		node1.addSubtree( node3 );
-
-		SimpleTree< Number > node4 = new SimpleTree<>( 1 );
-		node2.addSubtree( node4 );
-
-		SimpleTree< Number > node5 = new SimpleTree<>( 100 );
-		node2.addSubtree( node5 );
-
-		return node1;
-	}
-
-	private SimpleTree< Number > tree4()
-	{
-		//                       node1(node_weight=1)
-		//              ┌-─────────┴─────────────┐
-		//              │                        │
-		//            node2(node_weight=100)   node3(node_weight=1)
-		//   ┌-─────────┴─────────────┐
-		//   │                        │
-		// node4(node_weight=1)     node5(node_weight=1)
-
-		SimpleTree< Number > node1 = new SimpleTree<>( 1 );
-
-		SimpleTree< Number > node2 = new SimpleTree<>( 100 );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Number > node3 = new SimpleTree<>( 1 );
-		node1.addSubtree( node3 );
-
-		SimpleTree< Number > node4 = new SimpleTree<>( 1 );
-		node2.addSubtree( node4 );
-
-		SimpleTree< Number > node5 = new SimpleTree<>( 1 );
-		node2.addSubtree( node5 );
-
-		return node1;
-	}
-
-	private SimpleTree< Number > tree5()
-	{
-		//
-		//                 node1(node_weight=13)
-		//        ┌-─────────┴─────────────┐
-		//        │                        │
-		//      node2(node_weight=203)     node3(node_weight=203)
-
-		SimpleTree< Number > node1 = new SimpleTree<>( 13 );
-
-		SimpleTree< Number > node2 = new SimpleTree<>( 203 );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Number > node3 = new SimpleTree<>( 203 );
-		node1.addSubtree( node3 );
-
-		return node1;
-	}
-
-	private SimpleTree< Number > tree6()
-	{
-		//                 node1(node_weight=12)
-		//        ┌-─────────┴─────────────┐
-		//        │                        │
-		//      node2(node_weight=227)     node3(node_weight=227)
-
-		SimpleTree< Number > node1 = new SimpleTree<>( 12 );
-
-		SimpleTree< Number > node2 = new SimpleTree<>( 227 );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Number > node3 = new SimpleTree<>( 227 );
-		node1.addSubtree( node3 );
-
-		return node1;
-	}
-
-	private SimpleTree< Number > tree7()
-	{
-		//
-		//                 node1(node_weight=12)
-		//        ┌-─────────┴─────────────┐
-		//        │                        │
-		//      node2(node_weight=227)   node3(node_weight=227)
-		//                      ┌-─────────┴─────────────┐
-		//                    node4(node_weight=10)    node5(node_weight=10)
-
-		SimpleTree< Number > node1 = new SimpleTree<>( 12 );
-
-		SimpleTree< Number > node2 = new SimpleTree<>( 227 );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Number > node3 = new SimpleTree<>( 227 );
-		node1.addSubtree( node3 );
-
-		SimpleTree< Number > node4 = new SimpleTree<>( 10 );
-		node3.addSubtree( node4 );
-
-		SimpleTree< Number > node5 = new SimpleTree<>( 10 );
-		node3.addSubtree( node5 );
-
-		return node1;
 	}
 }

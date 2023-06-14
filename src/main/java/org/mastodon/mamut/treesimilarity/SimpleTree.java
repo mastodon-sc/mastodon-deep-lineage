@@ -1,8 +1,6 @@
 package org.mastodon.mamut.treesimilarity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class SimpleTree< T > implements Tree< T >
@@ -36,22 +34,6 @@ public class SimpleTree< T > implements Tree< T >
 	public T getAttribute()
 	{
 		return attribute;
-	}
-
-	/**
-	 * Returns the list of subtrees (as Tree class objects) of the tree and all of its descendants.
-	 *
-	 * @return The list of subtrees.
-	 */
-	public List< Tree< T > > listOfSubtrees()
-	{
-		List< Tree< T > > list = new ArrayList<>();
-		list.add( this );
-		for ( Tree< T > child : children )
-		{
-			list.addAll( child.listOfSubtrees() );
-		}
-		return list;
 	}
 
 	/**

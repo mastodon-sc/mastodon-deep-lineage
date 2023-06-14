@@ -45,12 +45,12 @@ public class ZhangUnorderedTreeEditDistance
 		{
 			if ( costFunction == null )
 			{
-				return tree1.size();
+				return TreeUtils.size( tree1 );
 			}
 			else
 			{
 				int distance = 0;
-				for ( Tree< Number > subtree : tree1.listOfSubtrees() )
+				for ( Tree< Number > subtree : TreeUtils.listOfSubtrees( tree1 ) )
 				{
 					distance += getCosts( subtree, null, costFunction );
 				}
@@ -74,9 +74,9 @@ public class ZhangUnorderedTreeEditDistance
 		Map< Tree< Number >, Integer > equivalenceClasses;
 
 		// list of nodes of tree1
-		List< Tree< Number > > subtrees1 = tree1.listOfSubtrees();
+		List< Tree< Number > > subtrees1 = TreeUtils.listOfSubtrees( tree1 );
 		// list of nodes of tree2
-		List< Tree< Number > > subtrees2 = tree2.listOfSubtrees();
+		List< Tree< Number > > subtrees2 = TreeUtils.listOfSubtrees( tree2 );
 
 		if ( costFunction == null )
 		{
