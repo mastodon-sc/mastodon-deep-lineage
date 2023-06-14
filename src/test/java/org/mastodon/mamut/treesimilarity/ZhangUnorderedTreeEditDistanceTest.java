@@ -10,32 +10,7 @@ public class ZhangUnorderedTreeEditDistanceTest
 {
 
 	@Test
-	public void testZhangEditDistanceEmptyTrees()
-	{
-		BiFunction< Number, Number, Integer > costFunction = getCostFunction();
-
-		SimpleTree< Number > emptyTree = SimpleTreeFactory.emptyTree();
-		SimpleTree< Number > tree1 = SimpleTreeFactory.tree1();
-		SimpleTree< Number > tree2 = SimpleTreeFactory.tree2();
-		SimpleTree< Number > tree3 = SimpleTreeFactory.tree3();
-		SimpleTree< Number > tree4 = SimpleTreeFactory.tree4();
-
-		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
-		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( tree1, emptyTree, costFunction, false ) );
-		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree1, costFunction, false ) );
-		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
-		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( tree2, emptyTree, costFunction, false ) );
-		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree2, costFunction, false ) );
-		// 104, because: 3 nodes with a total weight of 104 are added to the empty tree
-		assertEquals( 104, ZhangUnorderedTreeEditDistance.distance( tree3, emptyTree, costFunction, false ) );
-		assertEquals( 104, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree3, costFunction, false ) );
-		// 104, because: 3 nodes with a total weight of 104 are added to the empty tree
-		assertEquals( 104, ZhangUnorderedTreeEditDistance.distance( tree4, emptyTree, costFunction, false ) );
-		assertEquals( 104, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree4, costFunction, false ) );
-	}
-
-	@Test
-	public void testZhangEditDistance()
+	public void testDistance()
 	{
 		BiFunction< Number, Number, Integer > costFunction = getCostFunction();
 
@@ -72,7 +47,32 @@ public class ZhangUnorderedTreeEditDistanceTest
 	}
 
 	@Test
-	public void testZhangEditDistanceNullCostFunction()
+	public void testDistanceEmptyTrees()
+	{
+		BiFunction< Number, Number, Integer > costFunction = getCostFunction();
+
+		SimpleTree< Number > emptyTree = SimpleTreeFactory.emptyTree();
+		SimpleTree< Number > tree1 = SimpleTreeFactory.tree1();
+		SimpleTree< Number > tree2 = SimpleTreeFactory.tree2();
+		SimpleTree< Number > tree3 = SimpleTreeFactory.tree3();
+		SimpleTree< Number > tree4 = SimpleTreeFactory.tree4();
+
+		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
+		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( tree1, emptyTree, costFunction, false ) );
+		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree1, costFunction, false ) );
+		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
+		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( tree2, emptyTree, costFunction, false ) );
+		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree2, costFunction, false ) );
+		// 104, because: 3 nodes with a total weight of 104 are added to the empty tree
+		assertEquals( 104, ZhangUnorderedTreeEditDistance.distance( tree3, emptyTree, costFunction, false ) );
+		assertEquals( 104, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree3, costFunction, false ) );
+		// 104, because: 3 nodes with a total weight of 104 are added to the empty tree
+		assertEquals( 104, ZhangUnorderedTreeEditDistance.distance( tree4, emptyTree, costFunction, false ) );
+		assertEquals( 104, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree4, costFunction, false ) );
+	}
+
+	@Test
+	public void testDistanceNullCostFunction()
 	{
 
 		SimpleTree< Number > tree1 = SimpleTreeFactory.tree1();
