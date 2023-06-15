@@ -21,6 +21,7 @@ public class SimpleTree< T > implements Tree< T >
 	 *
 	 * @return The list of child Tree objects.
 	 */
+	@Override
 	public Set< Tree< T > > getChildren()
 	{
 		return children;
@@ -31,6 +32,7 @@ public class SimpleTree< T > implements Tree< T >
 	 *
 	 * @return The map of attributes.
 	 */
+	@Override
 	public T getAttribute()
 	{
 		return attribute;
