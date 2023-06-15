@@ -15,9 +15,9 @@ public class TreeUtilsTest
 	@Test
 	public void testListOfSubtrees()
 	{
-		SimpleTree< Number > emptyTree = SimpleTreeFactory.emptyTree();
+		SimpleTree< Number > emptyTree = SimpleTreeExamples.emptyTree();
 
-		SimpleTree< Number > tree1 = SimpleTreeFactory.tree1();
+		SimpleTree< Number > tree1 = SimpleTreeExamples.tree1();
 		List< Tree< Number > > subtrees1 = new ArrayList<>();
 		subtrees1.add( tree1 );
 		subtrees1.addAll( tree1.getChildren() );
@@ -30,13 +30,13 @@ public class TreeUtilsTest
 	public void testSize()
 	{
 		assertThrows( IllegalArgumentException.class, () -> TreeUtils.size( null ) );
-		assertEquals( 1, TreeUtils.size( SimpleTreeFactory.emptyTree() ) );
-		assertEquals( 3, TreeUtils.size( SimpleTreeFactory.tree1() ) );
-		assertEquals( 3, TreeUtils.size( SimpleTreeFactory.tree2() ) );
-		assertEquals( 5, TreeUtils.size( SimpleTreeFactory.tree3() ) );
-		assertEquals( 5, TreeUtils.size( SimpleTreeFactory.tree4() ) );
-		assertEquals( 3, TreeUtils.size( SimpleTreeFactory.tree5() ) );
-		assertEquals( 3, TreeUtils.size( SimpleTreeFactory.tree6() ) );
-		assertEquals( 5, TreeUtils.size( SimpleTreeFactory.tree7() ) );
+		assertEquals( 1, TreeUtils.size( SimpleTreeExamples.emptyTree() ) );
+		assertEquals( 3, TreeUtils.size( SimpleTreeExamples.tree1() ) );
+		assertEquals( 3, TreeUtils.size( SimpleTreeExamples.tree2() ) );
+		assertEquals( 5, TreeUtils.size( SimpleTreeExamples.tree3() ) );
+		assertEquals( 5, TreeUtils.size( SimpleTreeExamples.tree4() ) );
+		assertEquals( 3, TreeUtils.size( SimpleTreeExamples.tree5() ) );
+		assertEquals( 3, TreeUtils.size( SimpleTreeExamples.tree6() ) );
+		assertEquals( 5, TreeUtils.size( SimpleTreeExamples.tree7() ) );
 	}
 }

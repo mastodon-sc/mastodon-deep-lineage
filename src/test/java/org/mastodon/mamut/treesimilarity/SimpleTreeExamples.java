@@ -1,6 +1,6 @@
 package org.mastodon.mamut.treesimilarity;
 
-public class SimpleTreeFactory
+public class SimpleTreeExamples
 {
 	static SimpleTree< Number > emptyTree()
 	{

@@ -14,13 +14,13 @@ public class ZhangUnorderedTreeEditDistanceTest
 	{
 		BiFunction< Number, Number, Integer > costFunction = getCostFunction();
 
-		SimpleTree< Number > tree1 = SimpleTreeFactory.tree1();
-		SimpleTree< Number > tree2 = SimpleTreeFactory.tree2();
-		SimpleTree< Number > tree3 = SimpleTreeFactory.tree3();
-		SimpleTree< Number > tree4 = SimpleTreeFactory.tree4();
-		SimpleTree< Number > tree5 = SimpleTreeFactory.tree5();
-		SimpleTree< Number > tree6 = SimpleTreeFactory.tree6();
-		SimpleTree< Number > tree7 = SimpleTreeFactory.tree7();
+		SimpleTree< Number > tree1 = SimpleTreeExamples.tree1();
+		SimpleTree< Number > tree2 = SimpleTreeExamples.tree2();
+		SimpleTree< Number > tree3 = SimpleTreeExamples.tree3();
+		SimpleTree< Number > tree4 = SimpleTreeExamples.tree4();
+		SimpleTree< Number > tree5 = SimpleTreeExamples.tree5();
+		SimpleTree< Number > tree6 = SimpleTreeExamples.tree6();
+		SimpleTree< Number > tree7 = SimpleTreeExamples.tree7();
 
 		// similarity of trees against other trees
 
@@ -51,11 +51,11 @@ public class ZhangUnorderedTreeEditDistanceTest
 	{
 		BiFunction< Number, Number, Integer > costFunction = getCostFunction();
 
-		SimpleTree< Number > emptyTree = SimpleTreeFactory.emptyTree();
-		SimpleTree< Number > tree1 = SimpleTreeFactory.tree1();
-		SimpleTree< Number > tree2 = SimpleTreeFactory.tree2();
-		SimpleTree< Number > tree3 = SimpleTreeFactory.tree3();
-		SimpleTree< Number > tree4 = SimpleTreeFactory.tree4();
+		SimpleTree< Number > emptyTree = SimpleTreeExamples.emptyTree();
+		SimpleTree< Number > tree1 = SimpleTreeExamples.tree1();
+		SimpleTree< Number > tree2 = SimpleTreeExamples.tree2();
+		SimpleTree< Number > tree3 = SimpleTreeExamples.tree3();
+		SimpleTree< Number > tree4 = SimpleTreeExamples.tree4();
 
 		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
 		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( tree1, emptyTree, costFunction ) );
@@ -75,13 +75,13 @@ public class ZhangUnorderedTreeEditDistanceTest
 	public void testDistanceNullCostFunction()
 	{
 
-		SimpleTree< Number > tree1 = SimpleTreeFactory.tree1();
-		SimpleTree< Number > tree2 = SimpleTreeFactory.tree2();
-		SimpleTree< Number > tree3 = SimpleTreeFactory.tree3();
-		SimpleTree< Number > tree4 = SimpleTreeFactory.tree4();
-		SimpleTree< Number > tree5 = SimpleTreeFactory.tree5();
-		SimpleTree< Number > tree6 = SimpleTreeFactory.tree6();
-		SimpleTree< Number > tree7 = SimpleTreeFactory.tree7();
+		SimpleTree< Number > tree1 = SimpleTreeExamples.tree1();
+		SimpleTree< Number > tree2 = SimpleTreeExamples.tree2();
+		SimpleTree< Number > tree3 = SimpleTreeExamples.tree3();
+		SimpleTree< Number > tree4 = SimpleTreeExamples.tree4();
+		SimpleTree< Number > tree5 = SimpleTreeExamples.tree5();
+		SimpleTree< Number > tree6 = SimpleTreeExamples.tree6();
+		SimpleTree< Number > tree7 = SimpleTreeExamples.tree7();
 
 		// similarity of trees against other trees
 
