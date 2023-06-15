@@ -38,7 +38,7 @@ public class ZhangUnorderedTreeEditDistance
 	 * @return The Zhang edit distance between tree1 and tree2 as an integer.
 	 */
 	public static int distance( Tree< Number > tree1, @Nullable Tree< Number > tree2,
-			@Nullable BiFunction< Number, Number, Integer > costFunction, boolean verbose )
+			@Nullable BiFunction< Number, Number, Integer > costFunction )
 	{
 
 		if ( tree2 == null )
@@ -115,12 +115,12 @@ public class ZhangUnorderedTreeEditDistance
 			forestInsertMap = p2.getKey();
 			treeInsertMap = p2.getValue();
 		}
-		int[][] gridf = new int[ subtrees1.size() ][ subtrees2.size() ];
-		int[][] gridt = new int[ subtrees1.size() ][ subtrees2.size() ];
+		int[][] forestDistances = new int[ subtrees1.size() ][ subtrees2.size() ];
+		int[][] treeDistances = new int[ subtrees1.size() ][ subtrees2.size() ];
 
-		for ( int[] row : gridf )
+		for ( int[] row : forestDistances )
 			Arrays.fill( row, -1 );
-		for ( int[] row : gridt )
+		for ( int[] row : treeDistances )
 			Arrays.fill( row, -1 );
 
 		if ( treeInsertMap == null || forestInsertMap == null || treeDeleteMap == null || forestDeleteMap == null )
@@ -128,21 +128,21 @@ public class ZhangUnorderedTreeEditDistance
 			throw new IllegalArgumentException( "One of the maps is null" );
 		}
 
-		int distance = distanceTree( tree1, tree2, costFunction, subtrees1, subtrees2, gridt, gridf, treeInsertMap, forestInsertMap,
-				treeDeleteMap, forestDeleteMap, equivalenceClasses, verbose, costTreeToTree );
+		int distance = distanceTree( tree1, tree2, costFunction, subtrees1, subtrees2, treeDistances, forestDistances, treeInsertMap,
+				forestInsertMap,
+				treeDeleteMap, forestDeleteMap, equivalenceClasses, costTreeToTree );
 
 		logger.info( "matrix of tree distances:" );
 		for ( int i = 0; i < subtrees1.size(); i++ )
 		{
 			if ( logger.isInfoEnabled() )
-				logger.info( "tree distance[{}] = {}", i, Arrays.toString( gridt[ i ] ) );
+				logger.info( "tree distance[{}] = {}", i, Arrays.toString( treeDistances[ i ] ) );
 		}
 		logger.info( "matrix of forest distances:" );
 		for ( int i = 0; i < subtrees1.size(); i++ )
 		{
-			// TODO: there is a difference compared to the original python implementation
 			if ( logger.isInfoEnabled() )
-				logger.info( "forest distance[{}] = {}", i, Arrays.toString( gridf[ i ] ) );
+				logger.info( "forest distance[{}] = {}", i, Arrays.toString( forestDistances[ i ] ) );
 		}
 		logger.info( "tree deletion costs (tree1):" );
 		for ( Tree< Number > subtree : subtrees1 )
@@ -185,75 +185,78 @@ public class ZhangUnorderedTreeEditDistance
 	 */
 	private static int distanceTree( Tree< Number > tree1, Tree< Number > tree2,
 			@Nullable BiFunction< Number, Number, Integer > costFunction, List< Tree< Number > > l1,
-			List< Tree< Number > > l2, int[][] mt, int[][] mf,
-			@Nullable Map< Tree< Number >, Integer > dit, @Nullable Map< Tree< Number >, Integer > dif,
-			@Nullable Map< Tree< Number >, Integer > dst,
-			@Nullable Map< Tree< Number >, Integer > dsf, @Nullable Map< Tree< Number >, Integer > equivalenceClasses, boolean verbose,
+			List< Tree< Number > > l2, int[][] treeDistances, int[][] forestDistances,
+			@Nullable Map< Tree< Number >, Integer > treeInsertMap, @Nullable Map< Tree< Number >, Integer > forestInsertMap,
+			@Nullable Map< Tree< Number >, Integer > treeDeleteMap,
+			@Nullable Map< Tree< Number >, Integer > forestDeleteMap, @Nullable Map< Tree< Number >, Integer > equivalenceClasses,
 			Map< Pair< Tree< Number >, Tree< Number > >, Integer > costTreeToTree )
 	{
-		if ( equivalenceClasses != null && Objects.equals( equivalenceClasses.get( tree1 ), equivalenceClasses.get( tree2 ) ) && !verbose )
+		if ( equivalenceClasses != null && Objects.equals( equivalenceClasses.get( tree1 ), equivalenceClasses.get( tree2 ) ) )
 		{
-			mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = 0;
-			mf[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = 0;
+			treeDistances[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = 0;
+			forestDistances[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = 0;
 			return 0;
 		}
-		if ( mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] != -1 )
+		if ( treeDistances[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] != -1 )
 		{
-			return mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ];
+			return treeDistances[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ];
 		}
 
 		if ( tree1.isLeaf() && tree2.isLeaf() )
 		{
 			if ( costFunction == null )
 			{
-				mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = 0;
-				mf[ l2.indexOf( tree2 ) ][ l1.indexOf( tree1 ) ] = 0;
+				treeDistances[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = 0;
+				forestDistances[ l2.indexOf( tree2 ) ][ l1.indexOf( tree1 ) ] = 0;
 				return 0;
 			}
 			else
 			{
 				int value = costTreeToTree.get( Pair.of( tree1, tree2 ) );
-				mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = value;
+				treeDistances[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = value;
 				return value;
 			}
 		}
 		else
 		{
 			int a = 0;
-			if ( dit != null )
+			if ( treeInsertMap != null )
 			{
-				a = dit.get( tree2 );
+				a = treeInsertMap.get( tree2 );
 				List< Integer > l = new ArrayList<>();
 				if ( !tree2.isLeaf() )
 				{
 					for ( Tree< Number > child : tree2.getChildren() )
 					{
 						int distanceZhangTree =
-								distanceTree( tree1, child, costFunction, l1, l2, mt, mf, dit, dif, dst, dsf, equivalenceClasses,
-										verbose,
-										costTreeToTree ) - dit.get( child );
+								distanceTree( tree1, child, costFunction, l1, l2, treeDistances, forestDistances, treeInsertMap,
+										forestInsertMap, treeDeleteMap, forestDeleteMap,
+										equivalenceClasses,
+										costTreeToTree ) - treeInsertMap.get( child );
 						l.add( distanceZhangTree );
 					}
 					a += Collections.min( l );
 				}
 			}
 			int b = 0;
-			if ( dst != null )
+			if ( treeDeleteMap != null )
 			{
-				b = dst.get( tree1 );
+				b = treeDeleteMap.get( tree1 );
 				List< Integer > l = new ArrayList<>();
 				if ( !tree1.isLeaf() )
 				{
 					for ( Tree< Number > child : tree1.getChildren() )
 					{
-						l.add( distanceTree( child, tree2, costFunction, l1, l2, mt, mf, dit, dif, dst, dsf, equivalenceClasses,
-								verbose,
-								costTreeToTree ) - dst.get( child ) );
+						l.add( distanceTree( child, tree2, costFunction, l1, l2, treeDistances, forestDistances, treeInsertMap,
+								forestInsertMap, treeDeleteMap, forestDeleteMap,
+								equivalenceClasses,
+								costTreeToTree ) - treeDeleteMap.get( child ) );
 					}
 					b += Collections.min( l );
 				}
 			}
-			int c = distanceForest( tree1, tree2, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses );
+			int c = distanceForest( tree1, tree2, l1, l2, forestDistances, treeDistances, forestInsertMap, forestDeleteMap, treeInsertMap,
+					treeDeleteMap, equivalenceClasses );
 			if ( costFunction != null )
 			{
 				c += costTreeToTree.get( Pair.of( tree1, tree2 ) );
@@ -261,12 +264,12 @@ public class ZhangUnorderedTreeEditDistance
 
 			if ( tree1.isLeaf() || tree2.isLeaf() )
 			{
-				mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = c;
+				treeDistances[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = c;
 				return c;
 			}
 			else
 			{
-				mt[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = min( a, b, c );
+				treeDistances[ l1.indexOf( tree1 ) ][ l2.indexOf( tree2 ) ] = min( a, b, c );
 				return min( a, b, c );
 			}
 		}
@@ -282,200 +285,210 @@ public class ZhangUnorderedTreeEditDistance
 	 * Algorithmica (1996) 15:208
 	 */
 	private static int distanceForest( Tree< Number > forest1, Tree< Number > forest2, List< Tree< Number > > l1,
-			List< Tree< Number > > l2, int[][] mf, int[][] mt, @Nullable Map< Tree< Number >, Integer > dif,
-			@Nullable Map< Tree< Number >, Integer > dsf, @Nullable Map< Tree< Number >, Integer > dit,
-			@Nullable Map< Tree< Number >, Integer > dst, @Nullable Map< Tree< Number >, Integer > equivalenceClasses )
+			List< Tree< Number > > l2, int[][] forestDistances, int[][] treeDistances,
+			@Nullable Map< Tree< Number >, Integer > forestInsertMap,
+			@Nullable Map< Tree< Number >, Integer > forestDeleteMap, @Nullable Map< Tree< Number >, Integer > treeInsertMap,
+			@Nullable Map< Tree< Number >, Integer > treeDeleteMap, @Nullable Map< Tree< Number >, Integer > equivalenceClasses )
 	{
 		// Calculate the zhang edit distance between two subforests
-		if ( mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] != -1 )
+		if ( forestDistances[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] != -1 )
 		{
-			return mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ];
+			return forestDistances[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ];
 		}
 		else
 		{
-			if ( dsf != null && !forest1.isLeaf() && forest2.isLeaf() )
+			if ( forestDeleteMap != null && !forest1.isLeaf() && forest2.isLeaf() )
 			{
-				mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = dsf.get( forest1 );
-				return dsf.get( forest1 );
+				forestDistances[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = forestDeleteMap.get( forest1 );
+				return forestDeleteMap.get( forest1 );
 			}
 
-			if ( dif != null && !forest2.isLeaf() && forest1.isLeaf() )
+			if ( forestInsertMap != null && !forest2.isLeaf() && forest1.isLeaf() )
 			{
-				mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = dif.get( forest2 );
-				return dif.get( forest2 );
+				forestDistances[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = forestInsertMap.get( forest2 );
+				return forestInsertMap.get( forest2 );
 			}
 
-			if ( dif != null && dsf != null && !forest2.isLeaf() && !forest1.isLeaf() )
+			if ( forestInsertMap != null && forestDeleteMap != null && !forest2.isLeaf() && !forest1.isLeaf() )
 			{
-				int a = dif.get( forest2 );
+				int a = forestInsertMap.get( forest2 );
 				List< Integer > l = new ArrayList<>();
 				if ( !forest2.isLeaf() )
 				{
 					for ( Tree< Number > child : forest2.getChildren() )
 					{
-						l.add( distanceForest( forest1, child, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
-								- dif.get( child ) );
+						l.add( distanceForest( forest1, child, l1, l2, forestDistances, treeDistances, forestInsertMap, forestDeleteMap,
+								treeInsertMap, treeDeleteMap, equivalenceClasses )
+								- forestInsertMap.get( child ) );
 					}
 					a += Collections.min( l );
 				}
-				int b = dsf.get( forest1 );
+				int b = forestDeleteMap.get( forest1 );
 				l = new ArrayList<>();
 				if ( !forest1.isLeaf() )
 				{
 					for ( Tree< Number > child : forest1.getChildren() )
 					{
-						l.add( distanceForest( child, forest2, l1, l2, mf, mt, dif, dsf, dit, dst, equivalenceClasses )
-								- dsf.get( child ) );
+						l.add( distanceForest( child, forest2, l1, l2, forestDistances, treeDistances, forestInsertMap, forestDeleteMap,
+								treeInsertMap, treeDeleteMap, equivalenceClasses )
+								- forestDeleteMap.get( child ) );
 					}
 					b += Collections.min( l );
 				}
-				int c = minCostMaxFlow( forest1, forest2, mt, l1, l2, dst, dit, equivalenceClasses );
-				mf[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = min( a, b, c );
+				int c = minCostMaxFlow( forest1, forest2, treeDistances, l1, l2, treeDeleteMap, treeInsertMap, equivalenceClasses );
+				forestDistances[ l1.indexOf( forest1 ) ][ l2.indexOf( forest2 ) ] = min( a, b, c );
 				return min( a, b, c );
 			}
 		}
 		return 0;
 	}
 
-	private static int minCostMaxFlow( Tree< Number > forest1, Tree< Number > forest2, int[][] mt, @Nullable List< Tree< Number > > l1,
-			@Nullable List< Tree< Number > > l2, @Nullable Map< Tree< Number >, Integer > dst, @Nullable Map< Tree< Number >, Integer > dit,
+	private static int minCostMaxFlow( Tree< Number > forest1, Tree< Number > forest2, int[][] treeDistances,
+			@Nullable List< Tree< Number > > l1,
+			@Nullable List< Tree< Number > > l2, @Nullable Map< Tree< Number >, Integer > treeDeleteMap,
+			@Nullable Map< Tree< Number >, Integer > treeInsertMap,
 			@Nullable Map< Tree< Number >, Integer > equivalenceClasses )
 	{
-		int n1;
-		int n2;
-		Map< Object, List< Tree< Number > > > dico1 = new LinkedHashMap<>();
-		Map< Object, List< Tree< Number > > > dico2 = new LinkedHashMap<>();
+		int numberOfEquivalenceClasses1;
+		int numberOfEquivalenceClasses2;
+		Map< Number, List< Tree< Number > > > equivalenceClassToTrees1 = new LinkedHashMap<>();
+		Map< Number, List< Tree< Number > > > equivalenceClassToTrees2 = new LinkedHashMap<>();
 
 		if ( equivalenceClasses != null )
 		{
 			for ( Tree< Number > tree1 : forest1.getChildren() )
 			{
 				int equivalenceClass = equivalenceClasses.get( tree1 );
-				if ( dico1.containsKey( equivalenceClass ) )
+				if ( equivalenceClassToTrees1.containsKey( equivalenceClass ) )
 				{
-					List< Tree< Number > > trees = dico1.get( equivalenceClass );
+					List< Tree< Number > > trees = equivalenceClassToTrees1.get( equivalenceClass );
 					trees.add( tree1 );
 				}
 				else
 				{
 					List< Tree< Number > > list = new ArrayList<>();
 					list.add( tree1 );
-					dico1.put( equivalenceClass, list );
+					equivalenceClassToTrees1.put( equivalenceClass, list );
 				}
 			}
 
 			for ( Tree< Number > tree2 : forest2.getChildren() )
 			{
 				int equivalenceClass = equivalenceClasses.get( tree2 );
-				if ( dico2.containsKey( equivalenceClass ) )
+				if ( equivalenceClassToTrees2.containsKey( equivalenceClass ) )
 				{
-					List< Tree< Number > > trees = dico2.get( equivalenceClass );
+					List< Tree< Number > > trees = equivalenceClassToTrees2.get( equivalenceClass );
 					trees.add( tree2 );
 				}
 				else
 				{
 					List< Tree< Number > > list = new ArrayList<>();
 					list.add( tree2 );
-					dico2.put( equivalenceClass, list );
+					equivalenceClassToTrees2.put( equivalenceClass, list );
 				}
 			}
 		}
 
-		n1 = dico1.keySet().size();
-		n2 = dico2.keySet().size();
+		numberOfEquivalenceClasses1 = equivalenceClassToTrees1.keySet().size();
+		numberOfEquivalenceClasses2 = equivalenceClassToTrees2.keySet().size();
 
-		List< Integer > N1 = new ArrayList<>();
-		for ( Object key : dico1.keySet() )
+		List< Integer > numberOfTreesWithEquivalenceClass1 = new ArrayList<>();
+		int sumEquivalenceClass1 = 0;
+		for ( Map.Entry< Number, List< Tree< Number > > > treesWithEquivalenceClass : equivalenceClassToTrees1.entrySet() )
 		{
-			N1.add( dico1.get( key ).size() );
+			int numberOfTreesWithEquivalenceClass = treesWithEquivalenceClass.getValue().size();
+			sumEquivalenceClass1 += numberOfTreesWithEquivalenceClass;
+			numberOfTreesWithEquivalenceClass1.add( numberOfTreesWithEquivalenceClass );
 		}
-		int N1s = N1.stream().mapToInt( Integer::intValue ).sum();
 
-		List< Integer > N2 = new ArrayList<>();
-		for ( Object key : dico2.keySet() )
+		List< Integer > numberOfTreesWithEquivalenceClass2 = new ArrayList<>();
+		int sumEquivalenceClass2 = 0;
+		for ( Map.Entry< Number, List< Tree< Number > > > treesWithEquivalenceClass : equivalenceClassToTrees2.entrySet() )
 		{
-			N2.add( dico2.get( key ).size() );
+			int numberOfTreesWithEquivalenceClass = treesWithEquivalenceClass.getValue().size();
+			sumEquivalenceClass2 += numberOfTreesWithEquivalenceClass;
+			numberOfTreesWithEquivalenceClass2.add( numberOfTreesWithEquivalenceClass );
 		}
-		int N2s = N2.stream().mapToInt( Integer::intValue ).sum();
 
 		// Construction of graph for max flow min cost algorithm
-		// 0 source
-		// (n1+n2+1) sink
-		// (n1+n2+2) empty tree 1
-		// (n1+n2+3) empty tree 2
+		Integer source = 0;
+		Integer sink = numberOfEquivalenceClasses1 + numberOfEquivalenceClasses2 + 1;
+		Integer emptyTree1 = numberOfEquivalenceClasses1 + numberOfEquivalenceClasses2 + 2;
+		Integer emptyTree2 = numberOfEquivalenceClasses1 + numberOfEquivalenceClasses2 + 3;
 
 		SimpleDirectedWeightedGraph< Integer, DefaultWeightedEdge > graph = new SimpleDirectedWeightedGraph<>( DefaultWeightedEdge.class );
-		graph.addVertex( 0 );
-		graph.addVertex( n1 + n2 + 1 );
-		graph.addVertex( n1 + n2 + 2 );
-		graph.addVertex( n1 + n2 + 3 );
+		graph.addVertex( source );
+		graph.addVertex( sink );
+		graph.addVertex( emptyTree1 );
+		graph.addVertex( emptyTree2 );
 
-		DefaultWeightedEdge e1 = graph.addEdge( 0, n1 + n2 + 2 );
-		DefaultWeightedEdge e2 = graph.addEdge( n1 + n2 + 3, n1 + n2 + 1 );
-		DefaultWeightedEdge e3 = graph.addEdge( n1 + n2 + 2, n1 + n2 + 3 );
+		DefaultWeightedEdge e1 = graph.addEdge( source, emptyTree1 );
+		DefaultWeightedEdge e2 = graph.addEdge( emptyTree1, emptyTree2 );
+		DefaultWeightedEdge e3 = graph.addEdge( emptyTree2, sink );
 
 		graph.setEdgeWeight( e1, 0 );
 		graph.setEdgeWeight( e2, 0 );
 		graph.setEdgeWeight( e3, 0 );
 
 		Map< DefaultWeightedEdge, Integer > capacities = new HashMap<>();
-		capacities.put( e1, N2s - Math.min( N1s, N2s ) );
-		capacities.put( e2, N1s - Math.min( N1s, N2s ) );
-		capacities.put( e3, Math.max( N1s, N2s ) - Math.min( N1s, N2s ) );
+		capacities.put( e1, sumEquivalenceClass2 - Math.min( sumEquivalenceClass1, sumEquivalenceClass2 ) );
+		capacities.put( e2,
+				Math.max( sumEquivalenceClass1, sumEquivalenceClass2 ) - Math.min( sumEquivalenceClass1, sumEquivalenceClass2 ) );
+		capacities.put( e3, sumEquivalenceClass1 - Math.min( sumEquivalenceClass1, sumEquivalenceClass2 ) );
 
-		for ( int i = 0; i < n1; i++ )
+		for ( int i = 0; i < numberOfEquivalenceClasses1; i++ )
 		{
 			if ( !graph.containsVertex( i + 1 ) )
 				graph.addVertex( i + 1 );
 			DefaultWeightedEdge edge = graph.addEdge( 0, i + 1 );
 			graph.setEdgeWeight( edge, 0 );
-			capacities.put( edge, N1.get( i ) );
+			capacities.put( edge, numberOfTreesWithEquivalenceClass1.get( i ) );
 			Tree< Number > s1 = null;
-			for ( int j = 0; j < n2; j++ )
+			for ( int j = 0; j < numberOfEquivalenceClasses2; j++ )
 			{
-				Object[] keys1 = dico1.keySet().toArray();
+				Object[] keys1 = equivalenceClassToTrees1.keySet().toArray();
 				Object key1 = keys1[ i ];
-				List< Tree< Number > > trees1 = dico1.get( key1 );
+				List< Tree< Number > > trees1 = equivalenceClassToTrees1.get( key1 );
 				s1 = trees1.get( 0 );
 
-				Object[] keys2 = dico2.keySet().toArray();
+				Object[] keys2 = equivalenceClassToTrees2.keySet().toArray();
 				Object key2 = keys2[ j ];
-				List< Tree< Number > > trees2 = dico2.get( key2 );
+				List< Tree< Number > > trees2 = equivalenceClassToTrees2.get( key2 );
 				Tree< Number > s2 = trees2.get( 0 );
 
-				int edgeWeight = mt[ l1.indexOf( s1 ) ][ l2.indexOf( s2 ) ];
-				Integer source = i + 1;
-				Integer target = n1 + j + 1;
-				if ( !graph.containsVertex( source ) )
-					graph.addVertex( source );
+				int edgeWeight = treeDistances[ l1.indexOf( s1 ) ][ l2.indexOf( s2 ) ];
+				Integer start = i + 1;
+				Integer target = numberOfEquivalenceClasses1 + j + 1;
+				if ( !graph.containsVertex( start ) )
+					graph.addVertex( start );
 				if ( !graph.containsVertex( target ) )
 					graph.addVertex( target );
-				edge = graph.addEdge( ( i + 1 ), ( n1 + j + 1 ) );
+				edge = graph.addEdge( ( i + 1 ), ( numberOfEquivalenceClasses1 + j + 1 ) );
 				graph.setEdgeWeight( edge, edgeWeight );
-				capacities.put( edge, N1.get( i ) );
+				capacities.put( edge, numberOfTreesWithEquivalenceClass1.get( i ) );
 			}
-			edge = graph.addEdge( ( i + 1 ), ( n1 + n2 + 3 ) );
-			graph.setEdgeWeight( edge, dst.get( s1 ) );
-			capacities.put( edge, N1.get( i ) );
+			edge = graph.addEdge( ( i + 1 ), ( emptyTree2 ) );
+			graph.setEdgeWeight( edge, treeDeleteMap.get( s1 ) );
+			capacities.put( edge, numberOfTreesWithEquivalenceClass1.get( i ) );
 		}
-		for ( int j = 0; j < n2; j++ )
+		for ( int j = 0; j < numberOfEquivalenceClasses2; j++ )
 		{
-			Object[] keys2 = dico2.keySet().toArray();
+			Object[] keys2 = equivalenceClassToTrees2.keySet().toArray();
 			Object key2 = keys2[ j ];
-			List< Tree< Number > > trees2 = dico2.get( key2 );
+			List< Tree< Number > > trees2 = equivalenceClassToTrees2.get( key2 );
 			Tree< Number > s2 = trees2.get( 0 );
 
-			DefaultWeightedEdge edge = graph.addEdge( n1 + n2 + 2, n1 + j + 1 );
-			Integer weight = dit.get( s2 );
+			DefaultWeightedEdge edge = graph.addEdge( emptyTree1, numberOfEquivalenceClasses1 + j + 1 );
+			Integer weight = treeInsertMap.get( s2 );
 			graph.setEdgeWeight( edge, weight );
-			capacities.put( edge, N2s - Math.min( N1s, N2s ) );
+			capacities.put( edge, sumEquivalenceClass2 - Math.min( sumEquivalenceClass1, sumEquivalenceClass2 ) );
 
-			edge = graph.addEdge( n1 + j + 1, n1 + n2 + 1 );
+			edge = graph.addEdge( numberOfEquivalenceClasses1 + j + 1, sink );
 			graph.setEdgeWeight( edge, 0 );
-			capacities.put( edge, N2.get( j ) );
+			capacities.put( edge, numberOfTreesWithEquivalenceClass2.get( j ) );
 		}
 
-		return ( int ) JGraphtTools.maxFlowMinCost( graph, capacities, 0, n1 + n2 + 1 );
+		return ( int ) JGraphtTools.maxFlowMinCost( graph, capacities, 0, sink );
 	}
 
 	private static int min( int a, int b, int c )
@@ -491,27 +504,27 @@ public class ZhangUnorderedTreeEditDistance
 	 * <li>+ the cost of deleting/inserting the forest associated with that source
 	 * <p>
 	 * The cost of deleting/inserting a forest is the cost of deleting/inserting all trees belonging to it
-	 * @param tree
-	 * @param costTreeToNone
+	 * @param tree the tree/forest to compute the cost for
+	 * @param costTreeToNone a mapping from tree to the cost of deleting/inserting the attribute of its source
 	 * @return
 	 */
 	private static Pair< Map< Tree< Number >, Integer >, Map< Tree< Number >, Integer > > computeDeleteInsertCostsForestTree(
 			Tree< Number > tree, @Nullable Map< Tree< Number >, Integer > costTreeToNone )
 	{
 
-		Map< Tree< Number >, Integer > df = new HashMap<>();
-		Map< Tree< Number >, Integer > dt = new HashMap<>();
+		Map< Tree< Number >, Integer > deleteInsertCostForest = new HashMap<>();
+		Map< Tree< Number >, Integer > deleteInsertCostTree = new HashMap<>();
 
 		if ( tree.isLeaf() )
 		{
-			df.put( tree, 0 );
+			deleteInsertCostForest.put( tree, 0 );
 			if ( costTreeToNone == null )
 			{
-				dt.put( tree, 1 );
+				deleteInsertCostTree.put( tree, 1 );
 			}
 			else
 			{
-				dt.put( tree, costTreeToNone.get( tree ) );
+				deleteInsertCostTree.put( tree, costTreeToNone.get( tree ) );
 			}
 		}
 		else
@@ -526,21 +539,21 @@ public class ZhangUnorderedTreeEditDistance
 				dfi = result.getKey();
 				dti = result.getValue();
 				v += dti.get( child );
-				df.putAll( dfi );
-				dt.putAll( dti );
+				deleteInsertCostForest.putAll( dfi );
+				deleteInsertCostTree.putAll( dti );
 			}
 
-			df.put( tree, v );
+			deleteInsertCostForest.put( tree, v );
 			if ( costTreeToNone == null )
 			{
-				dt.put( tree, v + 1 );
+				deleteInsertCostTree.put( tree, v + 1 );
 			}
 			else
 			{
-				dt.put( tree, v + costTreeToNone.get( tree ) );
+				deleteInsertCostTree.put( tree, v + costTreeToNone.get( tree ) );
 			}
 		}
-		return Pair.of( df, dt );
+		return Pair.of( deleteInsertCostForest, deleteInsertCostTree );
 	}
 
 	private static int postOrder( Tree< Number > tree, Map< Integer, Map< Number, List< Tree< Number > > > > graphDepthToClassifiedTrees,
