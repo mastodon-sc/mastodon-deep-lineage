@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,14 +63,9 @@ public class ZhangUnorderedTreeEditDistance
 		else
 			subtrees2 = TreeUtils.listOfSubtrees( tree2 );
 
-		// TODO - this is a hack to make the code work with the current implementation of SimpleTree.
-		Tree< Number > supertree = new SimpleTree<>( 0 );
-		supertree.getChildren().add( tree1 );
-		supertree.getChildren().add( tree2 );
-
 		if ( costFunction == null )
 		{
-			equivalenceClasses = getEquivalenceClasses( supertree, false );
+			equivalenceClasses = getEquivalenceClasses( tree1, tree2, false );
 			costTreeToTree = Collections.emptyMap();
 
 			forestDeleteMap = getForestCosts( tree1, null );
@@ -82,7 +76,7 @@ public class ZhangUnorderedTreeEditDistance
 		}
 		else
 		{
-			equivalenceClasses = getEquivalenceClasses( supertree, true );
+			equivalenceClasses = getEquivalenceClasses( tree1, tree2, true );
 			costTreeToTree = new HashMap<>();
 			for ( Tree< Number > subtree1 : subtrees1 )
 			{
@@ -627,17 +621,17 @@ public class ZhangUnorderedTreeEditDistance
 		return depth + 1;
 	}
 
-	private static Map< Tree< Number >, Integer > getEquivalenceClasses( Tree< Number > inputTree, boolean useAttribute )
+	private static Map< Tree< Number >, Integer > getEquivalenceClasses( Tree< Number > tree1, @Nullable Tree< Number > tree2,
+			boolean useAttribute )
 	{
 		Map< Tree< Number >, Integer > equivalenceClasses = new HashMap<>();
 		Map< Integer, Map< Number, List< Tree< Number > > > > graphDepthToClassifiedTrees = new LinkedHashMap<>();
 
-		postOrder( inputTree, graphDepthToClassifiedTrees, useAttribute );
+		postOrder( tree1, graphDepthToClassifiedTrees, useAttribute );
+		if ( tree2 != null )
+			postOrder( tree2, graphDepthToClassifiedTrees, useAttribute );
 
 		boolean subtreeClassNumberIncremented = false;
-		Iterator< Tree< Number > > iterator = inputTree.getChildren().iterator();
-		Tree< Number > subtree1 = iterator.next();
-		Tree< Number > subtree2 = iterator.next();
 
 		int classNumber = 0;
 		for ( Map.Entry< Integer, Map< Number, List< Tree< Number > > > > graphDepth : graphDepthToClassifiedTrees.entrySet() )
@@ -645,13 +639,11 @@ public class ZhangUnorderedTreeEditDistance
 			for ( Map.Entry< Number, List< Tree< Number > > > treesWithSameAttributeAtGraphDepth : graphDepth.getValue().entrySet() )
 			{
 				List< Tree< Number > > treesWithSameAttribute = treesWithSameAttributeAtGraphDepth.getValue();
-				// NB: we do not add the given tree itself
-				treesWithSameAttribute.remove( inputTree );
-				for ( Tree< Number > tree : treesWithSameAttributeAtGraphDepth.getValue() )
+				for ( Tree< Number > tree : treesWithSameAttribute )
 				{
 					equivalenceClasses.put( tree, classNumber );
 					// NB: ensure that the two subtrees of the given tree have different class numbers, if the attribute is used
-					if ( ( tree.equals( subtree1 ) || tree.equals( subtree2 ) ) && !subtreeClassNumberIncremented && useAttribute )
+					if ( ( tree.equals( tree1 ) || tree.equals( tree2 ) ) && !subtreeClassNumberIncremented && useAttribute )
 					{
 						classNumber++;
 						subtreeClassNumberIncremented = true;
