@@ -22,7 +22,6 @@ public class ZhangUnorderedTreeEditDistanceTest
 		SimpleTree< Number > tree6 = SimpleTreeExamples.tree6();
 		SimpleTree< Number > tree7 = SimpleTreeExamples.tree7();
 
-		// similarity of trees against other trees
 
 		// 20, because: 2 nodes with a difference of 10 each need to be changed
 		assertEquals( 20, ZhangUnorderedTreeEditDistance.distance( tree1, tree2, costFunction ) );
@@ -57,6 +56,7 @@ public class ZhangUnorderedTreeEditDistanceTest
 		SimpleTree< Number > tree3 = SimpleTreeExamples.tree3();
 		SimpleTree< Number > tree4 = SimpleTreeExamples.tree4();
 
+
 		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
 		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( tree1, emptyTree, costFunction ) );
 		assertEquals( 60, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree1, costFunction ) );
@@ -83,7 +83,6 @@ public class ZhangUnorderedTreeEditDistanceTest
 		SimpleTree< Number > tree6 = SimpleTreeExamples.tree6();
 		SimpleTree< Number > tree7 = SimpleTreeExamples.tree7();
 
-		// similarity of trees against other trees
 
 		// 0, because: the trees are topologically identical
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( tree1, tree2, null ) );
