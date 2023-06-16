@@ -10,9 +10,12 @@ public class BranchSpotTree implements Tree< Integer >
 {
 	private final BranchSpot branchSpot;
 
-	public BranchSpotTree( final BranchSpot branchSpot )
+	private final int endTimepoint;
+
+	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
 	{
 		this.branchSpot = branchSpot;
+		this.endTimepoint = endTimepoint;
 	}
 
 	@Override
@@ -20,13 +23,18 @@ public class BranchSpotTree implements Tree< Integer >
 	{
 		HashSet< Tree< Integer > > children = new HashSet<>();
 		for ( BranchLink branchLink : branchSpot.outgoingEdges() )
-			children.add( new BranchSpotTree( branchLink.getTarget() ) );
+		{
+			BranchSpot child = branchLink.getTarget();
+			if ( child.getTimepoint() < this.endTimepoint )
+				children.add( new BranchSpotTree( branchLink.getTarget(), this.endTimepoint ) );
+		}
 		return children;
 	}
 
 	@Override
 	public Integer getAttribute()
 	{
-		return branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
+		int lifespan = branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
+		return lifespan;
 	}
 }
