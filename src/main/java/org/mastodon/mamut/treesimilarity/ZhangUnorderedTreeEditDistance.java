@@ -304,37 +304,24 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private int minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
 	{
-		Map< Integer, List< Tree< T > > > equivalenceClassesForest1 = getEquivalenceClassMapping( forest1 );
-		Map< Integer, List< Tree< T > > > equivalenceClassesForest2 = getEquivalenceClassMapping( forest2 );
+		List< List< Tree< T > > > classifiedTreesOfForest1 = getEquivalenceClassMapping( forest1 );
+		List< List< Tree< T > > > classifiedTreesOfForest2 = getEquivalenceClassMapping( forest2 );
 
-		List< Integer > numberOfTreesWithEquivalenceClass1 = new ArrayList<>();
-		int sumEquivalenceClass1 = 0;
-		for ( Map.Entry< Integer, List< Tree< T > > > treesWithEquivalenceClass : equivalenceClassesForest1.entrySet() )
-		{
-			int numberOfTreesWithEquivalenceClass = treesWithEquivalenceClass.getValue().size();
-			sumEquivalenceClass1 += numberOfTreesWithEquivalenceClass;
-			numberOfTreesWithEquivalenceClass1.add( numberOfTreesWithEquivalenceClass );
-		}
+		// NB: The size of the forests is the number of their nodes minus one, since the root of the forest is not counted
+		int forest1Size = TreeUtils.size( forest1 ) - 1;
+		int forest2Size = TreeUtils.size( forest1 ) - 1;
 
-		List< Integer > numberOfTreesWithEquivalenceClass2 = new ArrayList<>();
-		int sumEquivalenceClass2 = 0;
-		for ( Map.Entry< Integer, List< Tree< T > > > treesWithEquivalenceClass : equivalenceClassesForest2.entrySet() )
-		{
-			int numberOfTreesWithEquivalenceClass = treesWithEquivalenceClass.getValue().size();
-			sumEquivalenceClass2 += numberOfTreesWithEquivalenceClass;
-			numberOfTreesWithEquivalenceClass2.add( numberOfTreesWithEquivalenceClass );
-		}
-
-		int numberOfEquivalenceClasses1 = equivalenceClassesForest1.keySet().size();
-		int numberOfEquivalenceClasses2 = equivalenceClassesForest2.keySet().size();
+		int numberOfEquivalenceClasses1 = classifiedTreesOfForest1.size();
+		int numberOfEquivalenceClasses2 = classifiedTreesOfForest2.size();
 
 		// Construction of graph for max flow min cost algorithm
+		SimpleDirectedWeightedGraph< Integer, DefaultWeightedEdge > graph = new SimpleDirectedWeightedGraph<>( DefaultWeightedEdge.class );
+
 		Integer source = 0;
 		Integer sink = numberOfEquivalenceClasses1 + numberOfEquivalenceClasses2 + 1;
 		Integer emptyTree1 = numberOfEquivalenceClasses1 + numberOfEquivalenceClasses2 + 2;
 		Integer emptyTree2 = numberOfEquivalenceClasses1 + numberOfEquivalenceClasses2 + 3;
 
-		SimpleDirectedWeightedGraph< Integer, DefaultWeightedEdge > graph = new SimpleDirectedWeightedGraph<>( DefaultWeightedEdge.class );
 		graph.addVertex( source );
 		graph.addVertex( sink );
 		graph.addVertex( emptyTree1 );
@@ -349,32 +336,24 @@ public class ZhangUnorderedTreeEditDistance< T >
 		graph.setEdgeWeight( e3, 0 );
 
 		Map< DefaultWeightedEdge, Integer > capacities = new HashMap<>();
-		capacities.put( e1, sumEquivalenceClass2 - Math.min( sumEquivalenceClass1, sumEquivalenceClass2 ) );
-		capacities.put( e2,
-				Math.max( sumEquivalenceClass1, sumEquivalenceClass2 ) - Math.min( sumEquivalenceClass1, sumEquivalenceClass2 ) );
-		capacities.put( e3, sumEquivalenceClass1 - Math.min( sumEquivalenceClass1, sumEquivalenceClass2 ) );
+		capacities.put( e1, forest2Size - Math.min( forest1Size, forest2Size ) );
+		capacities.put( e2, Math.max( forest1Size, forest2Size ) - Math.min( forest1Size, forest2Size ) );
+		capacities.put( e3, forest1Size - Math.min( forest1Size, forest2Size ) );
 
-		for ( int i = 0; i < numberOfEquivalenceClasses1; i++ )
+		for ( int i = 0; i < classifiedTreesOfForest1.size(); i++ )
 		{
+			List< Tree< T > > subtreesWithSameEquivalenceClassForest1 = classifiedTreesOfForest1.get( i );
 			if ( !graph.containsVertex( i + 1 ) )
 				graph.addVertex( i + 1 );
 			DefaultWeightedEdge edge = graph.addEdge( 0, i + 1 );
 			graph.setEdgeWeight( edge, 0 );
-			capacities.put( edge, numberOfTreesWithEquivalenceClass1.get( i ) );
-			Tree< T > s1 = null;
-			for ( int j = 0; j < numberOfEquivalenceClasses2; j++ )
+			capacities.put( edge, subtreesWithSameEquivalenceClassForest1.size() );
+			Tree< T > tree1 = subtreesWithSameEquivalenceClassForest1.get( 0 );
+			for ( int j = 0; j < classifiedTreesOfForest2.size(); j++ )
 			{
-				Object[] keys1 = equivalenceClassesForest1.keySet().toArray();
-				Object key1 = keys1[ i ];
-				List< Tree< T > > trees1 = equivalenceClassesForest1.get( key1 );
-				s1 = trees1.get( 0 );
-
-				Object[] keys2 = equivalenceClassesForest2.keySet().toArray();
-				Object key2 = keys2[ j ];
-				List< Tree< T > > trees2 = equivalenceClassesForest2.get( key2 );
-				Tree< T > s2 = trees2.get( 0 );
-
-				double edgeWeight = treeDistances[ subtrees1.indexOf( s1 ) ][ subtrees2.indexOf( s2 ) ];
+				List< Tree< T > > subtreesWithSameEquivalenceClassForest2 = classifiedTreesOfForest2.get( j );
+				Tree< T > tree2 = subtreesWithSameEquivalenceClassForest2.get( 0 );
+				double edgeWeight = treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ];
 				Integer start = i + 1;
 				Integer target = numberOfEquivalenceClasses1 + j + 1;
 				if ( !graph.containsVertex( start ) )
@@ -383,34 +362,32 @@ public class ZhangUnorderedTreeEditDistance< T >
 					graph.addVertex( target );
 				edge = graph.addEdge( ( i + 1 ), ( numberOfEquivalenceClasses1 + j + 1 ) );
 				graph.setEdgeWeight( edge, edgeWeight );
-				capacities.put( edge, numberOfTreesWithEquivalenceClass1.get( i ) );
+				capacities.put( edge, subtreesWithSameEquivalenceClassForest1.size() );
 			}
 			edge = graph.addEdge( ( i + 1 ), ( emptyTree2 ) );
-			graph.setEdgeWeight( edge, treeDeleteCosts.get( s1 ) );
-			capacities.put( edge, numberOfTreesWithEquivalenceClass1.get( i ) );
+			graph.setEdgeWeight( edge, treeDeleteCosts.get( tree1 ) );
+			capacities.put( edge, subtreesWithSameEquivalenceClassForest1.size() );
 		}
-		for ( int j = 0; j < numberOfEquivalenceClasses2; j++ )
+		for ( int j = 0; j < classifiedTreesOfForest2.size(); j++ )
 		{
-			Object[] keys2 = equivalenceClassesForest2.keySet().toArray();
-			Object key2 = keys2[ j ];
-			List< Tree< T > > trees2 = equivalenceClassesForest2.get( key2 );
-			Tree< T > s2 = trees2.get( 0 );
+			List< Tree< T > > subtreesWithSameEquivalenceClassForest2 = classifiedTreesOfForest2.get( j );
+			Tree< T > tree2 = subtreesWithSameEquivalenceClassForest2.get( 0 );
 
 			DefaultWeightedEdge edge = graph.addEdge( emptyTree1, numberOfEquivalenceClasses1 + j + 1 );
-			Double weight = treeInsertCosts.get( s2 );
+			Double weight = treeInsertCosts.get( tree2 );
 			graph.setEdgeWeight( edge, weight );
-			capacities.put( edge, sumEquivalenceClass2 - Math.min( sumEquivalenceClass1, sumEquivalenceClass2 ) );
+			capacities.put( edge, forest2Size - Math.min( forest1Size, forest2Size ) );
 
 			edge = graph.addEdge( numberOfEquivalenceClasses1 + j + 1, sink );
 			graph.setEdgeWeight( edge, 0 );
-			capacities.put( edge, numberOfTreesWithEquivalenceClass2.get( j ) );
+			capacities.put( edge, subtreesWithSameEquivalenceClassForest2.size() );
 		}
-
 		return ( int ) JGraphtTools.maxFlowMinCost( graph, capacities, 0, sink );
 	}
 
-	private Map< Integer, List< Tree< T > > > getEquivalenceClassMapping( Tree< T > forest1 )
+	private List< List< Tree< T > > > getEquivalenceClassMapping( Tree< T > forest1 )
 	{
+		// NB: a LinkedHashMap is used to preserve the order of the keys
 		Map< Integer, List< Tree< T > > > equivalenceClassesTree1 = new LinkedHashMap<>();
 		for ( Tree< T > tree1 : forest1.getChildren() )
 		{
@@ -427,7 +404,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 				equivalenceClassesTree1.put( equivalenceClass, list );
 			}
 		}
-		return equivalenceClassesTree1;
+		return new ArrayList<>( equivalenceClassesTree1.values() );
 	}
 
 	private static double min( final double a, final double b, final double c )
