@@ -296,10 +296,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 				if ( !forest2.isLeaf() )
 				{
 					for ( Tree< T > child : forest2.getChildren() )
-					{
-						l.add( distanceForest( forest1, child )
-								- forestInsertCosts.get( child ) );
-					}
+						l.add( distanceForest( forest1, child ) - forestInsertCosts.get( child ) );
 					a += Collections.min( l );
 				}
 				double b = forestDeleteCosts.get( forest1 );
@@ -307,10 +304,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 				if ( !forest1.isLeaf() )
 				{
 					for ( Tree< T > child : forest1.getChildren() )
-					{
-						l.add( distanceForest( child, forest2 )
-								- forestDeleteCosts.get( child ) );
-					}
+						l.add( distanceForest( child, forest2 ) - forestDeleteCosts.get( child ) );
 					b += Collections.min( l );
 				}
 				double c = minCostMaxFlow( forest1, forest2 );
