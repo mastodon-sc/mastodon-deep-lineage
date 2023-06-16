@@ -317,52 +317,46 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private int minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
 	{
-		int numberOfEquivalenceClasses1;
-		int numberOfEquivalenceClasses2;
-		Map< Number, List< Tree< T > > > equivalenceClassToTrees1 = new LinkedHashMap<>();
-		Map< Number, List< Tree< T > > > equivalenceClassToTrees2 = new LinkedHashMap<>();
-
-		if ( equivalenceClasses != null )
+		Map< Integer, List< Tree< T > > > equivalenceClassesTree1 = new LinkedHashMap<>();
+		for ( Tree< T > tree1 : forest1.getChildren() )
 		{
-			for ( Tree< T > tree1 : forest1.getChildren() )
+			int equivalenceClass = equivalenceClasses.get( tree1 );
+			if ( equivalenceClassesTree1.containsKey( equivalenceClass ) )
 			{
-				int equivalenceClass = equivalenceClasses.get( tree1 );
-				if ( equivalenceClassToTrees1.containsKey( equivalenceClass ) )
-				{
-					List< Tree< T > > trees = equivalenceClassToTrees1.get( equivalenceClass );
-					trees.add( tree1 );
-				}
-				else
-				{
-					List< Tree< T > > list = new ArrayList<>();
-					list.add( tree1 );
-					equivalenceClassToTrees1.put( equivalenceClass, list );
-				}
+				List< Tree< T > > trees = equivalenceClassesTree1.get( equivalenceClass );
+				trees.add( tree1 );
 			}
-
-			for ( Tree< T > tree2 : forest2.getChildren() )
+			else
 			{
-				int equivalenceClass = equivalenceClasses.get( tree2 );
-				if ( equivalenceClassToTrees2.containsKey( equivalenceClass ) )
-				{
-					List< Tree< T > > trees = equivalenceClassToTrees2.get( equivalenceClass );
-					trees.add( tree2 );
-				}
-				else
-				{
-					List< Tree< T > > list = new ArrayList<>();
-					list.add( tree2 );
-					equivalenceClassToTrees2.put( equivalenceClass, list );
-				}
+				List< Tree< T > > list = new ArrayList<>();
+				list.add( tree1 );
+				equivalenceClassesTree1.put( equivalenceClass, list );
 			}
 		}
 
-		numberOfEquivalenceClasses1 = equivalenceClassToTrees1.keySet().size();
-		numberOfEquivalenceClasses2 = equivalenceClassToTrees2.keySet().size();
+		Map< Integer, List< Tree< T > > > equivalenceClassesTree2 = new LinkedHashMap<>();
+		for ( Tree< T > tree2 : forest2.getChildren() )
+		{
+			int equivalenceClass = equivalenceClasses.get( tree2 );
+			if ( equivalenceClassesTree2.containsKey( equivalenceClass ) )
+			{
+				List< Tree< T > > trees = equivalenceClassesTree2.get( equivalenceClass );
+				trees.add( tree2 );
+			}
+			else
+			{
+				List< Tree< T > > list = new ArrayList<>();
+				list.add( tree2 );
+				equivalenceClassesTree2.put( equivalenceClass, list );
+			}
+		}
+
+		int numberOfEquivalenceClasses1 = equivalenceClassesTree1.keySet().size();
+		int numberOfEquivalenceClasses2 = equivalenceClassesTree2.keySet().size();
 
 		List< Integer > numberOfTreesWithEquivalenceClass1 = new ArrayList<>();
 		int sumEquivalenceClass1 = 0;
-		for ( Map.Entry< Number, List< Tree< T > > > treesWithEquivalenceClass : equivalenceClassToTrees1.entrySet() )
+		for ( Map.Entry< Integer, List< Tree< T > > > treesWithEquivalenceClass : equivalenceClassesTree1.entrySet() )
 		{
 			int numberOfTreesWithEquivalenceClass = treesWithEquivalenceClass.getValue().size();
 			sumEquivalenceClass1 += numberOfTreesWithEquivalenceClass;
@@ -371,7 +365,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		List< Integer > numberOfTreesWithEquivalenceClass2 = new ArrayList<>();
 		int sumEquivalenceClass2 = 0;
-		for ( Map.Entry< Number, List< Tree< T > > > treesWithEquivalenceClass : equivalenceClassToTrees2.entrySet() )
+		for ( Map.Entry< Integer, List< Tree< T > > > treesWithEquivalenceClass : equivalenceClassesTree2.entrySet() )
 		{
 			int numberOfTreesWithEquivalenceClass = treesWithEquivalenceClass.getValue().size();
 			sumEquivalenceClass2 += numberOfTreesWithEquivalenceClass;
@@ -414,14 +408,14 @@ public class ZhangUnorderedTreeEditDistance< T >
 			Tree< T > s1 = null;
 			for ( int j = 0; j < numberOfEquivalenceClasses2; j++ )
 			{
-				Object[] keys1 = equivalenceClassToTrees1.keySet().toArray();
+				Object[] keys1 = equivalenceClassesTree1.keySet().toArray();
 				Object key1 = keys1[ i ];
-				List< Tree< T > > trees1 = equivalenceClassToTrees1.get( key1 );
+				List< Tree< T > > trees1 = equivalenceClassesTree1.get( key1 );
 				s1 = trees1.get( 0 );
 
-				Object[] keys2 = equivalenceClassToTrees2.keySet().toArray();
+				Object[] keys2 = equivalenceClassesTree2.keySet().toArray();
 				Object key2 = keys2[ j ];
-				List< Tree< T > > trees2 = equivalenceClassToTrees2.get( key2 );
+				List< Tree< T > > trees2 = equivalenceClassesTree2.get( key2 );
 				Tree< T > s2 = trees2.get( 0 );
 
 				double edgeWeight = treeDistances[ subtrees1.indexOf( s1 ) ][ subtrees2.indexOf( s2 ) ];
@@ -441,9 +435,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		}
 		for ( int j = 0; j < numberOfEquivalenceClasses2; j++ )
 		{
-			Object[] keys2 = equivalenceClassToTrees2.keySet().toArray();
+			Object[] keys2 = equivalenceClassesTree2.keySet().toArray();
 			Object key2 = keys2[ j ];
-			List< Tree< T > > trees2 = equivalenceClassToTrees2.get( key2 );
+			List< Tree< T > > trees2 = equivalenceClassesTree2.get( key2 );
 			Tree< T > s2 = trees2.get( 0 );
 
 			DefaultWeightedEdge edge = graph.addEdge( emptyTree1, numberOfEquivalenceClasses1 + j + 1 );
