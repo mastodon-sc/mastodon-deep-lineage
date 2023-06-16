@@ -250,11 +250,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	/**
 	 * Calculate the zhang edit distance between two sub-forests.
-	 * What is a forest?
+	 * <strong>What is a forest?</strong>
+	 * <p>
 	 * "Suppose that we have a numbering for each tree.
-	 * Let t[i] be the i<sup>th</sup> node of tree T in the given numbering.
-	 * Let T[i] be the subtree rooted at t[i]
-	 * Let F[i] be the unordered forest obtained by deleting t[i] from T[i]."
+	 * <ul>
+	 * <li>Let t[i] be the i<sup>th</sup> node of tree T in the given numbering.</li>
+	 * <li>Let T[i] be the subtree rooted at t[i]</li>
+	 * <li>Let F[i] be the unordered forest obtained by deleting t[i] from T[i]."</li>
 	 * Algorithmica (1996) 15:208
 	 */
 	private double distanceForest( final Tree< T > forest1, final Tree< T > forest2 )
