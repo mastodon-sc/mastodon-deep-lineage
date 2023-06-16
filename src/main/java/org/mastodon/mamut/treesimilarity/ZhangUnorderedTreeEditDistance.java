@@ -30,6 +30,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private final Map< Tree< T >, Double > forestDeleteCosts;
 
+	private final Double[][] forestDistances;
+
+	private final Double[][] treeDistances;
+
 	private final Map< Tree< T >, Integer > equivalenceClasses;
 
 	private final List< Tree< T > > subtrees1;
@@ -111,6 +115,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 			treeInsertCosts = insertCosts.treeCosts;
 			forestInsertCosts = insertCosts.forestCosts;
 		}
+
+		treeDistances = new Double[ subtrees1.size() ][ subtrees2.size() ];
+		forestDistances = new Double[ subtrees1.size() ][ subtrees2.size() ];
 	}
 
 	/**
@@ -124,22 +131,19 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double compute( Tree< T > tree1, Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction )
 	{
-		double[][] forestDistances = new double[ subtrees1.size() ][ subtrees2.size() ];
-		double[][] treeDistances = new double[ subtrees1.size() ][ subtrees2.size() ];
+		for ( Double[] row : forestDistances )
+			Arrays.fill( row, -1d );
+		for ( Double[] row : treeDistances )
+			Arrays.fill( row, -1d );
 
-		for ( double[] row : forestDistances )
-			Arrays.fill( row, -1 );
-		for ( double[] row : treeDistances )
-			Arrays.fill( row, -1 );
+		double distance = distanceTree( tree1, tree2, costFunction );
 
-		double distance = distanceTree( tree1, tree2, costFunction, treeDistances, forestDistances );
-
-		log( forestDistances, treeDistances );
+		log();
 
 		return distance;
 	}
 
-	private void log( double[][] forestDistances, double[][] treeDistances )
+	private void log()
 	{
 		logger.info( "matrix of tree distances:" );
 		for ( int i = 0; i < subtrees1.size(); i++ )
@@ -178,13 +182,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 	/**
 	 * Calculate the zhang edit distance between two sub-trees
 	 */
-	private double distanceTree( Tree< T > tree1, Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction,
-			double[][] treeDistances, double[][] forestDistances )
+	private double distanceTree( Tree< T > tree1, Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction )
 	{
 		if ( equivalenceClasses != null && Objects.equals( equivalenceClasses.get( tree1 ), equivalenceClasses.get( tree2 ) ) )
 		{
-			treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = 0;
-			forestDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = 0;
+			treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = 0d;
+			forestDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = 0d;
 			return 0;
 		}
 		if ( treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] != -1 )
@@ -194,8 +197,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		{
 			if ( costFunction == null )
 			{
-				treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = 0;
-				forestDistances[ subtrees2.indexOf( tree2 ) ][ subtrees1.indexOf( tree1 ) ] = 0;
+				treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = 0d;
+				forestDistances[ subtrees2.indexOf( tree2 ) ][ subtrees1.indexOf( tree1 ) ] = 0d;
 				return 0;
 			}
 			else
@@ -217,7 +220,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 					for ( Tree< T > child : tree2.getChildren() )
 					{
 						double distanceZhangTree =
-								distanceTree( tree1, child, costFunction, treeDistances, forestDistances ) - treeInsertCosts.get( child );
+								distanceTree( tree1, child, costFunction ) - treeInsertCosts.get( child );
 						l.add( distanceZhangTree );
 					}
 					a += Collections.min( l );
@@ -232,12 +235,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 				{
 					for ( Tree< T > child : tree1.getChildren() )
 					{
-						l.add( distanceTree( child, tree2, costFunction, treeDistances, forestDistances ) - treeDeleteCosts.get( child ) );
+						l.add( distanceTree( child, tree2, costFunction ) - treeDeleteCosts.get( child ) );
 					}
 					b += Collections.min( l );
 				}
 			}
-			double c = distanceForest( tree1, tree2, forestDistances, treeDistances );
+			double c = distanceForest( tree1, tree2 );
 			if ( costFunction != null )
 			{
 				c += costTreeToTree.get( Pair.of( tree1, tree2 ) );
@@ -265,7 +268,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * Let F[i] be the unordered forest obtained by deleting t[i] from T[i]."
 	 * Algorithmica (1996) 15:208
 	 */
-	private double distanceForest( Tree< T > forest1, Tree< T > forest2, double[][] forestDistances, double[][] treeDistances )
+	private double distanceForest( Tree< T > forest1, Tree< T > forest2 )
 	{
 		// Calculate the zhang edit distance between two subforests
 		if ( forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] != -1 )
@@ -292,7 +295,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 				{
 					for ( Tree< T > child : forest2.getChildren() )
 					{
-						l.add( distanceForest( forest1, child, forestDistances, treeDistances )
+						l.add( distanceForest( forest1, child )
 								- forestInsertCosts.get( child ) );
 					}
 					a += Collections.min( l );
@@ -303,12 +306,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 				{
 					for ( Tree< T > child : forest1.getChildren() )
 					{
-						l.add( distanceForest( child, forest2, forestDistances, treeDistances )
+						l.add( distanceForest( child, forest2 )
 								- forestDeleteCosts.get( child ) );
 					}
 					b += Collections.min( l );
 				}
-				double c = minCostMaxFlow( forest1, forest2, treeDistances );
+				double c = minCostMaxFlow( forest1, forest2 );
 				forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] = min( a, b, c );
 				return min( a, b, c );
 			}
@@ -316,7 +319,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return 0;
 	}
 
-	private int minCostMaxFlow( Tree< T > forest1, Tree< T > forest2, double[][] treeDistances )
+	private int minCostMaxFlow( Tree< T > forest1, Tree< T > forest2 )
 	{
 		int numberOfEquivalenceClasses1;
 		int numberOfEquivalenceClasses2;
@@ -468,12 +471,25 @@ public class ZhangUnorderedTreeEditDistance< T >
 	/**
 	 * Compute the costs of deleting or inserting a tree or a forest.
 	 * <p>
-	 * The cost of deleting or inserting a tree is
-	 * <li>the cost of deleting or inserting the attribute of its source
-	 * <li>+ the cost of deleting or inserting the forest associated with that source
-	 * <p>
-	 * The cost of deleting or inserting a forest is
+	 * <strong>The cost of deleting or inserting a tree is:</strong>
+	 * <ul>
+	 * <li>the cost of deleting or inserting the attribute of its source</li>
+	 * <li>+ the cost of deleting or inserting the forest associated with that source</li>
+	 * </ul>
+	 * <strong>The cost of deleting or inserting a forest is:</strong>
+	 * <ul>
 	 * <li>the cost of deleting or inserting all trees belonging to it
+	 * </ul>
+	 * <strong>What is a forest?</strong>
+	 * <p>
+	 * "Suppose that we have a numbering for each tree.
+	 * <ul>
+	 * <li>Let t[i] be the i<sup>th</sup> node of tree T in the given numbering.
+	 * <li>Let T[i] be the subtree rooted at t[i]
+	 * <li>Let F[i] be the unordered forest obtained by deleting t[i] from T[i]."
+	 * </ul>
+	 * <i>Algorithmica (1996) 15:208</i>
+	 *
 	 * @param tree the tree or forest to compute the change costs for
 	 * @param costTreeToNone a mapping from tree to the cost of deleting or inserting the attribute of its source
 	 * @return the change costs
