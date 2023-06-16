@@ -272,9 +272,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double distanceForest( final Tree< T > forest1, final Tree< T > forest2 )
 	{
-		// Calculate the zhang edit distance between two subforests
-		if ( forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] != -1 )
-			return forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ];
+		double distance = forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ];
+		if ( distance != -1 )
+			return distance;
 		else
 		{
 			if ( !forest1.isLeaf() && forest2.isLeaf() )
