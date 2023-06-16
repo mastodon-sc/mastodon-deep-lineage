@@ -47,21 +47,31 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 *
 	 * @return The Zhang edit distance between tree1 and tree2.
 	 */
-	public static < T > double distance( Tree< T > tree1, @Nullable Tree< T > tree2,
-			@Nullable BiFunction< T, T, Double > costFunction )
+	public static < T > double distance( Tree< T > tree1, @Nullable Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction )
 	{
+		// trivial cases
+		if ( tree2 == null )
+		{
+			if ( costFunction == null )
+				return TreeUtils.size( tree1 );
+			else
+			{
+				double distance = 0;
+				for ( Tree< T > subtree : TreeUtils.listOfSubtrees( tree1 ) )
+				{
+					distance += costFunction.apply( subtree.getAttribute(), null );
+				}
+				return distance;
+			}
+		}
 		ZhangUnorderedTreeEditDistance< T > zhang = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction );
 		return zhang.compute( tree1, tree2, costFunction );
 	}
 
-	private ZhangUnorderedTreeEditDistance( Tree< T > tree1, @Nullable Tree< T > tree2,
-			@Nullable BiFunction< T, T, Double > costFunction )
+	private ZhangUnorderedTreeEditDistance( Tree< T > tree1, Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction )
 	{
 		subtrees1 = TreeUtils.listOfSubtrees( tree1 );
-		if ( tree2 == null )
-			subtrees2 = Collections.emptyList();
-		else
-			subtrees2 = TreeUtils.listOfSubtrees( tree2 );
+		subtrees2 = TreeUtils.listOfSubtrees( tree2 );
 
 		if ( costFunction == null )
 		{
@@ -108,24 +118,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 *
 	 * @return The Zhang edit distance between tree1 and tree2 as an integer.
 	 */
-	private double compute( Tree< T > tree1, @Nullable Tree< T > tree2,
-			@Nullable BiFunction< T, T, Double > costFunction )
+	private double compute( Tree< T > tree1, Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction )
 	{
-		if ( tree2 == null )
-		{
-			if ( costFunction == null )
-				return TreeUtils.size( tree1 );
-			else
-			{
-				double distance = 0;
-				for ( Tree< T > subtree : TreeUtils.listOfSubtrees( tree1 ) )
-				{
-					distance += costFunction.apply( subtree.getAttribute(), null );
-				}
-				return distance;
-			}
-		}
-
 		double[][] forestDistances = new double[ subtrees1.size() ][ subtrees2.size() ];
 		double[][] treeDistances = new double[ subtrees1.size() ][ subtrees2.size() ];
 
@@ -527,13 +521,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * @param costTreeToNone a mapping from tree to the costs of deleting or inserting the attribute of its source
 	 * @return a mapping from tree to the cost of deleting or inserting the forest associated with that tree
 	 */
-	private Map< Tree< T >, Double > getForestCosts( @Nullable Tree< T > tree,
-			@Nullable Map< Tree< T >, Double > costTreeToNone )
+	private Map< Tree< T >, Double > getForestCosts( Tree< T > tree, @Nullable Map< Tree< T >, Double > costTreeToNone )
 	{
-		if ( tree == null )
-		{
-			return Collections.emptyMap();
-		}
 		Map< Tree< T >, Double > deleteInsertCostForest = new HashMap<>();
 		if ( tree.isLeaf() )
 			deleteInsertCostForest.put( tree, 0d );
@@ -563,13 +552,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * @param costTreeToNone a mapping from tree to the costs of deleting or inserting the attribute of its source
 	 * @return a mapping from tree to the costs of deleting or inserting it
 	 */
-	private Map< Tree< T >, Double > getTreeCosts(
-			@Nullable Tree< T > tree, @Nullable Map< Tree< T >, Double > costTreeToNone )
+	private Map< Tree< T >, Double > getTreeCosts( Tree< T > tree, @Nullable Map< Tree< T >, Double > costTreeToNone )
 	{
-		if ( tree == null )
-		{
-			return Collections.emptyMap();
-		}
 		Map< Tree< T >, Double > costs = new HashMap<>();
 		if ( tree.isLeaf() )
 		{
@@ -621,15 +605,14 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return depth + 1;
 	}
 
-	private static < T > Map< Tree< T >, Integer > getEquivalenceClasses( Tree< T > tree1, @Nullable Tree< T > tree2,
+	private static < T > Map< Tree< T >, Integer > getEquivalenceClasses( Tree< T > tree1, Tree< T > tree2,
 			boolean useAttribute )
 	{
 		Map< Tree< T >, Integer > equivalenceClasses = new HashMap<>();
 		Map< Integer, Map< T, List< Tree< T > > > > graphDepthToClassifiedTrees = new LinkedHashMap<>();
 
 		postOrder( tree1, graphDepthToClassifiedTrees, useAttribute );
-		if ( tree2 != null )
-			postOrder( tree2, graphDepthToClassifiedTrees, useAttribute );
+		postOrder( tree2, graphDepthToClassifiedTrees, useAttribute );
 
 		boolean subtreeClassNumberIncremented = false;
 
