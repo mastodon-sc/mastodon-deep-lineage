@@ -382,7 +382,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			graph.setEdgeWeight( edge, 0 );
 			capacities.put( edge, subtreesWithSameEquivalenceClassForest2.size() );
 		}
-		return JGraphtTools.maxFlowMinCost( graph, capacities, 0, sink );
+		return JGraphtTools.maxFlowMinCost( graph, capacities, source, sink );
 	}
 
 	private List< List< Tree< T > > > getEquivalenceClassMapping( Tree< T > forest1 )
