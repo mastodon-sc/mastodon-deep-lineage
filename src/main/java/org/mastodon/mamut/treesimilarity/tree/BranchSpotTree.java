@@ -25,7 +25,7 @@ public class BranchSpotTree implements Tree< Integer >
 		for ( BranchLink branchLink : branchSpot.outgoingEdges() )
 		{
 			BranchSpot child = branchLink.getTarget();
-			if ( child.getTimepoint() < this.endTimepoint )
+			if ( child.getFirstTimePoint() <= this.endTimepoint )
 				children.add( new BranchSpotTree( branchLink.getTarget(), this.endTimepoint ) );
 		}
 		return children;
@@ -34,7 +34,11 @@ public class BranchSpotTree implements Tree< Integer >
 	@Override
 	public Integer getAttribute()
 	{
-		int lifespan = branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
+		int lifespan;
+		if ( branchSpot.getTimepoint() > this.endTimepoint )
+			lifespan = this.endTimepoint - branchSpot.getFirstTimePoint();
+		else
+			lifespan = branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
 		return lifespan;
 	}
 }
