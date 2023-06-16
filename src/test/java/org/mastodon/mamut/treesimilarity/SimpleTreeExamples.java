@@ -2,7 +2,7 @@ package org.mastodon.mamut.treesimilarity;
 
 public class SimpleTreeExamples
 {
-	static SimpleTree< Number > emptyTree()
+	static Tree< Number > emptyTree()
 	{
 		return new SimpleTree<>( 0 );
 	}
@@ -15,7 +15,7 @@ public class SimpleTreeExamples
 	 * 		            node2(node_weight=10)    node3(node_weight=30)
 	 * </pre>
 	 */
-	static SimpleTree< Number > tree1()
+	static Tree< Number > tree1()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 20 );
 
@@ -36,7 +36,7 @@ public class SimpleTreeExamples
 	 * 		              node2(node_weight=10)    node3(node_weight=20)
 	 * </pre>
 	 */
-	static SimpleTree< Number > tree2()
+	static Tree< Number > tree2()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 30 );
 
@@ -60,7 +60,7 @@ public class SimpleTreeExamples
 	 * 		  node4(node_weight=1)     node5(node_weight=100)
 	 * </pre>
 	 */
-	static SimpleTree< Number > tree3()
+	static Tree< Number > tree3()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 1 );
 
@@ -90,7 +90,7 @@ public class SimpleTreeExamples
 	 * 		node4(node_weight=1)     node5(node_weight=1)
 	 * </pre>
 	 */
-	static SimpleTree< Number > tree4()
+	static Tree< Number > tree4()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 1 );
 
@@ -117,7 +117,7 @@ public class SimpleTreeExamples
 	 * 		     node2(node_weight=203)     node3(node_weight=203)
 	 * </pre>
 	 */
-	static SimpleTree< Number > tree5()
+	static Tree< Number > tree5()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 13 );
 
@@ -138,7 +138,7 @@ public class SimpleTreeExamples
 	 * 		     node2(node_weight=227)     node3(node_weight=227)
 	 * </pre>
 	 */
-	static SimpleTree< Number > tree6()
+	static Tree< Number > tree6()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 12 );
 
@@ -161,7 +161,7 @@ public class SimpleTreeExamples
 	 * 		                    node4(node_weight=10)    node5(node_weight=10)
 	 * </pre>
 	 */
-	static SimpleTree< Number > tree7()
+	static Tree< Number > tree7()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 12 );
 

@@ -14,13 +14,13 @@ public class ZhangUnorderedTreeEditDistanceTest
 	{
 		BiFunction< Number, Number, Integer > costFunction = getCostFunction();
 
-		SimpleTree< Number > tree1 = SimpleTreeExamples.tree1();
-		SimpleTree< Number > tree2 = SimpleTreeExamples.tree2();
-		SimpleTree< Number > tree3 = SimpleTreeExamples.tree3();
-		SimpleTree< Number > tree4 = SimpleTreeExamples.tree4();
-		SimpleTree< Number > tree5 = SimpleTreeExamples.tree5();
-		SimpleTree< Number > tree6 = SimpleTreeExamples.tree6();
-		SimpleTree< Number > tree7 = SimpleTreeExamples.tree7();
+		Tree< Number > tree1 = SimpleTreeExamples.tree1();
+		Tree< Number > tree2 = SimpleTreeExamples.tree2();
+		Tree< Number > tree3 = SimpleTreeExamples.tree3();
+		Tree< Number > tree4 = SimpleTreeExamples.tree4();
+		Tree< Number > tree5 = SimpleTreeExamples.tree5();
+		Tree< Number > tree6 = SimpleTreeExamples.tree6();
+		Tree< Number > tree7 = SimpleTreeExamples.tree7();
 
 
 		// 20, because: 2 nodes with a difference of 10 each need to be changed
@@ -50,11 +50,11 @@ public class ZhangUnorderedTreeEditDistanceTest
 	{
 		BiFunction< Number, Number, Integer > costFunction = getCostFunction();
 
-		SimpleTree< Number > emptyTree = SimpleTreeExamples.emptyTree();
-		SimpleTree< Number > tree1 = SimpleTreeExamples.tree1();
-		SimpleTree< Number > tree2 = SimpleTreeExamples.tree2();
-		SimpleTree< Number > tree3 = SimpleTreeExamples.tree3();
-		SimpleTree< Number > tree4 = SimpleTreeExamples.tree4();
+		Tree< Number > emptyTree = SimpleTreeExamples.emptyTree();
+		Tree< Number > tree1 = SimpleTreeExamples.tree1();
+		Tree< Number > tree2 = SimpleTreeExamples.tree2();
+		Tree< Number > tree3 = SimpleTreeExamples.tree3();
+		Tree< Number > tree4 = SimpleTreeExamples.tree4();
 
 
 		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
@@ -75,13 +75,13 @@ public class ZhangUnorderedTreeEditDistanceTest
 	public void testDistanceNullCostFunction()
 	{
 
-		SimpleTree< Number > tree1 = SimpleTreeExamples.tree1();
-		SimpleTree< Number > tree2 = SimpleTreeExamples.tree2();
-		SimpleTree< Number > tree3 = SimpleTreeExamples.tree3();
-		SimpleTree< Number > tree4 = SimpleTreeExamples.tree4();
-		SimpleTree< Number > tree5 = SimpleTreeExamples.tree5();
-		SimpleTree< Number > tree6 = SimpleTreeExamples.tree6();
-		SimpleTree< Number > tree7 = SimpleTreeExamples.tree7();
+		Tree< Number > tree1 = SimpleTreeExamples.tree1();
+		Tree< Number > tree2 = SimpleTreeExamples.tree2();
+		Tree< Number > tree3 = SimpleTreeExamples.tree3();
+		Tree< Number > tree4 = SimpleTreeExamples.tree4();
+		Tree< Number > tree5 = SimpleTreeExamples.tree5();
+		Tree< Number > tree6 = SimpleTreeExamples.tree6();
+		Tree< Number > tree7 = SimpleTreeExamples.tree7();
 
 
 		// 0, because: the trees are topologically identical
