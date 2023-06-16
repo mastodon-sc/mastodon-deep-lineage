@@ -302,10 +302,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return 0;
 	}
 
-	private int minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
+	private double minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
 	{
 		List< List< Tree< T > > > classifiedTreesOfForest1 = getEquivalenceClassMapping( forest1 );
 		List< List< Tree< T > > > classifiedTreesOfForest2 = getEquivalenceClassMapping( forest2 );
+
+		// Construction of graph for max flow min cost algorithm
+		SimpleDirectedWeightedGraph< Integer, DefaultWeightedEdge > graph = new SimpleDirectedWeightedGraph<>( DefaultWeightedEdge.class );
 
 		// NB: The size of the forests is the number of their nodes minus one, since the root of the forest is not counted
 		int forest1Size = TreeUtils.size( forest1 ) - 1;
@@ -313,9 +316,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		int numberOfEquivalenceClasses1 = classifiedTreesOfForest1.size();
 		int numberOfEquivalenceClasses2 = classifiedTreesOfForest2.size();
-
-		// Construction of graph for max flow min cost algorithm
-		SimpleDirectedWeightedGraph< Integer, DefaultWeightedEdge > graph = new SimpleDirectedWeightedGraph<>( DefaultWeightedEdge.class );
 
 		Integer source = 0;
 		Integer sink = numberOfEquivalenceClasses1 + numberOfEquivalenceClasses2 + 1;
@@ -382,7 +382,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			graph.setEdgeWeight( edge, 0 );
 			capacities.put( edge, subtreesWithSameEquivalenceClassForest2.size() );
 		}
-		return ( int ) JGraphtTools.maxFlowMinCost( graph, capacities, 0, sink );
+		return JGraphtTools.maxFlowMinCost( graph, capacities, 0, sink );
 	}
 
 	private List< List< Tree< T > > > getEquivalenceClassMapping( Tree< T > forest1 )
