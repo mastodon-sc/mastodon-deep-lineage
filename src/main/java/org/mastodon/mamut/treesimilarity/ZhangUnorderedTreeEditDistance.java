@@ -262,7 +262,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
-	 * Calculate the zhang edit distance between two forests.
+	 * Calculate the zhang edit distance between two sub-forests.
 	 * What is a forest?
 	 * "Suppose that we have a numbering for each tree.
 	 * Let t[i] be the i<sup>th</sup> node of tree T in the given numbering.
