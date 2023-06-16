@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.BiFunction;
 
 public class ZhangUnorderedTreeEditDistance< T >
@@ -186,7 +185,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double distanceTree( final Tree< T > tree1, final Tree< T > tree2, final @Nullable BiFunction< T, T, Double > costFunction )
 	{
-		if ( Objects.equals( equivalenceClasses.get( tree1 ), equivalenceClasses.get( tree2 ) ) )
+		if ( equivalenceClasses.get( tree1 ).intValue() == equivalenceClasses.get( tree2 ).intValue() )
 		{
 			treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = 0d;
 			forestDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = 0d;
@@ -213,37 +212,37 @@ public class ZhangUnorderedTreeEditDistance< T >
 		}
 		else
 		{
-			double a = treeInsertCosts.get( tree2 );
+			double insertCosts = treeInsertCosts.get( tree2 );
 			List< Double > l1 = new ArrayList<>();
 			if ( !tree2.isLeaf() )
 			{
 				for ( Tree< T > child : tree2.getChildren() )
 					l1.add( distanceTree( tree1, child, costFunction ) - treeInsertCosts.get( child ) );
-				a += Collections.min( l1 );
+				insertCosts += Collections.min( l1 );
 			}
 
-			double b = treeDeleteCosts.get( tree1 );
+			double deleteCosts = treeDeleteCosts.get( tree1 );
 			List< Double > l2 = new ArrayList<>();
 			if ( !tree1.isLeaf() )
 			{
 				for ( Tree< T > child : tree1.getChildren() )
 					l2.add( distanceTree( child, tree2, costFunction ) - treeDeleteCosts.get( child ) );
-				b += Collections.min( l2 );
+				deleteCosts += Collections.min( l2 );
 			}
-			double c = distanceForest( tree1, tree2 );
+			double changeCosts = distanceForest( tree1, tree2 );
 			if ( costFunction != null )
-				c += costTreeToTree.get( Pair.of( tree1, tree2 ) );
+				changeCosts += costTreeToTree.get( Pair.of( tree1, tree2 ) );
 
 			if ( tree1.isLeaf() || tree2.isLeaf() )
 			{
-				treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = c;
-				return c;
+				treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = changeCosts;
+				return changeCosts;
 			}
 			else
 			{
-				double minValue = min( a, b, c );
-				treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = minValue;
-				return minValue;
+				double minCost = min( insertCosts, deleteCosts, changeCosts );
+				treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = minCost;
+				return minCost;
 			}
 		}
 	}
@@ -278,27 +277,28 @@ public class ZhangUnorderedTreeEditDistance< T >
 				return forestInsertCosts.get( forest2 );
 			}
 
-			if ( forestDeleteCosts != null && !forest2.isLeaf() && !forest1.isLeaf() )
+			if ( !forest2.isLeaf() && !forest1.isLeaf() )
 			{
-				double a = forestInsertCosts.get( forest2 );
-				List< Double > l = new ArrayList<>();
+				double insertCosts = forestInsertCosts.get( forest2 );
+				List< Double > l1 = new ArrayList<>();
 				if ( !forest2.isLeaf() )
 				{
 					for ( Tree< T > child : forest2.getChildren() )
-						l.add( distanceForest( forest1, child ) - forestInsertCosts.get( child ) );
-					a += Collections.min( l );
+						l1.add( distanceForest( forest1, child ) - forestInsertCosts.get( child ) );
+					insertCosts += Collections.min( l1 );
 				}
-				double b = forestDeleteCosts.get( forest1 );
-				l = new ArrayList<>();
+				double deleteCosts = forestDeleteCosts.get( forest1 );
+				List< Double > l2 = new ArrayList<>();
 				if ( !forest1.isLeaf() )
 				{
 					for ( Tree< T > child : forest1.getChildren() )
-						l.add( distanceForest( child, forest2 ) - forestDeleteCosts.get( child ) );
-					b += Collections.min( l );
+						l2.add( distanceForest( child, forest2 ) - forestDeleteCosts.get( child ) );
+					deleteCosts += Collections.min( l2 );
 				}
-				double c = minCostMaxFlow( forest1, forest2 );
-				forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] = min( a, b, c );
-				return min( a, b, c );
+				double changeCosts = minCostMaxFlow( forest1, forest2 );
+				forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] =
+						min( insertCosts, deleteCosts, changeCosts );
+				return min( insertCosts, deleteCosts, changeCosts );
 			}
 		}
 		return 0;
@@ -484,6 +484,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return new ChangeCosts( treeCosts, forestCosts );
 	}
 
+	// TODO rename
 	private static < T > int postOrder( final Tree< T > tree, final Map< Integer, Map< T, List< Tree< T > > > > graphDepthToClassifiedTrees,
 			final boolean useAttribute )
 	{
