@@ -304,8 +304,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private double minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
 	{
-		List< List< Tree< T > > > classifiedTreesOfForest1 = getEquivalenceClassMapping( forest1 );
-		List< List< Tree< T > > > classifiedTreesOfForest2 = getEquivalenceClassMapping( forest2 );
+		List< List< Tree< T > > > classifiedTreesOfForest1 = getClassifiedTrees( forest1 );
+		List< List< Tree< T > > > classifiedTreesOfForest2 = getClassifiedTrees( forest2 );
 
 		// Construction of graph for max flow min cost algorithm
 		SimpleDirectedWeightedGraph< Integer, DefaultWeightedEdge > graph = new SimpleDirectedWeightedGraph<>( DefaultWeightedEdge.class );
@@ -385,7 +385,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return JGraphtTools.maxFlowMinCost( graph, capacities, source, sink );
 	}
 
-	private List< List< Tree< T > > > getEquivalenceClassMapping( Tree< T > forest1 )
+	/**
+	 * Returns a list of lists of trees, where each list contains trees with the same equivalence class.
+	 * @param forest1 the forest
+	 * @return a list of lists of trees, where each list contains trees with the same equivalence class
+	 */
+	private List< List< Tree< T > > > getClassifiedTrees( Tree< T > forest1 )
 	{
 		// NB: a LinkedHashMap is used to preserve the order of the keys
 		Map< Integer, List< Tree< T > > > equivalenceClassesTree1 = new LinkedHashMap<>();
