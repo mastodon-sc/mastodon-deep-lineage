@@ -192,8 +192,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 			forestDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = 0d;
 			return 0;
 		}
-		if ( treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] != -1 )
-			return treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ];
+		double distance = treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ];
+		if ( distance != -1 )
+			return distance;
 
 		if ( tree1.isLeaf() && tree2.isLeaf() )
 		{
