@@ -348,12 +348,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 			DefaultWeightedEdge edge = graph.addEdge( 0, i + 1 );
 			graph.setEdgeWeight( edge, 0 );
 			capacities.put( edge, subtreesWithSameEquivalenceClassForest1.size() );
-			Tree< T > tree1 = subtreesWithSameEquivalenceClassForest1.get( 0 );
+			Tree< T > firstTree1OfForest1 = subtreesWithSameEquivalenceClassForest1.get( 0 );
 			for ( int j = 0; j < classifiedTreesOfForest2.size(); j++ )
 			{
 				List< Tree< T > > subtreesWithSameEquivalenceClassForest2 = classifiedTreesOfForest2.get( j );
-				Tree< T > tree2 = subtreesWithSameEquivalenceClassForest2.get( 0 );
-				double edgeWeight = treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ];
+				Tree< T > firstTreeOfForest2 = subtreesWithSameEquivalenceClassForest2.get( 0 );
+				double edgeWeight = treeDistances[ subtrees1.indexOf( firstTree1OfForest1 ) ][ subtrees2.indexOf( firstTreeOfForest2 ) ];
 				Integer start = i + 1;
 				Integer target = numberOfEquivalenceClasses1 + j + 1;
 				if ( !graph.containsVertex( start ) )
@@ -364,8 +364,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 				graph.setEdgeWeight( edge, edgeWeight );
 				capacities.put( edge, subtreesWithSameEquivalenceClassForest1.size() );
 			}
-			edge = graph.addEdge( ( i + 1 ), ( emptyTree2 ) );
-			graph.setEdgeWeight( edge, treeDeleteCosts.get( tree1 ) );
+			edge = graph.addEdge( i + 1, emptyTree2 );
+			graph.setEdgeWeight( edge, treeDeleteCosts.get( firstTree1OfForest1 ) );
 			capacities.put( edge, subtreesWithSameEquivalenceClassForest1.size() );
 		}
 		for ( int j = 0; j < classifiedTreesOfForest2.size(); j++ )
