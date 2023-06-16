@@ -10,7 +10,7 @@ public class SimpleTree< T > implements Tree< T >
 
 	private final T attribute;
 
-	public SimpleTree( T attribute )
+	public SimpleTree( final T attribute )
 	{
 		children = new HashSet<>();
 		this.attribute = attribute;
@@ -42,7 +42,7 @@ public class SimpleTree< T > implements Tree< T >
 	 * Add the given tree as a child of the main tree
 	 * @param subtree the tree to add as a child
 	 */
-	public void addSubtree( SimpleTree< T > subtree )
+	public void addSubtree( final SimpleTree< T > subtree )
 	{
 		this.children.add( subtree );
 	}

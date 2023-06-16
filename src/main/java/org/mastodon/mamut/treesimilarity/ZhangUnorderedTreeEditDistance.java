@@ -51,7 +51,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 *
 	 * @return The Zhang edit distance between tree1 and tree2.
 	 */
-	public static < T > double distance( Tree< T > tree1, @Nullable Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction )
+	public static < T > double distance( final Tree< T > tree1, final @Nullable Tree< T > tree2,
+			final @Nullable BiFunction< T, T, Double > costFunction )
 	{
 		// trivial cases
 		if ( tree2 == null )
@@ -72,7 +73,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return zhang.compute( tree1, tree2, costFunction );
 	}
 
-	private ZhangUnorderedTreeEditDistance( Tree< T > tree1, Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction )
+	private ZhangUnorderedTreeEditDistance( final Tree< T > tree1, final Tree< T > tree2,
+			final @Nullable BiFunction< T, T, Double > costFunction )
 	{
 		subtrees1 = TreeUtils.listOfSubtrees( tree1 );
 		subtrees2 = TreeUtils.listOfSubtrees( tree2 );
@@ -129,7 +131,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 *
 	 * @return The Zhang edit distance between tree1 and tree2 as an integer.
 	 */
-	private double compute( Tree< T > tree1, Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction )
+	private double compute( final Tree< T > tree1, final Tree< T > tree2, final @Nullable BiFunction< T, T, Double > costFunction )
 	{
 		for ( Double[] row : forestDistances )
 			Arrays.fill( row, -1d );
@@ -182,7 +184,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	/**
 	 * Calculate the zhang edit distance between two sub-trees
 	 */
-	private double distanceTree( Tree< T > tree1, Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction )
+	private double distanceTree( final Tree< T > tree1, final Tree< T > tree2, final @Nullable BiFunction< T, T, Double > costFunction )
 	{
 		if ( equivalenceClasses != null && Objects.equals( equivalenceClasses.get( tree1 ), equivalenceClasses.get( tree2 ) ) )
 		{
@@ -268,7 +270,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * Let F[i] be the unordered forest obtained by deleting t[i] from T[i]."
 	 * Algorithmica (1996) 15:208
 	 */
-	private double distanceForest( Tree< T > forest1, Tree< T > forest2 )
+	private double distanceForest( final Tree< T > forest1, final Tree< T > forest2 )
 	{
 		// Calculate the zhang edit distance between two subforests
 		if ( forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] != -1 )
@@ -319,7 +321,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return 0;
 	}
 
-	private int minCostMaxFlow( Tree< T > forest1, Tree< T > forest2 )
+	private int minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
 	{
 		int numberOfEquivalenceClasses1;
 		int numberOfEquivalenceClasses2;
@@ -463,7 +465,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return ( int ) JGraphtTools.maxFlowMinCost( graph, capacities, 0, sink );
 	}
 
-	private static double min( double a, double b, double c )
+	private static double min( final double a, final double b, final double c )
 	{
 		return Math.min( Math.min( a, b ), c );
 	}
@@ -494,7 +496,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * @param costTreeToNone a mapping from tree to the cost of deleting or inserting the attribute of its source
 	 * @return the change costs
 	 */
-	private ChangeCosts getChangeCosts( Tree< T > tree, @Nullable Map< Tree< T >, Double > costTreeToNone )
+	private ChangeCosts getChangeCosts( final Tree< T > tree, final @Nullable Map< Tree< T >, Double > costTreeToNone )
 	{
 
 		Map< Tree< T >, Double > treeCosts = new HashMap<>();
@@ -533,8 +535,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return new ChangeCosts( treeCosts, forestCosts );
 	}
 
-	private static < T > int postOrder( Tree< T > tree, Map< Integer, Map< T, List< Tree< T > > > > graphDepthToClassifiedTrees,
-			boolean useAttribute )
+	private static < T > int postOrder( final Tree< T > tree, final Map< Integer, Map< T, List< Tree< T > > > > graphDepthToClassifiedTrees,
+			final boolean useAttribute )
 	{
 		int depth = 0;
 		List< Integer > depths = new ArrayList<>();
@@ -559,8 +561,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return depth + 1;
 	}
 
-	private static < T > Map< Tree< T >, Integer > getEquivalenceClasses( Tree< T > tree1, Tree< T > tree2,
-			boolean useAttribute )
+	private static < T > Map< Tree< T >, Integer > getEquivalenceClasses( final Tree< T > tree1, final Tree< T > tree2,
+			final boolean useAttribute )
 	{
 		Map< Tree< T >, Integer > equivalenceClasses = new HashMap<>();
 		Map< Integer, Map< T, List< Tree< T > > > > graphDepthToClassifiedTrees = new LinkedHashMap<>();
@@ -598,7 +600,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		private final Map< Tree< T >, Double > forestCosts;
 
-		private ChangeCosts( Map< Tree< T >, Double > treeCosts, Map< Tree< T >, Double > forestCosts )
+		private ChangeCosts( final Map< Tree< T >, Double > treeCosts, final Map< Tree< T >, Double > forestCosts )
 		{
 			this.treeCosts = treeCosts;
 			this.forestCosts = forestCosts;

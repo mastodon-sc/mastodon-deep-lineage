@@ -27,8 +27,8 @@ public class JGraphtTools
 	 * @param sink the sink node
 	 * @return the minimum cost of the maximum flow
 	 */
-	public static < V > double maxFlowMinCost( SimpleDirectedWeightedGraph< V, DefaultWeightedEdge > graph,
-			Map< DefaultWeightedEdge, Integer > capacities, V source, V sink )
+	public static < V > double maxFlowMinCost( final SimpleDirectedWeightedGraph< V, DefaultWeightedEdge > graph,
+			final Map< DefaultWeightedEdge, Integer > capacities, final V source, final V sink )
 	{
 		// Intermediately save the edge weights, since they need to be overwritten with capacities for the maximum flow algorithm
 		Map< DefaultWeightedEdge, Double > weights = new HashMap<>();

@@ -15,7 +15,7 @@ public class TreeUtils
 	 *
 	 * @return The list of subtrees.
 	 */
-	public static < T > List< Tree< T > > listOfSubtrees( Tree< T > tree )
+	public static < T > List< Tree< T > > listOfSubtrees( final Tree< T > tree )
 	{
 		if ( tree == null )
 			throw new IllegalArgumentException( "Given tree must not be null" );
@@ -32,7 +32,7 @@ public class TreeUtils
 	 * Gets the number of descendant subtrees of this {@link Tree}, including itself.
 	 * @return the number
 	 */
-	public static < T > int size( Tree< T > tree )
+	public static < T > int size( final Tree< T > tree )
 	{
 		return listOfSubtrees( tree ).size();
 	}
