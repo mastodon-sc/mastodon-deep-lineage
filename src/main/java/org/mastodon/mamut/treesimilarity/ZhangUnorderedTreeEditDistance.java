@@ -214,6 +214,44 @@ public class ZhangUnorderedTreeEditDistance< T >
 			return getMinTreeChangeCosts( tree1, tree2, costFunction );
 	}
 
+	/**
+	 * Calculate the zhang edit distance between two sub-forests.
+	 * <strong>What is a forest?</strong>
+	 * <p>
+	 * "Suppose that we have a numbering for each tree.
+	 * <ul>
+	 * <li>Let t[i] be the i<sup>th</sup> node of tree T in the given numbering.</li>
+	 * <li>Let T[i] be the subtree rooted at t[i]</li>
+	 * <li>Let F[i] be the unordered forest obtained by deleting t[i] from T[i]."</li>
+	 * Algorithmica (1996) 15:208
+	 */
+	private double distanceForest( final Tree< T > forest1, final Tree< T > forest2 )
+	{
+		double distance = forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ];
+		if ( distance != -1 )
+			return distance;
+		else
+		{
+			if ( !forest1.isLeaf() && forest2.isLeaf() )
+			{
+				forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] = forestDeleteCosts.get( forest1 );
+				return forestDeleteCosts.get( forest1 );
+			}
+
+			if ( forest1.isLeaf() && !forest2.isLeaf() )
+			{
+				forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] = forestInsertCosts.get( forest2 );
+				return forestInsertCosts.get( forest2 );
+			}
+
+			if ( !forest2.isLeaf() && !forest1.isLeaf() )
+			{
+				return getMinForestChangeCosts( forest1, forest2 );
+			}
+			throw new IllegalArgumentException( "The given trees are both leaves and thus they are both not forests." );
+		}
+	}
+
 	private double getMinTreeChangeCosts( Tree< T > tree1, Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction )
 	{
 		double insertCosts = treeInsertCosts.get( tree2 );
@@ -249,61 +287,28 @@ public class ZhangUnorderedTreeEditDistance< T >
 		}
 	}
 
-	/**
-	 * Calculate the zhang edit distance between two sub-forests.
-	 * <strong>What is a forest?</strong>
-	 * <p>
-	 * "Suppose that we have a numbering for each tree.
-	 * <ul>
-	 * <li>Let t[i] be the i<sup>th</sup> node of tree T in the given numbering.</li>
-	 * <li>Let T[i] be the subtree rooted at t[i]</li>
-	 * <li>Let F[i] be the unordered forest obtained by deleting t[i] from T[i]."</li>
-	 * Algorithmica (1996) 15:208
-	 */
-	private double distanceForest( final Tree< T > forest1, final Tree< T > forest2 )
+	private double getMinForestChangeCosts( Tree< T > forest1, Tree< T > forest2 )
 	{
-		double distance = forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ];
-		if ( distance != -1 )
-			return distance;
-		else
+		double insertCosts = forestInsertCosts.get( forest2 );
+		List< Double > distances = new ArrayList<>();
+		if ( !forest2.isLeaf() )
 		{
-			if ( !forest1.isLeaf() && forest2.isLeaf() )
-			{
-				forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] = forestDeleteCosts.get( forest1 );
-				return forestDeleteCosts.get( forest1 );
-			}
-
-			if ( forest1.isLeaf() && !forest2.isLeaf() )
-			{
-				forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] = forestInsertCosts.get( forest2 );
-				return forestInsertCosts.get( forest2 );
-			}
-
-			if ( !forest2.isLeaf() && !forest1.isLeaf() )
-			{
-				double insertCosts = forestInsertCosts.get( forest2 );
-				List< Double > distances = new ArrayList<>();
-				if ( !forest2.isLeaf() )
-				{
-					for ( Tree< T > child : forest2.getChildren() )
-						distances.add( distanceForest( forest1, child ) - forestInsertCosts.get( child ) );
-					insertCosts += Collections.min( distances );
-				}
-				double deleteCosts = forestDeleteCosts.get( forest1 );
-				distances = new ArrayList<>();
-				if ( !forest1.isLeaf() )
-				{
-					for ( Tree< T > child : forest1.getChildren() )
-						distances.add( distanceForest( child, forest2 ) - forestDeleteCosts.get( child ) );
-					deleteCosts += Collections.min( distances );
-				}
-				double changeCosts = minCostMaxFlow( forest1, forest2 );
-				forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] =
-						min( insertCosts, deleteCosts, changeCosts );
-				return min( insertCosts, deleteCosts, changeCosts );
-			}
+			for ( Tree< T > child : forest2.getChildren() )
+				distances.add( distanceForest( forest1, child ) - forestInsertCosts.get( child ) );
+			insertCosts += Collections.min( distances );
 		}
-		return 0;
+		double deleteCosts = forestDeleteCosts.get( forest1 );
+		distances = new ArrayList<>();
+		if ( !forest1.isLeaf() )
+		{
+			for ( Tree< T > child : forest1.getChildren() )
+				distances.add( distanceForest( child, forest2 ) - forestDeleteCosts.get( child ) );
+			deleteCosts += Collections.min( distances );
+		}
+		double changeCosts = minCostMaxFlow( forest1, forest2 );
+		forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] =
+				min( insertCosts, deleteCosts, changeCosts );
+		return min( insertCosts, deleteCosts, changeCosts );
 	}
 
 	private double minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
