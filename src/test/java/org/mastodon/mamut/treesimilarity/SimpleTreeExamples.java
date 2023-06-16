@@ -4,7 +4,7 @@ public class SimpleTreeExamples
 {
 	static Tree< Number > emptyTree()
 	{
-		return new SimpleTree<>( 0 );
+		return new SimpleTree<>( 0d );
 	}
 
 	/**
@@ -17,12 +17,12 @@ public class SimpleTreeExamples
 	 */
 	static Tree< Number > tree1()
 	{
-		SimpleTree< Number > node1 = new SimpleTree<>( 20 );
+		SimpleTree< Number > node1 = new SimpleTree<>( 20d );
 
-		SimpleTree< Number > node2 = new SimpleTree<>( 10 );
+		SimpleTree< Number > node2 = new SimpleTree<>( 10d );
 		node1.addSubtree( node2 );
 
-		SimpleTree< Number > node3 = new SimpleTree<>( 30 );
+		SimpleTree< Number > node3 = new SimpleTree<>( 30d );
 		node1.addSubtree( node3 );
 
 		return node1;
@@ -38,12 +38,12 @@ public class SimpleTreeExamples
 	 */
 	static Tree< Number > tree2()
 	{
-		SimpleTree< Number > node1 = new SimpleTree<>( 30 );
+		SimpleTree< Number > node1 = new SimpleTree<>( 30d );
 
-		SimpleTree< Number > node2 = new SimpleTree<>( 10 );
+		SimpleTree< Number > node2 = new SimpleTree<>( 10d );
 		node1.addSubtree( node2 );
 
-		SimpleTree< Number > node3 = new SimpleTree<>( 20 );
+		SimpleTree< Number > node3 = new SimpleTree<>( 20d );
 		node1.addSubtree( node3 );
 
 		return node1;
@@ -62,18 +62,18 @@ public class SimpleTreeExamples
 	 */
 	static Tree< Number > tree3()
 	{
-		SimpleTree< Number > node1 = new SimpleTree<>( 1 );
+		SimpleTree< Number > node1 = new SimpleTree<>( 1d );
 
-		SimpleTree< Number > node2 = new SimpleTree<>( 1 );
+		SimpleTree< Number > node2 = new SimpleTree<>( 1d );
 		node1.addSubtree( node2 );
 
-		SimpleTree< Number > node3 = new SimpleTree<>( 1 );
+		SimpleTree< Number > node3 = new SimpleTree<>( 1d );
 		node1.addSubtree( node3 );
 
-		SimpleTree< Number > node4 = new SimpleTree<>( 1 );
+		SimpleTree< Number > node4 = new SimpleTree<>( 1d );
 		node2.addSubtree( node4 );
 
-		SimpleTree< Number > node5 = new SimpleTree<>( 100 );
+		SimpleTree< Number > node5 = new SimpleTree<>( 100d );
 		node2.addSubtree( node5 );
 
 		return node1;
@@ -92,18 +92,18 @@ public class SimpleTreeExamples
 	 */
 	static Tree< Number > tree4()
 	{
-		SimpleTree< Number > node1 = new SimpleTree<>( 1 );
+		SimpleTree< Number > node1 = new SimpleTree<>( 1d );
 
-		SimpleTree< Number > node2 = new SimpleTree<>( 100 );
+		SimpleTree< Number > node2 = new SimpleTree<>( 100d );
 		node1.addSubtree( node2 );
 
-		SimpleTree< Number > node3 = new SimpleTree<>( 1 );
+		SimpleTree< Number > node3 = new SimpleTree<>( 1d );
 		node1.addSubtree( node3 );
 
-		SimpleTree< Number > node4 = new SimpleTree<>( 1 );
+		SimpleTree< Number > node4 = new SimpleTree<>( 1d );
 		node2.addSubtree( node4 );
 
-		SimpleTree< Number > node5 = new SimpleTree<>( 1 );
+		SimpleTree< Number > node5 = new SimpleTree<>( 1d );
 		node2.addSubtree( node5 );
 
 		return node1;
@@ -119,12 +119,12 @@ public class SimpleTreeExamples
 	 */
 	static Tree< Number > tree5()
 	{
-		SimpleTree< Number > node1 = new SimpleTree<>( 13 );
+		SimpleTree< Number > node1 = new SimpleTree<>( 13d );
 
-		SimpleTree< Number > node2 = new SimpleTree<>( 203 );
+		SimpleTree< Number > node2 = new SimpleTree<>( 203d );
 		node1.addSubtree( node2 );
 
-		SimpleTree< Number > node3 = new SimpleTree<>( 203 );
+		SimpleTree< Number > node3 = new SimpleTree<>( 203d );
 		node1.addSubtree( node3 );
 
 		return node1;
@@ -140,12 +140,12 @@ public class SimpleTreeExamples
 	 */
 	static Tree< Number > tree6()
 	{
-		SimpleTree< Number > node1 = new SimpleTree<>( 12 );
+		SimpleTree< Number > node1 = new SimpleTree<>( 12d );
 
-		SimpleTree< Number > node2 = new SimpleTree<>( 227 );
+		SimpleTree< Number > node2 = new SimpleTree<>( 227d );
 		node1.addSubtree( node2 );
 
-		SimpleTree< Number > node3 = new SimpleTree<>( 227 );
+		SimpleTree< Number > node3 = new SimpleTree<>( 227d );
 		node1.addSubtree( node3 );
 
 		return node1;
@@ -163,18 +163,18 @@ public class SimpleTreeExamples
 	 */
 	static Tree< Number > tree7()
 	{
-		SimpleTree< Number > node1 = new SimpleTree<>( 12 );
+		SimpleTree< Number > node1 = new SimpleTree<>( 12d );
 
-		SimpleTree< Number > node2 = new SimpleTree<>( 227 );
+		SimpleTree< Number > node2 = new SimpleTree<>( 227d );
 		node1.addSubtree( node2 );
 
-		SimpleTree< Number > node3 = new SimpleTree<>( 227 );
+		SimpleTree< Number > node3 = new SimpleTree<>( 227d );
 		node1.addSubtree( node3 );
 
-		SimpleTree< Number > node4 = new SimpleTree<>( 10 );
+		SimpleTree< Number > node4 = new SimpleTree<>( 10d );
 		node3.addSubtree( node4 );
 
-		SimpleTree< Number > node5 = new SimpleTree<>( 10 );
+		SimpleTree< Number > node5 = new SimpleTree<>( 10d );
 		node3.addSubtree( node5 );
 
 		return node1;
