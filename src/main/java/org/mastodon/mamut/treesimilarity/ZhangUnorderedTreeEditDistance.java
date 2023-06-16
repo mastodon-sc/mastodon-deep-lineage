@@ -277,19 +277,19 @@ public class ZhangUnorderedTreeEditDistance< T >
 			return forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ];
 		else
 		{
-			if ( forestDeleteCosts != null && !forest1.isLeaf() && forest2.isLeaf() )
+			if ( !forest1.isLeaf() && forest2.isLeaf() )
 			{
 				forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] = forestDeleteCosts.get( forest1 );
 				return forestDeleteCosts.get( forest1 );
 			}
 
-			if ( forestInsertCosts != null && !forest2.isLeaf() && forest1.isLeaf() )
+			if ( !forest2.isLeaf() && forest1.isLeaf() )
 			{
 				forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] = forestInsertCosts.get( forest2 );
 				return forestInsertCosts.get( forest2 );
 			}
 
-			if ( forestInsertCosts != null && forestDeleteCosts != null && !forest2.isLeaf() && !forest1.isLeaf() )
+			if ( forestDeleteCosts != null && !forest2.isLeaf() && !forest1.isLeaf() )
 			{
 				double a = forestInsertCosts.get( forest2 );
 				List< Double > l = new ArrayList<>();
