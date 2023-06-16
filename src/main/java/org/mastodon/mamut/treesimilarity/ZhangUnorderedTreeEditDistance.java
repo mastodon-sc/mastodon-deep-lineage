@@ -213,21 +213,20 @@ public class ZhangUnorderedTreeEditDistance< T >
 		else
 		{
 			double insertCosts = treeInsertCosts.get( tree2 );
-			List< Double > l1 = new ArrayList<>();
+			List< Double > distances = new ArrayList<>();
 			if ( !tree2.isLeaf() )
 			{
 				for ( Tree< T > child : tree2.getChildren() )
-					l1.add( distanceTree( tree1, child, costFunction ) - treeInsertCosts.get( child ) );
-				insertCosts += Collections.min( l1 );
+					distances.add( distanceTree( tree1, child, costFunction ) - treeInsertCosts.get( child ) );
+				insertCosts += Collections.min( distances );
 			}
-
 			double deleteCosts = treeDeleteCosts.get( tree1 );
-			List< Double > l2 = new ArrayList<>();
+			distances = new ArrayList<>();
 			if ( !tree1.isLeaf() )
 			{
 				for ( Tree< T > child : tree1.getChildren() )
-					l2.add( distanceTree( child, tree2, costFunction ) - treeDeleteCosts.get( child ) );
-				deleteCosts += Collections.min( l2 );
+					distances.add( distanceTree( child, tree2, costFunction ) - treeDeleteCosts.get( child ) );
+				deleteCosts += Collections.min( distances );
 			}
 			double changeCosts = distanceForest( tree1, tree2 );
 			if ( costFunction != null )
@@ -280,20 +279,20 @@ public class ZhangUnorderedTreeEditDistance< T >
 			if ( !forest2.isLeaf() && !forest1.isLeaf() )
 			{
 				double insertCosts = forestInsertCosts.get( forest2 );
-				List< Double > l1 = new ArrayList<>();
+				List< Double > distances = new ArrayList<>();
 				if ( !forest2.isLeaf() )
 				{
 					for ( Tree< T > child : forest2.getChildren() )
-						l1.add( distanceForest( forest1, child ) - forestInsertCosts.get( child ) );
-					insertCosts += Collections.min( l1 );
+						distances.add( distanceForest( forest1, child ) - forestInsertCosts.get( child ) );
+					insertCosts += Collections.min( distances );
 				}
 				double deleteCosts = forestDeleteCosts.get( forest1 );
-				List< Double > l2 = new ArrayList<>();
+				distances = new ArrayList<>();
 				if ( !forest1.isLeaf() )
 				{
 					for ( Tree< T > child : forest1.getChildren() )
-						l2.add( distanceForest( child, forest2 ) - forestDeleteCosts.get( child ) );
-					deleteCosts += Collections.min( l2 );
+						distances.add( distanceForest( child, forest2 ) - forestDeleteCosts.get( child ) );
+					deleteCosts += Collections.min( distances );
 				}
 				double changeCosts = minCostMaxFlow( forest1, forest2 );
 				forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] =
@@ -389,14 +388,14 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	/**
 	 * Returns a list of lists of trees, where each list contains trees with the same equivalence class.
-	 * @param forest1 the forest
+	 * @param tree the forest
 	 * @return a list of lists of trees, where each list contains trees with the same equivalence class
 	 */
-	private List< List< Tree< T > > > getClassifiedTrees( Tree< T > forest1 )
+	private List< List< Tree< T > > > getClassifiedTrees( Tree< T > tree )
 	{
 		// NB: a LinkedHashMap is used to preserve the order of the keys
 		Map< Integer, List< Tree< T > > > equivalenceClassesTree1 = new LinkedHashMap<>();
-		for ( Tree< T > tree1 : forest1.getChildren() )
+		for ( Tree< T > tree1 : tree.getChildren() )
 		{
 			int equivalenceClass = equivalenceClasses.get( tree1 );
 			if ( equivalenceClassesTree1.containsKey( equivalenceClass ) )
@@ -484,29 +483,26 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return new ChangeCosts( treeCosts, forestCosts );
 	}
 
-	// TODO rename
-	private static < T > int postOrder( final Tree< T > tree, final Map< Integer, Map< T, List< Tree< T > > > > graphDepthToClassifiedTrees,
+	private static < T > int classifyTrees( final Tree< T > tree, final Map< Integer, Map< T, List< Tree< T > > > > classifiedTrees,
 			final boolean useAttribute )
 	{
 		int depth = 0;
 		List< Integer > depths = new ArrayList<>();
 		for ( Tree< T > child : tree.getChildren() )
 		{
-			int d = postOrder( child, graphDepthToClassifiedTrees, useAttribute );
+			int d = classifyTrees( child, classifiedTrees, useAttribute );
 			depths.add( d );
 			depth = Collections.max( depths );
 		}
 
-		Map< T, List< Tree< T > > > attributeToTrees = graphDepthToClassifiedTrees.computeIfAbsent( depth, k -> new HashMap<>() );
+		Map< T, List< Tree< T > > > attributeToTrees = classifiedTrees.computeIfAbsent( depth, treeClass -> new HashMap<>() );
 		T value = useAttribute ? tree.getAttribute() : null;
 		List< Tree< T > > treesWithSameAttribute = attributeToTrees.get( value );
 		if ( treesWithSameAttribute == null )
-		{
 			treesWithSameAttribute = new ArrayList<>();
-		}
 		treesWithSameAttribute.add( tree );
 		attributeToTrees.put( value, treesWithSameAttribute );
-		graphDepthToClassifiedTrees.put( depth, attributeToTrees );
+		classifiedTrees.put( depth, attributeToTrees );
 
 		return depth + 1;
 	}
@@ -515,15 +511,15 @@ public class ZhangUnorderedTreeEditDistance< T >
 			final boolean useAttribute )
 	{
 		Map< Tree< T >, Integer > equivalenceClasses = new HashMap<>();
-		Map< Integer, Map< T, List< Tree< T > > > > graphDepthToClassifiedTrees = new LinkedHashMap<>();
+		Map< Integer, Map< T, List< Tree< T > > > > classifiedTrees = new LinkedHashMap<>();
 
-		postOrder( tree1, graphDepthToClassifiedTrees, useAttribute );
-		postOrder( tree2, graphDepthToClassifiedTrees, useAttribute );
+		classifyTrees( tree1, classifiedTrees, useAttribute );
+		classifyTrees( tree2, classifiedTrees, useAttribute );
 
 		boolean subtreeClassNumberIncremented = false;
 
 		int classNumber = 0;
-		for ( Map.Entry< Integer, Map< T, List< Tree< T > > > > graphDepth : graphDepthToClassifiedTrees.entrySet() )
+		for ( Map.Entry< Integer, Map< T, List< Tree< T > > > > graphDepth : classifiedTrees.entrySet() )
 		{
 			for ( Map.Entry< T, List< Tree< T > > > treesWithSameAttributeAtGraphDepth : graphDepth.getValue().entrySet() )
 			{
