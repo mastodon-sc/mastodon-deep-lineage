@@ -1,8 +1,8 @@
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.treesimilarity.tree;
 
 public class SimpleTreeExamples
 {
-	static Tree< Number > emptyTree()
+	public static Tree< Number > emptyTree()
 	{
 		return new SimpleTree<>( 0d );
 	}
@@ -15,7 +15,7 @@ public class SimpleTreeExamples
 	 * 		            node2(node_weight=10)    node3(node_weight=30)
 	 * </pre>
 	 */
-	static Tree< Number > tree1()
+	public static Tree< Number > tree1()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 20d );
 
@@ -36,7 +36,7 @@ public class SimpleTreeExamples
 	 * 		              node2(node_weight=10)    node3(node_weight=20)
 	 * </pre>
 	 */
-	static Tree< Number > tree2()
+	public static Tree< Number > tree2()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 30d );
 
@@ -60,7 +60,7 @@ public class SimpleTreeExamples
 	 * 		  node4(node_weight=1)     node5(node_weight=100)
 	 * </pre>
 	 */
-	static Tree< Number > tree3()
+	public static Tree< Number > tree3()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 1d );
 
@@ -90,7 +90,7 @@ public class SimpleTreeExamples
 	 * 		node4(node_weight=1)     node5(node_weight=1)
 	 * </pre>
 	 */
-	static Tree< Number > tree4()
+	public static Tree< Number > tree4()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 1d );
 
@@ -117,7 +117,7 @@ public class SimpleTreeExamples
 	 * 		     node2(node_weight=203)     node3(node_weight=203)
 	 * </pre>
 	 */
-	static Tree< Number > tree5()
+	public static Tree< Number > tree5()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 13d );
 
@@ -138,7 +138,7 @@ public class SimpleTreeExamples
 	 * 		     node2(node_weight=227)     node3(node_weight=227)
 	 * </pre>
 	 */
-	static Tree< Number > tree6()
+	public static Tree< Number > tree6()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 12d );
 
@@ -161,7 +161,7 @@ public class SimpleTreeExamples
 	 * 		                    node4(node_weight=10)    node5(node_weight=10)
 	 * </pre>
 	 */
-	static Tree< Number > tree7()
+	public static Tree< Number > tree7()
 	{
 		SimpleTree< Number > node1 = new SimpleTree<>( 12d );
 

@@ -1,10 +1,9 @@
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.treesimilarity.tree;
 
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 public class BranchSpotTree implements Tree< Integer >

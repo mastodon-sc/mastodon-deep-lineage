@@ -1,6 +1,7 @@
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.treesimilarity.tree;
 
 import org.junit.Test;
+import org.mastodon.mamut.treesimilarity.tree.SimpleTree;
 
 import java.util.HashSet;
 
