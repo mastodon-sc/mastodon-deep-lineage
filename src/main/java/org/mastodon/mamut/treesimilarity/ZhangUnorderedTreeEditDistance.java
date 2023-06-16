@@ -213,41 +213,26 @@ public class ZhangUnorderedTreeEditDistance< T >
 		}
 		else
 		{
-			double a = 0;
-			if ( treeInsertCosts != null )
+			double a = treeInsertCosts.get( tree2 );
+			List< Double > l1 = new ArrayList<>();
+			if ( !tree2.isLeaf() )
 			{
-				a = treeInsertCosts.get( tree2 );
-				List< Double > l = new ArrayList<>();
-				if ( !tree2.isLeaf() )
-				{
-					for ( Tree< T > child : tree2.getChildren() )
-					{
-						double distanceZhangTree =
-								distanceTree( tree1, child, costFunction ) - treeInsertCosts.get( child );
-						l.add( distanceZhangTree );
-					}
-					a += Collections.min( l );
-				}
+				for ( Tree< T > child : tree2.getChildren() )
+					l1.add( distanceTree( tree1, child, costFunction ) - treeInsertCosts.get( child ) );
+				a += Collections.min( l1 );
 			}
-			double b = 0;
-			if ( treeDeleteCosts != null )
+
+			double b = treeDeleteCosts.get( tree1 );
+			List< Double > l2 = new ArrayList<>();
+			if ( !tree1.isLeaf() )
 			{
-				b = treeDeleteCosts.get( tree1 );
-				List< Double > l = new ArrayList<>();
-				if ( !tree1.isLeaf() )
-				{
-					for ( Tree< T > child : tree1.getChildren() )
-					{
-						l.add( distanceTree( child, tree2, costFunction ) - treeDeleteCosts.get( child ) );
-					}
-					b += Collections.min( l );
-				}
+				for ( Tree< T > child : tree1.getChildren() )
+					l2.add( distanceTree( child, tree2, costFunction ) - treeDeleteCosts.get( child ) );
+				b += Collections.min( l2 );
 			}
 			double c = distanceForest( tree1, tree2 );
 			if ( costFunction != null )
-			{
 				c += costTreeToTree.get( Pair.of( tree1, tree2 ) );
-			}
 
 			if ( tree1.isLeaf() || tree2.isLeaf() )
 			{
@@ -256,8 +241,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 			}
 			else
 			{
-				treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = min( a, b, c );
-				return min( a, b, c );
+				double minValue = min( a, b, c );
+				treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = minValue;
+				return minValue;
 			}
 		}
 	}
