@@ -40,7 +40,7 @@ public class BranchSpotTree implements Tree< Double >
 		if ( branchSpot.getTimepoint() > this.endTimepoint )
 			lifespan = this.endTimepoint - branchSpot.getFirstTimePoint();
 		else
-			lifespan = branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
+			lifespan = ( double ) branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
 		return lifespan;
 	}
 
