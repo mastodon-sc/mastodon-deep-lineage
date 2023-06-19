@@ -8,6 +8,24 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
 
 public class BranchSpotTreeExamples
 {
+	public static BranchSpotTree emptyTree()
+	{
+		final Model model = new Model();
+
+		final ModelGraph modelGraph = model.getGraph();
+
+		final ModelBranchGraph modelBranchGraph = model.getBranchGraph();
+
+		Spot spot1 = modelGraph.addVertex();
+		spot1.init( 0, new double[ 3 ], 0 );
+
+		modelBranchGraph.graphRebuilt();
+
+		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
+
+		return new BranchSpotTree( branchSpot, 0d );
+	}
+
 	/**
 	 * <pre>
 	 *                             branchSpot1(lifespan=20)
@@ -16,7 +34,7 @@ public class BranchSpotTreeExamples
 	 *                  branchSpot2(lifespan=10)    branchSpot3(lifespan=30)
 	 * </pre>
 	 */
-	public static Tree< Double > tree1()
+	public static BranchSpotTree tree1()
 	{
 		final Model model = new Model();
 
@@ -58,7 +76,7 @@ public class BranchSpotTreeExamples
 	 *                    branchSpot2(lifespan=10) branchSpot3(lifespan=20)
 	 * </pre>
 	 */
-	public static Tree< Double > tree2()
+	public static BranchSpotTree tree2()
 	{
 		final Model model = new Model();
 
@@ -103,7 +121,7 @@ public class BranchSpotTreeExamples
 	 *        branchSpot4(lifespan=1)  branchSpot5(lifespan=100)
 	 * </pre>
 	 */
-	public static Tree< Double > tree3()
+	public static BranchSpotTree tree3()
 	{
 		final Model model = new Model();
 
@@ -160,7 +178,7 @@ public class BranchSpotTreeExamples
 	 *      branchSpot4(lifespan=1)  branchSpot5(lifespan=1)
 	 * </pre>
 	 */
-	public static Tree< Double > tree4()
+	public static BranchSpotTree tree4()
 	{
 		final Model model = new Model();
 
@@ -214,7 +232,7 @@ public class BranchSpotTreeExamples
 	 *           branchSpot2(lifespan=203) branchSpot3(lifespan=203)
 	 * </pre>
 	 */
-	public static Tree< Double > tree5()
+	public static BranchSpotTree tree5()
 	{
 		final Model model = new Model();
 
@@ -256,7 +274,7 @@ public class BranchSpotTreeExamples
 	 *           branchSpot2(lifespan=227) branchSpot3(lifespan=227)
 	 * </pre>
 	 */
-	public static Tree< Double > tree6()
+	public static BranchSpotTree tree6()
 	{
 		final Model model = new Model();
 
@@ -300,7 +318,7 @@ public class BranchSpotTreeExamples
 	 *                          branchSpot4(lifespan=10)   branchSpot5(lifespan=10)
 	 * </pre>
 	 */
-	public static Tree< Double > tree7()
+	public static BranchSpotTree tree7()
 	{
 		final Model model = new Model();
 

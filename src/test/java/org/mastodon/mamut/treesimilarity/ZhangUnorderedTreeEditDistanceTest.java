@@ -69,25 +69,39 @@ public class ZhangUnorderedTreeEditDistanceTest
 	{
 		BiFunction< Double, Double, Double > costFunction = getCostFunction();
 
-		Tree< Double > emptyTree = SimpleTreeExamples.emptyTree();
-		Tree< Double > tree1 = SimpleTreeExamples.tree1();
-		Tree< Double > tree2 = SimpleTreeExamples.tree2();
-		Tree< Double > tree3 = SimpleTreeExamples.tree3();
-		Tree< Double > tree4 = SimpleTreeExamples.tree4();
+		Tree< Double > simpleEmptyTree = SimpleTreeExamples.emptyTree();
+		Tree< Double > simpleTree1 = SimpleTreeExamples.tree1();
+		Tree< Double > simpleTree2 = SimpleTreeExamples.tree2();
+		Tree< Double > simpleTree3 = SimpleTreeExamples.tree3();
+		Tree< Double > simpleTree4 = SimpleTreeExamples.tree4();
+
+		Tree< Double > branchSpotEmptyTree = BranchSpotTreeExamples.emptyTree();
+		Tree< Double > branchSpotTree1 = BranchSpotTreeExamples.tree1();
+		Tree< Double > branchSpotTree2 = BranchSpotTreeExamples.tree2();
+		Tree< Double > branchSpotTree3 = BranchSpotTreeExamples.tree3();
+		Tree< Double > branchSpotTree4 = BranchSpotTreeExamples.tree4();
 
 
 		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
-		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( tree1, emptyTree, costFunction ), 0d );
-		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree1, costFunction ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( simpleTree1, branchSpotEmptyTree, costFunction ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, simpleTree1, costFunction ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree1, branchSpotEmptyTree, costFunction ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, branchSpotTree1, costFunction ), 0d );
 		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
-		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( tree2, emptyTree, costFunction ), 0d );
-		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree2, costFunction ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( simpleTree2, branchSpotEmptyTree, costFunction ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, simpleTree2, costFunction ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree2, branchSpotEmptyTree, costFunction ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, branchSpotTree2, costFunction ), 0d );
 		// 104, because: 3 nodes with a total weight of 104 are added to the empty tree
-		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( tree3, emptyTree, costFunction ), 0d );
-		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree3, costFunction ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( simpleTree3, branchSpotEmptyTree, costFunction ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, simpleTree3, costFunction ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree3, branchSpotEmptyTree, costFunction ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, branchSpotTree3, costFunction ), 0d );
 		// 104, because: 3 nodes with a total weight of 104 are added to the empty tree
-		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( tree4, emptyTree, costFunction ), 0d );
-		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( emptyTree, tree4, costFunction ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( simpleTree4, branchSpotEmptyTree, costFunction ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, simpleTree4, costFunction ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree4, branchSpotEmptyTree, costFunction ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, branchSpotTree4, costFunction ), 0d );
 	}
 
 	@Test
