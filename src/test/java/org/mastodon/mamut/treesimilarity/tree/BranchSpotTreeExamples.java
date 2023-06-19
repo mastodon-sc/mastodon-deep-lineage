@@ -10,10 +10,10 @@ public class BranchSpotTreeExamples
 {
 	/**
 	 * <pre>
-	 *        					   node1(lifespan=20)
-	 * 		              ┌-─────────┴─────────────┐
-	 * 		              │                        │
-	 * 		            node2(lifespan=10)    node3(lifespan=30)
+	 *                             branchSpot1(lifespan=20)
+	 *                    ┌-─────────┴─────────────┐
+	 *                    │                        │
+	 *                  branchSpot2(lifespan=10)    branchSpot3(lifespan=30)
 	 * </pre>
 	 */
 	public static Tree< Integer > tree1()
@@ -47,15 +47,15 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, modelBranchGraph, 60 );
+		return new BranchSpotTree( branchSpot, 60 );
 	}
 
 	/**
 	 * <pre>
-	 *    		  				     node1(lifespan=30)
-	 * 		                ┌-─────────┴─────────────┐
-	 * 		                │                        │
-	 * 		              node2(lifespan=10)    node3(lifespan=20)
+	 *                               branchSpot1(lifespan=30)
+	 *                      ┌-─────────┴─────────────┐
+	 *                      │                        │
+	 *                    branchSpot2(lifespan=10) branchSpot3(lifespan=20)
 	 * </pre>
 	 */
 	public static Tree< Integer > tree2()
@@ -89,6 +89,260 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, modelBranchGraph, 60 );
+		return new BranchSpotTree( branchSpot, 60 );
+	}
+
+	/**
+	 * <pre>
+	 *                              branchSpot1(lifespan=1)
+	 *                     ┌-─────────┴─────────────┐
+	 *                     │                        │
+	 *                   branchSpot2(lifespan=1)  branchSpot3(lifespan=1)
+	 *          ┌-─────────┴─────────────┐
+	 *          │                        │
+	 *        branchSpot4(lifespan=1)  branchSpot5(lifespan=100)
+	 * </pre>
+	 */
+	public static Tree< Integer > tree3()
+	{
+		final Model model = new Model();
+
+		final ModelGraph modelGraph = model.getGraph();
+
+		final ModelBranchGraph modelBranchGraph = model.getBranchGraph();
+
+		Spot spot1 = modelGraph.addVertex();
+		spot1.init( 0, new double[ 3 ], 0 );
+		Spot spot2 = modelGraph.addVertex();
+		spot2.init( 1, new double[ 3 ], 0 );
+		Spot spot3 = modelGraph.addVertex();
+		spot3.init( 1, new double[ 3 ], 0 );
+		Spot spot4 = modelGraph.addVertex();
+		spot4.init( 2, new double[ 3 ], 0 );
+		Spot spot5 = modelGraph.addVertex();
+		spot5.init( 1, new double[ 3 ], 0 );
+		Spot spot6 = modelGraph.addVertex();
+		spot6.init( 2, new double[ 3 ], 0 );
+		Spot spot7 = modelGraph.addVertex();
+		spot7.init( 2, new double[ 3 ], 0 );
+		Spot spot8 = modelGraph.addVertex();
+		spot8.init( 3, new double[ 3 ], 0 );
+		Spot spot9 = modelGraph.addVertex();
+		spot9.init( 2, new double[ 3 ], 0 );
+		Spot spot10 = modelGraph.addVertex();
+		spot10.init( 102, new double[ 3 ], 0 );
+
+		modelGraph.addEdge( spot1, spot2 );
+		modelGraph.addEdge( spot2, spot3 );
+		modelGraph.addEdge( spot2, spot5 );
+		modelGraph.addEdge( spot3, spot4 );
+		modelGraph.addEdge( spot5, spot6 );
+		modelGraph.addEdge( spot6, spot7 );
+		modelGraph.addEdge( spot6, spot9 );
+		modelGraph.addEdge( spot7, spot8 );
+		modelGraph.addEdge( spot9, spot10 );
+
+		modelBranchGraph.graphRebuilt();
+
+		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
+
+		return new BranchSpotTree( branchSpot, 200 );
+	}
+
+	/**
+	 * <pre>
+	 *                            branchSpot1(lifespan=1)
+	 *                   ┌-─────────┴──────────────┐
+	 *                   │                         │
+	 *                 branchSpot2(lifespan=100) branchSpot3(lifespan=1)
+	 *        ┌-─────────┴─────────────┐
+	 *        │                        │
+	 *      branchSpot4(lifespan=1)  branchSpot5(lifespan=1)
+	 * </pre>
+	 */
+	public static Tree< Integer > tree4()
+	{
+		final Model model = new Model();
+
+		final ModelGraph modelGraph = model.getGraph();
+
+		final ModelBranchGraph modelBranchGraph = model.getBranchGraph();
+
+		Spot spot1 = modelGraph.addVertex();
+		spot1.init( 0, new double[ 3 ], 0 );
+		Spot spot2 = modelGraph.addVertex();
+		spot2.init( 1, new double[ 3 ], 0 );
+		Spot spot3 = modelGraph.addVertex();
+		spot3.init( 1, new double[ 3 ], 0 );
+		Spot spot4 = modelGraph.addVertex();
+		spot4.init( 2, new double[ 3 ], 0 );
+		Spot spot5 = modelGraph.addVertex();
+		spot5.init( 1, new double[ 3 ], 0 );
+		Spot spot6 = modelGraph.addVertex();
+		spot6.init( 101, new double[ 3 ], 0 );
+		Spot spot7 = modelGraph.addVertex();
+		spot7.init( 102, new double[ 3 ], 0 );
+		Spot spot8 = modelGraph.addVertex();
+		spot8.init( 103, new double[ 3 ], 0 );
+		Spot spot9 = modelGraph.addVertex();
+		spot9.init( 102, new double[ 3 ], 0 );
+		Spot spot10 = modelGraph.addVertex();
+		spot10.init( 103, new double[ 3 ], 0 );
+
+		modelGraph.addEdge( spot1, spot2 );
+		modelGraph.addEdge( spot2, spot3 );
+		modelGraph.addEdge( spot2, spot5 );
+		modelGraph.addEdge( spot3, spot4 );
+		modelGraph.addEdge( spot5, spot6 );
+		modelGraph.addEdge( spot6, spot7 );
+		modelGraph.addEdge( spot6, spot9 );
+		modelGraph.addEdge( spot7, spot8 );
+		modelGraph.addEdge( spot9, spot10 );
+
+		modelBranchGraph.graphRebuilt();
+
+		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
+
+		return new BranchSpotTree( branchSpot, 200 );
+	}
+
+	/**
+	 * <pre>
+	 *                      branchSpot1(lifespan=13)
+	 *             ┌-─────────┴──────────────┐
+	 *             │                         │
+	 *           branchSpot2(lifespan=203) branchSpot3(lifespan=203)
+	 * </pre>
+	 */
+	public static Tree< Integer > tree5()
+	{
+		final Model model = new Model();
+
+		final ModelGraph modelGraph = model.getGraph();
+
+		final ModelBranchGraph modelBranchGraph = model.getBranchGraph();
+
+		Spot spot1 = modelGraph.addVertex();
+		spot1.init( 0, new double[ 3 ], 0 );
+		Spot spot2 = modelGraph.addVertex();
+		spot2.init( 13, new double[ 3 ], 0 );
+		Spot spot3 = modelGraph.addVertex();
+		spot3.init( 13, new double[ 3 ], 0 );
+		Spot spot4 = modelGraph.addVertex();
+		spot4.init( 216, new double[ 3 ], 0 );
+		Spot spot5 = modelGraph.addVertex();
+		spot5.init( 13, new double[ 3 ], 0 );
+		Spot spot6 = modelGraph.addVertex();
+		spot6.init( 216, new double[ 3 ], 0 );
+
+		modelGraph.addEdge( spot1, spot2 );
+		modelGraph.addEdge( spot2, spot3 );
+		modelGraph.addEdge( spot2, spot5 );
+		modelGraph.addEdge( spot3, spot4 );
+		modelGraph.addEdge( spot5, spot6 );
+
+		modelBranchGraph.graphRebuilt();
+
+		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
+
+		return new BranchSpotTree( branchSpot, 300 );
+	}
+
+	/**
+	 * <pre>
+	 *                      branchSpot1(lifespan=12)
+	 *             ┌-─────────┴──────────────┐
+	 *             │                         │
+	 *           branchSpot2(lifespan=227) branchSpot3(lifespan=227)
+	 * </pre>
+	 */
+	public static Tree< Integer > tree6()
+	{
+		final Model model = new Model();
+
+		final ModelGraph modelGraph = model.getGraph();
+
+		final ModelBranchGraph modelBranchGraph = model.getBranchGraph();
+
+		Spot spot1 = modelGraph.addVertex();
+		spot1.init( 0, new double[ 3 ], 0 );
+		Spot spot2 = modelGraph.addVertex();
+		spot2.init( 12, new double[ 3 ], 0 );
+		Spot spot3 = modelGraph.addVertex();
+		spot3.init( 12, new double[ 3 ], 0 );
+		Spot spot4 = modelGraph.addVertex();
+		spot4.init( 239, new double[ 3 ], 0 );
+		Spot spot5 = modelGraph.addVertex();
+		spot5.init( 12, new double[ 3 ], 0 );
+		Spot spot6 = modelGraph.addVertex();
+		spot6.init( 239, new double[ 3 ], 0 );
+
+		modelGraph.addEdge( spot1, spot2 );
+		modelGraph.addEdge( spot2, spot3 );
+		modelGraph.addEdge( spot2, spot5 );
+		modelGraph.addEdge( spot3, spot4 );
+		modelGraph.addEdge( spot5, spot6 );
+
+		modelBranchGraph.graphRebuilt();
+
+		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
+
+		return new BranchSpotTree( branchSpot, 300 );
+	}
+
+	/**
+	 * <pre>
+	 *                       branchSpot1(lifespan=12)
+	 *              ┌-─────────┴───────────────┐
+	 *              │                          │
+	 *            branchSpot2(lifespan=227)  branchSpot3(lifespan=227)
+	 *                            ┌-───────────┴─────────────┐
+	 *                          branchSpot4(lifespan=10)   branchSpot5(lifespan=10)
+	 * </pre>
+	 */
+	public static Tree< Integer > tree7()
+	{
+		final Model model = new Model();
+
+		final ModelGraph modelGraph = model.getGraph();
+
+		final ModelBranchGraph modelBranchGraph = model.getBranchGraph();
+
+		Spot spot1 = modelGraph.addVertex();
+		spot1.init( 0, new double[ 3 ], 0 );
+		Spot spot2 = modelGraph.addVertex();
+		spot2.init( 12, new double[ 3 ], 0 );
+		Spot spot3 = modelGraph.addVertex();
+		spot3.init( 12, new double[ 3 ], 0 );
+		Spot spot4 = modelGraph.addVertex();
+		spot4.init( 239, new double[ 3 ], 0 );
+		Spot spot5 = modelGraph.addVertex();
+		spot5.init( 12, new double[ 3 ], 0 );
+		Spot spot6 = modelGraph.addVertex();
+		spot6.init( 239, new double[ 3 ], 0 );
+		Spot spot7 = modelGraph.addVertex();
+		spot7.init( 239, new double[ 3 ], 0 );
+		Spot spot8 = modelGraph.addVertex();
+		spot8.init( 249, new double[ 3 ], 0 );
+		Spot spot9 = modelGraph.addVertex();
+		spot9.init( 239, new double[ 3 ], 0 );
+		Spot spot10 = modelGraph.addVertex();
+		spot10.init( 249, new double[ 3 ], 0 );
+
+		modelGraph.addEdge( spot1, spot2 );
+		modelGraph.addEdge( spot2, spot3 );
+		modelGraph.addEdge( spot2, spot5 );
+		modelGraph.addEdge( spot3, spot4 );
+		modelGraph.addEdge( spot5, spot6 );
+		modelGraph.addEdge( spot6, spot7 );
+		modelGraph.addEdge( spot6, spot9 );
+		modelGraph.addEdge( spot7, spot8 );
+		modelGraph.addEdge( spot9, spot10 );
+
+		modelBranchGraph.graphRebuilt();
+
+		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
+
+		return new BranchSpotTree( branchSpot, 300 );
 	}
 }

@@ -28,24 +28,32 @@ public class ZhangUnorderedTreeEditDistanceTest
 		BiFunction< Integer, Integer, Double > costFunctionBranchSpotTree = getCostFunctionBranchSpotTree();
 		Tree< Integer > branchSpotTree1 = BranchSpotTreeExamples.tree1();
 		Tree< Integer > branchSpotTree2 = BranchSpotTreeExamples.tree2();
-
+		Tree< Integer > branchSpotTree3 = BranchSpotTreeExamples.tree3();
+		Tree< Integer > branchSpotTree4 = BranchSpotTreeExamples.tree4();
+		Tree< Integer > branchSpotTree5 = BranchSpotTreeExamples.tree5();
+		Tree< Integer > branchSpotTree6 = BranchSpotTreeExamples.tree6();
+		Tree< Integer > branchSpotTree7 = BranchSpotTreeExamples.tree7();
 
 		// 20, because: 2 nodes with a difference of 10 each need to be changed
-		assertEquals( 20d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree1, branchSpotTree2, costFunctionBranchSpotTree ), 0d );
-		assertEquals( 20d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree2, branchSpotTree1, costFunctionBranchSpotTree ), 0d );
 		assertEquals( 20d, ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleTree2, costFunctionSimpleTree ), 0d );
 		assertEquals( 20d, ZhangUnorderedTreeEditDistance.distance( simpleTree2, simpleTree1, costFunctionSimpleTree ), 0d );
+		assertEquals( 20d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree1, branchSpotTree2, costFunctionBranchSpotTree ), 0d );
+		assertEquals( 20d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree2, branchSpotTree1, costFunctionBranchSpotTree ), 0d );
 
 		// 4, because:
 		// 2 nodes are removed (weight 1 each), e.g. node 2 and node 3 in tree 3
 		// 2 nodes are added (weight 1 each), e.g. node 4 and node 5 in tree 4
 		assertEquals( 4d, ZhangUnorderedTreeEditDistance.distance( simpleTree3, simpleTree4, costFunctionSimpleTree ), 0d );
 		assertEquals( 4d, ZhangUnorderedTreeEditDistance.distance( simpleTree4, simpleTree3, costFunctionSimpleTree ), 0d );
+		assertEquals( 4d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree3, branchSpotTree4, costFunctionBranchSpotTree ), 0d );
+		assertEquals( 4d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree4, branchSpotTree3, costFunctionBranchSpotTree ), 0d );
 
 		// 49, because: one node has a difference of 1
 		// two nodes have a difference of 24 each
 		assertEquals( 49d, ZhangUnorderedTreeEditDistance.distance( simpleTree5, simpleTree6, costFunctionSimpleTree ), 0d );
 		assertEquals( 49d, ZhangUnorderedTreeEditDistance.distance( simpleTree6, simpleTree5, costFunctionSimpleTree ), 0d );
+		assertEquals( 49d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree5, branchSpotTree6, costFunctionBranchSpotTree ), 0d );
+		assertEquals( 49d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree6, branchSpotTree5, costFunctionBranchSpotTree ), 0d );
 
 		// 69, because:
 		// one node has a difference of 1
@@ -53,6 +61,8 @@ public class ZhangUnorderedTreeEditDistanceTest
 		// two extra nodes are added with a weight of 10 each
 		assertEquals( 69d, ZhangUnorderedTreeEditDistance.distance( simpleTree5, simpleTree7, costFunctionSimpleTree ), 0d );
 		assertEquals( 69d, ZhangUnorderedTreeEditDistance.distance( simpleTree7, simpleTree5, costFunctionSimpleTree ), 0d );
+		assertEquals( 69d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree5, branchSpotTree7, costFunctionBranchSpotTree ), 0d );
+		assertEquals( 69d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree7, branchSpotTree5, costFunctionBranchSpotTree ), 0d );
 	}
 
 	@Test
