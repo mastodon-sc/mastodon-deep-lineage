@@ -148,37 +148,37 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private void log()
 	{
-		logger.info( "matrix of tree distances:" );
+		logger.trace( "matrix of tree distances:" );
 		for ( int i = 0; i < subtrees1.size(); i++ )
 		{
-			if ( logger.isInfoEnabled() )
-				logger.info( "tree distance[{}] = {}", i, Arrays.toString( treeDistances[ i ] ) );
+			if ( logger.isTraceEnabled() )
+				logger.trace( "tree distance[{}] = {}", i, Arrays.toString( treeDistances[ i ] ) );
 		}
-		logger.info( "matrix of forest distances:" );
+		logger.trace( "matrix of forest distances:" );
 		for ( int i = 0; i < subtrees1.size(); i++ )
 		{
-			if ( logger.isInfoEnabled() )
-				logger.info( "forest distance[{}] = {}", i, Arrays.toString( forestDistances[ i ] ) );
+			if ( logger.isTraceEnabled() )
+				logger.trace( "forest distance[{}] = {}", i, Arrays.toString( forestDistances[ i ] ) );
 		}
-		logger.info( "tree deletion costs (tree1):" );
+		logger.trace( "tree deletion costs (tree1):" );
 		for ( Tree< T > subtree : subtrees1 )
 		{
-			logger.info( "tree deletion[{}] = {}", subtree, treeDeleteCosts.get( subtree ) );
+			logger.trace( "tree deletion[{}] = {}", subtree, treeDeleteCosts.get( subtree ) );
 		}
-		logger.info( "forest deletion costs (tree1):" );
+		logger.trace( "forest deletion costs (tree1):" );
 		for ( Tree< T > subtree : subtrees1 )
 		{
-			logger.info( "forest deletion[{}] = {}", subtree, forestDeleteCosts.get( subtree ) );
+			logger.trace( "forest deletion[{}] = {}", subtree, forestDeleteCosts.get( subtree ) );
 		}
-		logger.info( "tree insertion costs (tree2):" );
+		logger.trace( "tree insertion costs (tree2):" );
 		for ( Tree< T > subtree : subtrees2 )
 		{
-			logger.info( "tree insertion[{}] = {}", subtree, treeInsertCosts.get( subtree ) );
+			logger.trace( "tree insertion[{}] = {}", subtree, treeInsertCosts.get( subtree ) );
 		}
-		logger.info( "forest insertion costs (tree2):" );
+		logger.trace( "forest insertion costs (tree2):" );
 		for ( Tree< T > subtree : subtrees2 )
 		{
-			logger.info( "forest insertion[{}] = {}", subtree, forestInsertCosts.get( subtree ) );
+			logger.trace( "forest insertion[{}] = {}", subtree, forestInsertCosts.get( subtree ) );
 		}
 	}
 
