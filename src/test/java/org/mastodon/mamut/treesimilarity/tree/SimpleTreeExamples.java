@@ -9,10 +9,10 @@ public class SimpleTreeExamples
 
 	/**
 	 * <pre>
-	 *        					   node1(node_weight=20)
-	 * 		              ┌-─────────┴─────────────┐
-	 * 		              │                        │
-	 * 		            node2(node_weight=10)    node3(node_weight=30)
+	 *                             node1(node_weight=20)
+	 *                    ┌-─────────┴─────────────┐
+	 *                    │                        │
+	 *                  node2(node_weight=10)    node3(node_weight=30)
 	 * </pre>
 	 */
 	public static Tree< Number > tree1()
@@ -30,10 +30,10 @@ public class SimpleTreeExamples
 
 	/**
 	 * <pre>
-	 *    		  				     node1(node_weight=30)
-	 * 		                ┌-─────────┴─────────────┐
-	 * 		                │                        │
-	 * 		              node2(node_weight=10)    node3(node_weight=20)
+	 *                               node1(node_weight=30)
+	 *                      ┌-─────────┴─────────────┐
+	 *                      │                        │
+	 *                    node2(node_weight=10)    node3(node_weight=20)
 	 * </pre>
 	 */
 	public static Tree< Number > tree2()
@@ -51,13 +51,13 @@ public class SimpleTreeExamples
 
 	/**
 	 * <pre>
-	 *                             node1(node_weight=1)
-	 * 		               ┌-─────────┴─────────────┐
-	 * 		               │                        │
-	 * 		             node2(node_weight=1)     node3(node_weight=1)
-	 * 		    ┌-─────────┴─────────────┐
-	 * 		    │                        │
-	 * 		  node4(node_weight=1)     node5(node_weight=100)
+	 *                              node1(node_weight=1)
+	 *                     ┌-─────────┴─────────────┐
+	 *                     │                        │
+	 *                   node2(node_weight=1)     node3(node_weight=1)
+	 *          ┌-─────────┴─────────────┐
+	 *          │                        │
+	 *        node4(node_weight=1)     node5(node_weight=100)
 	 * </pre>
 	 */
 	public static Tree< Number > tree3()
@@ -82,12 +82,12 @@ public class SimpleTreeExamples
 	/**
 	 * <pre>
 	 *                            node1(node_weight=1)
-	 * 		             ┌-─────────┴─────────────┐
-	 * 		             │                        │
-	 * 		           node2(node_weight=100)   node3(node_weight=1)
-	 * 		  ┌-─────────┴─────────────┐
-	 * 		  │                        │
-	 * 		node4(node_weight=1)     node5(node_weight=1)
+	 *                   ┌-─────────┴─────────────┐
+	 *                   │                        │
+	 *                 node2(node_weight=100)   node3(node_weight=1)
+	 *        ┌-─────────┴─────────────┐
+	 *        │                        │
+	 *      node4(node_weight=1)     node5(node_weight=1)
 	 * </pre>
 	 */
 	public static Tree< Number > tree4()
@@ -112,9 +112,9 @@ public class SimpleTreeExamples
 	/**
 	 * <pre>
 	 *                      node1(node_weight=13)
-	 * 		       ┌-─────────┴─────────────┐
-	 * 		       │                        │
-	 * 		     node2(node_weight=203)     node3(node_weight=203)
+	 *             ┌-─────────┴─────────────┐
+	 *             │                        │
+	 *           node2(node_weight=203)     node3(node_weight=203)
 	 * </pre>
 	 */
 	public static Tree< Number > tree5()
@@ -133,9 +133,9 @@ public class SimpleTreeExamples
 	/**
 	 * <pre>
 	 *                      node1(node_weight=12)
-	 * 		       ┌-─────────┴─────────────┐
-	 * 		       │                        │
-	 * 		     node2(node_weight=227)     node3(node_weight=227)
+	 *             ┌-─────────┴─────────────┐
+	 *             │                        │
+	 *           node2(node_weight=227)     node3(node_weight=227)
 	 * </pre>
 	 */
 	public static Tree< Number > tree6()
@@ -153,12 +153,12 @@ public class SimpleTreeExamples
 
 	/**
 	 * <pre>
-	 * 		                 node1(node_weight=12)
-	 * 		        ┌-─────────┴─────────────┐
-	 * 		        │                        │
-	 * 		      node2(node_weight=227)   node3(node_weight=227)
-	 * 		                      ┌-─────────┴─────────────┐
-	 * 		                    node4(node_weight=10)    node5(node_weight=10)
+	 *                       node1(node_weight=12)
+	 *              ┌-─────────┴─────────────┐
+	 *              │                        │
+	 *            node2(node_weight=227)   node3(node_weight=227)
+	 *                            ┌-─────────┴─────────────┐
+	 *                          node4(node_weight=10)    node5(node_weight=10)
 	 * </pre>
 	 */
 	public static Tree< Number > tree7()
