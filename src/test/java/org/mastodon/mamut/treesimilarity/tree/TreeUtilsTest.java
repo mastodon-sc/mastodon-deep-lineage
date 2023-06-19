@@ -15,10 +15,10 @@ public class TreeUtilsTest
 	@Test
 	public void testListOfSubtrees()
 	{
-		Tree< Number > emptyTree = SimpleTreeExamples.emptyTree();
+		Tree< Double > emptyTree = SimpleTreeExamples.emptyTree();
 
-		Tree< Number > tree1 = SimpleTreeExamples.tree1();
-		List< Tree< Number > > subtrees1 = new ArrayList<>();
+		Tree< Double > tree1 = SimpleTreeExamples.tree1();
+		List< Tree< Double > > subtrees1 = new ArrayList<>();
 		subtrees1.add( tree1 );
 		subtrees1.addAll( tree1.getChildren() );
 

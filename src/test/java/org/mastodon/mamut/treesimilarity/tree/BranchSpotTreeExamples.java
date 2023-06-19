@@ -16,7 +16,7 @@ public class BranchSpotTreeExamples
 	 *                  branchSpot2(lifespan=10)    branchSpot3(lifespan=30)
 	 * </pre>
 	 */
-	public static Tree< Integer > tree1()
+	public static Tree< Double > tree1()
 	{
 		final Model model = new Model();
 
@@ -47,7 +47,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 60 );
+		return new BranchSpotTree( branchSpot, 60d );
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class BranchSpotTreeExamples
 	 *                    branchSpot2(lifespan=10) branchSpot3(lifespan=20)
 	 * </pre>
 	 */
-	public static Tree< Integer > tree2()
+	public static Tree< Double > tree2()
 	{
 		final Model model = new Model();
 
@@ -103,7 +103,7 @@ public class BranchSpotTreeExamples
 	 *        branchSpot4(lifespan=1)  branchSpot5(lifespan=100)
 	 * </pre>
 	 */
-	public static Tree< Integer > tree3()
+	public static Tree< Double > tree3()
 	{
 		final Model model = new Model();
 
@@ -160,7 +160,7 @@ public class BranchSpotTreeExamples
 	 *      branchSpot4(lifespan=1)  branchSpot5(lifespan=1)
 	 * </pre>
 	 */
-	public static Tree< Integer > tree4()
+	public static Tree< Double > tree4()
 	{
 		final Model model = new Model();
 
@@ -214,7 +214,7 @@ public class BranchSpotTreeExamples
 	 *           branchSpot2(lifespan=203) branchSpot3(lifespan=203)
 	 * </pre>
 	 */
-	public static Tree< Integer > tree5()
+	public static Tree< Double > tree5()
 	{
 		final Model model = new Model();
 
@@ -256,7 +256,7 @@ public class BranchSpotTreeExamples
 	 *           branchSpot2(lifespan=227) branchSpot3(lifespan=227)
 	 * </pre>
 	 */
-	public static Tree< Integer > tree6()
+	public static Tree< Double > tree6()
 	{
 		final Model model = new Model();
 
@@ -300,7 +300,7 @@ public class BranchSpotTreeExamples
 	 *                          branchSpot4(lifespan=10)   branchSpot5(lifespan=10)
 	 * </pre>
 	 */
-	public static Tree< Integer > tree7()
+	public static Tree< Double > tree7()
 	{
 		final Model model = new Model();
 

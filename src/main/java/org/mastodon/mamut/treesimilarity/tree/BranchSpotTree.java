@@ -6,15 +6,15 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BranchSpotTree implements Tree< Integer >
+public class BranchSpotTree implements Tree< Double >
 {
 	private final BranchSpot branchSpot;
 
-	private final int endTimepoint;
+	private final double endTimepoint;
 
-	private final HashSet< Tree< Integer > > children;
+	private final HashSet< Tree< Double > > children;
 
-	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
+	public BranchSpotTree( final BranchSpot branchSpot, final double endTimepoint )
 	{
 		this.branchSpot = branchSpot;
 		this.endTimepoint = endTimepoint;
@@ -28,15 +28,15 @@ public class BranchSpotTree implements Tree< Integer >
 	}
 
 	@Override
-	public Set< Tree< Integer > > getChildren()
+	public Set< Tree< Double > > getChildren()
 	{
 		return children;
 	}
 
 	@Override
-	public Integer getAttribute()
+	public Double getAttribute()
 	{
-		int lifespan;
+		double lifespan;
 		if ( branchSpot.getTimepoint() > this.endTimepoint )
 			lifespan = this.endTimepoint - branchSpot.getFirstTimePoint();
 		else

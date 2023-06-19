@@ -21,31 +21,31 @@ public class BranchSpotTreeTest
 	@Test
 	public void testGetAttribute()
 	{
-		Tree< Integer > tree1 = BranchSpotTreeExamples.tree1();
-		assertEquals( 20d, tree1.getAttribute().doubleValue(), 0d );
-		Iterator< Tree< Integer > > iterator1 = tree1.getChildren().iterator();
-		assertEquals( 30d, iterator1.next().getAttribute().doubleValue(), 0d );
-		assertEquals( 10d, iterator1.next().getAttribute().doubleValue(), 0d );
+		Tree< Double > tree1 = BranchSpotTreeExamples.tree1();
+		assertEquals( 20d, tree1.getAttribute(), 0d );
+		Iterator< Tree< Double > > iterator1 = tree1.getChildren().iterator();
+		assertEquals( 30d, iterator1.next().getAttribute(), 0d );
+		assertEquals( 10d, iterator1.next().getAttribute(), 0d );
 
-		Tree< Integer > tree2 = BranchSpotTreeExamples.tree2();
-		assertEquals( 30d, tree2.getAttribute().doubleValue(), 0d );
-		Iterator< Tree< Integer > > iterator2 = tree2.getChildren().iterator();
-		assertEquals( 20d, iterator2.next().getAttribute().doubleValue(), 0d );
-		assertEquals( 10d, iterator2.next().getAttribute().doubleValue(), 0d );
+		Tree< Double > tree2 = BranchSpotTreeExamples.tree2();
+		assertEquals( 30d, tree2.getAttribute(), 0d );
+		Iterator< Tree< Double > > iterator2 = tree2.getChildren().iterator();
+		assertEquals( 20d, iterator2.next().getAttribute(), 0d );
+		assertEquals( 10d, iterator2.next().getAttribute(), 0d );
 	}
 
 	@Test
 	public void testIsLeaf()
 	{
-		Tree< Integer > tree1 = BranchSpotTreeExamples.tree1();
+		Tree< Double > tree1 = BranchSpotTreeExamples.tree1();
 		assertFalse( tree1.isLeaf() );
-		Iterator< Tree< Integer > > iterator1 = tree1.getChildren().iterator();
+		Iterator< Tree< Double > > iterator1 = tree1.getChildren().iterator();
 		assertTrue( iterator1.next().isLeaf() );
 		assertTrue( iterator1.next().isLeaf() );
 
-		Tree< Integer > tree2 = BranchSpotTreeExamples.tree2();
+		Tree< Double > tree2 = BranchSpotTreeExamples.tree2();
 		assertFalse( tree2.isLeaf() );
-		Iterator< Tree< Integer > > iterator2 = tree1.getChildren().iterator();
+		Iterator< Tree< Double > > iterator2 = tree1.getChildren().iterator();
 		assertTrue( iterator2.next().isLeaf() );
 		assertTrue( iterator2.next().isLeaf() );
 	}
