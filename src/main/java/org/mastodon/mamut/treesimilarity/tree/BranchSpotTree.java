@@ -43,4 +43,9 @@ public class BranchSpotTree implements Tree< Integer >
 			lifespan = branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
 		return lifespan;
 	}
+
+	public BranchSpot getBranchSpot()
+	{
+		return branchSpot;
+	}
 }
