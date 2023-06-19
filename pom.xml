@@ -20,7 +20,6 @@
 
         <mastodon.version>1.0.0-beta-27-SNAPSHOT</mastodon.version>
         <mastodon-ellipsoid-fitting.version>0.3.5</mastodon-ellipsoid-fitting.version>
-        <jgrapht.version>1.5.1</jgrapht.version>
         <mastodon.group>org.mastodon</mastodon.group>
 
         <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
@@ -93,7 +92,6 @@
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
-            <version>${jgrapht.version}</version>
         </dependency>
 
         <dependency>
