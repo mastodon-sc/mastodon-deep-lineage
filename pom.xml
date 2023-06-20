@@ -103,6 +103,14 @@
             <artifactId>ui-behaviour</artifactId>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.apporiented</groupId>
+            <artifactId>hierarchical-clustering</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
