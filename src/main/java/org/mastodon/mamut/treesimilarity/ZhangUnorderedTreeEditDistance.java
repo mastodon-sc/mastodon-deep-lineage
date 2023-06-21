@@ -92,13 +92,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 		subtrees1.forEach( tree -> costTreeToNone.put( tree, costFunction.apply( tree.getAttribute(), null ) ) );
 		subtrees2.forEach( tree -> costTreeToNone.put( tree, costFunction.apply( tree.getAttribute(), null ) ) );
 
-		ChangeCosts deleteCosts = getChangeCosts( tree1, costTreeToNone );
-		treeDeleteCosts = deleteCosts.treeCosts;
-		forestDeleteCosts = deleteCosts.forestCosts;
+		treeDeleteCosts = new HashMap<>();
+		forestDeleteCosts = new HashMap<>();
+		computeChangeCosts( tree1, costTreeToNone, treeDeleteCosts, forestDeleteCosts );
 
-		ChangeCosts insertCosts = getChangeCosts( tree2, costTreeToNone );
-		treeInsertCosts = insertCosts.treeCosts;
-		forestInsertCosts = insertCosts.forestCosts;
+		treeInsertCosts = new HashMap<>();
+		forestInsertCosts = new HashMap<>();
+		computeChangeCosts( tree2, costTreeToNone, treeInsertCosts, forestInsertCosts );
 
 		treeDistances = new Double[ subtrees1.size() ][ subtrees2.size() ];
 		forestDistances = new Double[ subtrees1.size() ][ subtrees2.size() ];
@@ -424,41 +424,22 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 *
 	 * @param tree the tree or forest to compute the change costs for
 	 * @param costTreeToNone a mapping from tree to the cost of deleting or inserting the attribute of its source
-	 * @return the change costs
+	 * @param treeCosts (output parameter) a mapping from tree to the cost of deleting or inserting it
+	 * @param forestCosts (output parameter) a mapping from forest to the cost of deleting or inserting it
 	 */
-	private ChangeCosts getChangeCosts( final Tree< T > tree, final Map< Tree< T >, Double > costTreeToNone )
+	private void computeChangeCosts( final Tree< T > tree, final Map< Tree< T >, Double > costTreeToNone, Map< Tree< T >, Double > treeCosts, Map< Tree< T >, Double > forestCosts )
 	{
-		if ( costTreeToNone == null )
-			throw new NullPointerException( "costTreeToNone is null" );
-
-		Map< Tree< T >, Double > treeCosts = new HashMap<>();
-		Map< Tree< T >, Double > forestCosts = new HashMap<>();
-
-		if ( tree.isLeaf() )
+		double cost = 0;
+		if ( ! tree.isLeaf() )
 		{
-			forestCosts.put( tree, 0d );
-			treeCosts.put( tree, costTreeToNone.get( tree ) );
-		}
-		else
-		{
-			double cost = 0;
 			for ( Tree< T > child : tree.getChildren() )
 			{
-				Map< Tree< T >, Double > childForestChangeCosts;
-				Map< Tree< T >, Double > childTreeChangeCosts;
-				ChangeCosts costs = getChangeCosts( child, costTreeToNone );
-				childTreeChangeCosts = costs.treeCosts;
-				childForestChangeCosts = costs.forestCosts;
-
-				cost += childTreeChangeCosts.get( child );
-				treeCosts.putAll( childTreeChangeCosts );
-				forestCosts.putAll( childForestChangeCosts );
+				computeChangeCosts( child, costTreeToNone, treeCosts, forestCosts );
+				cost += treeCosts.get( child );
 			}
-
-			forestCosts.put( tree, cost );
-			treeCosts.put( tree, cost + costTreeToNone.get( tree ) );
 		}
-		return new ChangeCosts( treeCosts, forestCosts );
+		forestCosts.put( tree, cost );
+		treeCosts.put( tree, cost + costTreeToNone.get( tree ) );
 	}
 
 	private static < T > int classifyTrees( final Tree< T > tree, final Map< Integer, Map< T, List< Tree< T > > > > classifiedTrees )
@@ -514,18 +495,5 @@ public class ZhangUnorderedTreeEditDistance< T >
 			}
 		}
 		return equivalenceClasses;
-	}
-
-	private class ChangeCosts
-	{
-		private final Map< Tree< T >, Double > treeCosts;
-
-		private final Map< Tree< T >, Double > forestCosts;
-
-		private ChangeCosts( final Map< Tree< T >, Double > treeCosts, final Map< Tree< T >, Double > forestCosts )
-		{
-			this.treeCosts = treeCosts;
-			this.forestCosts = forestCosts;
-		}
 	}
 }
