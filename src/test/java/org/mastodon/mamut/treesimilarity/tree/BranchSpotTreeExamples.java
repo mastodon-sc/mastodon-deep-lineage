@@ -23,7 +23,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 0d );
+		return new BranchSpotTree( branchSpot, 0 );
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 60d );
+		return new BranchSpotTree( branchSpot, 60 );
 	}
 
 	/**
