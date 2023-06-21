@@ -10,11 +10,11 @@ public class BranchSpotTree implements Tree< Double >
 {
 	private final BranchSpot branchSpot;
 
-	private final double endTimepoint;
+	private final int endTimepoint;
 
 	private final HashSet< Tree< Double > > children;
 
-	public BranchSpotTree( final BranchSpot branchSpot, final double endTimepoint )
+	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
 	{
 		this.branchSpot = branchSpot;
 		this.endTimepoint = endTimepoint;
@@ -36,11 +36,8 @@ public class BranchSpotTree implements Tree< Double >
 	@Override
 	public Double getAttribute()
 	{
-		double lifespan;
-		if ( branchSpot.getTimepoint() > this.endTimepoint )
-			lifespan = this.endTimepoint - branchSpot.getFirstTimePoint();
-		else
-			lifespan = ( double ) branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
+		int lastTimePoint = Math.min( branchSpot.getTimepoint(), this.endTimepoint );
+		double lifespan = ( double ) lastTimePoint - branchSpot.getFirstTimePoint();
 		return lifespan;
 	}
 
