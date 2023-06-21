@@ -472,15 +472,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 			depth = Collections.max( depths );
 		}
 
-		Map< T, List< Tree< T > > > attributeToTrees = classifiedTrees.computeIfAbsent( depth, treeClass -> new HashMap<>() );
-		T value = tree.getAttribute();
-		List< Tree< T > > treesWithSameAttribute = attributeToTrees.get( value );
-		if ( treesWithSameAttribute == null )
-			treesWithSameAttribute = new ArrayList<>();
+		Map< T, List< Tree< T > > > attributeToTrees = classifiedTrees.computeIfAbsent( depth, ignore -> new HashMap<>() );
+		T attribute = tree.getAttribute();
+		List< Tree< T > > treesWithSameAttribute = attributeToTrees.computeIfAbsent( attribute, ignore -> new ArrayList<>() );
 		treesWithSameAttribute.add( tree );
-		attributeToTrees.put( value, treesWithSameAttribute );
-		classifiedTrees.put( depth, attributeToTrees );
-
 		return depth + 1;
 	}
 
