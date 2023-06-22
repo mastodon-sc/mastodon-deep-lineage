@@ -2,6 +2,7 @@ package org.mastodon.mamut.treesimilarity;
 
 import org.junit.Test;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTreeExamples;
+import org.mastodon.mamut.treesimilarity.tree.SimpleTree;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
@@ -167,5 +168,34 @@ public class ZhangUnorderedTreeEditDistanceTest
 			else
 				return Math.abs( o1 - o2 );
 		};
+	}
+
+
+	@Test
+	public void testReorderingLeafNodes() {
+		BiFunction< Double, Double, Double > costFunction = getCostFunction();
+		Tree< Double > a = node( 1, leaf(100 ), leaf( 1 ));
+		Tree< Double > b = leaf( 100 );
+		double distance = ZhangUnorderedTreeEditDistance.distance( a, b, costFunction );
+		assertEquals( 2, distance, 0d );
+	}
+
+	/**
+	 * Creates a {@link SimpleTree} with the given attribute and children.
+	 */
+	private static SimpleTree< Double > node( double a, SimpleTree< Double > childA, SimpleTree< Double > childB )
+	{
+		SimpleTree< Double > node = new SimpleTree<>( a );
+		node.addSubtree( childA );
+		node.addSubtree( childB );
+		return node;
+	}
+
+	/**
+	 * Creates a {@link SimpleTree} with the given attribute and no children.
+	 */
+	private static SimpleTree< Double > leaf( double a )
+	{
+		return new SimpleTree<>( a );
 	}
 }
