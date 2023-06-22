@@ -4,7 +4,7 @@ public class SimpleTreeExamples
 {
 	public static Tree< Double > emptyTree()
 	{
-		return new SimpleTree<>( 0d );
+		return leaf( 0 );
 	}
 
 	/**
@@ -17,15 +17,7 @@ public class SimpleTreeExamples
 	 */
 	public static Tree< Double > tree1()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 20d );
-
-		SimpleTree< Double > node2 = new SimpleTree<>( 10d );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Double > node3 = new SimpleTree<>( 30d );
-		node1.addSubtree( node3 );
-
-		return node1;
+		return node( 20, leaf( 10 ), leaf( 30 ) );
 	}
 
 	/**
@@ -38,15 +30,7 @@ public class SimpleTreeExamples
 	 */
 	public static Tree< Double > tree2()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 30d );
-
-		SimpleTree< Double > node2 = new SimpleTree<>( 10d );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Double > node3 = new SimpleTree<>( 20d );
-		node1.addSubtree( node3 );
-
-		return node1;
+		return node( 30, leaf( 10 ), leaf( 20 ) );
 	}
 
 	/**
@@ -62,21 +46,7 @@ public class SimpleTreeExamples
 	 */
 	public static Tree< Double > tree3()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 1d );
-
-		SimpleTree< Double > node2 = new SimpleTree<>( 1d );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Double > node3 = new SimpleTree<>( 1d );
-		node1.addSubtree( node3 );
-
-		SimpleTree< Double > node4 = new SimpleTree<>( 1d );
-		node2.addSubtree( node4 );
-
-		SimpleTree< Double > node5 = new SimpleTree<>( 100d );
-		node2.addSubtree( node5 );
-
-		return node1;
+		return node( 1, node( 1, leaf( 1 ), leaf( 100 ) ), leaf( 1 ) );
 	}
 
 	/**
@@ -92,21 +62,7 @@ public class SimpleTreeExamples
 	 */
 	public static Tree< Double > tree4()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 1d );
-
-		SimpleTree< Double > node2 = new SimpleTree<>( 100d );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Double > node3 = new SimpleTree<>( 1d );
-		node1.addSubtree( node3 );
-
-		SimpleTree< Double > node4 = new SimpleTree<>( 1d );
-		node2.addSubtree( node4 );
-
-		SimpleTree< Double > node5 = new SimpleTree<>( 1d );
-		node2.addSubtree( node5 );
-
-		return node1;
+		return node( 1, node( 100, leaf( 1 ), leaf( 1 ) ), leaf( 1 ) );
 	}
 
 	/**
@@ -119,15 +75,7 @@ public class SimpleTreeExamples
 	 */
 	public static Tree< Double > tree5()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 13d );
-
-		SimpleTree< Double > node2 = new SimpleTree<>( 203d );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Double > node3 = new SimpleTree<>( 203d );
-		node1.addSubtree( node3 );
-
-		return node1;
+		return node( 13, leaf( 203 ), leaf( 203 ) );
 	}
 
 	/**
@@ -140,15 +88,7 @@ public class SimpleTreeExamples
 	 */
 	public static Tree< Double > tree6()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 12d );
-
-		SimpleTree< Double > node2 = new SimpleTree<>( 227d );
-		node1.addSubtree( node2 );
-
-		SimpleTree< Double > node3 = new SimpleTree<>( 227d );
-		node1.addSubtree( node3 );
-
-		return node1;
+		return node( 12, leaf( 227 ), leaf( 227 ) );
 	}
 
 	/**
@@ -163,20 +103,27 @@ public class SimpleTreeExamples
 	 */
 	public static Tree< Double > tree7()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 12d );
+		return node( 12, leaf( 227 ), node( 227, leaf( 10 ), leaf( 10 ) ) );
+	}
 
-		SimpleTree< Double > node2 = new SimpleTree<>( 227d );
-		node1.addSubtree( node2 );
 
-		SimpleTree< Double > node3 = new SimpleTree<>( 227d );
-		node1.addSubtree( node3 );
 
-		SimpleTree< Double > node4 = new SimpleTree<>( 10d );
-		node3.addSubtree( node4 );
+	/**
+	 * Creates a {@link SimpleTree} with the given attribute and children.
+	 */
+	private static SimpleTree< Double > node( double a, SimpleTree< Double > childA, SimpleTree< Double > childB )
+	{
+		SimpleTree< Double > node = new SimpleTree<>( a );
+		node.addSubtree( childA );
+		node.addSubtree( childB );
+		return node;
+	}
 
-		SimpleTree< Double > node5 = new SimpleTree<>( 10d );
-		node3.addSubtree( node5 );
-
-		return node1;
+	/**
+	 * Creates a {@link SimpleTree} with the given attribute and no children.
+	 */
+	private static SimpleTree< Double > leaf( double a )
+	{
+		return new SimpleTree<>( a );
 	}
 }
