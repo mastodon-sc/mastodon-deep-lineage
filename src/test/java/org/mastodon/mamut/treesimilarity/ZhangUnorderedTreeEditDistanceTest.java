@@ -150,6 +150,15 @@ public class ZhangUnorderedTreeEditDistanceTest
 		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( branchSpotTree7, branchSpotTree5, costFunction ), 0d );
 	}
 
+	@Test
+	public void testEquivalenceClasses() {
+		BiFunction< Double, Double, Double > costFunction = getCostFunction();
+		Tree< Double > a = SimpleTreeExamples.tree8();
+		Tree< Double > b = SimpleTreeExamples.tree9();
+		double distance = ZhangUnorderedTreeEditDistance.distance( a, b, costFunction );
+		assertEquals( 1, distance, 0d );
+	}
+
 	private static BiFunction< Double, Double, Double > getCostFunction()
 	{
 		return ( o1, o2 ) -> {

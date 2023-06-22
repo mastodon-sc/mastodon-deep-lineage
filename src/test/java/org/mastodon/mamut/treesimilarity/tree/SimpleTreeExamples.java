@@ -179,4 +179,72 @@ public class SimpleTreeExamples
 
 		return node1;
 	}
+
+	/**
+	 * <pre>
+	 *       ┌────── 3 ──────┐
+	 *       │               │
+	 *   ┌── 8 ──┐       ┌── 8 ──┐
+	 *   │       │       │       │
+	 *   5       4       1       2
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree8()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 3d );
+
+		SimpleTree< Double > node2 = new SimpleTree<>( 8d );
+		node1.addSubtree( node2 );
+
+		SimpleTree< Double > node3 = new SimpleTree<>( 8d );
+		node1.addSubtree( node3 );
+
+		SimpleTree< Double > node4 = new SimpleTree<>( 5d );
+		node2.addSubtree( node4 );
+
+		SimpleTree< Double > node5 = new SimpleTree<>( 4d );
+		node2.addSubtree( node5 );
+
+		SimpleTree< Double > node6 = new SimpleTree<>( 1d );
+		node3.addSubtree( node6 );
+
+		SimpleTree< Double > node7 = new SimpleTree<>( 2d );
+		node3.addSubtree( node7 );
+
+		return node1;
+	}
+
+	/**
+	 * <pre>
+	 *       ┌────── 3 ──────┐
+	 *       │               │
+	 *   ┌── 8 ──┐       ┌── 8 ──┐
+	 *   │       │       │       │
+	 *   4       4       1       2
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree9()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 3d );
+
+		SimpleTree< Double > node2 = new SimpleTree<>( 8d );
+		node1.addSubtree( node2 );
+
+		SimpleTree< Double > node3 = new SimpleTree<>( 8d );
+		node1.addSubtree( node3 );
+
+		SimpleTree< Double > node4 = new SimpleTree<>( 4d );
+		node2.addSubtree( node4 );
+
+		SimpleTree< Double > node5 = new SimpleTree<>( 4d );
+		node2.addSubtree( node5 );
+
+		SimpleTree< Double > node6 = new SimpleTree<>( 1d );
+		node3.addSubtree( node6 );
+
+		SimpleTree< Double > node7 = new SimpleTree<>( 2d );
+		node3.addSubtree( node7 );
+
+		return node1;
+	}
 }
