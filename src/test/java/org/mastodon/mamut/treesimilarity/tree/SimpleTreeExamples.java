@@ -106,7 +106,33 @@ public class SimpleTreeExamples
 		return node( 12, leaf( 227 ), node( 227, leaf( 10 ), leaf( 10 ) ) );
 	}
 
+	/**
+	 * <pre>
+	 *       ┌────── 3 ──────┐
+	 *       │               │
+	 *   ┌── 8 ──┐       ┌── 8 ──┐
+	 *   │       │       │       │
+	 *   5       4       1       2
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree8()
+	{
+		return node( 3, node( 8, leaf( 5 ), leaf( 4 ) ), node( 8, leaf( 1 ), leaf( 2 ) ) );
+	}
 
+	/**
+	 * <pre>
+	 *       ┌────── 3 ──────┐
+	 *       │               │
+	 *   ┌── 8 ──┐       ┌── 8 ──┐
+	 *   │       │       │       │
+	 *   4       4       1       2
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree9()
+	{
+		return node( 3, node( 8, leaf( 4 ), leaf( 4 ) ), node( 8, leaf( 1 ), leaf( 2 ) ) );
+	}
 
 	/**
 	 * Creates a {@link SimpleTree} with the given attribute and children.
