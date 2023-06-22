@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ClusterUtils
 {
@@ -29,94 +30,100 @@ public class ClusterUtils
 	private static final ClusteringAlgorithm algorithm = new DefaultClusteringAlgorithm();
 
 	/**
-	 * Gets a mapping from cluster id to leave names. The cluster ids are incremented by 1 starting from 0.
-	 * The amount of clusters depends on the given threshold. The leave names are sorted alphabetically.
+	 * Gets a mapping from cluster id to objects. The cluster ids are incremented by 1 starting from 0.
+	 * The amount of clusters depends on the given threshold.
 	 * <p>
 	 * Constraints:
 	 * <ul>
 	 *     <li>The distance matrix needs to be quadratic</li>
 	 *     <li>The distance matrix to be symmetric with zero diagonal</li>
-	 *     <li>The length of the leave names needs to equal the length of the distance matrix</li>
-	 *     <li>The leave names need to be unique</li>
+	 *     <li>The number of object needs to equal the length of the distance matrix</li>
 	 * </ul>
 	 *
-	 * @param leaveNames the unique names of the leaves
+	 * @param objects the objects to be clustered
 	 * @param distances the symmetric distance matrix with zero diagonal
 	 * @param linkageStrategy the linkage strategy (e.g. {@link com.apporiented.algorithm.clustering.AverageLinkageStrategy}, {@link com.apporiented.algorithm.clustering.CompleteLinkageStrategy}, {@link com.apporiented.algorithm.clustering.SingleLinkageStrategy})
 	 * @param threshold the threshold for the distance for building clusters
-	 * @return a mapping from cluster id to leave names
+	 * @return a mapping from cluster id objects
 	 */
-	public static Map< Integer, List< String > > getClustersByThreshold( String[] leaveNames, double[][] distances,
+	public static < T > Map< Integer, List< T > > getClustersByThreshold( T[] objects, double[][] distances,
 			LinkageStrategy linkageStrategy, double threshold )
 	{
 		if ( threshold < 0 )
 			throw new IllegalArgumentException( "threshold must be greater than or equal to zero" );
 
-		List< Cluster > clusters = getSortedClusters( leaveNames, distances, linkageStrategy );
+		Map< String, T > objectNames = new HashMap<>();
+		for ( int i = 0; i < objects.length; i++ )
+			objectNames.put( String.valueOf( i ), objects[ i ] );
+		String[] names = objectNames.keySet().toArray( new String[ 0 ] );
 
+		List< Cluster > sortedClusters = getSortedClusters( names, distances, linkageStrategy );
 		List< Cluster > output = new ArrayList<>();
-		for ( Cluster cluster : clusters )
+		for ( Cluster cluster : sortedClusters )
 		{
 			if ( cluster.getDistanceValue() < threshold )
 				break;
 			output.add( cluster );
 		}
 
-		Map< Integer, List< String > > classes = convertClustersToClasses( output );
-		log( classes );
-		return classes;
+		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( output, objectNames );
+		log( classifiedObjects );
+		return classifiedObjects;
 	}
 
 	/**
-	 * Gets a mapping from cluster id to leave names. The cluster ids are incremented by 1 starting from 0.
-	 * The amount of clusters depends on the given class count. The leave names are sorted alphabetically.
+	 * Gets a mapping from cluster id to objects. The cluster ids are incremented by 1 starting from 0.
+	 * The amount of clusters depends on the given class count.
 	 * <p>
 	 * Constraints:
 	 * <ul>
 	 *     <li>The distance matrix needs to be quadratic</li>
 	 *     <li>The distance matrix to be symmetric with zero diagonal</li>
-	 *     <li>The length of the leave names needs to equal the length of the distance matrix</li>
-	 *     <li>The leave names need to be unique</li>
+	 *     <li>The number of objects needs to equal the length of the distance matrix</li>
 	 *     <li>The class count needs to be greater than zero</li>
 	 *     <li>The class count needs to be less than or equal to the number of names</li>
 	 * </ul>
 	 *
-	 * @param leaveNames the unique names of the leaves
+	 * @param objects the objects to be clustered
 	 * @param distances the symmetric distance matrix with zero diagonal
 	 * @param linkageStrategy the linkage strategy (e.g. {@link com.apporiented.algorithm.clustering.AverageLinkageStrategy}, {@link com.apporiented.algorithm.clustering.CompleteLinkageStrategy}, {@link com.apporiented.algorithm.clustering.SingleLinkageStrategy})
 	 * @param classCount the number of classes to be built
-	 * @return a mapping from cluster id to leave names
+	 * @return a mapping from cluster id objects
 	 */
-	public static Map< Integer, List< String > > getClustersByClassCount( String[] leaveNames, double[][] distances,
+	public static < T > Map< Integer, List< T > > getClustersByClassCount( T[] objects, double[][] distances,
 			LinkageStrategy linkageStrategy, int classCount )
 	{
 		if ( classCount < 1 )
 			throw new IllegalArgumentException( "classCount must be greater than zero" );
-		else if ( classCount > leaveNames.length )
+		else if ( classCount > objects.length )
 			throw new IllegalArgumentException( "classCount must be less than or equal to the number of names" );
 		else if ( classCount == 1 )
-			return Collections.singletonMap( 0, Arrays.asList( leaveNames ) );
+			return Collections.singletonMap( 0, Arrays.asList( objects ) );
 
 		int clusterId = 0;
-		Map< Integer, List< String > > classes = new HashMap<>();
-		if ( classCount == leaveNames.length )
+		Map< Integer, List< T > > classes = new HashMap<>();
+		if ( classCount == objects.length )
 		{
-			for ( String name : leaveNames )
+			for ( T name : objects )
 				classes.put( clusterId++, Collections.singletonList( name ) );
 			return classes;
 		}
-		List< Cluster > clusters = getSortedClusters( leaveNames, distances, linkageStrategy );
-		List< Cluster > output = new ArrayList<>();
-		for ( Cluster cluster : clusters )
+
+		Map< String, T > objectNames = convertObjects( objects );
+		String[] names = objectNames.keySet().toArray( new String[ 0 ] );
+
+		List< Cluster > sortedClusters = getSortedClusters( names, distances, linkageStrategy );
+		List< Cluster > clusters = new ArrayList<>();
+		for ( Cluster cluster : sortedClusters )
 		{
-			output.add( cluster );
-			if ( output.size() == classCount - 1 )
+			clusters.add( cluster );
+			if ( clusters.size() == classCount - 1 )
 				break;
 		}
 
-		classes = convertClustersToClasses( output );
-		log( classes );
-		return classes;
+		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( clusters, objectNames );
+		log( classifiedObjects );
+		return classifiedObjects;
 	}
 
 	private static List< Cluster > getSortedClusters( String[] leaveNames, double[][] distances, LinkageStrategy linkageStrategy )
@@ -128,7 +135,15 @@ public class ClusterUtils
 		return clusters;
 	}
 
-	private static Map< Integer, List< String > > convertClustersToClasses( List< Cluster > output )
+	private static < T > Map< String, T > convertObjects( T[] objects )
+	{
+		Map< String, T > objectNames = new HashMap<>();
+		for ( int i = 0; i < objects.length; i++ )
+			objectNames.put( String.valueOf( i ), objects[ i ] );
+		return objectNames;
+	}
+
+	private static < T > Map< Integer, List< T > > convertClustersToClasses( List< Cluster > output, Map< String, T > objectNames )
 	{
 		int clusterId = 0;
 		Map< Integer, List< String > > classes = new HashMap<>();
@@ -140,12 +155,26 @@ public class ClusterUtils
 					classes.put( clusterId++, leaveNames( child ) );
 			}
 		}
-		return classes;
+		Map< Integer, List< T > > classifiedObjects = new HashMap<>();
+		for ( Map.Entry< Integer, List< String > > entry : classes.entrySet() )
+		{
+			List< T > o = new ArrayList<>();
+			for ( String name : entry.getValue() )
+				o.add( objectNames.get( name ) );
+			classifiedObjects.put( entry.getKey(), o );
+		}
+		return classifiedObjects;
 	}
 
-	private static void log( Map< Integer, List< String > > leavesToClusterIds )
+	private static < T > void log( Map< Integer, List< T > > objectsToClusterIds )
 	{
-		leavesToClusterIds.forEach( ( id, leaves ) -> logger.info( "clusterId: {}, leaves: {}", id, String.join( ",", leaves ) ) );
+		for ( Map.Entry< Integer, List< T > > entry : objectsToClusterIds.entrySet() )
+		{
+			List< T > objects = entry.getValue();
+			if ( logger.isInfoEnabled() )
+				logger.info( "clusterId: {}, object: {}", entry.getKey(),
+						objects.stream().map( Object::toString ).collect( Collectors.joining( "," ) ) );
+		}
 	}
 
 	private static List< Cluster > allClusters( final Cluster cluster )
