@@ -41,7 +41,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private final List< Tree< T > > subtrees2;
 
-	private final Map< Pair< Tree< T >, Tree< T > >, Double > costTreeToTree;
+	private final Map< Pair< Tree< T >, Tree< T > >, Double > attributeDistances;
 
 	/**
 	 * Calculate the Zhang edit distance between two labeled unordered trees.
@@ -78,12 +78,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 		subtrees1 = TreeUtils.listOfSubtrees( tree1 );
 		subtrees2 = TreeUtils.listOfSubtrees( tree2 );
 
-		equivalenceClasses = getEquivalenceClasses( tree1, tree2 ); costTreeToTree = new HashMap<>();
+		equivalenceClasses = getEquivalenceClasses( tree1, tree2 ); attributeDistances = new HashMap<>();
 		for ( Tree< T > subtree1 : subtrees1 )
 		{
 			for ( Tree< T > subtree2 : subtrees2 )
 			{
-				costTreeToTree.put( Pair.of( subtree1, subtree2 ),
+				attributeDistances.put( Pair.of( subtree1, subtree2 ),
 						costFunction.apply( subtree1.getAttribute(), subtree2.getAttribute() ) );
 			}
 		}
@@ -179,7 +179,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			return distance;
 
 		if ( tree1.isLeaf() && tree2.isLeaf() )
-			distance = costTreeToTree.get( Pair.of( tree1, tree2 ) );
+			distance = attributeDistances.get( Pair.of( tree1, tree2 ) );
 		else
 			distance =  getMinTreeChangeCosts( tree1, tree2, costFunction );
 
@@ -237,7 +237,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		}
 		double changeCosts = distanceForest( tree1, tree2 );
 		if ( costFunction != null )
-			changeCosts += costTreeToTree.get( Pair.of( tree1, tree2 ) );
+			changeCosts += attributeDistances.get( Pair.of( tree1, tree2 ) );
 
 		if ( tree1.isLeaf() || tree2.isLeaf() )
 		{
