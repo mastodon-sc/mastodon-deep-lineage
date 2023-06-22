@@ -166,7 +166,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	/**
 	 * Calculate the zhang edit distance between two sub-trees
 	 */
-	private double distanceTree( final Tree< T > tree1, final Tree< T > tree2, final @Nullable BiFunction< T, T, Double > costFunction )
+	private double distanceTree( final Tree< T > tree1, final Tree< T > tree2, final BiFunction< T, T, Double > costFunction )
 	{
 		if ( equivalenceClasses.get( tree1 ).intValue() == equivalenceClasses.get( tree2 ).intValue() )
 		{
@@ -217,27 +217,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return distance;
 	}
 
-	private double getMinTreeChangeCosts( Tree< T > tree1, Tree< T > tree2, @Nullable BiFunction< T, T, Double > costFunction )
+	private double getMinTreeChangeCosts( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
 	{
-		double insertCosts = treeInsertCosts.get( tree2 );
-		List< Double > distances = new ArrayList<>();
-		if ( !tree2.isLeaf() )
-		{
-			for ( Tree< T > child : tree2.getChildren() )
-				distances.add( distanceTree( tree1, child, costFunction ) - treeInsertCosts.get( child ) );
-			insertCosts += Collections.min( distances );
-		}
-		double deleteCosts = treeDeleteCosts.get( tree1 );
-		distances = new ArrayList<>();
-		if ( !tree1.isLeaf() )
-		{
-			for ( Tree< T > child : tree1.getChildren() )
-				distances.add( distanceTree( child, tree2, costFunction ) - treeDeleteCosts.get( child ) );
-			deleteCosts += Collections.min( distances );
-		}
-		double changeCosts = distanceForest( tree1, tree2 );
-		if ( costFunction != null )
-			changeCosts += attributeDistances.get( Pair.of( tree1, tree2 ) );
+		// NB: the order of the following three lines is important, changing the order will result in a wrong distance.
+		double insertCosts = insertOperationCosts( tree1, tree2, costFunction );
+		double deleteCosts = deleteOperationCosts( tree1, tree2, costFunction );
+		double changeCosts = distanceForest( tree1, tree2 ) + attributeDistances.get( Pair.of( tree1, tree2 ) );
 
 		if ( tree1.isLeaf() || tree2.isLeaf() )
 		{
@@ -247,6 +232,39 @@ public class ZhangUnorderedTreeEditDistance< T >
 		{
 			return min( insertCosts, deleteCosts, changeCosts );
 		}
+	}
+
+
+	/**
+	 * Costs for deleting tree1 but keeping a child-tree of tree1, and changing that child-tree to tree2.
+	 * (These are the costs for matching a child-tree of tree1 to tree2.)
+	 */
+	private double deleteOperationCosts( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
+	{
+		if ( tree1.isLeaf() )
+			return Double.NaN;
+
+		List< Double > distances = new ArrayList<>();
+		for ( Tree< T > child : tree1.getChildren() )
+			distances.add( distanceTree( child, tree2, costFunction ) - treeDeleteCosts.get( child ) );
+
+		return treeDeleteCosts.get( tree1 ) + Collections.min( distances );
+	}
+
+	/**
+	 * Costs for inserting tree2 with all but one child-tree, and changing tree1 to replace that child-tree.
+	 * (These are the costs for matching tree1 to a child-tree of tree2.)
+	 */
+	private double insertOperationCosts( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
+	{
+		if ( tree2.isLeaf() )
+			return Double.NaN;
+
+		List< Double > distances = new ArrayList<>();
+		for ( Tree< T > child : tree2.getChildren() )
+			distances.add( distanceTree( tree1, child, costFunction ) - treeInsertCosts.get( child ) );
+
+		return treeInsertCosts.get( tree2 ) + Collections.min( distances );
 	}
 
 	private double getMinForestChangeCosts( Tree< T > forest1, Tree< T > forest2 )
