@@ -247,4 +247,34 @@ public class SimpleTreeExamples
 
 		return node1;
 	}
+
+	/**
+	 * <pre>
+	 *       ┌────── 1 ──────┐
+	 *       │               │
+	 *       1               2
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree10()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 1d );
+
+		SimpleTree< Double > node2 = new SimpleTree<>( 1d );
+		node1.addSubtree( node2 );
+
+		SimpleTree< Double > node3 = new SimpleTree<>( 2d );
+		node1.addSubtree( node3 );
+
+		return node1;
+	}
+
+	/**
+	 * <pre>
+	 *       ─ 2 ─
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree11()
+	{
+		return new SimpleTree<>( 2d );
+	}
 }
