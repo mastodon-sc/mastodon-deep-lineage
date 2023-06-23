@@ -227,6 +227,139 @@ public class SimpleTreeExamples
 		return new SimpleTree<>( 2d );
 	}
 
+	/**
+	 * <pre>
+	 *       ┌────── 1000 ──────┐
+	 *       │                  │
+	 *     ┌─1 ───┐             1
+	 *     │      │
+	 *    100    200
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree12()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 1000d );
+
+		SimpleTree< Double > node2 = addNode( 1d, node1 );
+		addNode( 1d, node1 );
+
+		addNode( 100d, node2 );
+		addNode( 200d, node2 );
+
+		return node1;
+	}
+
+	/**
+	 * <pre>
+	 *       ┌────── 1000 ──────┐
+	 *       │                  │
+	 *      100                200
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree13()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 1_000d );
+
+		addNode( 100d, node1 );
+		addNode( 200d, node1 );
+
+		return node1;
+	}
+
+	/**
+	 * <pre>
+	 *       ┌────── 10000 ───┐
+	 *       │                │
+	 *       2                4
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree14()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 10_000d );
+
+		addNode( 2d, node1 );
+		addNode( 4d, node1 );
+
+		return node1;
+	}
+
+	/**
+	 * <pre>
+	 *       ┌──────────────10001──────────────┐
+	 *       │                │                │
+	 *       3                5            1_000_000
+	 * </pre>
+	 */
+	public static SimpleTree< Double > nonBinaryTree()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 10_001d );
+
+		addNode( 3d, node1 );
+		addNode( 5d, node1 );
+		addNode( 1_000_000d, node1 );
+
+		return node1;
+	}
+
+	/**
+	 * <pre>
+	 *       ┌────── 1000 ──────┐
+	 *       │                  │
+	 *      100               ┌─1───┐
+	 *                        │     │
+	 *                       200   300
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree15()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 1_000d );
+		addNode( 100d, node1 );
+
+		SimpleTree< Double > node2 = addNode( 1d, node1 );
+		addNode( 200d, node2 );
+		addNode( 300d, node2 );
+
+		return node1;
+	}
+
+	/**
+	 * <pre>
+	 *       ┌────── 1000 ──────┐
+	 *       │                  │
+	 *     ┌─2 ───┐            300
+	 *     │      │
+	 *    100    200
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree16()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 1_000d );
+		SimpleTree< Double > node2 = addNode( 2d, node1 );
+
+		addNode( 100d, node2 );
+		addNode( 200d, node2 );
+		addNode( 300d, node1 );
+
+		return node1;
+	}
+
+	/**
+	 * <pre>
+	 *       ┌────── 1000 ───┐
+	 *       │               │
+	 *      200             300
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree17()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 1_000d );
+
+		addNode( 200d, node1 );
+		addNode( 300d, node1 );
+
+		return node1;
+	}
+
 	private static SimpleTree< Double > addNode( double attribute, SimpleTree< Double > parentTree )
 	{
 		SimpleTree< Double > node = new SimpleTree<>( attribute );

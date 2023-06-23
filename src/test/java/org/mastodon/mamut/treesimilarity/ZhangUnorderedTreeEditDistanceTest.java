@@ -178,4 +178,57 @@ public class ZhangUnorderedTreeEditDistanceTest
 		double distance = ZhangUnorderedTreeEditDistance.distance( a, b, costFunction );
 		assertEquals( 2, distance, 0d );
 	}
+
+
+	/**
+	 * This test requires the method
+	 * {@link ZhangUnorderedTreeEditDistance#getMinForestChangeCosts(Tree, Tree)}.
+	 * to work correctly. (So it essentially tests that method.)
+	 */
+	@Test
+	public void testNodeRemovalAndInsertion()
+	{
+		BiFunction< Double, Double, Double > costFunction = getCostFunction();
+		Tree< Double > tree12 = SimpleTreeExamples.tree12();
+		Tree< Double > tree13 = SimpleTreeExamples.tree13();
+		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( tree12, tree13, costFunction ), 0d );
+		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( tree13, tree12, costFunction ), 0d );
+	}
+
+	@Test
+	public void testNonBinaryTrees()
+	{
+		// NB: I guess there is a bug in the code that sets up the flow network.
+		// It fails if the number of child trees is not equal between the compared trees.
+		Tree< Double > tree14 = SimpleTreeExamples.tree14();
+		Tree< Double > tree15 = SimpleTreeExamples.nonBinaryTree();
+		assertEquals( 1_000_003, ZhangUnorderedTreeEditDistance.distance( tree14, tree15, getCostFunction() ), 0d );
+		assertEquals( 1_000_003, ZhangUnorderedTreeEditDistance.distance( tree15, tree14, getCostFunction() ), 0d );
+	}
+
+	/**
+	 * Try a tricky example:
+	 * <pre>
+	 *                  1000              1000          1000
+	 *                  /  \              /  \          /  \
+	 *                 /    1            2    \       200  300
+	 *                /    / \          / \    \
+	 *              100  200 300      100 200  300
+	 * </pre>
+	 */
+	@Test
+	public void testTrickyExample()
+	{
+		Tree< Double > tree15 = SimpleTreeExamples.tree15();
+		Tree< Double > tree16 = SimpleTreeExamples.tree16();
+		assertEquals( 203, ZhangUnorderedTreeEditDistance.distance( tree15, tree16, getCostFunction() ), 0d );
+		assertEquals( 203, ZhangUnorderedTreeEditDistance.distance( tree16, tree15, getCostFunction() ), 0d );
+
+		// This is the optimal edit path: (delete the nodes with attribute 100 and 1), (insert the nodes with attribute 2 and 100)
+		Tree< Double > tree17 = SimpleTreeExamples.tree17();
+		assertEquals( 101, ZhangUnorderedTreeEditDistance.distance( tree15, tree17, getCostFunction() ), 0d );
+		assertEquals( 101, ZhangUnorderedTreeEditDistance.distance( tree17, tree15, getCostFunction() ), 0d );
+		assertEquals( 102, ZhangUnorderedTreeEditDistance.distance( tree17, tree16, getCostFunction() ), 0d );
+		assertEquals( 102, ZhangUnorderedTreeEditDistance.distance( tree16, tree17, getCostFunction() ), 0d );
+	}
 }
