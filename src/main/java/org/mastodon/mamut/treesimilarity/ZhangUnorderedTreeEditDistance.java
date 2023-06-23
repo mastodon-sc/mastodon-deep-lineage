@@ -261,24 +261,50 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private double getMinForestChangeCosts( Tree< T > forest1, Tree< T > forest2 )
 	{
-		double insertCosts = forestInsertCosts.get( forest2 );
-		List< Double > distances = new ArrayList<>();
-		if ( !forest2.isLeaf() )
-		{
-			for ( Tree< T > child : forest2.getChildren() )
-				distances.add( distanceForest( forest1, child ) - forestInsertCosts.get( child ) );
-			insertCosts += Collections.min( distances );
-		}
-		double deleteCosts = forestDeleteCosts.get( forest1 );
-		distances = new ArrayList<>();
-		if ( !forest1.isLeaf() )
-		{
-			for ( Tree< T > child : forest1.getChildren() )
-				distances.add( distanceForest( child, forest2 ) - forestDeleteCosts.get( child ) );
-			deleteCosts += Collections.min( distances );
-		}
+		if ( forest1.isLeaf() || forest2.isLeaf() )
+			throw new IllegalArgumentException( "This method expects the given trees not to be leaves." );
+
+		double insertCosts = getInsertCosts( forest1, forest2 );
+		double deleteCosts = getDeleteCosts( forest1, forest2 );
 		double changeCosts = minCostMaxFlow( forest1, forest2 );
 		return min( insertCosts, deleteCosts, changeCosts );
+	}
+
+	/**
+	 * This effectively calculates the costs for the following edit operation that
+	 * converts forest1 to forest2:
+	 * Where the children "X1", "Y1" of "A" are mapped to the children "X1", "X2" of "T2"
+	 * "A" and "B" are deleted. (The children of "B" are also removed)
+	 * <pre>
+	 *      T1             T2
+	 *     /  \           / \
+	 *    A    B   ->   X2  Y2
+	 *   / \
+	 *  X1 Y1
+	 * </pre>
+	 */
+	private double getDeleteCosts( Tree< T > forest1, Tree< T > forest2 )
+	{
+		if ( forest1.isLeaf() )
+			throw new IllegalArgumentException();
+
+		List< Double > distances = new ArrayList<>();
+		for ( Tree< T > child : forest1.getChildren() )
+			distances.add( distanceForest( child, forest2 ) - forestDeleteCosts.get( child ) );
+
+		return forestDeleteCosts.get( forest1 ) + Collections.min( distances );
+	}
+
+	private double getInsertCosts( Tree< T > forest1, Tree< T > forest2 )
+	{
+		if ( forest2.isLeaf() )
+			throw new IllegalArgumentException();
+
+		List< Double > distances = new ArrayList<>();
+		for ( Tree< T > child : forest2.getChildren() )
+			distances.add( distanceForest( forest1, child ) - forestInsertCosts.get( child ) );
+
+		return forestInsertCosts.get( forest2 ) + Collections.min( distances );
 	}
 
 	private double minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
