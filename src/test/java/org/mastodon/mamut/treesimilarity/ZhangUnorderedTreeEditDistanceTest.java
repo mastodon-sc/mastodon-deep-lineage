@@ -176,8 +176,8 @@ public class ZhangUnorderedTreeEditDistanceTest
 		BiFunction< Double, Double, Double > costFunction = getCostFunction();
 		Tree< Double > a = node( 1, leaf(100 ), leaf( 1 ));
 		Tree< Double > b = leaf( 100 );
-		double distance = ZhangUnorderedTreeEditDistance.distance( a, b, costFunction );
-		assertEquals( 2, distance, 0d );
+		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( a, b, costFunction ), 0d );
+		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( b, a, costFunction ), 0d );
 	}
 
 	/**
@@ -230,6 +230,15 @@ public class ZhangUnorderedTreeEditDistanceTest
 		assertEquals( 101, ZhangUnorderedTreeEditDistance.distance( c, a, getCostFunction() ), 0d );
 		assertEquals( 102, ZhangUnorderedTreeEditDistance.distance( c, b, getCostFunction() ), 0d );
 		assertEquals( 102, ZhangUnorderedTreeEditDistance.distance( b, c, getCostFunction() ), 0d );
+	}
+
+	@Test
+	public void testAnotherBug()
+	{
+		Tree< Double > a = node( 1000, node( 1, leaf( 2 ), node( 3, leaf( 4 ), node( 5, leaf( 6 ), leaf( 200 ), leaf( 300 ) ) ) ) );
+		Tree< Double > b = node( 1000, leaf( 200 ), leaf( 300 ) );
+		// The edit path is to simply remove the nodes with weights: 1, 2, 3, 4, 5, 6 (cost 21 = 1 + 2 + 3 + 4 + 5 + 6)
+		assertEquals( 21, ZhangUnorderedTreeEditDistance.distance( a, b, getCostFunction() ), 0d );
 	}
 
 	/**
