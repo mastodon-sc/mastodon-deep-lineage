@@ -181,13 +181,66 @@ public class ZhangUnorderedTreeEditDistanceTest
 	}
 
 	/**
+	 * This test requires the method
+	 * {@link ZhangUnorderedTreeEditDistance#getMinForestChangeCosts(Tree, Tree)}.
+	 * to work correctly. (So it essentially tests that method.)
+	 */
+	@Test
+	public void testNodeRemovalAndInsertion()
+	{
+		BiFunction< Double, Double, Double > costFunction = getCostFunction();
+		Tree< Double > a = node( 1000, node( 1, leaf( 100 ), leaf( 200 ) ), leaf( 1 ) );
+		Tree< Double > b = node( 1000, leaf( 100 ), leaf( 200 ) );
+		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( a, b, costFunction ), 0d );
+		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( b, a, costFunction ), 0d );
+	}
+
+	@Test
+	public void testNonBinaryTrees()
+	{
+		// NB: I guess there is a bug in the code that sets up the flow network.
+		// It fails if the number of child trees is not equal between the compared trees.
+		Tree< Double > a = node( 10000, leaf( 2 ), leaf( 4 ) );
+		Tree< Double > b = node( 10001, leaf( 3 ), leaf( 5 ), leaf(1000_000) );
+		assertEquals( 1000_003, ZhangUnorderedTreeEditDistance.distance( a, b, getCostFunction() ), 0d );
+		assertEquals( 1000_003, ZhangUnorderedTreeEditDistance.distance( b, a, getCostFunction() ), 0d );
+	}
+
+	/**
+	 * Try a tricky example:
+	 * <pre>
+	 *                  1000              1000
+	 *                  /  \              /  \
+	 *                 /    1            2    \
+	 *                /    / \          / \    \
+	 *              100  200 300      100 200  300
+	 * </pre>
+	 */
+	@Test
+	public void testTrickyExample()
+	{
+		Tree< Double > a = node( 1000, leaf( 100 ), node( 1, leaf( 200 ), leaf( 300 ) ) );
+		Tree< Double > b = node( 1000, node( 2, leaf( 100 ), leaf( 200 ) ), leaf( 300 ) );
+		assertEquals( 203, ZhangUnorderedTreeEditDistance.distance( a, b, getCostFunction() ), 0d );
+		assertEquals( 203, ZhangUnorderedTreeEditDistance.distance( b, a, getCostFunction() ), 0d );
+
+		// This is the optimal edit path: (delete the nodes with attribute 100 and 1), (insert the nodes with attribute 2 and 100)
+		Tree< Double > c = node( 1000, leaf( 200 ), leaf( 300 ) );
+		assertEquals( 101, ZhangUnorderedTreeEditDistance.distance( a, c, getCostFunction() ), 0d );
+		assertEquals( 101, ZhangUnorderedTreeEditDistance.distance( c, a, getCostFunction() ), 0d );
+		assertEquals( 102, ZhangUnorderedTreeEditDistance.distance( c, b, getCostFunction() ), 0d );
+		assertEquals( 102, ZhangUnorderedTreeEditDistance.distance( b, c, getCostFunction() ), 0d );
+	}
+
+	/**
 	 * Creates a {@link SimpleTree} with the given attribute and children.
 	 */
-	private static SimpleTree< Double > node( double a, SimpleTree< Double > childA, SimpleTree< Double > childB )
+	@SafeVarargs
+	private static SimpleTree< Double > node( double a, SimpleTree< Double >... children )
 	{
-		SimpleTree< Double > node = new SimpleTree<>( a );
-		node.addSubtree( childA );
-		node.addSubtree( childB );
+		final SimpleTree< Double > node = new SimpleTree<>( a );
+		for ( final SimpleTree< Double > child : children )
+			node.addSubtree( child );
 		return node;
 	}
 
