@@ -2,6 +2,7 @@ package org.mastodon.mamut.treesimilarity.tree;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringJoiner;
 
 public class SimpleTree< T > implements Tree< T >
 {
@@ -50,6 +51,10 @@ public class SimpleTree< T > implements Tree< T >
 	@Override
 	public String toString()
 	{
-		return getClass().getSimpleName() + "@" + hashCode();
+		StringJoiner s = new StringJoiner( " ", "(", ")" );
+		s.add( String.valueOf( attribute ) );
+		for ( Tree< T > child : children )
+			s.add( child.toString() );
+		return s.toString();
 	}
 }
