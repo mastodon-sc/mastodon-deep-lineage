@@ -173,10 +173,10 @@ public class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	public void testReorderingLeafNodes() {
 		BiFunction< Double, Double, Double > costFunction = getCostFunction();
-		Tree< Double > a = SimpleTreeExamples.tree10();
-		Tree< Double > b = SimpleTreeExamples.tree11();
-		double distance = ZhangUnorderedTreeEditDistance.distance( a, b, costFunction );
-		assertEquals( 2, distance, 0d );
+		Tree< Double > tree10 = SimpleTreeExamples.tree10();
+		Tree< Double > tree11 = SimpleTreeExamples.tree11();
+		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( tree10, tree11, costFunction ), 0d );
+		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( tree11, tree10, costFunction ), 0d );
 	}
 
 
@@ -230,5 +230,14 @@ public class ZhangUnorderedTreeEditDistanceTest
 		assertEquals( 101, ZhangUnorderedTreeEditDistance.distance( tree17, tree15, getCostFunction() ), 0d );
 		assertEquals( 102, ZhangUnorderedTreeEditDistance.distance( tree17, tree16, getCostFunction() ), 0d );
 		assertEquals( 102, ZhangUnorderedTreeEditDistance.distance( tree16, tree17, getCostFunction() ), 0d );
+	}
+
+	@Test
+	public void testRecursiveRemoveNodes()
+	{
+		Tree< Double > tree18 = SimpleTreeExamples.tree18();
+		Tree< Double > tree19 = SimpleTreeExamples.tree19();
+		// The edit path is to remove the nodes with weights: 1, 2, 3, 4, 5, 6 (cost 21 = 1 + 2 + 3 + 4 + 5 + 6)
+		assertEquals( 21, ZhangUnorderedTreeEditDistance.distance( tree18, tree19, getCostFunction() ), 0d );
 	}
 }
