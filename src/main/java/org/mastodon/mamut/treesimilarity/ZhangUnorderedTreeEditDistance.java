@@ -63,9 +63,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		{
 			double distance = 0;
 			for ( Tree< T > subtree : TreeUtils.listOfSubtrees( tree1 ) )
-			{
 				distance += costFunction.apply( subtree.getAttribute(), null );
-			}
 			return distance;
 		}
 		ZhangUnorderedTreeEditDistance< T > zhang = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction );
@@ -141,26 +139,22 @@ public class ZhangUnorderedTreeEditDistance< T >
 			if ( logger.isTraceEnabled() )
 				logger.trace( "forest distance[{}] = {}", i, Arrays.toString( forestDistances[ i ] ) );
 		}
+
 		logger.trace( "tree deletion costs (tree1):" );
 		for ( Tree< T > subtree : subtrees1 )
-		{
 			logger.trace( "tree deletion[{}] = {}", subtree, treeDeleteCosts.get( subtree ) );
-		}
+
 		logger.trace( "forest deletion costs (tree1):" );
 		for ( Tree< T > subtree : subtrees1 )
-		{
 			logger.trace( "forest deletion[{}] = {}", subtree, forestDeleteCosts.get( subtree ) );
-		}
+
 		logger.trace( "tree insertion costs (tree2):" );
 		for ( Tree< T > subtree : subtrees2 )
-		{
 			logger.trace( "tree insertion[{}] = {}", subtree, treeInsertCosts.get( subtree ) );
-		}
+
 		logger.trace( "forest insertion costs (tree2):" );
 		for ( Tree< T > subtree : subtrees2 )
-		{
 			logger.trace( "forest insertion[{}] = {}", subtree, forestInsertCosts.get( subtree ) );
-		}
 	}
 
 	/**
