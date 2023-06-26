@@ -48,7 +48,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 *
 	 * @param tree1 Tree object representing the first tree.
 	 * @param tree2 Tree object representing the second tree.
-	 * @param costFunction Optional cost function.
+	 * @param costFunction mandatory cost function.
 	 *
 	 * @return The Zhang edit distance between tree1 and tree2.
 	 */
@@ -56,7 +56,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			final BiFunction< T, T, Double > costFunction )
 	{
 		if ( costFunction == null )
-			throw new NullPointerException( "The cost function is expected to be non-null, but it is null." );
+			throw new IllegalArgumentException( "The cost function is expected to be non-null, but it is null." );
 
 		// trivial cases
 		if ( tree2 == null )
