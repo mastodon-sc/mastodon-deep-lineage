@@ -126,7 +126,7 @@ public class ZhangUnorderedTreeEditDistanceTest
 
 
 		// 0, because: the trees are topologically identical
-		BiFunction< Double, Double, Double > costFunction = ( a, b ) -> (a == null) != (b == null) ? 1d : 0d;
+		BiFunction< Double, Double, Double > costFunction = ( a, b ) -> ( a == null ) == ( b == null ) ? 0d : 1d;
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleTree2, costFunction ), 0d );
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( simpleTree2, simpleTree1, costFunction ), 0d );
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( branchSpotTree1, branchSpotTree2, costFunction ), 0d );
