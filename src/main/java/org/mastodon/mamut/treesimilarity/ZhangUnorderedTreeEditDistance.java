@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class ZhangUnorderedTreeEditDistance< T >
 {
@@ -234,11 +235,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	{
 		if ( tree2.isLeaf() )
 			return Double.POSITIVE_INFINITY;
-
 		List< Double > distances = new ArrayList<>();
-		for ( Tree< T > child : tree2.getChildren() )
-			distances.add( distanceTree( tree1, child, costFunction ) - treeInsertCosts.get( child ) );
-
+		tree2.getChildren().forEach( child -> distances.add( distanceTree( tree1, child, costFunction ) - treeInsertCosts.get( child ) ) );
 		return treeInsertCosts.get( tree2 ) + Collections.min( distances );
 	}
 
@@ -250,11 +248,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	{
 		if ( tree1.isLeaf() )
 			return Double.POSITIVE_INFINITY;
-
 		List< Double > distances = new ArrayList<>();
-		for ( Tree< T > child : tree1.getChildren() )
-			distances.add( distanceTree( child, tree2, costFunction ) - treeDeleteCosts.get( child ) );
-
+		tree1.getChildren().forEach( child -> distances.add( distanceTree( child, tree2, costFunction ) - treeDeleteCosts.get( child ) ) );
 		return treeDeleteCosts.get( tree1 ) + Collections.min( distances );
 	}
 
