@@ -18,7 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 public class ZhangUnorderedTreeEditDistance< T >
 {
@@ -93,11 +92,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 		subtrees1.forEach( tree -> costTreeToNone.put( tree, costFunction.apply( tree.getAttribute(), null ) ) );
 		subtrees2.forEach( tree -> costTreeToNone.put( tree, costFunction.apply( tree.getAttribute(), null ) ) );
 
-		ChangeCosts deleteCosts = getChangeCosts( tree1, costTreeToNone );
+		ChangeCosts deleteCosts = new ChangeCosts( tree1, costTreeToNone );
 		treeDeleteCosts = deleteCosts.treeCosts;
 		forestDeleteCosts = deleteCosts.forestCosts;
 
-		ChangeCosts insertCosts = getChangeCosts( tree2, costTreeToNone );
+		ChangeCosts insertCosts = new ChangeCosts( tree2, costTreeToNone );
 		treeInsertCosts = insertCosts.treeCosts;
 		forestInsertCosts = insertCosts.forestCosts;
 
@@ -390,67 +389,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return Math.min( Math.min( a, b ), c );
 	}
 
-	/**
-	 * Compute the costs of deleting or inserting a tree or a forest.
-	 * <p>
-	 * <strong>The cost of deleting or inserting a tree is:</strong>
-	 * <ul>
-	 * <li>the cost of deleting or inserting the attribute of its source</li>
-	 * <li>+ the cost of deleting or inserting the forest associated with that source</li>
-	 * </ul>
-	 * <strong>The cost of deleting or inserting a forest is:</strong>
-	 * <ul>
-	 * <li>the cost of deleting or inserting all trees belonging to it
-	 * </ul>
-	 * <strong>What is a forest?</strong>
-	 * <p>
-	 * "Suppose that we have a numbering for each tree.
-	 * <ul>
-	 * <li>Let t[i] be the i<sup>th</sup> node of tree T in the given numbering.
-	 * <li>Let T[i] be the subtree rooted at t[i]
-	 * <li>Let F[i] be the unordered forest obtained by deleting t[i] from T[i]."
-	 * </ul>
-	 * <i>Algorithmica (1996) 15:208</i>
-	 *
-	 * @param tree the tree or forest to compute the change costs for
-	 * @param costTreeToNone a mapping from tree to the cost of deleting or inserting the attribute of its source
-	 * @return the change costs
-	 */
-	private ChangeCosts getChangeCosts( final Tree< T > tree, final Map< Tree< T >, Double > costTreeToNone )
-	{
-		if ( costTreeToNone == null )
-			throw new NullPointerException( "costTreeToNone is null" );
-
-		Map< Tree< T >, Double > treeCosts = new HashMap<>();
-		Map< Tree< T >, Double > forestCosts = new HashMap<>();
-
-		if ( tree.isLeaf() )
-		{
-			forestCosts.put( tree, 0d );
-			treeCosts.put( tree, costTreeToNone.get( tree ) );
-		}
-		else
-		{
-			double cost = 0;
-			for ( Tree< T > child : tree.getChildren() )
-			{
-				Map< Tree< T >, Double > childForestChangeCosts;
-				Map< Tree< T >, Double > childTreeChangeCosts;
-				ChangeCosts costs = getChangeCosts( child, costTreeToNone );
-				childTreeChangeCosts = costs.treeCosts;
-				childForestChangeCosts = costs.forestCosts;
-
-				cost += childTreeChangeCosts.get( child );
-				treeCosts.putAll( childTreeChangeCosts );
-				forestCosts.putAll( childForestChangeCosts );
-			}
-
-			forestCosts.put( tree, cost );
-			treeCosts.put( tree, cost + costTreeToNone.get( tree ) );
-		}
-		return new ChangeCosts( treeCosts, forestCosts );
-	}
-
 	private static < T > int classifyTrees( final Tree< T > tree, final Map< Integer, Map< T, List< Tree< T > > > > classifiedTrees )
 	{
 		int depth = 0;
@@ -503,14 +441,58 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private class ChangeCosts
 	{
+		private final Map< Tree< T >, Double > costTreeToNone;
+
 		private final Map< Tree< T >, Double > treeCosts;
 
 		private final Map< Tree< T >, Double > forestCosts;
 
-		private ChangeCosts( final Map< Tree< T >, Double > treeCosts, final Map< Tree< T >, Double > forestCosts )
+		/**
+		 * Compute the costs of deleting or inserting a tree or a forest.
+		 * <p>
+		 * <strong>The cost of deleting or inserting a tree is:</strong>
+		 * <ul>
+		 * <li>the cost of deleting or inserting the attribute of its source</li>
+		 * <li>+ the cost of deleting or inserting the forest associated with that source</li>
+		 * </ul>
+		 * <strong>The cost of deleting or inserting a forest is:</strong>
+		 * <ul>
+		 * <li>the cost of deleting or inserting all trees belonging to it
+		 * </ul>
+		 * <strong>What is a forest?</strong>
+		 * <p>
+		 * "Suppose that we have a numbering for each tree.
+		 * <ul>
+		 * <li>Let t[i] be the i<sup>th</sup> node of tree T in the given numbering.
+		 * <li>Let T[i] be the subtree rooted at t[i]
+		 * <li>Let F[i] be the unordered forest obtained by deleting t[i] from T[i]."
+		 * </ul>
+		 * <i>Algorithmica (1996) 15:208</i>
+		 *
+		 * @param tree the tree or forest to compute the change costs for
+		 * @param costTreeToNone a mapping from tree to the cost of deleting or inserting the attribute of its source
+		 */
+		private ChangeCosts( final Tree< T > tree, final Map< Tree< T >, Double > costTreeToNone )
 		{
-			this.treeCosts = treeCosts;
-			this.forestCosts = forestCosts;
+			this.costTreeToNone = costTreeToNone;
+			this.treeCosts = new HashMap<>();
+			this.forestCosts = new HashMap<>();
+			computeChangeCosts( tree );
+		}
+
+		private void computeChangeCosts( final Tree< T > tree )
+		{
+			double cost = 0;
+			if ( !tree.isLeaf() )
+			{
+				for ( Tree< T > child : tree.getChildren() )
+				{
+					computeChangeCosts( child );
+					cost += treeCosts.get( child );
+				}
+			}
+			forestCosts.put( tree, cost );
+			treeCosts.put( tree, cost + costTreeToNone.get( tree ) );
 		}
 	}
 }
