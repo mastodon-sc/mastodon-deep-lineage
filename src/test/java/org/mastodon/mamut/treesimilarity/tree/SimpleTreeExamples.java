@@ -412,7 +412,7 @@ public class SimpleTreeExamples
 	private static SimpleTree< Double > addNode( double attribute, SimpleTree< Double > parentTree )
 	{
 		SimpleTree< Double > node = new SimpleTree<>( attribute );
-		parentTree.addSubtree( node );
+		parentTree.addChild( node );
 		return node;
 	}
 }
