@@ -33,17 +33,13 @@ public class JGraphtTools
 		// Intermediately save the edge weights, since they need to be overwritten with capacities for the maximum flow algorithm
 		Map< DefaultWeightedEdge, Double > weights = new HashMap<>();
 		for ( DefaultWeightedEdge edge : graph.edgeSet() )
-		{
 			weights.put( edge, graph.getEdgeWeight( edge ) );
-		}
 
 		// Set the capacities as edge weights
 		// Edges, for which no capacity is set in the given capacities map, are assumed to have Integer.MAX_VALUE capacity
 		for ( DefaultWeightedEdge defaultWeightedEdge : graph.edgeSet() )
-		{
 			graph.setEdgeWeight( defaultWeightedEdge,
 					capacities.get( defaultWeightedEdge ) == null ? Integer.MAX_VALUE : capacities.get( defaultWeightedEdge ) );
-		}
 
 		// Compute the maximum flow value
 		MaximumFlowAlgorithm< V, DefaultWeightedEdge > maximumFlowAlgorithm = new PushRelabelMFImpl<>( graph );
@@ -51,9 +47,7 @@ public class JGraphtTools
 
 		// Now set the actual edge weights again
 		for ( DefaultWeightedEdge edge : graph.edgeSet() )
-		{
 			graph.setEdgeWeight( edge, weights.get( edge ) );
-		}
 
 		// Create demands for the minimum cost flow problem
 		Map< V, Integer > demands = new HashMap<>();
