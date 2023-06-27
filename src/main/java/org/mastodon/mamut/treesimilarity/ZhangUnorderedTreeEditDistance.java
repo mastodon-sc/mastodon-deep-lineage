@@ -51,22 +51,30 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 *
 	 * @return The Zhang edit distance between tree1 and tree2.
 	 */
-	public static < T > double distance( final Tree< T > tree1, final @Nullable Tree< T > tree2,
+	public static < T > double distance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
 			final BiFunction< T, T, Double > costFunction )
 	{
 		if ( costFunction == null )
 			throw new IllegalArgumentException( "The cost function is expected to be non-null, but it is null." );
+		if ( tree1 == null && tree2 == null )
+			throw new IllegalArgumentException( "Both trees are null. This is not allowed." );
 
 		// trivial cases
-		if ( tree2 == null )
-		{
-			double distance = 0;
-			for ( Tree< T > subtree : TreeUtils.listOfSubtrees( tree1 ) )
-				distance += costFunction.apply( subtree.getAttribute(), null );
-			return distance;
-		}
+		if ( tree1 == null )
+			return distanceTreeToNull( tree2, costFunction );
+		else if ( tree2 == null )
+			return distanceTreeToNull( tree1, costFunction );
+
 		ZhangUnorderedTreeEditDistance< T > zhang = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction );
 		return zhang.compute( tree1, tree2 );
+	}
+
+	private static < T > double distanceTreeToNull( Tree< T > tree2, BiFunction< T, T, Double > costFunction )
+	{
+		double distance = 0;
+		for ( Tree< T > subtree : TreeUtils.listOfSubtrees( tree2 ) )
+			distance += costFunction.apply( null, subtree.getAttribute() );
+		return distance;
 	}
 
 	private ZhangUnorderedTreeEditDistance( final Tree< T > tree1, final Tree< T > tree2,
