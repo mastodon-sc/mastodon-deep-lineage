@@ -9,6 +9,7 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class JGraphtTools
 {
@@ -49,20 +50,18 @@ public class JGraphtTools
 		for ( DefaultWeightedEdge edge : graph.edgeSet() )
 			graph.setEdgeWeight( edge, weights.get( edge ) );
 
-		// Create demands for the minimum cost flow problem
-		Map< V, Integer > supply = new HashMap<>();
-		for ( V v : graph.vertexSet() )
-		{
+		// Create supplies for the minimum cost flow problem
+		Function< V, Integer > supplies = v -> {
 			if ( v.equals( source ) )
-				supply.put( v, ( int ) maximumFlowValue );
+				return ( int ) maximumFlowValue;
 			else if ( v.equals( sink ) )
-				supply.put( v, -( int ) maximumFlowValue );
+				return -( int ) maximumFlowValue;
 			else
-				supply.put( v, 0 );
-		}
+				return 0;
+		};
 
 		MinimumCostFlowProblem< V, DefaultWeightedEdge > problem =
-				new MinimumCostFlowProblem.MinimumCostFlowProblemImpl<>( graph, supply::get, capacities::get );
+				new MinimumCostFlowProblem.MinimumCostFlowProblemImpl<>( graph, supplies, capacities::get );
 		CapacityScalingMinimumCostFlow< V, DefaultWeightedEdge > minimumCostFlowAlgorithm =
 				new CapacityScalingMinimumCostFlow<>();
 		return minimumCostFlowAlgorithm.getMinimumCostFlow( problem ).getCost();
