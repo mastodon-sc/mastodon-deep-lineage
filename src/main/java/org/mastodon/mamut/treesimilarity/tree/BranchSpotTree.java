@@ -3,8 +3,8 @@ package org.mastodon.mamut.treesimilarity.tree;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class BranchSpotTree implements Tree< Double >
 {
@@ -12,13 +12,13 @@ public class BranchSpotTree implements Tree< Double >
 
 	private final int endTimepoint;
 
-	private final HashSet< Tree< Double > > children;
+	private final Collection< Tree< Double > > children;
 
 	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
 	{
 		this.branchSpot = branchSpot;
 		this.endTimepoint = endTimepoint;
-		this.children = new HashSet<>();
+		this.children = new ArrayList<>();
 		for ( BranchLink branchLink : branchSpot.outgoingEdges() )
 		{
 			BranchSpot child = branchLink.getTarget();
@@ -28,7 +28,7 @@ public class BranchSpotTree implements Tree< Double >
 	}
 
 	@Override
-	public Set< Tree< Double > > getChildren()
+	public Collection< Tree< Double > > getChildren()
 	{
 		return children;
 	}
