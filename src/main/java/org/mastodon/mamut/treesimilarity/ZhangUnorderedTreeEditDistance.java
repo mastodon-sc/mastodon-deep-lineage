@@ -40,6 +40,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private final Map< Pair< Tree< T >, Tree< T > >, Double > attributeDistances;
 
+	private final BiFunction< T, T, Double > costFunction;
+
 	/**
 	 * Calculate the Zhang edit distance between two labeled unordered trees.
 	 *
@@ -64,12 +66,14 @@ public class ZhangUnorderedTreeEditDistance< T >
 			return distance;
 		}
 		ZhangUnorderedTreeEditDistance< T > zhang = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction );
-		return zhang.compute( tree1, tree2, costFunction );
+		return zhang.compute( tree1, tree2 );
 	}
 
 	private ZhangUnorderedTreeEditDistance( final Tree< T > tree1, final Tree< T > tree2,
 			final BiFunction< T, T, Double > costFunction )
 	{
+		this.costFunction = costFunction;
+
 		subtrees1 = TreeUtils.listOfSubtrees( tree1 );
 		subtrees2 = TreeUtils.listOfSubtrees( tree2 );
 
@@ -104,11 +108,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 *
 	 * @param tree1 Tree object representing the first tree.
 	 * @param tree2 Tree object representing the second tree.
-	 * @param costFunction Optional cost function.
 	 *
 	 * @return The Zhang edit distance between tree1 and tree2 as an integer.
 	 */
-	private double compute( final Tree< T > tree1, final Tree< T > tree2, final BiFunction< T, T, Double > costFunction )
+	private double compute( final Tree< T > tree1, final Tree< T > tree2 )
 	{
 		for ( Tree< T > t1 : subtrees1 )
 			for ( Tree< T > t2 : subtrees2 )
