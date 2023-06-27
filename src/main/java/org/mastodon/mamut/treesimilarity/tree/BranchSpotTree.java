@@ -37,8 +37,7 @@ public class BranchSpotTree implements Tree< Double >
 	public Double getAttribute()
 	{
 		int lastTimePoint = Math.min( branchSpot.getTimepoint(), this.endTimepoint );
-		double lifespan = ( double ) lastTimePoint - branchSpot.getFirstTimePoint();
-		return lifespan;
+		return ( double ) lastTimePoint - branchSpot.getFirstTimePoint();
 	}
 
 	public BranchSpot getBranchSpot()
