@@ -24,6 +24,8 @@ public class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > simpleTree5 = SimpleTreeExamples.tree5();
 		Tree< Double > simpleTree6 = SimpleTreeExamples.tree6();
 		Tree< Double > simpleTree7 = SimpleTreeExamples.tree7();
+		Tree< Double > simpleTree8 = SimpleTreeExamples.tree8();
+		Tree< Double > simpleTree9 = SimpleTreeExamples.tree9();
 
 		Tree< Double > branchSpotTree1 = BranchSpotTreeExamples.tree1();
 		Tree< Double > branchSpotTree2 = BranchSpotTreeExamples.tree2();
@@ -32,6 +34,8 @@ public class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > branchSpotTree5 = BranchSpotTreeExamples.tree5();
 		Tree< Double > branchSpotTree6 = BranchSpotTreeExamples.tree6();
 		Tree< Double > branchSpotTree7 = BranchSpotTreeExamples.tree7();
+		Tree< Double > branchSpotTree8 = BranchSpotTreeExamples.tree8();
+		Tree< Double > branchSpotTree9 = BranchSpotTreeExamples.tree9();
 
 		// 20, because: 2 nodes with a difference of 10 each need to be changed
 		assertEquals( 20d, ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleTree2, costFunction ), 0d );
@@ -62,6 +66,12 @@ public class ZhangUnorderedTreeEditDistanceTest
 		assertEquals( 69d, ZhangUnorderedTreeEditDistance.distance( simpleTree7, simpleTree5, costFunction ), 0d );
 		assertEquals( 69d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree5, branchSpotTree7, costFunction ), 0d );
 		assertEquals( 69d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree7, branchSpotTree5, costFunction ), 0d );
+
+		// 1, because: one node has a difference of 1
+		assertEquals( 1d, ZhangUnorderedTreeEditDistance.distance( simpleTree8, simpleTree9, costFunction ), 0d );
+		assertEquals( 1d, ZhangUnorderedTreeEditDistance.distance( simpleTree9, simpleTree8, costFunction ), 0d );
+		assertEquals( 1d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree8, branchSpotTree9, costFunction ), 0d );
+		assertEquals( 1d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree9, branchSpotTree8, costFunction ), 0d );
 	}
 
 	@Test
@@ -107,7 +117,6 @@ public class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	public void testDistanceNullCostFunction()
 	{
-
 		Tree< Double > simpleTree1 = SimpleTreeExamples.tree1();
 		Tree< Double > simpleTree2 = SimpleTreeExamples.tree2();
 		Tree< Double > simpleTree3 = SimpleTreeExamples.tree3();
@@ -150,15 +159,6 @@ public class ZhangUnorderedTreeEditDistanceTest
 		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( branchSpotTree7, branchSpotTree5, costFunction ), 0d );
 	}
 
-	@Test
-	public void testEquivalenceClasses() {
-		BiFunction< Double, Double, Double > costFunction = getCostFunction();
-		Tree< Double > a = SimpleTreeExamples.tree8();
-		Tree< Double > b = SimpleTreeExamples.tree9();
-		double distance = ZhangUnorderedTreeEditDistance.distance( a, b, costFunction );
-		assertEquals( 1, distance, 0d );
-	}
-
 	private static BiFunction< Double, Double, Double > getCostFunction()
 	{
 		return ( o1, o2 ) -> {
@@ -171,7 +171,8 @@ public class ZhangUnorderedTreeEditDistanceTest
 
 
 	@Test
-	public void testReorderingLeafNodes() {
+	public void testReorderingLeafNodes()
+	{
 		BiFunction< Double, Double, Double > costFunction = getCostFunction();
 		Tree< Double > tree10 = SimpleTreeExamples.tree10();
 		Tree< Double > tree11 = SimpleTreeExamples.tree11();

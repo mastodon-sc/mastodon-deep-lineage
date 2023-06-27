@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -34,8 +33,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private final Double[][] forestDistances;
 
 	private final Double[][] treeDistances;
-
-	private final Map< Tree< T >, Integer > equivalenceClasses;
 
 	private final List< Tree< T > > subtrees1;
 
@@ -76,7 +73,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		subtrees1 = TreeUtils.listOfSubtrees( tree1 );
 		subtrees2 = TreeUtils.listOfSubtrees( tree2 );
 
-		equivalenceClasses = getEquivalenceClasses( tree1, tree2 ); attributeDistances = new HashMap<>();
+		attributeDistances = new HashMap<>();
 		for ( Tree< T > subtree1 : subtrees1 )
 		{
 			for ( Tree< T > subtree2 : subtrees2 )
@@ -162,12 +159,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double distanceTree( final Tree< T > tree1, final Tree< T > tree2, final BiFunction< T, T, Double > costFunction )
 	{
-		if ( equivalenceClasses.get( tree1 ).intValue() == equivalenceClasses.get( tree2 ).intValue() )
-		{
-			treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = 0d;
-			forestDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = 0d;
-			return 0;
-		}
 		double distance = treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ];
 		if ( distance != -1 )
 			return distance;
@@ -292,23 +283,19 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private double minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
 	{
-		List< List< Tree< T > > > classifiedTreesOfForest1 = getClassifiedTrees( forest1 );
-		List< List< Tree< T > > > classifiedTreesOfForest2 = getClassifiedTrees( forest2 );
-
 		// Construction of graph for max flow min cost algorithm
 		SimpleDirectedWeightedGraph< Integer, DefaultWeightedEdge > graph = new SimpleDirectedWeightedGraph<>( DefaultWeightedEdge.class );
 
-		// NB: The size of the forests is the number of their nodes minus one, since the root of the forest is not counted
-		int forest1Size = TreeUtils.size( forest1 ) - 1;
-		int forest2Size = TreeUtils.size( forest2 ) - 1;
+		List< Tree< T > > childrenForest1 = new ArrayList<>( forest1.getChildren() );
+		List< Tree< T > > childrenForest2 = new ArrayList<>( forest2.getChildren() );
 
-		int numberOfEquivalenceClasses1 = classifiedTreesOfForest1.size();
-		int numberOfEquivalenceClasses2 = classifiedTreesOfForest2.size();
+		int forest1NumberOfChildren = childrenForest1.size();
+		int forest2NumberOfChildren = childrenForest2.size();
 
 		Integer source = 0;
-		Integer sink = numberOfEquivalenceClasses1 + numberOfEquivalenceClasses2 + 1;
-		Integer emptyTree1 = numberOfEquivalenceClasses1 + numberOfEquivalenceClasses2 + 2;
-		Integer emptyTree2 = numberOfEquivalenceClasses1 + numberOfEquivalenceClasses2 + 3;
+		Integer sink = forest1NumberOfChildren + forest2NumberOfChildren + 1;
+		Integer emptyTree1 = forest1NumberOfChildren + forest2NumberOfChildren + 2;
+		Integer emptyTree2 = forest1NumberOfChildren + forest2NumberOfChildren + 3;
 
 		graph.addVertex( source );
 		graph.addVertex( sink );
@@ -323,136 +310,57 @@ public class ZhangUnorderedTreeEditDistance< T >
 		graph.setEdgeWeight( e2, 0 );
 		graph.setEdgeWeight( e3, 0 );
 
+		// NB: The size of the forests is the number of their nodes minus one, since the root of the forest is not counted
+		int forest1Size = TreeUtils.size( forest1 ) - 1;
+		int forest2Size = TreeUtils.size( forest2 ) - 1;
+
 		Map< DefaultWeightedEdge, Integer > capacities = new HashMap<>();
 		capacities.put( e1, forest2Size - Math.min( forest1Size, forest2Size ) );
 		capacities.put( e2, Math.max( forest1Size, forest2Size ) - Math.min( forest1Size, forest2Size ) );
 		capacities.put( e3, forest1Size - Math.min( forest1Size, forest2Size ) );
 
-		for ( int i = 0; i < classifiedTreesOfForest1.size(); i++ )
+		for ( int i = 0; i < forest1NumberOfChildren; i++ )
 		{
-			List< Tree< T > > subtreesWithSameEquivalenceClassForest1 = classifiedTreesOfForest1.get( i );
 			if ( !graph.containsVertex( i + 1 ) )
 				graph.addVertex( i + 1 );
 			DefaultWeightedEdge edge = graph.addEdge( 0, i + 1 );
 			graph.setEdgeWeight( edge, 0 );
-			capacities.put( edge, subtreesWithSameEquivalenceClassForest1.size() );
-			Tree< T > firstTree1OfForest1 = subtreesWithSameEquivalenceClassForest1.get( 0 );
-			for ( int j = 0; j < classifiedTreesOfForest2.size(); j++ )
+			capacities.put( edge, 1 );
+			for ( int j = 0; j < childrenForest2.size(); j++ )
 			{
-				List< Tree< T > > subtreesWithSameEquivalenceClassForest2 = classifiedTreesOfForest2.get( j );
-				Tree< T > firstTreeOfForest2 = subtreesWithSameEquivalenceClassForest2.get( 0 );
-				double edgeWeight = treeDistances[ subtrees1.indexOf( firstTree1OfForest1 ) ][ subtrees2.indexOf( firstTreeOfForest2 ) ];
+				double edgeWeight =
+						treeDistances[ subtrees1.indexOf( childrenForest1.get( i ) ) ][ subtrees2.indexOf( childrenForest2.get( j ) ) ];
 				Integer start = i + 1;
-				Integer target = numberOfEquivalenceClasses1 + j + 1;
+				Integer target = forest1NumberOfChildren + j + 1;
 				if ( !graph.containsVertex( start ) )
 					graph.addVertex( start );
 				if ( !graph.containsVertex( target ) )
 					graph.addVertex( target );
-				edge = graph.addEdge( ( i + 1 ), ( numberOfEquivalenceClasses1 + j + 1 ) );
+				edge = graph.addEdge( ( i + 1 ), ( forest1NumberOfChildren + j + 1 ) );
 				graph.setEdgeWeight( edge, edgeWeight );
-				capacities.put( edge, subtreesWithSameEquivalenceClassForest1.size() );
+				capacities.put( edge, 1 );
 			}
 			edge = graph.addEdge( i + 1, emptyTree2 );
-			graph.setEdgeWeight( edge, treeDeleteCosts.get( firstTree1OfForest1 ) );
-			capacities.put( edge, subtreesWithSameEquivalenceClassForest1.size() );
+			graph.setEdgeWeight( edge, treeDeleteCosts.get( childrenForest1.get( i ) ) );
+			capacities.put( edge, 1 );
 		}
-		for ( int j = 0; j < classifiedTreesOfForest2.size(); j++ )
+		for ( int j = 0; j < childrenForest2.size(); j++ )
 		{
-			List< Tree< T > > subtreesWithSameEquivalenceClassForest2 = classifiedTreesOfForest2.get( j );
-			Tree< T > tree2 = subtreesWithSameEquivalenceClassForest2.get( 0 );
-
-			DefaultWeightedEdge edge = graph.addEdge( emptyTree1, numberOfEquivalenceClasses1 + j + 1 );
-			Double weight = treeInsertCosts.get( tree2 );
+			DefaultWeightedEdge edge = graph.addEdge( emptyTree1, forest1NumberOfChildren + j + 1 );
+			Double weight = treeInsertCosts.get( childrenForest2.get( j ) );
 			graph.setEdgeWeight( edge, weight );
 			capacities.put( edge, forest2Size - Math.min( forest1Size, forest2Size ) );
 
-			edge = graph.addEdge( numberOfEquivalenceClasses1 + j + 1, sink );
+			edge = graph.addEdge( forest1NumberOfChildren + j + 1, sink );
 			graph.setEdgeWeight( edge, 0 );
-			capacities.put( edge, subtreesWithSameEquivalenceClassForest2.size() );
+			capacities.put( edge, 1 );
 		}
 		return JGraphtTools.maxFlowMinCost( graph, capacities, source, sink );
-	}
-
-	/**
-	 * Returns a list of lists of trees, where each list contains trees with the same equivalence class.
-	 * @param tree the forest
-	 * @return a list of lists of trees, where each list contains trees with the same equivalence class
-	 */
-	private List< List< Tree< T > > > getClassifiedTrees( Tree< T > tree )
-	{
-		// NB: a LinkedHashMap is used to preserve the order of the keys
-		Map< Integer, List< Tree< T > > > equivalenceClassesTree1 = new LinkedHashMap<>();
-		for ( Tree< T > tree1 : tree.getChildren() )
-		{
-			int equivalenceClass = equivalenceClasses.get( tree1 );
-			if ( equivalenceClassesTree1.containsKey( equivalenceClass ) )
-			{
-				List< Tree< T > > trees = equivalenceClassesTree1.get( equivalenceClass );
-				trees.add( tree1 );
-			}
-			else
-			{
-				List< Tree< T > > list = new ArrayList<>();
-				list.add( tree1 );
-				equivalenceClassesTree1.put( equivalenceClass, list );
-			}
-		}
-		return new ArrayList<>( equivalenceClassesTree1.values() );
 	}
 
 	private static double min( final double a, final double b, final double c )
 	{
 		return Math.min( Math.min( a, b ), c );
-	}
-
-	private static < T > int classifyTrees( final Tree< T > tree, final Map< Integer, Map< T, List< Tree< T > > > > classifiedTrees )
-	{
-		int depth = 0;
-		List< Integer > depths = new ArrayList<>();
-		for ( Tree< T > child : tree.getChildren() )
-		{
-			int d = classifyTrees( child, classifiedTrees );
-			depths.add( d );
-			depth = Collections.max( depths );
-		}
-
-		Map< T, List< Tree< T > > > attributeToTrees = classifiedTrees.computeIfAbsent( depth, ignore -> new HashMap<>() );
-		T attribute = tree.getAttribute();
-		List< Tree< T > > treesWithSameAttribute = attributeToTrees.computeIfAbsent( attribute, ignore -> new ArrayList<>() );
-		treesWithSameAttribute.add( tree );
-		return depth + 1;
-	}
-
-	private static < T > Map< Tree< T >, Integer > getEquivalenceClasses( final Tree< T > tree1, final Tree< T > tree2 )
-	{
-		Map< Tree< T >, Integer > equivalenceClasses = new HashMap<>();
-		Map< Integer, Map< T, List< Tree< T > > > > classifiedTrees = new LinkedHashMap<>();
-
-		classifyTrees( tree1, classifiedTrees );
-		classifyTrees( tree2, classifiedTrees );
-
-		boolean subtreeClassNumberIncremented = false;
-
-		int classNumber = 0;
-		for ( Map.Entry< Integer, Map< T, List< Tree< T > > > > graphDepth : classifiedTrees.entrySet() )
-		{
-			for ( Map.Entry< T, List< Tree< T > > > treesWithSameAttributeAtGraphDepth : graphDepth.getValue().entrySet() )
-			{
-				List< Tree< T > > treesWithSameAttribute = treesWithSameAttributeAtGraphDepth.getValue();
-				for ( Tree< T > tree : treesWithSameAttribute )
-				{
-					equivalenceClasses.put( tree, classNumber );
-					// NB: ensure that the two subtrees of the given tree have different class numbers, if the attribute is used
-					if ( ( tree.equals( tree1 ) || tree.equals( tree2 ) ) && !subtreeClassNumberIncremented )
-					{
-						classNumber++;
-						subtreeClassNumberIncremented = true;
-					}
-				}
-				classNumber++;
-			}
-		}
-		return equivalenceClasses;
 	}
 
 	private class ChangeCosts
