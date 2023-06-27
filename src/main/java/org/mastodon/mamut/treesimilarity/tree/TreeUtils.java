@@ -22,9 +22,7 @@ public class TreeUtils
 		List< Tree< T > > list = new ArrayList<>();
 		list.add( tree );
 		for ( Tree< T > child : tree.getChildren() )
-		{
 			list.addAll( listOfSubtrees( child ) );
-		}
 		return list;
 	}
 
