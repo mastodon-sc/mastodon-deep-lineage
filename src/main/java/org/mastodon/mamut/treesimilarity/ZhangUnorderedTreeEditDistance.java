@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.function.BiFunction;
 
 public class ZhangUnorderedTreeEditDistance< T >
@@ -30,9 +30,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private final Map< Tree< T >, Double > forestDeleteCosts;
 
-	private final Double[][] forestDistances;
+	private final Map< Pair< Tree< T >, Tree< T > >, Double > forestDistances;
 
-	private final Double[][] treeDistances;
+	private final Map< Pair< Tree< T >, Tree< T > >, Double > treeDistances;
 
 	private final List< Tree< T > > subtrees1;
 
@@ -95,8 +95,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		treeInsertCosts = insertCosts.treeCosts;
 		forestInsertCosts = insertCosts.forestCosts;
 
-		treeDistances = new Double[ subtrees1.size() ][ subtrees2.size() ];
-		forestDistances = new Double[ subtrees1.size() ][ subtrees2.size() ];
+		treeDistances = new HashMap<>();
+		forestDistances = new HashMap<>();
 	}
 
 	/**
@@ -110,10 +110,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double compute( final Tree< T > tree1, final Tree< T > tree2, final BiFunction< T, T, Double > costFunction )
 	{
-		for ( Double[] row : forestDistances )
-			Arrays.fill( row, -1d );
-		for ( Double[] row : treeDistances )
-			Arrays.fill( row, -1d );
+		for ( Tree< T > t1 : subtrees1 )
+			for ( Tree< T > t2 : subtrees2 )
+				treeDistances.put( Pair.of( t1, t2 ), -1d );
+		for ( Tree< T > t1 : subtrees1 )
+			for ( Tree< T > t2 : subtrees2 )
+				forestDistances.put( Pair.of( t1, t2 ), -1d );
 
 		double distance = distanceTree( tree1, tree2, costFunction );
 
@@ -124,18 +126,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private void log()
 	{
-		logger.trace( "matrix of tree distances:" );
-		for ( int i = 0; i < subtrees1.size(); i++ )
-		{
-			if ( logger.isTraceEnabled() )
-				logger.trace( "tree distance[{}] = {}", i, Arrays.toString( treeDistances[ i ] ) );
-		}
-		logger.trace( "matrix of forest distances:" );
-		for ( int i = 0; i < subtrees1.size(); i++ )
-		{
-			if ( logger.isTraceEnabled() )
-				logger.trace( "forest distance[{}] = {}", i, Arrays.toString( forestDistances[ i ] ) );
-		}
+		logDistances( "tree", treeDistances );
+		logDistances( "forest", forestDistances );
 
 		logger.trace( "tree deletion costs (tree1):" );
 		for ( Tree< T > subtree : subtrees1 )
@@ -154,12 +146,26 @@ public class ZhangUnorderedTreeEditDistance< T >
 			logger.trace( "forest insertion[{}] = {}", subtree, forestInsertCosts.get( subtree ) );
 	}
 
+	private void logDistances( String prefix, Map< Pair< Tree< T >, Tree< T > >, Double > distances )
+	{
+		logger.trace( "matrix of {} distances:", prefix );
+		for ( Tree< T > t1 : subtrees1 )
+		{
+			List< Double > row = new ArrayList<>();
+			for ( Tree< T > t2 : subtrees2 )
+				row.add( distances.get( Pair.of( t1, t2 ) ) );
+			StringJoiner stringJoiner = new StringJoiner( ", ", "[", "]" );
+			row.forEach( entry -> stringJoiner.add( entry.toString() ) );
+			logger.trace( "{} distance[{}] = {}", prefix, t1, stringJoiner );
+		}
+	}
+
 	/**
 	 * Calculate the zhang edit distance between two sub-trees
 	 */
 	private double distanceTree( final Tree< T > tree1, final Tree< T > tree2, final BiFunction< T, T, Double > costFunction )
 	{
-		double distance = treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ];
+		double distance = treeDistances.get( Pair.of( tree1, tree2 ) );
 		if ( distance != -1 )
 			return distance;
 
@@ -168,7 +174,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		else
 			distance =  getMinTreeChangeCosts( tree1, tree2, costFunction );
 
-		treeDistances[ subtrees1.indexOf( tree1 ) ][ subtrees2.indexOf( tree2 ) ] = distance;
+		treeDistances.put( Pair.of( tree1, tree2 ), distance );
 		return distance;
 	}
 
@@ -185,7 +191,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double distanceForest( final Tree< T > forest1, final Tree< T > forest2 )
 	{
-		double distance = forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ];
+		double distance = forestDistances.get( Pair.of( forest1, forest2 ) );
 		if ( distance != -1 )
 			return distance;
 
@@ -198,7 +204,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		else
 			throw new IllegalArgumentException( "The given trees are both leaves and thus they are both not forests." );
 
-		forestDistances[ subtrees1.indexOf( forest1 ) ][ subtrees2.indexOf( forest2 ) ] = distance;
+		forestDistances.put( Pair.of( forest1, forest2 ), distance );
 		return distance;
 	}
 
@@ -328,8 +334,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			capacities.put( edge, 1 );
 			for ( int j = 0; j < childrenForest2.size(); j++ )
 			{
-				double edgeWeight =
-						treeDistances[ subtrees1.indexOf( childrenForest1.get( i ) ) ][ subtrees2.indexOf( childrenForest2.get( j ) ) ];
+				double edgeWeight = treeDistances.get( Pair.of( childrenForest1.get( i ), childrenForest2.get( j ) ) );
 				Integer start = i + 1;
 				Integer target = forest1NumberOfChildren + j + 1;
 				if ( !graph.containsVertex( start ) )
