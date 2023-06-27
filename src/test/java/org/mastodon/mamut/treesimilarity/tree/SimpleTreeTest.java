@@ -18,10 +18,8 @@ public class SimpleTreeTest
 		SimpleTree< Number > child2 = new SimpleTree<>( 2 );
 		tree.addSubtree( child1 );
 		tree.addSubtree( child2 );
-		HashSet< SimpleTree< Number > > children = new HashSet<>();
-		children.add( child1 );
-		children.add( child2 );
-		assertEquals( children, tree.getChildren() );
+		Set< SimpleTree< Number > > expected = new HashSet( Arrays.asList( child1, child2 ) )
+		assertEquals( expected, tree.getChildren() );
 	}
 
 	@Test
