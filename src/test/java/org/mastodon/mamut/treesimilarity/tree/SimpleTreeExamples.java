@@ -268,9 +268,9 @@ public class SimpleTreeExamples
 
 	/**
 	 * <pre>
-	 *       ┌────── 10000 ───┐
-	 *       │                │
-	 *       2                4
+	 *       ┌────── 10_000 ───┐
+	 *       │                 │
+	 *       2                 4
 	 * </pre>
 	 */
 	public static SimpleTree< Double > tree14()
@@ -285,9 +285,9 @@ public class SimpleTreeExamples
 
 	/**
 	 * <pre>
-	 *       ┌──────────────10001──────────────┐
-	 *       │                │                │
-	 *       3                5            1_000_000
+	 *       ┌──────────────10_001──────────────┐
+	 *       │                │                 │
+	 *       3                5             1_000_000
 	 * </pre>
 	 */
 	public static SimpleTree< Double > nonBinaryTree()
