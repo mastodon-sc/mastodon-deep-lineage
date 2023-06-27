@@ -113,7 +113,7 @@ public class ZhangUnorderedTreeEditDistanceTest
 	}
 
 	@Test
-	public void testDistanceNullCostFunction()
+	public void testDistanceTopologicalCostFunction()
 	{
 		Tree< Double > simpleTree1 = SimpleTreeExamples.tree1();
 		Tree< Double > simpleTree2 = SimpleTreeExamples.tree2();
