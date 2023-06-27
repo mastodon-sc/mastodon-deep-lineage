@@ -300,7 +300,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		// NB: The size of the forests is the number of their nodes minus one, since the root of the forest is not counted
 		int forest1Size = TreeUtils.size( forest1 ) - 1;
-		int forest2Size = TreeUtils.size( forest1 ) - 1;
+		int forest2Size = TreeUtils.size( forest2 ) - 1;
 
 		int numberOfEquivalenceClasses1 = classifiedTreesOfForest1.size();
 		int numberOfEquivalenceClasses2 = classifiedTreesOfForest2.size();
