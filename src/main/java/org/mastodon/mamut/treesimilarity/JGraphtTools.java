@@ -50,19 +50,19 @@ public class JGraphtTools
 			graph.setEdgeWeight( edge, weights.get( edge ) );
 
 		// Create demands for the minimum cost flow problem
-		Map< V, Integer > demands = new HashMap<>();
+		Map< V, Integer > supply = new HashMap<>();
 		for ( V v : graph.vertexSet() )
 		{
 			if ( v.equals( source ) )
-				demands.put( v, ( int ) maximumFlowValue );
+				supply.put( v, ( int ) maximumFlowValue );
 			else if ( v.equals( sink ) )
-				demands.put( v, -( int ) maximumFlowValue );
+				supply.put( v, -( int ) maximumFlowValue );
 			else
-				demands.put( v, 0 );
+				supply.put( v, 0 );
 		}
 
 		MinimumCostFlowProblem< V, DefaultWeightedEdge > problem =
-				new MinimumCostFlowProblem.MinimumCostFlowProblemImpl<>( graph, demands::get, capacities::get );
+				new MinimumCostFlowProblem.MinimumCostFlowProblemImpl<>( graph, supply::get, capacities::get );
 		CapacityScalingMinimumCostFlow< V, DefaultWeightedEdge > minimumCostFlowAlgorithm =
 				new CapacityScalingMinimumCostFlow<>();
 		return minimumCostFlowAlgorithm.getMinimumCostFlow( problem ).getCost();
