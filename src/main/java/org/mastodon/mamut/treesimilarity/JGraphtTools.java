@@ -39,8 +39,7 @@ public class JGraphtTools
 		// Set the capacities as edge weights
 		// Edges, for which no capacity is set in the given capacities map, are assumed to have Integer.MAX_VALUE capacity
 		for ( DefaultWeightedEdge defaultWeightedEdge : graph.edgeSet() )
-			graph.setEdgeWeight( defaultWeightedEdge,
-					capacities.get( defaultWeightedEdge ) == null ? Integer.MAX_VALUE : capacities.get( defaultWeightedEdge ) );
+			graph.setEdgeWeight( defaultWeightedEdge, capacities.getOrDefault( defaultWeightedEdge, Integer.MAX_VALUE ) );
 
 		// Compute the maximum flow value
 		MaximumFlowAlgorithm< V, DefaultWeightedEdge > maximumFlowAlgorithm = new PushRelabelMFImpl<>( graph );
