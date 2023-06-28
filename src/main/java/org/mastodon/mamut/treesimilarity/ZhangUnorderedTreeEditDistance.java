@@ -31,20 +31,20 @@ import java.util.function.BiFunction;
  *     TB TC     TB TC
  *
  *
- * 2a: Remove subtree
+ * 2a: Remove subtree (opposite of 2b)
  *
  *       A         A
  *      / \   ->   |
  *     TB TC       TB
  *
- * 2b: Add new subtree
+ * 2b: Add new subtree (opposite of 2a)
  *
  *       A          A
  *       |    ->   / \
  *       TB       TB TC
  *
  *
- * 3a: Remove subtree but keep one child
+ * 3a: Remove subtree but keep one child (opposite of 3b)
  *
  *       A          A
  *      / \   ->   / \
@@ -52,23 +52,29 @@ import java.util.function.BiFunction;
  *    / \
  *   TD TE        (remove B and TE, keep TD)
  *
- * 3b: Convert existing subtree into child of a newly inserted subtree
+ * 3b: Convert existing subtree into child of a newly inserted subtree (opposite of 3a)
  *       A             A
  *      / \    ->     / \
  *     TB TC         D  TC
  *                  / \
- *                 TB TE       (insert D and TE, keep TD)
+ *                 TB TE       (insert D and TE, keep TB)
  *
  *
- * 4a: Remove subtree (and siblings) but keep all children
+ * 4a: Remove subtree (and siblings) but keep all children (opposite of 4b)
  *       A               A
  *      / \             / \
  *     B  TC   ->      TD TE
  *    / \
- *   TD TE            (Subtree B and it's sibling TE are removed, but the children
+ *   TD TE            (Subtree B and it's sibling TC are removed, but the children
  *                     of B namely TD and TE are kept)
  *
- * 4b: Opposite of 4a
+ * 4b: Convert existing subtree into children of a newly inserted subtree (with siblings) (opposite of 4a)
+ *       A               A
+ *      / \             / \
+ *     TB TC   ->      D  TE
+ *                    / \
+ *                   TB TC       (Subtree D and it's sibling TE are newly inserted,
+ *                                TB and TC are kept as children of B)
  * </pre>
  * @param <T> Attribute type of the tree nodes.
  *
