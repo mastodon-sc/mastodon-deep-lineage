@@ -18,6 +18,63 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.BiFunction;
 
+/**
+ * Implementation of "A Constrained Edit Distance Between Unordered Labeled Trees", Kaizhong Zhang, Algorithmica (1996) 15:205-222<p>
+ *
+ * The Zhang unordered edit distance allows the following edit operations:
+ *
+ * <pre>
+ * 1. Change label
+ *
+ *       A         A'
+ *      / \  ->   / \
+ *     TB TC     TB TC
+ *
+ *
+ * 2a: Remove subtree
+ *
+ *       A         A
+ *      / \   ->   |
+ *     TB TC       TB
+ *
+ * 2b: Add new subtree
+ *
+ *       A          A
+ *       |    ->   / \
+ *       TB       TB TC
+ *
+ *
+ * 3a: Remove subtree but keep one child
+ *
+ *       A          A
+ *      / \   ->   / \
+ *     B  TC      TD TC
+ *    / \
+ *   TD TE        (remove B and TE, keep TD)
+ *
+ * 3b: Convert existing subtree into child of a newly inserted subtree
+ *       A             A
+ *      / \    ->     / \
+ *     TB TC         D  TC
+ *                  / \
+ *                 TB TE       (insert D and TE, keep TD)
+ *
+ *
+ * 4a: Remove subtree (and siblings) but keep all children
+ *       A               A
+ *      / \             / \
+ *     B  TC   ->      TD TE
+ *    / \
+ *   TD TE            (Subtree B and it's sibling TE are removed, but the children
+ *                     of B namely TD and TE are kept)
+ *
+ * 4b: Opposite of 4a
+ * </pre>
+ * @param <T> Attribute type of the tree nodes.
+ *
+ * @author Stefan Hahmann
+ * @author Matthias Arzt
+ */
 public class ZhangUnorderedTreeEditDistance< T >
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
