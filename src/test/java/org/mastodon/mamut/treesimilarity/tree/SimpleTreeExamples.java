@@ -204,7 +204,7 @@ public class SimpleTreeExamples
 	 * <pre>
 	 *       ┌────── 1 ──────┐
 	 *       │               │
-	 *       1               2
+	 *       1              10
 	 * </pre>
 	 */
 	public static SimpleTree< Double > tree10()
@@ -212,19 +212,19 @@ public class SimpleTreeExamples
 		SimpleTree< Double > node1 = new SimpleTree<>( 1d );
 
 		addNode( 1d, node1 );
-		addNode( 2d, node1 );
+		addNode( 10d, node1 );
 
 		return node1;
 	}
 
 	/**
 	 * <pre>
-	 *       ─ 2 ─
+	 *       ─ 10 ─
 	 * </pre>
 	 */
 	public static SimpleTree< Double > tree11()
 	{
-		return new SimpleTree<>( 2d );
+		return new SimpleTree<>( 10d );
 	}
 
 	/**
