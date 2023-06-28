@@ -256,8 +256,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	double getMinForestChangeCosts( Tree< T > forest1, Tree< T > forest2 )
 	{
+		// NB: this method should not be called on leaves.
 		if ( forest1.isLeaf() || forest2.isLeaf() )
-			throw new NoLeaveExpectedException();
+			throw new AssertionError();
 
 		double insertCosts = getForestInsertCosts( forest1, forest2 );
 		double deleteCosts = getForestDeleteCosts( forest1, forest2 );
@@ -267,8 +268,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private double getForestInsertCosts( Tree< T > forest1, Tree< T > forest2 )
 	{
+		// NB: this method should not be called on leaves.
 		if ( forest2.isLeaf() )
-			throw new NoLeaveExpectedException();
+			throw new AssertionError();
 
 		List< Double > distances = new ArrayList<>();
 		forest2.getChildren().forEach( child -> distances.add( distanceForest( forest1, child ) - forestInsertCosts.get( child ) ) );
@@ -290,8 +292,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double getForestDeleteCosts( Tree< T > forest1, Tree< T > forest2 )
 	{
+		// NB: this method should not be called on leaves.
 		if ( forest1.isLeaf() )
-			throw new NoLeaveExpectedException();
+			throw new AssertionError();
 
 		List< Double > distances = new ArrayList<>();
 		forest1.getChildren().forEach( child -> distances.add( distanceForest( child, forest2 ) - forestDeleteCosts.get( child ) ) );
