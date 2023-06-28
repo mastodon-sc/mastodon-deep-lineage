@@ -22,17 +22,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	private final Map< Tree< T >, Double > treeInsertCosts;
+	private final Map< Tree< T >, TreeDetails > insertCosts;
 
-	private final Map< Tree< T >, Double > forestInsertCosts;
-
-	private final Map< Tree< T >, Double > treeDeleteCosts;
-
-	private final Map< Tree< T >, Double > forestDeleteCosts;
-
-	private final Map< Pair< Tree< T >, Tree< T > >, Double > forestDistances;
+	private final Map< Tree< T >, TreeDetails > deleteCosts;
 
 	private final Map< Pair< Tree< T >, Tree< T > >, Double > treeDistances;
+
+	private final Map< Pair< Tree< T >, Tree< T > >, Double > forestDistances;
 
 	private final List< Tree< T > > subtrees1;
 
@@ -99,13 +95,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		subtrees1.forEach( tree -> costTreeToNone.put( tree, costFunction.apply( tree.getAttribute(), null ) ) );
 		subtrees2.forEach( tree -> costTreeToNone.put( tree, costFunction.apply( tree.getAttribute(), null ) ) );
 
-		ChangeCosts deleteCosts = new ChangeCosts( tree1, costTreeToNone );
-		treeDeleteCosts = deleteCosts.treeCosts;
-		forestDeleteCosts = deleteCosts.forestCosts;
-
-		ChangeCosts insertCosts = new ChangeCosts( tree2, costTreeToNone );
-		treeInsertCosts = insertCosts.treeCosts;
-		forestInsertCosts = insertCosts.forestCosts;
+		deleteCosts = new ChangeCosts( tree1, costTreeToNone ).costs;
+		insertCosts = new ChangeCosts( tree2, costTreeToNone ).costs;
 
 		treeDistances = new HashMap<>();
 		forestDistances = new HashMap<>();
@@ -142,19 +133,19 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		logger.trace( "tree deletion costs (tree1):" );
 		for ( Tree< T > subtree : subtrees1 )
-			logger.trace( "tree deletion[{}] = {}", subtree, treeDeleteCosts.get( subtree ) );
+			logger.trace( "tree deletion[{}] = {}", subtree, deleteCosts.get( subtree ).treeCost );
 
 		logger.trace( "forest deletion costs (tree1):" );
 		for ( Tree< T > subtree : subtrees1 )
-			logger.trace( "forest deletion[{}] = {}", subtree, forestDeleteCosts.get( subtree ) );
+			logger.trace( "forest deletion[{}] = {}", subtree, deleteCosts.get( subtree ).forestCost );
 
 		logger.trace( "tree insertion costs (tree2):" );
 		for ( Tree< T > subtree : subtrees2 )
-			logger.trace( "tree insertion[{}] = {}", subtree, treeInsertCosts.get( subtree ) );
+			logger.trace( "tree insertion[{}] = {}", subtree, insertCosts.get( subtree ).treeCost );
 
 		logger.trace( "forest insertion costs (tree2):" );
 		for ( Tree< T > subtree : subtrees2 )
-			logger.trace( "forest insertion[{}] = {}", subtree, forestInsertCosts.get( subtree ) );
+			logger.trace( "forest insertion[{}] = {}", subtree, insertCosts.get( subtree ).forestCost );
 	}
 
 	private void logDistances( String prefix, Map< Pair< Tree< T >, Tree< T > >, Double > distances )
@@ -207,9 +198,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 			return distance;
 
 		if ( !forest1.isLeaf() && forest2.isLeaf() )
-			distance = forestDeleteCosts.get( forest1 );
+			distance = deleteCosts.get( forest1 ).forestCost;
 		else if ( forest1.isLeaf() && !forest2.isLeaf() )
-			distance = forestInsertCosts.get( forest2 );
+			distance = insertCosts.get( forest2 ).forestCost;
 		else if ( !forest2.isLeaf() && !forest1.isLeaf() )
 			distance = getMinForestChangeCosts( forest1, forest2 );
 		else
@@ -222,10 +213,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private double getMinTreeChangeCosts( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
 	{
 		// NB: the order of the following three lines is important, changing the order will result in a wrong distance.
-		double insertCosts = insertOperationCosts( tree1, tree2, costFunction );
-		double deleteCosts = deleteOperationCosts( tree1, tree2, costFunction );
+		double insertOperationCosts = insertOperationCosts( tree1, tree2, costFunction );
+		double deleteOperationCosts = deleteOperationCosts( tree1, tree2, costFunction );
 		double changeCosts = distanceForest( tree1, tree2 ) + attributeDistances.get( Pair.of( tree1, tree2 ) );
-		return min( insertCosts, deleteCosts, changeCosts );
+		return min( insertOperationCosts, deleteOperationCosts, changeCosts );
 	}
 
 	/**
@@ -237,8 +228,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		if ( tree2.isLeaf() )
 			return Double.POSITIVE_INFINITY;
 		List< Double > distances = new ArrayList<>();
-		tree2.getChildren().forEach( child -> distances.add( distanceTree( tree1, child, costFunction ) - treeInsertCosts.get( child ) ) );
-		return treeInsertCosts.get( tree2 ) + Collections.min( distances );
+		tree2.getChildren()
+				.forEach( child -> distances.add( distanceTree( tree1, child, costFunction ) - insertCosts.get( child ).treeCost ) );
+		return insertCosts.get( tree2 ).treeCost + Collections.min( distances );
 	}
 
 	/**
@@ -250,8 +242,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		if ( tree1.isLeaf() )
 			return Double.POSITIVE_INFINITY;
 		List< Double > distances = new ArrayList<>();
-		tree1.getChildren().forEach( child -> distances.add( distanceTree( child, tree2, costFunction ) - treeDeleteCosts.get( child ) ) );
-		return treeDeleteCosts.get( tree1 ) + Collections.min( distances );
+		tree1.getChildren()
+				.forEach( child -> distances.add( distanceTree( child, tree2, costFunction ) - deleteCosts.get( child ).treeCost ) );
+		return deleteCosts.get( tree1 ).treeCost + Collections.min( distances );
 	}
 
 	double getMinForestChangeCosts( Tree< T > forest1, Tree< T > forest2 )
@@ -260,10 +253,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 		if ( forest1.isLeaf() || forest2.isLeaf() )
 			throw new AssertionError();
 
-		double insertCosts = getForestInsertCosts( forest1, forest2 );
-		double deleteCosts = getForestDeleteCosts( forest1, forest2 );
+		double forestInsertCosts = getForestInsertCosts( forest1, forest2 );
+		double forestDeleteCosts = getForestDeleteCosts( forest1, forest2 );
 		double changeCosts = minCostMaxFlow( forest1, forest2 );
-		return min( insertCosts, deleteCosts, changeCosts );
+		return min( forestInsertCosts, forestDeleteCosts, changeCosts );
 	}
 
 	private double getForestInsertCosts( Tree< T > forest1, Tree< T > forest2 )
@@ -271,10 +264,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		// NB: this method should not be called on leaves.
 		if ( forest2.isLeaf() )
 			throw new AssertionError();
-
 		List< Double > distances = new ArrayList<>();
-		forest2.getChildren().forEach( child -> distances.add( distanceForest( forest1, child ) - forestInsertCosts.get( child ) ) );
-		return forestInsertCosts.get( forest2 ) + Collections.min( distances );
+		forest2.getChildren().forEach( child -> distances.add( distanceForest( forest1, child ) - insertCosts.get( child ).forestCost ) );
+		return insertCosts.get( forest2 ).forestCost + Collections.min( distances );
 	}
 
 	/**
@@ -295,10 +287,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		// NB: this method should not be called on leaves.
 		if ( forest1.isLeaf() )
 			throw new AssertionError();
-
 		List< Double > distances = new ArrayList<>();
-		forest1.getChildren().forEach( child -> distances.add( distanceForest( child, forest2 ) - forestDeleteCosts.get( child ) ) );
-		return forestDeleteCosts.get( forest1 ) + Collections.min( distances );
+		forest1.getChildren().forEach( child -> distances.add( distanceForest( child, forest2 ) - deleteCosts.get( child ).forestCost ) );
+		return deleteCosts.get( forest1 ).forestCost + Collections.min( distances );
 	}
 
 	private double minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
@@ -360,13 +351,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 				capacities.put( edge, 1 );
 			}
 			edge = graph.addEdge( i + 1, emptyTree2 );
-			graph.setEdgeWeight( edge, treeDeleteCosts.get( childrenForest1.get( i ) ) );
+			graph.setEdgeWeight( edge, deleteCosts.get( childrenForest1.get( i ) ).treeCost );
 			capacities.put( edge, 1 );
 		}
 		for ( int j = 0; j < childrenForest2.size(); j++ )
 		{
 			DefaultWeightedEdge edge = graph.addEdge( emptyTree1, forest1NumberOfChildren + j + 1 );
-			Double weight = treeInsertCosts.get( childrenForest2.get( j ) );
+			double weight = insertCosts.get( childrenForest2.get( j ) ).treeCost;
 			graph.setEdgeWeight( edge, weight );
 			capacities.put( edge, forest2Size - Math.min( forest1Size, forest2Size ) );
 
@@ -386,9 +377,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	{
 		private final Map< Tree< T >, Double > costTreeToNone;
 
-		private final Map< Tree< T >, Double > treeCosts;
+		private final Map< Tree< T >, TreeDetails > costs;
 
-		private final Map< Tree< T >, Double > forestCosts;
 
 		/**
 		 * Compute the costs of deleting or inserting a tree or a forest.
@@ -418,8 +408,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		private ChangeCosts( final Tree< T > tree, final Map< Tree< T >, Double > costTreeToNone )
 		{
 			this.costTreeToNone = costTreeToNone;
-			this.treeCosts = new HashMap<>();
-			this.forestCosts = new HashMap<>();
+			this.costs = new HashMap<>();
 			computeChangeCosts( tree );
 		}
 
@@ -431,11 +420,23 @@ public class ZhangUnorderedTreeEditDistance< T >
 				for ( Tree< T > child : tree.getChildren() )
 				{
 					computeChangeCosts( child );
-					cost += treeCosts.get( child );
+					cost += costs.get( child ).treeCost;
 				}
 			}
-			forestCosts.put( tree, cost );
-			treeCosts.put( tree, cost + costTreeToNone.get( tree ) );
+			costs.put( tree, new TreeDetails( cost + costTreeToNone.get( tree ), cost ) );
+		}
+	}
+
+	private static class TreeDetails
+	{
+		private final double treeCost;
+
+		private final double forestCost;
+
+		private TreeDetails( final double treeCost, final double forestCost )
+		{
+			this.treeCost = treeCost;
+			this.forestCost = forestCost;
 		}
 	}
 }
