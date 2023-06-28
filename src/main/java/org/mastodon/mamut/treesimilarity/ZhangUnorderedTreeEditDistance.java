@@ -304,7 +304,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return deleteCosts.get( tree1 ).treeCost + Collections.min( distances );
 	}
 
-	double getMinForestChangeCosts( Tree< T > forest1, Tree< T > forest2 )
+	private double getMinForestChangeCosts( Tree< T > forest1, Tree< T > forest2 )
 	{
 		// NB: this method should not be called on leaves.
 		if ( forest1.isLeaf() || forest2.isLeaf() )

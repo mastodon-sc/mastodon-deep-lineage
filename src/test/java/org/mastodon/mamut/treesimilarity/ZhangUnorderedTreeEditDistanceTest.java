@@ -167,9 +167,13 @@ public class ZhangUnorderedTreeEditDistanceTest
 		};
 	}
 
-
+	/**
+	 * Tests the remove subtree operation (3a)
+	 * Special case: the root node is removed
+	 * @see ZhangUnorderedTreeEditDistance
+	 */
 	@Test
-	public void testReorderingLeafNodes()
+	public void testRemoveSubtreeKeepOneChild()
 	{
 		Tree< Double > tree10 = SimpleTreeExamples.tree10();
 		Tree< Double > tree11 = SimpleTreeExamples.tree11();
@@ -179,12 +183,11 @@ public class ZhangUnorderedTreeEditDistanceTest
 
 
 	/**
-	 * This test requires the method
-	 * {@link ZhangUnorderedTreeEditDistance#getMinForestChangeCosts(Tree, Tree)}.
-	 * to work correctly. (So it essentially tests that method.)
+	 * Tests the remove subtree operation (4a)
+	 * @see ZhangUnorderedTreeEditDistance
 	 */
 	@Test
-	public void testNodeRemovalAndInsertion()
+	public void testRemoveSubtreeKeepAllChildren()
 	{
 		Tree< Double > tree12 = SimpleTreeExamples.tree12();
 		Tree< Double > tree13 = SimpleTreeExamples.tree13();
@@ -195,8 +198,6 @@ public class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	public void testNonBinaryTrees()
 	{
-		// NB: I guess there is a bug in the code that sets up the flow network.
-		// It fails if the number of child trees is not equal between the compared trees.
 		Tree< Double > tree14 = SimpleTreeExamples.tree14();
 		Tree< Double > tree15 = SimpleTreeExamples.nonBinaryTree();
 		assertEquals( 1_000_003, ZhangUnorderedTreeEditDistance.distance( tree14, tree15, defaultCosts ), 0d );
