@@ -21,7 +21,7 @@ public abstract class IntPropertyFeature< T > implements Feature< T >
 
 	protected final IntFeatureProjection< T > projection;
 
-	public IntPropertyFeature( IntPropertyMap< T > map )
+	protected IntPropertyFeature( IntPropertyMap< T > map )
 	{
 		this.map = map;
 		this.projection = FeatureProjections.project( key( getFeatureProjectionSpec() ), map, Dimension.NONE_UNITS );

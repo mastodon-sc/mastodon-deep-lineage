@@ -20,7 +20,7 @@ public abstract class DoublePropertyFeature< T > implements Feature< T >
 
 	protected final FeatureProjection< T > projection;
 
-	public DoublePropertyFeature( DoublePropertyMap< T > map )
+	protected DoublePropertyFeature( DoublePropertyMap< T > map )
 	{
 		this.map = map;
 		this.projection = FeatureProjections.project( key( getFeatureProjectionSpec() ), map, Dimension.NONE_UNITS );
