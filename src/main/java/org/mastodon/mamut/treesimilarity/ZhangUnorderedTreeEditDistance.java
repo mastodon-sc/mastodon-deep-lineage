@@ -68,7 +68,7 @@ import java.util.function.BiFunction;
  *   TD TE            (Subtree B and it's sibling TC are removed, but the children
  *                     of B namely TD and TE are kept)
  *
- * 4b: Convert existing subtree into children of a newly inserted subtree (with siblings) (opposite of 4a)
+ * 4b: Convert existing subtrees into children of a newly inserted subtree (opposite of 4a)
  *       A               A
  *      / \             / \
  *     TB TC   ->      D  TE
