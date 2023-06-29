@@ -16,6 +16,11 @@ import java.util.function.Consumer;
 
 public class LineageTreeUtils {
 
+	private LineageTreeUtils()
+	{
+		// prevent from instantiation
+	}
+
 	/**
 	 * Performs a depth-first iteration through the specified {@link ModelBranchGraph} starting from each root.
 	 * <p>
