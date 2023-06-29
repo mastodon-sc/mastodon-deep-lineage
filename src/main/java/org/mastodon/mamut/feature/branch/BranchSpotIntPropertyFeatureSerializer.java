@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.mastodon.feature.FeatureSpec;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.IntPropertyMapSerializer;

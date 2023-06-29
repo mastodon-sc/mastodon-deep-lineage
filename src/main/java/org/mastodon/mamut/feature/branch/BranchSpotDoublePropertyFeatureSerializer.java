@@ -1,6 +1,5 @@
 package org.mastodon.mamut.feature.branch;
 
-import org.mastodon.feature.FeatureSpec;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.DoublePropertyMapSerializer;
