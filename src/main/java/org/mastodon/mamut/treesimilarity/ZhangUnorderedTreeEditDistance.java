@@ -74,7 +74,7 @@ import java.util.function.BiFunction;
  *     TB TC   ->      D  TE
  *                    / \
  *                   TB TC       (Subtree D and it's sibling TE are newly inserted,
- *                                TB and TC are kept as children of B)
+ *                                TB and TC are kept as children of D)
  * </pre>
  * @param <T> Attribute type of the tree nodes.
  *
