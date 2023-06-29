@@ -158,8 +158,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		subtrees1.forEach( tree -> costTreeToNone.put( tree, costFunction.apply( tree.getAttribute(), null ) ) );
 		subtrees2.forEach( tree -> costTreeToNone.put( tree, costFunction.apply( tree.getAttribute(), null ) ) );
 
-		deleteCosts = new ChangeCosts( tree1, costTreeToNone ).costs;
-		insertCosts = new ChangeCosts( tree2, costTreeToNone ).costs;
+		insertCosts = new EditCosts( tree2, costTreeToNone ).costs;
+		deleteCosts = new EditCosts( tree1, costTreeToNone ).costs;
 
 		treeDistances = new HashMap<>();
 		forestDistances = new HashMap<>();
@@ -436,7 +436,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return Math.min( Math.min( a, b ), c );
 	}
 
-	private class ChangeCosts
+	private class EditCosts
 	{
 		private final Map< Tree< T >, Double > costTreeToNone;
 
@@ -468,7 +468,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		 * @param tree the tree or forest to compute the change costs for
 		 * @param costTreeToNone a mapping from tree to the cost of deleting or inserting the attribute of its source
 		 */
-		private ChangeCosts( final Tree< T > tree, final Map< Tree< T >, Double > costTreeToNone )
+		private EditCosts( final Tree< T > tree, final Map< Tree< T >, Double > costTreeToNone )
 		{
 			this.costTreeToNone = costTreeToNone;
 			this.costs = new HashMap<>();
