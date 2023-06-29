@@ -10,7 +10,7 @@
             </pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>DEBUG</level>
+            <level>TRACE</level>
         </filter>
     </appender>
     <appender name="stderr" class="ch.qos.logback.core.ConsoleAppender">
@@ -109,7 +109,7 @@
     </appender>
 
     <!-- Set root log level to DEBUG -->
-    <root level="DEBUG">
+    <root level="TRACE">
         <appender-ref ref="stdout"/>
         <appender-ref ref="file-trace"/>
         <appender-ref ref="file-debug"/>
