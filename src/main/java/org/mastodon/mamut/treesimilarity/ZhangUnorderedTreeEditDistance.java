@@ -24,6 +24,9 @@ import java.util.function.BiFunction;
  * The Zhang unordered edit distance allows the following edit operations:
  *
  * <pre>
+ *
+ * Note: The prefix T may represent a node or a complete subtree. Nodes without this prefix are just nodes.
+ *
  * 1. Change label
  *
  *       A         A'
