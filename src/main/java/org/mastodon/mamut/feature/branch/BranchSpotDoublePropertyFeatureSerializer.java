@@ -17,8 +17,6 @@ import java.io.ObjectOutputStream;
 public abstract class BranchSpotDoublePropertyFeatureSerializer< T extends DoublePropertyFeature< BranchSpot > >
 		implements BranchFeatureSerializer< T, BranchSpot, Spot >
 {
-	@Override
-	public abstract FeatureSpec< T, BranchSpot > getFeatureSpec();
 
 	protected abstract T createFeature( DoublePropertyMap< BranchSpot > map );
 

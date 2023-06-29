@@ -17,8 +17,6 @@ import org.mastodon.properties.IntPropertyMap;
 public abstract class BranchSpotIntPropertyFeatureSerializer< T extends IntPropertyFeature< BranchSpot > >
 		implements BranchFeatureSerializer< T, BranchSpot, Spot >
 {
-	@Override
-	public abstract FeatureSpec< T, BranchSpot > getFeatureSpec();
 
 	protected abstract T createFeature( IntPropertyMap< BranchSpot > map );
 
