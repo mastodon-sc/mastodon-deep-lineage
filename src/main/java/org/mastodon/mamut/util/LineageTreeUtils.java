@@ -36,21 +36,28 @@ public class LineageTreeUtils {
 		DepthFirstSearch<BranchSpot, BranchLink> search = new DepthFirstSearch<>(branchGraph, GraphSearch.SearchDirection.DIRECTED);
 		search.setTraversalListener(new SearchListener<BranchSpot, BranchLink, DepthFirstSearch<BranchSpot, BranchLink>>() {
 			@Override
-			public void processVertexLate(BranchSpot vertex, DepthFirstSearch<BranchSpot, BranchLink> search) {
+			public void processVertexLate( BranchSpot vertex, DepthFirstSearch< BranchSpot, BranchLink > search )
+			{
 				action.accept(vertex);
 			}
 
 			@Override
 			public void processVertexEarly( BranchSpot vertex, DepthFirstSearch< BranchSpot, BranchLink > search )
-			{}
+			{
+				// Do nothing here. We only care about the vertices after all their descendants have been processed (see processVertexLate).
+			}
 
 			@Override
 			public void processEdge( BranchLink edge, BranchSpot from, BranchSpot to, DepthFirstSearch< BranchSpot, BranchLink > search )
-			{}
+			{
+				// Do nothing here. We only care about the vertices after all their descendants have been processed (see processVertexLate).
+			}
 
 			@Override
 			public void crossComponent( BranchSpot from, BranchSpot to, DepthFirstSearch< BranchSpot, BranchLink > search )
-			{}
+			{
+				// Do nothing here. We only care about the vertices after all their descendants have been processed (see processVertexLate).
+			}
 		} );
 		final RefSet< BranchSpot > roots = RootFinder.getRoots( branchGraph );
 		for ( BranchSpot root : roots )
