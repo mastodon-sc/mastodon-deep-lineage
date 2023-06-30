@@ -168,6 +168,16 @@ public class ZhangUnorderedTreeEditDistance< T >
 		forestDistances = new HashMap<>();
 	}
 
+	public static BinaryOperator< Double > getDefaultCostFunction()
+	{
+		return ( o1, o2 ) -> {
+			if ( o2 == null )
+				return o1;
+			else
+				return Math.abs( o1 - o2 );
+		};
+	}
+
 	/**
 	 * Calculate the Zhang edit distance between two (labeled) unordered trees.
 	 *

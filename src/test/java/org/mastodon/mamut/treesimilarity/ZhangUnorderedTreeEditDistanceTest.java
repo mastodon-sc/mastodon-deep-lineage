@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 public class ZhangUnorderedTreeEditDistanceTest
 {
 
-	private final static BiFunction< Double, Double, Double > defaultCosts = getCostFunction();
+	private final static BiFunction< Double, Double, Double > defaultCosts = ZhangUnorderedTreeEditDistance.getDefaultCostFunction();
 
 	@Test
 	public void testDistance()
@@ -155,16 +155,6 @@ public class ZhangUnorderedTreeEditDistanceTest
 		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( simpleTree7, simpleTree5, costFunction ), 0d );
 		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( branchSpotTree5, branchSpotTree7, costFunction ), 0d );
 		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( branchSpotTree7, branchSpotTree5, costFunction ), 0d );
-	}
-
-	private static BiFunction< Double, Double, Double > getCostFunction()
-	{
-		return ( o1, o2 ) -> {
-			if ( o2 == null )
-				return o1;
-			else
-				return Math.abs( o1 - o2 );
-		};
 	}
 
 	/**
