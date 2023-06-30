@@ -228,4 +228,20 @@ public class ZhangUnorderedTreeEditDistanceTest
 		// The edit path is to remove the nodes with weights: 1, 2, 3, 4, 5, 6 (cost 21 = 1 + 2 + 3 + 4 + 5 + 6)
 		assertEquals( 21, ZhangUnorderedTreeEditDistance.distance( tree18, tree19, defaultCosts ), 0d );
 	}
+
+	@Test
+	public void testNormalizedDistance()
+	{
+		Tree< Double > tree1 = SimpleTreeExamples.tree1();
+		Tree< Double > tree2 = SimpleTreeExamples.tree2();
+		assertEquals( 20d / 120d, ZhangUnorderedTreeEditDistance.normalizedDistance( tree1, tree2, defaultCosts ), 0d );
+	}
+
+	@Test
+	public void testAverageDistance()
+	{
+		Tree< Double > tree1 = SimpleTreeExamples.tree1();
+		Tree< Double > tree2 = SimpleTreeExamples.tree2();
+		assertEquals( 20d / 6d, ZhangUnorderedTreeEditDistance.averageDistance( tree1, tree2, defaultCosts ), 0d );
+	}
 }

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 
 /**
  * Implementation of "A Constrained Edit Distance Between Unordered Labeled Trees", Kaizhong Zhang, Algorithmica (1996) 15:205-222<p>
@@ -105,13 +106,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private final BiFunction< T, T, Double > costFunction;
 
 	/**
-	 * Calculate the Zhang edit distance between two labeled unordered trees.
+	 * Calculates the absolute Zhang edit distance between two labeled unordered trees.
 	 *
 	 * @param tree1 Tree object representing the first tree.
 	 * @param tree2 Tree object representing the second tree.
 	 * @param costFunction mandatory cost function.
 	 *
-	 * @return The Zhang edit distance between tree1 and tree2.
+	 * @return The absolute Zhang edit distance between tree1 and tree2.
 	 */
 	public static < T > double distance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
 			final BiFunction< T, T, Double > costFunction )
@@ -129,6 +130,43 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		ZhangUnorderedTreeEditDistance< T > zhang = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction );
 		return zhang.compute( tree1, tree2 );
+	}
+
+	/**
+	 * Calculates the normalized Zhang edit distance between two labeled unordered trees.
+	 * <p>
+	 * The normalized distance is defined as the absolute distance divided by the sum of the distances to empty/null trees.
+	 *
+	 * @param tree1 Tree object representing the first tree.
+	 * @param tree2 Tree object representing the second tree.
+	 * @param costFunction mandatory cost function.
+	 *
+	 * @return The normalized Zhang edit distance between tree1 and tree2.
+	 */
+	public static < T > double normalizedDistance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
+			final BiFunction< T, T, Double > costFunction )
+	{
+		double denominator = distance( tree1, null, costFunction ) + distance( null, tree2, costFunction );
+		if ( denominator == 0 )
+			throw new IllegalArgumentException( "Both trees are null. This is not allowed." );
+		return distance( tree1, tree2, costFunction ) / denominator;
+	}
+
+	/**
+	 * Calculates the normalized Zhang edit distance between two labeled unordered trees.
+	 * <p>
+	 * The average distance is defined as the absolute distance divided by the sum of the sizes (i.e. number of nodes) of the trees.
+	 *
+	 * @param tree1 Tree object representing the first tree.
+	 * @param tree2 Tree object representing the second tree.
+	 * @param costFunction mandatory cost function.
+	 *
+	 * @return The average Zhang edit distance between tree1 and tree2.
+	 */
+	public static < T > double averageDistance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
+			final BiFunction< T, T, Double > costFunction )
+	{
+		return distance( tree1, tree2, costFunction ) / ( TreeUtils.size( tree1 ) + TreeUtils.size( tree2 ) );
 	}
 
 	private static < T > double distanceTreeToNull( Tree< T > tree2, BiFunction< T, T, Double > costFunction )
@@ -173,6 +211,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return ( o1, o2 ) -> {
 			if ( o2 == null )
 				return o1;
+			else if ( o1 == null )
+				return o2;
 			else
 				return Math.abs( o1 - o2 );
 		};
