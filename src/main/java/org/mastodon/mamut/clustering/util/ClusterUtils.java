@@ -4,6 +4,11 @@ import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
+import net.imglib2.parallel.Parallelization;
+import org.apache.commons.lang3.tuple.Pair;
+import org.mastodon.mamut.clustering.config.SimilarityMeasure;
+import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
+import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +33,36 @@ public class ClusterUtils
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private static final ClusteringAlgorithm algorithm = new DefaultClusteringAlgorithm();
+
+	public static double[][] getDistanceMatrix( List< Tree< Double > > trees, SimilarityMeasure similarityMeasure )
+	{
+		int size = trees.size();
+		double[][] distances = new double[ size ][ size ];
+		List< Pair< Integer, Integer > > pairs = new ArrayList<>();
+
+		// only the upper triangle is computed since the matrix is symmetric
+		for ( int i = 0; i < size; i++ )
+			for ( int j = i; j < size; j++ )
+			{
+				if ( i == j )
+				{
+					distances[ i ][ j ] = 0; // Set diagonal elements to zero
+					continue;
+				}
+				pairs.add( Pair.of( i, j ) );
+			}
+
+		Parallelization.getTaskExecutor().forEach( pairs, pair -> {
+			int i = pair.getLeft();
+			int j = pair.getRight();
+			double distance = similarityMeasure.compute( trees.get( i ), trees.get( j ),
+					ZhangUnorderedTreeEditDistance.getDefaultCostFunction() );
+			distances[ i ][ j ] = distance;
+			distances[ j ][ i ] = distance;
+		} );
+
+		return distances;
+	}
 
 	/**
 	 * Gets a mapping from cluster id to objects. The cluster ids are incremented by 1 starting from 0.
