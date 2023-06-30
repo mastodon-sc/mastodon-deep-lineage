@@ -26,6 +26,14 @@ public enum ClusteringMethod
 		return name;
 	}
 
+	public static ClusteringMethod getByName( String name )
+	{
+		for ( ClusteringMethod clusteringMethod : ClusteringMethod.values() )
+			if ( clusteringMethod.getName().equals( name ) )
+				return clusteringMethod;
+		throw new IllegalArgumentException( "No enum constant with name: " + name );
+	}
+
 	public LinkageStrategy getLinkageStrategy()
 	{
 		return linkageStrategy;

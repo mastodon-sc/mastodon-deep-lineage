@@ -16,4 +16,12 @@ public enum CropCriteria
 	{
 		return name;
 	}
+
+	public static CropCriteria getByName( String name )
+	{
+		for ( CropCriteria cropCriterion : CropCriteria.values() )
+			if ( cropCriterion.getName().equals( name ) )
+				return cropCriterion;
+		throw new IllegalArgumentException( "No enum constant with name: " + name );
+	}
 }
