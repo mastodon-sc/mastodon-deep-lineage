@@ -2,9 +2,9 @@ package org.mastodon.mamut.clustering;
 
 public class ClusterData
 {
-	protected final static String[] names = new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
+	public final static String[] names = new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
 
-	protected final static double[][] fixedDistances = getFixedSymmetricDistanceMatrix();
+	public final static double[][] fixedDistances = getFixedSymmetricDistanceMatrix();
 
 	private static double[][] getFixedSymmetricDistanceMatrix()
 	{

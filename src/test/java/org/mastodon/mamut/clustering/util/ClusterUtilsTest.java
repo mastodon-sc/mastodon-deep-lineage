@@ -1,7 +1,9 @@
-package org.mastodon.mamut.clustering;
+package org.mastodon.mamut.clustering.util;
 
 import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import org.junit.Test;
+import org.mastodon.mamut.clustering.ClusterData;
+import org.mastodon.mamut.clustering.util.ClusterUtils;
 
 import java.util.List;
 import java.util.Map;
