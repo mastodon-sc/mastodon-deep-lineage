@@ -238,4 +238,20 @@ public class ClusterUtils
 		Collections.sort( list );
 		return list;
 	}
+
+	public static JPanel createDendrogram( String headline, Cluster cluster )
+	{
+		DendrogramPanel dendrogramPanel = new DendrogramPanel();
+		dendrogramPanel.setModel( cluster );
+
+		JPanel panel = new JPanel( new MigLayout( "fill" ) );
+		JLabel label = new JLabel( headline );
+
+		panel.add( label, "wrap, align center" );
+		panel.add( dendrogramPanel, "grow, push" );
+
+		panel.setBorder( BorderFactory.createEtchedBorder() );
+
+		return panel;
+	}
 }

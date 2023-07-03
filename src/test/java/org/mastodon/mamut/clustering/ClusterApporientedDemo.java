@@ -6,12 +6,10 @@ import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.CompleteLinkageStrategy;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.SingleLinkageStrategy;
-import com.apporiented.algorithm.clustering.visualization.DendrogramPanel;
 import net.miginfocom.swing.MigLayout;
+import org.mastodon.mamut.clustering.util.ClusterUtils;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.util.Random;
@@ -40,12 +38,12 @@ public class ClusterApporientedDemo
 		Cluster singleRandom = algorithm.performClustering( randomDistances, ClusterData.names, new SingleLinkageStrategy() );
 		Cluster completeRandom = algorithm.performClustering( randomDistances, ClusterData.names, new CompleteLinkageStrategy() );
 
-		JPanel averagedFixedPanel = createPanel( "Average Linkage (Fixed Values)", averageFixed );
-		JPanel singleFixedPanel = createPanel( "Single Linkage (Fixed Values)", singleFixed );
-		JPanel completeFixedPanel = createPanel( "Complete Linkage (Fixed Values)", completeFixed );
-		JPanel averagedRandomPanel = createPanel( "Average Linkage (Random Values)", averageRandom );
-		JPanel singleRandomPanel = createPanel( "Single Linkage (Random Values)", singleRandom );
-		JPanel completeRandomPanel = createPanel( "Complete Linkage (Random Values)", completeRandom );
+		JPanel averagedFixedPanel = ClusterUtils.createDendrogram( "Average Linkage (Fixed Values)", averageFixed );
+		JPanel singleFixedPanel = ClusterUtils.createDendrogram( "Single Linkage (Fixed Values)", singleFixed );
+		JPanel completeFixedPanel = ClusterUtils.createDendrogram( "Complete Linkage (Fixed Values)", completeFixed );
+		JPanel averagedRandomPanel = ClusterUtils.createDendrogram( "Average Linkage (Random Values)", averageRandom );
+		JPanel singleRandomPanel = ClusterUtils.createDendrogram( "Single Linkage (Random Values)", singleRandom );
+		JPanel completeRandomPanel = ClusterUtils.createDendrogram( "Complete Linkage (Random Values)", completeRandom );
 
 		frame.setLayout( new MigLayout( "insets 10, wrap 3, fill" ) );
 
@@ -70,21 +68,5 @@ public class ClusterApporientedDemo
 				symmetricArray[ i ][ j ] = symmetricArray[ j ][ i ] = j == i ? 0 : ( int ) ( random.nextDouble() * 100 );
 
 		return symmetricArray;
-	}
-
-	private static JPanel createPanel( String headline, Cluster cluster )
-	{
-		DendrogramPanel dendrogramPanel = new DendrogramPanel();
-		dendrogramPanel.setModel( cluster );
-
-		JPanel panel = new JPanel( new MigLayout( "fill" ) );
-		JLabel label = new JLabel( headline );
-
-		panel.add( label, "wrap, align center" );
-		panel.add( dendrogramPanel, "grow, push" );
-
-		panel.setBorder( BorderFactory.createEtchedBorder() );
-
-		return panel;
 	}
 }
