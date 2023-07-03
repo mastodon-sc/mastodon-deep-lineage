@@ -130,9 +130,10 @@ public class ClusterUtils
 			LinkageStrategy linkageStrategy, int classCount )
 	{
 		if ( classCount < 1 )
-			throw new IllegalArgumentException( "classCount must be greater than zero" );
+			throw new IllegalArgumentException( "classCount (" + classCount + ") must be greater than zero" );
 		else if ( classCount > objects.length )
-			throw new IllegalArgumentException( "classCount must be less than or equal to the number of names" );
+			throw new IllegalArgumentException(
+					"classCount (" + classCount + ") must be less than or equal to the number of names (" + objects.length + ")" );
 		else if ( classCount == 1 )
 			return Collections.singletonMap( 0, Arrays.asList( objects ) );
 
