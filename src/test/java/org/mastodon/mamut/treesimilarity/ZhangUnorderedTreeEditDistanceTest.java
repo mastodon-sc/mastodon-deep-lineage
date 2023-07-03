@@ -8,11 +8,21 @@ import org.mastodon.mamut.treesimilarity.tree.Tree;
 import java.util.function.BiFunction;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class ZhangUnorderedTreeEditDistanceTest
 {
 
 	private final static BiFunction< Double, Double, Double > defaultCosts = ZhangUnorderedTreeEditDistance.getDefaultCostFunction();
+
+	@Test
+	public void testExceptions()
+	{
+		Tree< Double > simpleTree1 = SimpleTreeExamples.tree1();
+		Tree< Double > simpleTree2 = SimpleTreeExamples.tree2();
+		assertThrows( IllegalArgumentException.class, () -> ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleTree2, null ) );
+		assertThrows( IllegalArgumentException.class, () -> ZhangUnorderedTreeEditDistance.distance( null, null, defaultCosts ) );
+	}
 
 	@Test
 	public void testDistance()
