@@ -144,6 +144,7 @@ public class ClusterUtils
 			return classes;
 		}
 
+		// NB: the cluster algorithm needs unique names instead of objects
 		Map< String, T > objectNames = convertObjects( objects );
 		String[] names = objectNames.keySet().toArray( new String[ 0 ] );
 
@@ -156,6 +157,7 @@ public class ClusterUtils
 				break;
 		}
 
+		// convert the clusters back to classes containing the original objects
 		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( clusters, objectNames );
 		log( classifiedObjects );
 		return classifiedObjects;
