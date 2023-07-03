@@ -147,8 +147,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 			final BiFunction< T, T, Double > costFunction )
 	{
 		double denominator = distance( tree1, null, costFunction ) + distance( null, tree2, costFunction );
+		// NB: avoid division by zero. Two empty trees are considered equal. Two trees with zero distance are considered equal.
 		if ( denominator == 0 )
-			throw new IllegalArgumentException( "Both trees are null. This is not allowed." );
+			return 0;
 		return distance( tree1, tree2, costFunction ) / denominator;
 	}
 

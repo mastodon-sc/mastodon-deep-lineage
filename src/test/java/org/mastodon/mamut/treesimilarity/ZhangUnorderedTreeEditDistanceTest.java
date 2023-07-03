@@ -232,8 +232,10 @@ public class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	public void testNormalizedDistance()
 	{
+		Tree< Double > emptyTree = SimpleTreeExamples.emptyTree();
 		Tree< Double > tree1 = SimpleTreeExamples.tree1();
 		Tree< Double > tree2 = SimpleTreeExamples.tree2();
+		assertEquals( 0d, ZhangUnorderedTreeEditDistance.normalizedDistance( emptyTree, emptyTree, defaultCosts ), 0d );
 		assertEquals( 20d / 120d, ZhangUnorderedTreeEditDistance.normalizedDistance( tree1, tree2, defaultCosts ), 0d );
 	}
 
