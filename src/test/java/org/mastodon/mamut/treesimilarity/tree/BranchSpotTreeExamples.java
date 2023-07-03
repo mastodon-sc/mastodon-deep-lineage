@@ -64,6 +64,7 @@ public class BranchSpotTreeExamples
 		modelBranchGraph.graphRebuilt();
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
+		spot1.setLabel( "spot1" );
 
 		return new BranchSpotTree( branchSpot, 60 );
 	}

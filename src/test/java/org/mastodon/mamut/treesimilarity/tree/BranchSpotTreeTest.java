@@ -61,6 +61,12 @@ public class BranchSpotTreeTest
 	}
 
 	@Test
+	public void testToString()
+	{
+		assertEquals( "spot1", BranchSpotTreeExamples.tree1().toString() );
+	}
+
+	@Test
 	public void testBranchSpot()
 	{
 		final Model model = new Model();
