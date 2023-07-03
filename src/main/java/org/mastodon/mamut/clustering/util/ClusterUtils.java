@@ -92,7 +92,8 @@ public class ClusterUtils
 			objectNames.put( String.valueOf( i ), objects[ i ] );
 		String[] names = objectNames.keySet().toArray( new String[ 0 ] );
 
-		List< Cluster > sortedClusters = getSortedClusters( names, distances, linkageStrategy );
+		Cluster algorithmResult = algorithm.performClustering( distances, names, linkageStrategy );
+		List< Cluster > sortedClusters = sortClusters( algorithmResult );
 		List< Cluster > output = new ArrayList<>();
 		for ( Cluster cluster : sortedClusters )
 		{
@@ -148,7 +149,8 @@ public class ClusterUtils
 		Map< String, T > objectNames = convertObjects( objects );
 		String[] names = objectNames.keySet().toArray( new String[ 0 ] );
 
-		List< Cluster > sortedClusters = getSortedClusters( names, distances, linkageStrategy );
+		Cluster algorithmResult = algorithm.performClustering( distances, names, linkageStrategy );
+		List< Cluster > sortedClusters = sortClusters( algorithmResult );
 		List< Cluster > clusters = new ArrayList<>();
 		for ( Cluster cluster : sortedClusters )
 		{
@@ -163,9 +165,8 @@ public class ClusterUtils
 		return classifiedObjects;
 	}
 
-	private static List< Cluster > getSortedClusters( String[] leaveNames, double[][] distances, LinkageStrategy linkageStrategy )
+	private static List< Cluster > sortClusters( Cluster algorithmResult )
 	{
-		Cluster algorithmResult = algorithm.performClustering( distances, leaveNames, linkageStrategy );
 		List< Cluster > clusters = allClusters( algorithmResult );
 		clusters.sort( Comparator.comparingDouble( Cluster::getDistanceValue ) );
 		Collections.reverse( clusters );
