@@ -14,6 +14,8 @@ public class Settings
 
 	private int numberOfClasses;
 
+	private int minCellDivisions;
+
 	public Settings()
 	{
 		this.cropCriterion = CropCriteria.TIMEPOINT;
@@ -22,6 +24,7 @@ public class Settings
 		this.numberOfClasses = 3;
 		this.similarityMeasure = SimilarityMeasure.NORMALIZED_DIFFERENCE;
 		this.clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE;
+		this.minCellDivisions = 1;
 	}
 
 	public CropCriteria getCropCriterion()
@@ -82,5 +85,15 @@ public class Settings
 	public void setNumberOfClasses( int numberOfClasses )
 	{
 		this.numberOfClasses = numberOfClasses;
+	}
+
+	public int getMinCellDivisions()
+	{
+		return minCellDivisions;
+	}
+
+	public void setMinCellDivisions( int minCellDivisions )
+	{
+		this.minCellDivisions = minCellDivisions;
 	}
 }
