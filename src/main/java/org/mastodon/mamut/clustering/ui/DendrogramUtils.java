@@ -4,12 +4,14 @@ import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.visualization.DendrogramPanel;
 import net.miginfocom.swing.MigLayout;
 
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.awt.*;
+import java.util.Map;
 
 public class DendrogramUtils
 {
@@ -18,9 +20,12 @@ public class DendrogramUtils
 		// prevent from instantiation
 	}
 
-	public static void showDendrogram( Cluster algorithmResult, double cutoff )
+	public static < T > void showDendrogram( @Nullable final Cluster cluster, @Nullable final Map< String, T > objectNames,
+			final double cutoff )
 	{
-		JPanel dendrogram = createDendrogram( "Dendrogram", algorithmResult, cutoff );
+		if ( cluster != null && objectNames != null )
+			renameClusters( cluster, objectNames );
+		JPanel dendrogram = createDendrogram( "Dendrogram", cluster, cutoff );
 		JFrame frame = new JFrame( "Hierarchical clustering of lineage trees" );
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
 		frame.setSize( 500, 300 );
