@@ -157,12 +157,7 @@ public class ClusterRootNodesFrame extends JFrame
 
 	private void createTagset()
 	{
-		settings.setCropCriterion( CropCriteria.getByName( getSelectedButton( cropCriteria ).getText() ) );
-		settings.setCropStart( getValue( startInput ) );
-		settings.setCropEnd( getValue( endInput ) );
-		settings.setNumberOfClasses( getValue( numberOfClassesInput ) );
-		settings.setSimilarityMeasure( SimilarityMeasure.getByName( getSelectedButton( similarityMeasures ).getText() ) );
-		settings.setClusteringMethod( ClusteringMethod.getByName( getSelectedButton( clusteringMethods ).getText() ) );
+		updateSettings();
 
 		Set< Spot > roots = RootFinder.getRoots( model.getGraph() );
 		List< BranchSpotTree > trees = new ArrayList<>();
@@ -181,6 +176,18 @@ public class ClusterRootNodesFrame extends JFrame
 		{
 			logger.info( "Class {} has {} trees", entry.getKey(), entry.getValue().size() );
 		}
+
+	}
+
+	private void updateSettings()
+	{
+		settings.setCropCriterion( CropCriteria.getByName( getSelectedButton( cropCriteria ).getText() ) );
+		settings.setCropStart( getValue( start ) );
+		settings.setCropEnd( getValue( end ) );
+		settings.setNumberOfClasses( getValue( numberOfClasses ) );
+		settings.setMinCellDivisions( getValue( minCellDivisions ) );
+		settings.setSimilarityMeasure( SimilarityMeasure.getByName( getSelectedButton( similarityMeasures ).getText() ) );
+		settings.setClusteringMethod( ClusteringMethod.getByName( getSelectedButton( clusteringMethods ).getText() ) );
 	}
 
 	private int getValue( JFormattedTextField textField )
