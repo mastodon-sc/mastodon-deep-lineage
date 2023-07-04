@@ -7,7 +7,6 @@ import com.apporiented.algorithm.clustering.LinkageStrategy;
 import net.imglib2.parallel.Parallelization;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
-import org.mastodon.mamut.clustering.ui.DendrogramUtils;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.slf4j.Logger;
@@ -88,30 +87,27 @@ public class ClusterUtils
 	 * @param threshold the threshold for the distance for building clusters
 	 * @return a mapping from cluster id objects
 	 */
-	public static < T > Map< Integer, List< T > > getClustersByThreshold( T[] objects, double[][] distances,
+	public static < T > Classification< T > getClustersByThreshold( T[] objects, double[][] distances,
 			LinkageStrategy linkageStrategy, double threshold )
 	{
 		if ( threshold < 0 )
 			throw new IllegalArgumentException( "threshold must be greater than or equal to zero" );
 
-		Map< String, T > objectNames = new HashMap<>();
-		for ( int i = 0; i < objects.length; i++ )
-			objectNames.put( String.valueOf( i ), objects[ i ] );
-		String[] names = objectNames.keySet().toArray( new String[ 0 ] );
+		Map< String, T > uniqueObjectNames = uniqueObjectNames( objects );
+		Cluster algorithmResult = performClustering( distances, linkageStrategy, uniqueObjectNames );
 
-		Cluster algorithmResult = algorithm.performClustering( distances, names, linkageStrategy );
 		List< Cluster > sortedClusters = sortClusters( algorithmResult );
-		List< Cluster > output = new ArrayList<>();
+		List< Cluster > resultClusters = new ArrayList<>();
 		for ( Cluster cluster : sortedClusters )
 		{
 			if ( cluster.getDistanceValue() < threshold )
 				break;
-			output.add( cluster );
+			resultClusters.add( cluster );
 		}
 
-		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( output, objectNames );
+		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( resultClusters, uniqueObjectNames );
 		log( classifiedObjects );
-		return classifiedObjects;
+		return new Classification<>( classifiedObjects, algorithmResult, uniqueObjectNames, threshold );
 	}
 
 	/**
@@ -133,33 +129,8 @@ public class ClusterUtils
 	 * @param classCount the number of classes to be built
 	 * @return a mapping from cluster id objects
 	 */
-	public static < T > Map< Integer, List< T > > getClustersByClassCount( T[] objects, double[][] distances,
+	public static < T > Classification< T > getClustersByClassCount( T[] objects, double[][] distances,
 			LinkageStrategy linkageStrategy, int classCount )
-	{
-		return getClustersByClassCount( objects, distances, linkageStrategy, classCount, false );
-	}
-
-	/**
-	 * Gets a mapping from cluster id to objects. The cluster ids are incremented by 1 starting from 0.
-	 * The amount of clusters depends on the given class count.
-	 * <p>
-	 * Constraints:
-	 * <ul>
-	 *     <li>The distance matrix needs to be quadratic</li>
-	 *     <li>The distance matrix to be symmetric with zero diagonal</li>
-	 *     <li>The number of objects needs to equal the length of the distance matrix</li>
-	 *     <li>The class count needs to be greater than zero</li>
-	 *     <li>The class count needs to be less than or equal to the number of names</li>
-	 * </ul>
-	 *
-	 * @param objects the objects to be clustered
-	 * @param distances the symmetric distance matrix with zero diagonal
-	 * @param linkageStrategy the linkage strategy (e.g. {@link com.apporiented.algorithm.clustering.AverageLinkageStrategy}, {@link com.apporiented.algorithm.clustering.CompleteLinkageStrategy}, {@link com.apporiented.algorithm.clustering.SingleLinkageStrategy})
-	 * @param classCount the number of classes to be built
-	 * @return a mapping from cluster id objects
-	 */
-	public static < T > Map< Integer, List< T > > getClustersByClassCount( T[] objects, double[][] distances,
-			LinkageStrategy linkageStrategy, int classCount, boolean showDendrogram )
 	{
 		if ( classCount < 1 )
 			throw new IllegalArgumentException( "classCount (" + classCount + ") must be greater than zero" );
@@ -167,7 +138,7 @@ public class ClusterUtils
 			throw new IllegalArgumentException(
 					"classCount (" + classCount + ") must be less than or equal to the number of names (" + objects.length + ")" );
 		else if ( classCount == 1 )
-			return Collections.singletonMap( 0, Arrays.asList( objects ) );
+			return new Classification<>( Collections.singletonMap( 0, Arrays.asList( objects ) ), null, null, 0d );
 
 		int clusterId = 0;
 		Map< Integer, List< T > > classes = new HashMap<>();
@@ -175,14 +146,13 @@ public class ClusterUtils
 		{
 			for ( T name : objects )
 				classes.put( clusterId++, Collections.singletonList( name ) );
-			return classes;
+			return new Classification<>( classes, null, null, 0d );
 		}
 
 		// NB: the cluster algorithm needs unique names instead of objects
-		Map< String, T > objectNames = convertObjects( objects );
-		String[] names = objectNames.keySet().toArray( new String[ 0 ] );
+		Map< String, T > uniqueObjectNames = uniqueObjectNames( objects );
+		Cluster algorithmResult = performClustering( distances, linkageStrategy, uniqueObjectNames );
 
-		Cluster algorithmResult = algorithm.performClustering( distances, names, linkageStrategy );
 		List< Cluster > sortedClusters = sortClusters( algorithmResult );
 		List< Cluster > resultClusters = new ArrayList<>();
 		double cutoff = sortedClusters.get( 0 ).getDistanceValue();
@@ -197,15 +167,17 @@ public class ClusterUtils
 		}
 
 		// convert the clusters back to classes containing the original objects
-		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( resultClusters, objectNames );
+		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( resultClusters, uniqueObjectNames );
 
-		if ( showDendrogram )
-		{
-			renameClusters( algorithmResult, objectNames );
-			DendrogramUtils.showDendrogram( algorithmResult, cutoff );
-		}
 		log( classifiedObjects );
-		return classifiedObjects;
+		return new Classification<>( classifiedObjects, algorithmResult, uniqueObjectNames, cutoff );
+	}
+
+	private static < T > Cluster performClustering( double[][] distances, LinkageStrategy linkageStrategy,
+			Map< String, T > uniqueObjectNames )
+	{
+		String[] uniqueNames = uniqueObjectNames.keySet().toArray( new String[ 0 ] );
+		return algorithm.performClustering( distances, uniqueNames, linkageStrategy );
 	}
 
 	private static List< Cluster > sortClusters( Cluster algorithmResult )
@@ -216,7 +188,7 @@ public class ClusterUtils
 		return clusters;
 	}
 
-	private static < T > Map< String, T > convertObjects( T[] objects )
+	private static < T > Map< String, T > uniqueObjectNames( T[] objects )
 	{
 		Map< String, T > objectNames = new HashMap<>();
 		for ( int i = 0; i < objects.length; i++ )
@@ -260,8 +232,6 @@ public class ClusterUtils
 
 	private static List< Cluster > allClusters( final Cluster cluster )
 	{
-		if ( cluster == null )
-			throw new IllegalArgumentException( "Given cluster must not be null" );
 		List< Cluster > list = new ArrayList<>();
 		list.add( cluster );
 		for ( Cluster child : cluster.getChildren() )
@@ -271,8 +241,6 @@ public class ClusterUtils
 
 	private static List< String > leaveNames( final Cluster cluster )
 	{
-		if ( cluster == null )
-			throw new IllegalArgumentException( "Given cluster must not be null" );
 		List< String > list = new ArrayList<>();
 		if ( cluster.isLeaf() )
 			list.add( cluster.getName() );
@@ -281,16 +249,4 @@ public class ClusterUtils
 		Collections.sort( list );
 		return list;
 	}
-
-	private static < T > void renameClusters( final Cluster cluster, final Map< String, T > objectNames )
-	{
-		if ( cluster == null )
-			throw new IllegalArgumentException( "Given cluster must not be null" );
-		if ( cluster.isLeaf() )
-			cluster.setName( objectNames.get( cluster.getName() ).toString() );
-		for ( Cluster child : cluster.getChildren() )
-			renameClusters( child, objectNames );
-	}
-
-
 }

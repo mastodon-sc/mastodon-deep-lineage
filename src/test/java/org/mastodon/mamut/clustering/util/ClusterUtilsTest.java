@@ -22,7 +22,8 @@ public class ClusterUtilsTest
 	public void testGetClustersByThreshold()
 	{
 		Map< Integer, List< String > > leavesToClusterIds =
-				ClusterUtils.getClustersByThreshold( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 50 );
+				ClusterUtils.getClustersByThreshold( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 50 )
+						.getClassifiedObjects();
 		assertArrayEquals( new String[] { "F" }, leavesToClusterIds.get( 0 ).toArray() );
 		assertArrayEquals( new String[] { "A", "B", "E", "G", "H" }, leavesToClusterIds.get( 1 ).toArray() );
 		assertArrayEquals( new String[] { "C", "D", "I", "J" }, leavesToClusterIds.get( 2 ).toArray() );
@@ -32,7 +33,8 @@ public class ClusterUtilsTest
 	public void testGetClustersByClassCount()
 	{
 		Map< Integer, List< String > > leavesToClusterIds =
-				ClusterUtils.getClustersByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 3 );
+				ClusterUtils.getClustersByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 3 )
+						.getClassifiedObjects();
 		assertArrayEquals( new String[] { "F" }, leavesToClusterIds.get( 0 ).toArray() );
 		assertArrayEquals( new String[] { "A", "B", "E", "G", "H" }, leavesToClusterIds.get( 1 ).toArray() );
 		assertArrayEquals( new String[] { "C", "D", "I", "J" }, leavesToClusterIds.get( 2 ).toArray() );
@@ -94,7 +96,8 @@ public class ClusterUtilsTest
 	public void testOneClass()
 	{
 		Map< Integer, List< String > > leavesToClusterIds =
-				ClusterUtils.getClustersByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 1 );
+				ClusterUtils.getClustersByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 1 )
+						.getClassifiedObjects();
 		assertArrayEquals( new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" }, leavesToClusterIds.get( 0 ).toArray() );
 	}
 
@@ -102,7 +105,8 @@ public class ClusterUtilsTest
 	public void testTrivialCase()
 	{
 		Map< Integer, List< String > > leavesToClusterIds =
-				ClusterUtils.getClustersByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 10 );
+				ClusterUtils.getClustersByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 10 )
+						.getClassifiedObjects();
 		assertArrayEquals( new String[] { "A" }, leavesToClusterIds.get( 0 ).toArray() );
 		assertArrayEquals( new String[] { "B" }, leavesToClusterIds.get( 1 ).toArray() );
 		assertArrayEquals( new String[] { "C" }, leavesToClusterIds.get( 2 ).toArray() );
