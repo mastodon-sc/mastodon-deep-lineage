@@ -13,31 +13,47 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
 public class ClusterUtilsTest
 {
 
 	@Test
-	public void testGetClustersByThreshold()
+	public void testGetClassificationByThreshold()
 	{
-		Map< Integer, List< String > > leavesToClusterIds =
-				ClusterUtils.getClustersByThreshold( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 50 )
-						.getClassifiedObjects();
-		assertArrayEquals( new String[] { "F" }, leavesToClusterIds.get( 0 ).toArray() );
-		assertArrayEquals( new String[] { "A", "B", "E", "G", "H" }, leavesToClusterIds.get( 1 ).toArray() );
-		assertArrayEquals( new String[] { "C", "D", "I", "J" }, leavesToClusterIds.get( 2 ).toArray() );
+		double threshold = 50d;
+		Classification< String > classification =
+				ClusterUtils.getClassificationByThreshold( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
+						threshold );
+		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
+		Map< String, String > objectMapping = classification.getObjectMapping();
+
+		assertArrayEquals( new String[] { "F" }, classifiedObjects.get( 0 ).toArray() );
+		assertArrayEquals( new String[] { "A", "B", "E", "G", "H" }, classifiedObjects.get( 1 ).toArray() );
+		assertArrayEquals( new String[] { "C", "D", "I", "J" }, classifiedObjects.get( 2 ).toArray() );
+		assertEquals( threshold, classification.getCutoff(), 0d );
+		assertEquals( ClusterData.names.length, objectMapping.size() );
+		assertNotNull( classification.getAlgorithmResult() );
 	}
 
 	@Test
-	public void testGetClustersByClassCount()
+	public void testGetClassificationByClassCount()
 	{
-		Map< Integer, List< String > > leavesToClusterIds =
-				ClusterUtils.getClustersByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 3 )
-						.getClassifiedObjects();
-		assertArrayEquals( new String[] { "F" }, leavesToClusterIds.get( 0 ).toArray() );
-		assertArrayEquals( new String[] { "A", "B", "E", "G", "H" }, leavesToClusterIds.get( 1 ).toArray() );
-		assertArrayEquals( new String[] { "C", "D", "I", "J" }, leavesToClusterIds.get( 2 ).toArray() );
+		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
+				new AverageLinkageStrategy(), 3 );
+		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
+		Map< String, String > objectMapping = classification.getObjectMapping();
+		double cutoff = classification.getCutoff();
+
+		assertArrayEquals( new String[] { "F" }, classifiedObjects.get( 0 ).toArray() );
+		assertArrayEquals( new String[] { "A", "B", "E", "G", "H" }, classifiedObjects.get( 1 ).toArray() );
+		assertArrayEquals( new String[] { "C", "D", "I", "J" }, classifiedObjects.get( 2 ).toArray() );
+		assertEquals( ClusterData.names.length, objectMapping.size() );
+		assertEquals( 61.5d, cutoff, 0d );
+		assertNotNull( classification.getAlgorithmResult() );
 	}
 
 	@Test
@@ -83,39 +99,44 @@ public class ClusterUtilsTest
 		LinkageStrategy linkageStrategy = new AverageLinkageStrategy();
 		// zero classes
 		assertThrows( IllegalArgumentException.class,
-				() -> ClusterUtils.getClustersByClassCount( ClusterData.names, ClusterData.fixedDistances, linkageStrategy, 0 ) );
+				() -> ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, linkageStrategy, 0 ) );
 		// too many classes
 		assertThrows( IllegalArgumentException.class,
-				() -> ClusterUtils.getClustersByClassCount( ClusterData.names, ClusterData.fixedDistances, linkageStrategy, 11 ) );
+				() -> ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, linkageStrategy, 11 ) );
 		// negative threshold
 		assertThrows( IllegalArgumentException.class,
-				() -> ClusterUtils.getClustersByThreshold( ClusterData.names, ClusterData.fixedDistances, linkageStrategy, -1 ) );
+				() -> ClusterUtils.getClassificationByThreshold( ClusterData.names, ClusterData.fixedDistances, linkageStrategy, -1 ) );
 	}
 
 	@Test
 	public void testOneClass()
 	{
-		Map< Integer, List< String > > leavesToClusterIds =
-				ClusterUtils.getClustersByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 1 )
-						.getClassifiedObjects();
-		assertArrayEquals( new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" }, leavesToClusterIds.get( 0 ).toArray() );
+		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
+				new AverageLinkageStrategy(), 1 );
+		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
+		assertArrayEquals( new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" }, classifiedObjects.get( 0 ).toArray() );
+		assertNull( classification.getObjectMapping() );
+		assertNull( classification.getAlgorithmResult() );
 	}
 
 	@Test
 	public void testTrivialCase()
 	{
-		Map< Integer, List< String > > leavesToClusterIds =
-				ClusterUtils.getClustersByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 10 )
-						.getClassifiedObjects();
-		assertArrayEquals( new String[] { "A" }, leavesToClusterIds.get( 0 ).toArray() );
-		assertArrayEquals( new String[] { "B" }, leavesToClusterIds.get( 1 ).toArray() );
-		assertArrayEquals( new String[] { "C" }, leavesToClusterIds.get( 2 ).toArray() );
-		assertArrayEquals( new String[] { "D" }, leavesToClusterIds.get( 3 ).toArray() );
-		assertArrayEquals( new String[] { "E" }, leavesToClusterIds.get( 4 ).toArray() );
-		assertArrayEquals( new String[] { "F" }, leavesToClusterIds.get( 5 ).toArray() );
-		assertArrayEquals( new String[] { "G" }, leavesToClusterIds.get( 6 ).toArray() );
-		assertArrayEquals( new String[] { "H" }, leavesToClusterIds.get( 7 ).toArray() );
-		assertArrayEquals( new String[] { "I" }, leavesToClusterIds.get( 8 ).toArray() );
-		assertArrayEquals( new String[] { "J" }, leavesToClusterIds.get( 9 ).toArray() );
+		Classification< String > classification =
+				ClusterUtils
+						.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 10 );
+		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
+		assertArrayEquals( new String[] { "A" }, classifiedObjects.get( 0 ).toArray() );
+		assertArrayEquals( new String[] { "B" }, classifiedObjects.get( 1 ).toArray() );
+		assertArrayEquals( new String[] { "C" }, classifiedObjects.get( 2 ).toArray() );
+		assertArrayEquals( new String[] { "D" }, classifiedObjects.get( 3 ).toArray() );
+		assertArrayEquals( new String[] { "E" }, classifiedObjects.get( 4 ).toArray() );
+		assertArrayEquals( new String[] { "F" }, classifiedObjects.get( 5 ).toArray() );
+		assertArrayEquals( new String[] { "G" }, classifiedObjects.get( 6 ).toArray() );
+		assertArrayEquals( new String[] { "H" }, classifiedObjects.get( 7 ).toArray() );
+		assertArrayEquals( new String[] { "I" }, classifiedObjects.get( 8 ).toArray() );
+		assertArrayEquals( new String[] { "J" }, classifiedObjects.get( 9 ).toArray() );
+		assertNull( classification.getObjectMapping() );
+		assertNull( classification.getAlgorithmResult() );
 	}
 }

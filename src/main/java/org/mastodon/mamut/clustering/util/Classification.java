@@ -11,16 +11,16 @@ public class Classification< T >
 
 	private final Cluster algorithmResult;
 
-	private final Map< String, T > uniqueObjectNames;
+	private final Map< String, T > objectMapping;
 
 	private final double cutoff;
 
-	public Classification( Map< Integer, List< T > > classifiedObjects, Cluster algorithmResult, Map< String, T > uniqueObjectNames,
+	public Classification( Map< Integer, List< T > > classifiedObjects, Cluster algorithmResult, Map< String, T > objectMapping,
 			double cutoff )
 	{
 		this.classifiedObjects = classifiedObjects;
 		this.algorithmResult = algorithmResult;
-		this.uniqueObjectNames = uniqueObjectNames;
+		this.objectMapping = objectMapping;
 		this.cutoff = cutoff;
 	}
 
@@ -34,9 +34,9 @@ public class Classification< T >
 		return algorithmResult;
 	}
 
-	public Map< String, T > getUniqueObjectNames()
+	public Map< String, T > getObjectMapping()
 	{
-		return uniqueObjectNames;
+		return objectMapping;
 	}
 
 	public double getCutoff()

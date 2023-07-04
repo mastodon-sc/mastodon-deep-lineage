@@ -71,7 +71,8 @@ public class ClusterUtils
 	}
 
 	/**
-	 * Gets a mapping from cluster id to objects. The cluster ids are incremented by 1 starting from 0.
+	 * Gets a {@link Classification} that contains a mapping from cluster ids to objects.<p>
+	 * The cluster ids are incremented by 1 starting from 0.
 	 * The amount of clusters depends on the given threshold.
 	 * <p>
 	 * Constraints:
@@ -87,14 +88,14 @@ public class ClusterUtils
 	 * @param threshold the threshold for the distance for building clusters
 	 * @return a mapping from cluster id objects
 	 */
-	public static < T > Classification< T > getClustersByThreshold( T[] objects, double[][] distances,
+	public static < T > Classification< T > getClassificationByThreshold( T[] objects, double[][] distances,
 			LinkageStrategy linkageStrategy, double threshold )
 	{
 		if ( threshold < 0 )
 			throw new IllegalArgumentException( "threshold must be greater than or equal to zero" );
 
-		Map< String, T > uniqueObjectNames = uniqueObjectNames( objects );
-		Cluster algorithmResult = performClustering( distances, linkageStrategy, uniqueObjectNames );
+		Map< String, T > objectMapping = objectMapping( objects );
+		Cluster algorithmResult = performClustering( distances, linkageStrategy, objectMapping );
 
 		List< Cluster > sortedClusters = sortClusters( algorithmResult );
 		List< Cluster > resultClusters = new ArrayList<>();
@@ -105,13 +106,14 @@ public class ClusterUtils
 			resultClusters.add( cluster );
 		}
 
-		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( resultClusters, uniqueObjectNames );
+		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( resultClusters, objectMapping );
 		log( classifiedObjects );
-		return new Classification<>( classifiedObjects, algorithmResult, uniqueObjectNames, threshold );
+		return new Classification<>( classifiedObjects, algorithmResult, objectMapping, threshold );
 	}
 
 	/**
-	 * Gets a mapping from cluster id to objects. The cluster ids are incremented by 1 starting from 0.
+	 * Gets a {@link Classification} that contains a mapping from cluster ids to objects.<p>
+	 * The cluster ids are incremented by 1 starting from 0.
 	 * The amount of clusters depends on the given class count.
 	 * <p>
 	 * Constraints:
@@ -129,7 +131,7 @@ public class ClusterUtils
 	 * @param classCount the number of classes to be built
 	 * @return a mapping from cluster id objects
 	 */
-	public static < T > Classification< T > getClustersByClassCount( T[] objects, double[][] distances,
+	public static < T > Classification< T > getClassificationByClassCount( T[] objects, double[][] distances,
 			LinkageStrategy linkageStrategy, int classCount )
 	{
 		if ( classCount < 1 )
@@ -150,8 +152,8 @@ public class ClusterUtils
 		}
 
 		// NB: the cluster algorithm needs unique names instead of objects
-		Map< String, T > uniqueObjectNames = uniqueObjectNames( objects );
-		Cluster algorithmResult = performClustering( distances, linkageStrategy, uniqueObjectNames );
+		Map< String, T > objectMapping = objectMapping( objects );
+		Cluster algorithmResult = performClustering( distances, linkageStrategy, objectMapping );
 
 		List< Cluster > sortedClusters = sortClusters( algorithmResult );
 		List< Cluster > resultClusters = new ArrayList<>();
@@ -167,10 +169,10 @@ public class ClusterUtils
 		}
 
 		// convert the clusters back to classes containing the original objects
-		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( resultClusters, uniqueObjectNames );
+		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( resultClusters, objectMapping );
 
 		log( classifiedObjects );
-		return new Classification<>( classifiedObjects, algorithmResult, uniqueObjectNames, cutoff );
+		return new Classification<>( classifiedObjects, algorithmResult, objectMapping, cutoff );
 	}
 
 	private static < T > Cluster performClustering( double[][] distances, LinkageStrategy linkageStrategy,
@@ -188,7 +190,7 @@ public class ClusterUtils
 		return clusters;
 	}
 
-	private static < T > Map< String, T > uniqueObjectNames( T[] objects )
+	private static < T > Map< String, T > objectMapping( T[] objects )
 	{
 		Map< String, T > objectNames = new HashMap<>();
 		for ( int i = 0; i < objects.length; i++ )
