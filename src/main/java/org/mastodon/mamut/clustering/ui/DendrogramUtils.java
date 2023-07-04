@@ -40,7 +40,32 @@ public class DendrogramUtils
 		return createDendrogram( headline, cluster, 0.0d );
 	}
 
-	public static JPanel createDendrogram( String headline, Cluster cluster, double cutoff )
+	public static int countZerosAfterDecimal( double number )
+	{
+		String numberString = String.valueOf( number );
+		int decimalIndex = numberString.indexOf( '.' );
+		if ( decimalIndex == -1 )
+		{
+			// No decimal point found, return 0
+			return 0;
+		}
+
+		int zeroCount = 0;
+		for ( int i = decimalIndex + 1; i < numberString.length(); i++ )
+		{
+			if ( numberString.charAt( i ) == '0' )
+			{
+				zeroCount++;
+			}
+			else
+			{
+				break;
+			}
+		}
+		return zeroCount;
+	}
+
+	private static JPanel createDendrogram( String headline, Cluster cluster, double cutoff )
 
 	{
 		DendrogramPanel dendrogramPanel;
@@ -67,6 +92,18 @@ public class DendrogramUtils
 		panel.setBorder( BorderFactory.createEtchedBorder() );
 
 		return panel;
+	}
+
+	private static < T > void renameClusters( final Cluster cluster, final Map< String, T > objectNames )
+	{
+		if ( cluster == null )
+			throw new IllegalArgumentException( "Given cluster must not be null" );
+		if ( objectNames == null )
+			throw new IllegalArgumentException( "Given objectNames must not be null" );
+		if ( cluster.isLeaf() )
+			cluster.setName( objectNames.get( cluster.getName() ).toString() );
+		for ( Cluster child : cluster.getChildren() )
+			renameClusters( child, objectNames );
 	}
 
 	private static class DendrogramPanelWithCutoffLine extends DendrogramPanel
@@ -111,30 +148,5 @@ public class DendrogramUtils
 				g2.setStroke( defaultStroke );
 			}
 		}
-	}
-
-	public static int countZerosAfterDecimal( double number )
-	{
-		String numberString = String.valueOf( number );
-		int decimalIndex = numberString.indexOf( '.' );
-		if ( decimalIndex == -1 )
-		{
-			// No decimal point found, return 0
-			return 0;
-		}
-
-		int zeroCount = 0;
-		for ( int i = decimalIndex + 1; i < numberString.length(); i++ )
-		{
-			if ( numberString.charAt( i ) == '0' )
-			{
-				zeroCount++;
-			}
-			else
-			{
-				break;
-			}
-		}
-		return zeroCount;
 	}
 }
