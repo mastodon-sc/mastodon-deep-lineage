@@ -43,13 +43,19 @@ public class DendrogramUtils
 	public static JPanel createDendrogram( String headline, Cluster cluster, double cutoff )
 
 	{
-		DendrogramPanel dendrogramPanel = new DendrogramPanelWithCutoffLine( cluster.getDistanceValue(), cutoff );
-		dendrogramPanel.setModel( cluster );
-		if ( cluster.getDistanceValue() < 1d )
+		DendrogramPanel dendrogramPanel;
+		if ( cluster == null )
+			dendrogramPanel = new DendrogramPanel(); // NB: empty dendrogram
+		else
 		{
-			int zeros = countZerosAfterDecimal( cluster.getDistanceValue() );
-			dendrogramPanel.setScaleValueInterval( Math.pow( 10, -( zeros + 1 ) ) );
-			dendrogramPanel.setScaleValueDecimals( zeros + 1 );
+			dendrogramPanel = new DendrogramPanelWithCutoffLine( cluster.getDistanceValue(), cutoff );
+			dendrogramPanel.setModel( cluster );
+			if ( cluster.getDistanceValue() < 1d )
+			{
+				int zeros = countZerosAfterDecimal( cluster.getDistanceValue() );
+				dendrogramPanel.setScaleValueInterval( Math.pow( 10, -( zeros + 1 ) ) );
+				dendrogramPanel.setScaleValueDecimals( zeros + 1 );
+			}
 		}
 
 		JPanel panel = new JPanel( new MigLayout( "fill" ) );
