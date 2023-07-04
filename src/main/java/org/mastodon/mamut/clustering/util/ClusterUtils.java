@@ -7,6 +7,7 @@ import com.apporiented.algorithm.clustering.LinkageStrategy;
 import net.imglib2.parallel.Parallelization;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
+import org.mastodon.mamut.clustering.ui.DendrogramUtils;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.slf4j.Logger;
@@ -183,16 +184,26 @@ public class ClusterUtils
 
 		Cluster algorithmResult = algorithm.performClustering( distances, names, linkageStrategy );
 		List< Cluster > sortedClusters = sortClusters( algorithmResult );
-		List< Cluster > clusters = new ArrayList<>();
+		List< Cluster > resultClusters = new ArrayList<>();
+		double cutoff = sortedClusters.get( 0 ).getDistanceValue();
 		for ( Cluster cluster : sortedClusters )
 		{
-			clusters.add( cluster );
-			if ( clusters.size() == classCount - 1 )
+			resultClusters.add( cluster );
+			if ( resultClusters.size() == classCount - 1 )
+			{
+				cutoff = cluster.getDistanceValue();
 				break;
+			}
 		}
 
 		// convert the clusters back to classes containing the original objects
-		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( clusters, objectNames );
+		Map< Integer, List< T > > classifiedObjects = convertClustersToClasses( resultClusters, objectNames );
+
+		if ( showDendrogram )
+		{
+			renameClusters( algorithmResult, objectNames );
+			DendrogramUtils.showDendrogram( algorithmResult, cutoff );
+		}
 		log( classifiedObjects );
 		return classifiedObjects;
 	}
@@ -271,19 +282,15 @@ public class ClusterUtils
 		return list;
 	}
 
-	public static JPanel createDendrogram( String headline, Cluster cluster )
+	private static < T > void renameClusters( final Cluster cluster, final Map< String, T > objectNames )
 	{
-		DendrogramPanel dendrogramPanel = new DendrogramPanel();
-		dendrogramPanel.setModel( cluster );
-
-		JPanel panel = new JPanel( new MigLayout( "fill" ) );
-		JLabel label = new JLabel( headline );
-
-		panel.add( label, "wrap, align center" );
-		panel.add( dendrogramPanel, "grow, push" );
-
-		panel.setBorder( BorderFactory.createEtchedBorder() );
-
-		return panel;
+		if ( cluster == null )
+			throw new IllegalArgumentException( "Given cluster must not be null" );
+		if ( cluster.isLeaf() )
+			cluster.setName( objectNames.get( cluster.getName() ).toString() );
+		for ( Cluster child : cluster.getChildren() )
+			renameClusters( child, objectNames );
 	}
+
+
 }
