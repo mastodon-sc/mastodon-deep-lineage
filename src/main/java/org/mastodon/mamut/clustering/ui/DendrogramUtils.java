@@ -20,11 +20,11 @@ public class DendrogramUtils
 		// prevent from instantiation
 	}
 
-	public static < T > void showDendrogram( @Nullable final Cluster cluster, @Nullable final Map< String, T > objectNames,
+	public static < T > void showDendrogram( @Nullable final Cluster cluster, @Nullable final Map< String, T > objectMapping,
 			final double cutoff )
 	{
-		if ( cluster != null && objectNames != null )
-			renameClusters( cluster, objectNames );
+		if ( cluster != null && objectMapping != null )
+			renameClusters( cluster, objectMapping );
 		JPanel dendrogram = createDendrogram( "Dendrogram", cluster, cutoff );
 		JFrame frame = new JFrame( "Hierarchical clustering of lineage trees" );
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
@@ -94,16 +94,16 @@ public class DendrogramUtils
 		return panel;
 	}
 
-	private static < T > void renameClusters( final Cluster cluster, final Map< String, T > objectNames )
+	private static < T > void renameClusters( final Cluster cluster, final Map< String, T > objectMapping )
 	{
 		if ( cluster == null )
 			throw new IllegalArgumentException( "Given cluster must not be null" );
-		if ( objectNames == null )
-			throw new IllegalArgumentException( "Given objectNames must not be null" );
+		if ( objectMapping == null )
+			throw new IllegalArgumentException( "Given objectMapping must not be null" );
 		if ( cluster.isLeaf() )
-			cluster.setName( objectNames.get( cluster.getName() ).toString() );
+			cluster.setName( objectMapping.get( cluster.getName() ).toString() );
 		for ( Cluster child : cluster.getChildren() )
-			renameClusters( child, objectNames );
+			renameClusters( child, objectMapping );
 	}
 
 	private static class DendrogramPanelWithCutoffLine extends DendrogramPanel
