@@ -7,7 +7,7 @@ import com.apporiented.algorithm.clustering.CompleteLinkageStrategy;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.SingleLinkageStrategy;
 import net.miginfocom.swing.MigLayout;
-import org.mastodon.mamut.clustering.ui.DendrogramUtils;
+import org.mastodon.mamut.clustering.ui.view.DendrogramView;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -38,12 +38,13 @@ public class ClusterApporientedDemo
 		Cluster singleRandom = algorithm.performClustering( randomDistances, ClusterData.names, new SingleLinkageStrategy() );
 		Cluster completeRandom = algorithm.performClustering( randomDistances, ClusterData.names, new CompleteLinkageStrategy() );
 
-		JPanel averagedFixedPanel = DendrogramUtils.createDendrogram( "Average Linkage (Fixed Values)", averageFixed );
-		JPanel singleFixedPanel = DendrogramUtils.createDendrogram( "Single Linkage (Fixed Values)", singleFixed );
-		JPanel completeFixedPanel = DendrogramUtils.createDendrogram( "Complete Linkage (Fixed Values)", completeFixed );
-		JPanel averagedRandomPanel = DendrogramUtils.createDendrogram( "Average Linkage (Random Values)", averageRandom );
-		JPanel singleRandomPanel = DendrogramUtils.createDendrogram( "Single Linkage (Random Values)", singleRandom );
-		JPanel completeRandomPanel = DendrogramUtils.createDendrogram( "Complete Linkage (Random Values)", completeRandom );
+		JPanel averagedFixedPanel = new DendrogramView<>( averageFixed, null, 0d, "Average Linkage (Fixed Values)" ).getPanel();
+		JPanel singleFixedPanel = new DendrogramView<>( singleFixed, null, 0d, "Single Linkage (Fixed Values)" ).getPanel();
+		JPanel completeFixedPanel = new DendrogramView<>( completeFixed, null, 0d, "Complete Linkage (Fixed Values)" ).getPanel();
+		JPanel averagedRandomPanel = new DendrogramView<>( averageRandom, null, 0d, "Average Linkage (Random Values)" ).getPanel();
+		JPanel singleRandomPanel = new DendrogramView<>( singleRandom, null, 0d, "Single Linkage (Random Values)" ).getPanel();
+		JPanel completeRandomPanel =
+				new DendrogramView<>( completeRandom, null, 0d, "Complete Linkage (Random Values)" ).getPanel();
 
 		frame.setLayout( new MigLayout( "insets 10, wrap 3, fill" ) );
 

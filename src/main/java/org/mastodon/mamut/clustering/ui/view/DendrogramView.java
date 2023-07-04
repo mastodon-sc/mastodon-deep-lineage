@@ -1,8 +1,9 @@
-package org.mastodon.mamut.clustering.ui;
+package org.mastodon.mamut.clustering.ui.view;
 
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.visualization.DendrogramPanel;
 import net.miginfocom.swing.MigLayout;
+import org.mastodon.mamut.clustering.util.DendrogramUtils;
 
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
@@ -13,60 +14,40 @@ import javax.swing.WindowConstants;
 import java.awt.*;
 import java.util.Map;
 
-public class DendrogramUtils
+public class DendrogramView< T >
 {
-	private DendrogramUtils()
+	@Nullable
+	private final Cluster cluster;
+
+	@Nullable
+	private final Map< String, T > objectMapping;
+
+	private final double cutoff;
+
+	private final String headline;
+
+	public DendrogramView( @Nullable final Cluster cluster, @Nullable final Map< String, T > objectMapping, final double cutoff,
+			final String headline )
 	{
-		// prevent from instantiation
+		this.cluster = cluster;
+		this.objectMapping = objectMapping;
+		this.cutoff = cutoff;
+		this.headline = headline;
 	}
 
-	public static < T > void showDendrogram( @Nullable final Cluster cluster, @Nullable final Map< String, T > objectMapping,
-			final double cutoff )
+	public void show()
 	{
 		if ( cluster != null && objectMapping != null )
-			renameClusters( cluster, objectMapping );
-		JPanel dendrogram = createDendrogram( "Dendrogram", cluster, cutoff );
+			DendrogramUtils.renameLeaves( cluster, objectMapping );
 		JFrame frame = new JFrame( "Hierarchical clustering of lineage trees" );
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
 		frame.setSize( 500, 300 );
 		frame.setLayout( new MigLayout( "insets 10, fill" ) );
-		frame.add( dendrogram, "grow" );
+		frame.add( getPanel(), "grow" );
 		frame.setVisible( true );
 	}
 
-	public static JPanel createDendrogram( String headline, Cluster cluster )
-
-	{
-		return createDendrogram( headline, cluster, 0.0d );
-	}
-
-	public static int countZerosAfterDecimal( double number )
-	{
-		String numberString = String.valueOf( number );
-		int decimalIndex = numberString.indexOf( '.' );
-		if ( decimalIndex == -1 )
-		{
-			// No decimal point found, return 0
-			return 0;
-		}
-
-		int zeroCount = 0;
-		for ( int i = decimalIndex + 1; i < numberString.length(); i++ )
-		{
-			if ( numberString.charAt( i ) == '0' )
-			{
-				zeroCount++;
-			}
-			else
-			{
-				break;
-			}
-		}
-		return zeroCount;
-	}
-
-	private static JPanel createDendrogram( String headline, Cluster cluster, double cutoff )
-
+	public JPanel getPanel()
 	{
 		DendrogramPanel dendrogramPanel;
 		if ( cluster == null )
@@ -76,11 +57,7 @@ public class DendrogramUtils
 			dendrogramPanel = new DendrogramPanelWithCutoffLine( cluster.getDistanceValue(), cutoff );
 			dendrogramPanel.setModel( cluster );
 			if ( cluster.getDistanceValue() < 1d )
-			{
-				int zeros = countZerosAfterDecimal( cluster.getDistanceValue() );
-				dendrogramPanel.setScaleValueInterval( Math.pow( 10, -( zeros + 1 ) ) );
-				dendrogramPanel.setScaleValueDecimals( zeros + 1 );
-			}
+				adaptScaleBar( dendrogramPanel );
 		}
 
 		JPanel panel = new JPanel( new MigLayout( "fill" ) );
@@ -94,16 +71,13 @@ public class DendrogramUtils
 		return panel;
 	}
 
-	private static < T > void renameClusters( final Cluster cluster, final Map< String, T > objectMapping )
+	private void adaptScaleBar( DendrogramPanel dendrogramPanel )
 	{
 		if ( cluster == null )
-			throw new IllegalArgumentException( "Given cluster must not be null" );
-		if ( objectMapping == null )
-			throw new IllegalArgumentException( "Given objectMapping must not be null" );
-		if ( cluster.isLeaf() )
-			cluster.setName( objectMapping.get( cluster.getName() ).toString() );
-		for ( Cluster child : cluster.getChildren() )
-			renameClusters( child, objectMapping );
+			return;
+		int zeros = DendrogramUtils.countZerosAfterDecimalPoint( cluster.getDistanceValue() );
+		dendrogramPanel.setScaleValueInterval( Math.pow( 10, -( zeros + 1 ) ) );
+		dendrogramPanel.setScaleValueDecimals( zeros + 1 );
 	}
 
 	private static class DendrogramPanelWithCutoffLine extends DendrogramPanel
@@ -133,15 +107,14 @@ public class DendrogramUtils
 
 			try
 			{
-				// a stroke for a dashed line with a thickness of 2
 				Stroke stroke = new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5, 5 }, 0 );
 				g2.setStroke( stroke );
 				int yDendrogramOrigin = 2 * getBorderBottom();
-				int dendrogramHeight = getHeight() - getBorderBottom();
-				int dendrogramWidth = getWidth() - getBorderRight();
-				int cutoffX = dendrogramWidth - ( int ) ( cutoff / maxDistance * dendrogramWidth );
+				int height = getHeight() - getBorderBottom();
+				int width = getWidth() - getBorderRight();
+				int cutoffX = width - ( int ) ( cutoff / maxDistance * width );
 
-				g.drawLine( cutoffX, yDendrogramOrigin, cutoffX, dendrogramHeight );
+				g.drawLine( cutoffX, yDendrogramOrigin, cutoffX, height );
 			}
 			finally
 			{
