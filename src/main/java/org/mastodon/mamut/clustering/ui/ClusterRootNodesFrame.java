@@ -47,11 +47,11 @@ public class ClusterRootNodesFrame extends JFrame
 
 	private final ButtonGroup clusteringMethods = new ButtonGroup();
 
-	private final JFormattedTextField startInput = createNumberTextField();
+	private final JFormattedTextField start = createNumberTextField();
 
-	private final JFormattedTextField endInput = createNumberTextField();
+	private final JFormattedTextField end = createNumberTextField();
 
-	private final JFormattedTextField numberOfClassesInput = createNumberTextField();
+	private final JFormattedTextField numberOfClasses = createNumberTextField();
 
 	private final JButton createTagset = new JButton( "Create Tagset" );
 
@@ -70,7 +70,7 @@ public class ClusterRootNodesFrame extends JFrame
 		addCropping();
 
 		add( new JLabel( "Number of classes:" ) );
-		add( numberOfClassesInput, "wrap" );
+		add( numberOfClasses, "wrap" );
 
 		addSimilarityMethod();
 		addClusteringMethod();
@@ -92,9 +92,9 @@ public class ClusterRootNodesFrame extends JFrame
 
 		add( new JLabel( "Crop at:" ), "gaptop unrelated" );
 		add( new JLabel( "start: " ), "split 4" );
-		add( startInput );
+		add( start );
 		add( new JLabel( "end: " ), "gapbefore unrelated" );
-		add( endInput, "wrap" );
+		add( end, "wrap" );
 	}
 
 	private void addSimilarityMethod()
