@@ -1,7 +1,8 @@
 package org.mastodon.mamut.clustering;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
-import org.mastodon.mamut.clustering.ui.ClusterRootNodesFrame;
+import org.mastodon.mamut.clustering.ui.ClusterRootNodesControllerImpl;
+import org.mastodon.mamut.clustering.ui.view.ClusterRootNodesView;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.plugin.MamutPluginAppModel;
 import org.scijava.plugin.Plugin;
@@ -33,7 +34,7 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 
 	public ClusterRootNodesPlugin()
 	{
-		cluserRootNodesAction = new RunnableAction( CLUSTER_ROOT_NODES, this::clusterRootNodes );
+		cluserRootNodesAction = new RunnableAction( CLUSTER_ROOT_NODES, this::showClusterRootNodesView );
 	}
 
 	@Override
@@ -54,9 +55,9 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 		actions.namedAction( cluserRootNodesAction, CLUSTER_ROOT_NODES_KEYS );
 	}
 
-	private void clusterRootNodes()
+	private void showClusterRootNodesView()
 	{
 		if ( pluginAppModel != null )
-			new ClusterRootNodesFrame( pluginAppModel.getAppModel().getModel() ).setVisible( true );
+			new ClusterRootNodesView<>( new ClusterRootNodesControllerImpl( pluginAppModel.getAppModel().getModel() ) ).setVisible( true );
 	}
 }
