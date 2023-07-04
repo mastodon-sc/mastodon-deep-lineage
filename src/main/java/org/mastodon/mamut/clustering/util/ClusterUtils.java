@@ -135,6 +135,31 @@ public class ClusterUtils
 	public static < T > Map< Integer, List< T > > getClustersByClassCount( T[] objects, double[][] distances,
 			LinkageStrategy linkageStrategy, int classCount )
 	{
+		return getClustersByClassCount( objects, distances, linkageStrategy, classCount, false );
+	}
+
+	/**
+	 * Gets a mapping from cluster id to objects. The cluster ids are incremented by 1 starting from 0.
+	 * The amount of clusters depends on the given class count.
+	 * <p>
+	 * Constraints:
+	 * <ul>
+	 *     <li>The distance matrix needs to be quadratic</li>
+	 *     <li>The distance matrix to be symmetric with zero diagonal</li>
+	 *     <li>The number of objects needs to equal the length of the distance matrix</li>
+	 *     <li>The class count needs to be greater than zero</li>
+	 *     <li>The class count needs to be less than or equal to the number of names</li>
+	 * </ul>
+	 *
+	 * @param objects the objects to be clustered
+	 * @param distances the symmetric distance matrix with zero diagonal
+	 * @param linkageStrategy the linkage strategy (e.g. {@link com.apporiented.algorithm.clustering.AverageLinkageStrategy}, {@link com.apporiented.algorithm.clustering.CompleteLinkageStrategy}, {@link com.apporiented.algorithm.clustering.SingleLinkageStrategy})
+	 * @param classCount the number of classes to be built
+	 * @return a mapping from cluster id objects
+	 */
+	public static < T > Map< Integer, List< T > > getClustersByClassCount( T[] objects, double[][] distances,
+			LinkageStrategy linkageStrategy, int classCount, boolean showDendrogram )
+	{
 		if ( classCount < 1 )
 			throw new IllegalArgumentException( "classCount (" + classCount + ") must be greater than zero" );
 		else if ( classCount > objects.length )
