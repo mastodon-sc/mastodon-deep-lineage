@@ -34,13 +34,19 @@ public class ClusterUtils
 
 	private static final ClusteringAlgorithm algorithm = new DefaultClusteringAlgorithm();
 
+	/**
+	 * Computes a symmetric quadratic distance matrix for the given trees using the given similarity measure. The diagonals are set to zero.
+	 * @param trees a list of trees
+	 * @param similarityMeasure the similarity measure to be used
+	 * @return a symmetric quadratic distance matrix
+	 */
 	public static double[][] getDistanceMatrix( List< Tree< Double > > trees, SimilarityMeasure similarityMeasure )
 	{
 		int size = trees.size();
 		double[][] distances = new double[ size ][ size ];
 		List< Pair< Integer, Integer > > pairs = new ArrayList<>();
 
-		// only the upper triangle is computed since the matrix is symmetric
+		// NB: only the upper triangle needs to be computed since the matrix is symmetric
 		for ( int i = 0; i < size; i++ )
 			for ( int j = i; j < size; j++ )
 			{
@@ -58,7 +64,7 @@ public class ClusterUtils
 			double distance = similarityMeasure.compute( trees.get( i ), trees.get( j ),
 					ZhangUnorderedTreeEditDistance.getDefaultCostFunction() );
 			distances[ i ][ j ] = distance;
-			distances[ j ][ i ] = distance;
+			distances[ j ][ i ] = distance; // symmetric
 		} );
 
 		return distances;
