@@ -196,6 +196,13 @@ public class ClusterRootNodesView< T > extends JFrame implements ClusterRootNode
 		dendrogramView.show();
 	}
 
+	@Override
+	public void cropCriterionChanged( double start, double end )
+	{
+		this.start.setValue( start );
+		this.end.setValue( end );
+	}
+
 	private int getValue( JFormattedTextField textField )
 	{
 		Object value = textField.getValue();

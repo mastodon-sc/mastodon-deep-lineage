@@ -131,7 +131,12 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 	@Override
 	public void setCropCriterion( CropCriteria cropCriterion )
 	{
+		if ( this.cropCriterion.equals( cropCriterion ) )
+			return;
 		this.cropCriterion = cropCriterion;
+		cropStart = 0;
+		cropEnd = 0;
+		listeners.forEach( listener -> listener.cropCriterionChanged( cropStart, cropEnd ) );
 	}
 
 	@Override
