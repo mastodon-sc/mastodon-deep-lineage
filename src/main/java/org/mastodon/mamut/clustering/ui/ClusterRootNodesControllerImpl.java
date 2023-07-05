@@ -86,7 +86,11 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 			{
 				Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), model.getGraph().vertexRef() );
 				LineageTreeUtils.callDepthFirst( model.getGraph(), rootSpot,
-						spot -> TagSetUtils.tagSpotAndLinks( model, tagSet, tag, spot, cropEnd ) );
+						spot -> {
+							if ( spot.getTimepoint() > cropEnd )
+								return;
+							TagSetUtils.tagSpotAndLinks( model, spot, tagSet, tag );
+						} );
 			}
 		}
 	}
