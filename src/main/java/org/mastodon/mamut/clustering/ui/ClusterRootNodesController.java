@@ -48,6 +48,8 @@ public class ClusterRootNodesController
 
 	private final List< ClusterRootNodesListener< BranchSpotTree > > listeners = new ArrayList<>();
 
+	private boolean running = false;
+
 	public ClusterRootNodesController( final Model model )
 	{
 		this.model = model;
@@ -56,26 +58,34 @@ public class ClusterRootNodesController
 
 	public void createTagSet()
 	{
+		if ( running )
+			return;
 		ReentrantReadWriteLock.WriteLock writeLock = model.getGraph().getLock().writeLock();
 		writeLock.lock();
-
 		try
 		{
-			model.getBranchGraph().graphRebuilt();
-			List< BranchSpotTree > roots = getRoots();
-			Classification< BranchSpotTree > classification = classifyLineageTrees( roots );
-
-			// notify view to start dendrogram visualisation
-			listeners.forEach( listener -> listener.clusterRootNodesComputed( classification.getAlgorithmResult(),
-					classification.getObjectMapping(), classification.getCutoff() ) );
-
-			Collection< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
-			applyClassification( classification, tagsAndColors );
+			running = true;
+			runClassification();
 		}
 		finally
 		{
 			writeLock.unlock();
+			running = false;
 		}
+	}
+
+	private void runClassification()
+	{
+		model.getBranchGraph().graphRebuilt();
+		List< BranchSpotTree > roots = getRoots();
+		Classification< BranchSpotTree > classification = classifyLineageTrees( roots );
+
+		// notify view to start dendrogram visualisation
+		listeners.forEach( listener -> listener.clusterRootNodesComputed( classification.getAlgorithmResult(),
+				classification.getObjectMapping(), classification.getCutoff() ) );
+
+		Collection< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
+		applyClassification( classification, tagsAndColors );
 	}
 
 	private Classification< BranchSpotTree > classifyLineageTrees( List< BranchSpotTree > roots )
