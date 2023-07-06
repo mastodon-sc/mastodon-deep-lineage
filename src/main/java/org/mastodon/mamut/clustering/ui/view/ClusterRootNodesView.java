@@ -150,7 +150,6 @@ public class ClusterRootNodesView extends JFrame implements ClusterRootNodesList
 		if ( controller == null )
 			return;
 
-		createTagSet.addActionListener( event -> SwingUtilities.invokeLater( controller::createTagSet ) );
 		timepoint.addActionListener( event -> controller.setCropCriterion( CropCriteria.TIMEPOINT ) );
 		numberOfCells.addActionListener( event -> controller.setCropCriterion( CropCriteria.NUMBER_OF_CELLS ) );
 		addChangeListener( start, event -> controller.setCropStart( getValue( start ) ) );
@@ -164,6 +163,7 @@ public class ClusterRootNodesView extends JFrame implements ClusterRootNodesList
 		averageLinkage.addActionListener( event -> controller.setClusteringMethod( ClusteringMethod.AVERAGE_LINKAGE ) );
 		singleLinkage.addActionListener( event -> controller.setClusteringMethod( ClusteringMethod.SINGLE_LINKAGE ) );
 		completeLinkage.addActionListener( event -> controller.setClusteringMethod( ClusteringMethod.COMPLETE_LINKAGE ) );
+		createTagSet.addActionListener( event -> SwingUtilities.invokeLater( controller::createTagSet ) );
 	}
 
 	private void updateState()
