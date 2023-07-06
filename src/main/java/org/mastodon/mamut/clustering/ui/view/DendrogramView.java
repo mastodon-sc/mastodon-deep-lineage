@@ -19,31 +19,30 @@ public class DendrogramView< T >
 	@Nullable
 	private final Cluster cluster;
 
-	@Nullable
-	private final Map< String, T > objectMapping;
-
 	private final double cutoff;
 
 	private final String headline;
+
+	private final JFrame frame;
 
 	public DendrogramView( @Nullable final Cluster cluster, @Nullable final Map< String, T > objectMapping, final double cutoff,
 			final String headline )
 	{
 		this.cluster = cluster;
-		this.objectMapping = objectMapping;
 		this.cutoff = cutoff;
 		this.headline = headline;
-	}
+		if ( this.cluster != null && objectMapping != null )
+			DendrogramUtils.mapLeaveNames( this.cluster, objectMapping );
 
-	public void show()
-	{
-		if ( cluster != null && objectMapping != null )
-			DendrogramUtils.renameLeaves( cluster, objectMapping );
-		JFrame frame = new JFrame( "Hierarchical clustering of lineage trees" );
+		frame = new JFrame( "Hierarchical clustering of lineage trees" );
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
 		frame.setSize( 500, 300 );
 		frame.setLayout( new MigLayout( "insets 10, fill" ) );
 		frame.add( getPanel(), "grow" );
+	}
+
+	public void show()
+	{
 		frame.setVisible( true );
 	}
 
