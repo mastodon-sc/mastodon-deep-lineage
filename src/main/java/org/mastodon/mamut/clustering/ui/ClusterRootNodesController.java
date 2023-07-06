@@ -63,46 +63,57 @@ public class ClusterRootNodesController
 		{
 			model.getBranchGraph().graphRebuilt();
 			List< BranchSpotTree > roots = getRoots();
+			Classification< BranchSpotTree > classification = classifyLineageTrees( roots );
 
-			// compute similarity matrix and hierarchical clustering
-			double[][] distances = ClusterUtils.getDistanceMatrix( new ArrayList<>( roots ), getSimilarityMeasure() );
-			BranchSpotTree[] rootBranchSpots = roots.toArray( new BranchSpotTree[ 0 ] );
-			Classification< BranchSpotTree > classification = ClusterUtils.getClassificationByClassCount( rootBranchSpots, distances,
-					getClusteringMethod().getLinkageStrategy(), getNumberOfClasses() );
-
-			Map< Integer, List< BranchSpotTree > > classifiedObjects = classification.getClassifiedObjects();
-			// notify listeners (e.g. for visualization of dendrogram)
+			// notify view to start dendrogram visualisation
 			listeners.forEach( listener -> listener.clusterRootNodesComputed( classification.getAlgorithmResult(),
 					classification.getObjectMapping(), classification.getCutoff() ) );
 
-			GlasbeyLut.reset();
-			GlasbeyLut.next();
-			// create tagset
-			Collection< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
-			for ( int i = 0; i < getNumberOfClasses(); i++ )
-				tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), GlasbeyLut.next().getRGB() ) );
-
-			// apply tagset
-			TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, "Classification", tagsAndColors );
-			for ( Map.Entry< Integer, List< BranchSpotTree > > entry : classifiedObjects.entrySet() )
-			{
-				logger.info( "Class {} has {} trees", entry.getKey(), entry.getValue().size() );
-				TagSetStructure.Tag tag = tagSet.getTags().get( entry.getKey() );
-				for ( BranchSpotTree tree : entry.getValue() )
-				{
-					Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), model.getGraph().vertexRef() );
-					LineageTreeUtils.callDepthFirst( model.getGraph(), rootSpot,
-							spot -> {
-								if ( spot.getTimepoint() > getCropEnd() )
-									return;
-								TagSetUtils.tagSpotAndLinks( model, spot, tagSet, tag );
-							} );
-				}
-			}
+			Collection< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
+			applyClassification( classification, tagsAndColors );
 		}
 		finally
 		{
 			writeLock.unlock();
+		}
+	}
+
+	private Classification< BranchSpotTree > classifyLineageTrees( List< BranchSpotTree > roots )
+	{
+		double[][] distances = ClusterUtils.getDistanceMatrix( new ArrayList<>( roots ), getSimilarityMeasure() );
+		BranchSpotTree[] rootBranchSpots = roots.toArray( new BranchSpotTree[ 0 ] );
+		return ClusterUtils.getClassificationByClassCount( rootBranchSpots, distances,
+				getClusteringMethod().getLinkageStrategy(), getNumberOfClasses() );
+	}
+
+	private Collection< Pair< String, Integer > > createTagsAndColors()
+	{
+		GlasbeyLut.reset();
+		GlasbeyLut.next();
+		Collection< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
+		for ( int i = 0; i < getNumberOfClasses(); i++ )
+			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), GlasbeyLut.next().getRGB() ) );
+		return tagsAndColors;
+	}
+
+	private void applyClassification( Classification< BranchSpotTree > classification, Collection< Pair< String, Integer > > tagsAndColors )
+	{
+		Map< Integer, List< BranchSpotTree > > classifiedObjects = classification.getClassifiedObjects();
+		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, "Classification", tagsAndColors );
+		for ( Map.Entry< Integer, List< BranchSpotTree > > entry : classifiedObjects.entrySet() )
+		{
+			logger.info( "Class {} has {} trees", entry.getKey(), entry.getValue().size() );
+			TagSetStructure.Tag tag = tagSet.getTags().get( entry.getKey() );
+			for ( BranchSpotTree tree : entry.getValue() )
+			{
+				Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), model.getGraph().vertexRef() );
+				LineageTreeUtils.callDepthFirst( model.getGraph(), rootSpot,
+						spot -> {
+							if ( spot.getTimepoint() > getCropEnd() )
+								return;
+							TagSetUtils.tagSpotAndLinks( model, spot, tagSet, tag );
+						} );
+			}
 		}
 	}
 
