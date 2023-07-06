@@ -8,19 +8,19 @@ public interface ClusterRootNodesController< T >
 {
 	void createTagSet();
 
-	void setCropCriterion( CropCriteria cropCriterion );
+	void setCropCriterion( final CropCriteria cropCriterion );
 
-	void setSimilarityMeasure( SimilarityMeasure similarityMeasure );
+	void setSimilarityMeasure( final SimilarityMeasure similarityMeasure );
 
-	void setClusteringMethod( ClusteringMethod clusteringMethod );
+	void setClusteringMethod( final ClusteringMethod clusteringMethod );
 
-	void setCropStart( int cropStart );
+	void setCropStart( final int cropStart );
 
-	void setCropEnd( int cropEnd );
+	void setCropEnd( final int cropEnd );
 
-	void setNumberOfClasses( int numberOfClasses );
+	void setNumberOfClasses( final int numberOfClasses );
 
-	void setMinCellDivisions( int minCellDivisions );
+	void setMinCellDivisions( final int minCellDivisions );
 
 	CropCriteria getCropCriterion();
 
