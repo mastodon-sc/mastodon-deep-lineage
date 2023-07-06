@@ -89,10 +89,20 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- tree similarity -->
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
         </dependency>
+
+        <!-- for unit tests -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.4.0</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>sc.fiji</groupId>
