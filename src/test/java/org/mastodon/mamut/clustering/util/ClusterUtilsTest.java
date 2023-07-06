@@ -35,6 +35,7 @@ public class ClusterUtilsTest
 		assertArrayEquals( new String[] { "A", "B", "E", "G", "H" }, classifiedObjects.get( 1 ).toArray() );
 		assertArrayEquals( new String[] { "C", "D", "I", "J" }, classifiedObjects.get( 2 ).toArray() );
 		assertEquals( threshold, classification.getCutoff(), 0d );
+		assertNotNull( objectMapping );
 		assertEquals( ClusterData.names.length, objectMapping.size() );
 		assertNotNull( classification.getAlgorithmResult() );
 	}
@@ -51,6 +52,7 @@ public class ClusterUtilsTest
 		assertArrayEquals( new String[] { "F" }, classifiedObjects.get( 0 ).toArray() );
 		assertArrayEquals( new String[] { "A", "B", "E", "G", "H" }, classifiedObjects.get( 1 ).toArray() );
 		assertArrayEquals( new String[] { "C", "D", "I", "J" }, classifiedObjects.get( 2 ).toArray() );
+		assertNotNull( objectMapping );
 		assertEquals( ClusterData.names.length, objectMapping.size() );
 		assertEquals( 61.5d, cutoff, 0d );
 		assertNotNull( classification.getAlgorithmResult() );
