@@ -29,14 +29,6 @@ public enum SimilarityMeasure
 		return name;
 	}
 
-	public static SimilarityMeasure getByName( String name )
-	{
-		for ( SimilarityMeasure similarityMeasure : SimilarityMeasure.values() )
-			if ( similarityMeasure.getName().equals( name ) )
-				return similarityMeasure;
-		throw new IllegalArgumentException( "No enum constant with name: " + name );
-	}
-
 	public double compute( Tree< Double > tree1, Tree< Double > tree2, BinaryOperator< Double > costFunction )
 	{
 		return distanceFunction.apply( tree1, tree2, costFunction );
