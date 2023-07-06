@@ -45,7 +45,7 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 
 	private int minCellDivisions;
 
-	private List< ClusterRootNodesListener< BranchSpotTree > > listeners;
+	private final List< ClusterRootNodesListener< BranchSpotTree > > listeners;
 
 	public ClusterRootNodesControllerImpl( final Model model )
 	{
@@ -133,7 +133,7 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 	}
 
 	@Override
-	public void setCropCriterion( CropCriteria cropCriterion )
+	public void setCropCriterion( final CropCriteria cropCriterion )
 	{
 		if ( this.cropCriterion.equals( cropCriterion ) )
 			return;
@@ -144,37 +144,37 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 	}
 
 	@Override
-	public void setSimilarityMeasure( SimilarityMeasure similarityMeasure )
+	public void setSimilarityMeasure( final SimilarityMeasure similarityMeasure )
 	{
 		this.similarityMeasure = similarityMeasure;
 	}
 
 	@Override
-	public void setClusteringMethod( ClusteringMethod clusteringMethod )
+	public void setClusteringMethod( final ClusteringMethod clusteringMethod )
 	{
 		this.clusteringMethod = clusteringMethod;
 	}
 
 	@Override
-	public void setCropStart( int cropStart )
+	public void setCropStart( final int cropStart )
 	{
 		this.cropStart = cropStart;
 	}
 
 	@Override
-	public void setCropEnd( int cropEnd )
+	public void setCropEnd( final int cropEnd )
 	{
 		this.cropEnd = cropEnd;
 	}
 
 	@Override
-	public void setNumberOfClasses( int numberOfClasses )
+	public void setNumberOfClasses( final int numberOfClasses )
 	{
 		this.numberOfClasses = numberOfClasses;
 	}
 
 	@Override
-	public void setMinCellDivisions( int minCellDivisions )
+	public void setMinCellDivisions( final int minCellDivisions )
 	{
 		this.minCellDivisions = minCellDivisions;
 	}
