@@ -228,7 +228,7 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 	}
 
 	@Override
-	public void addListener( ClusterRootNodesListener< BranchSpotTree > listener )
+	public void addListener( final ClusterRootNodesListener< BranchSpotTree > listener )
 	{
 		listeners.add( listener );
 	}
