@@ -59,10 +59,10 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 		List< BranchSpotTree > roots = getRoots();
 
 		// compute similarity matrix and hierarchical clustering
-		double[][] distances = ClusterUtils.getDistanceMatrix( new ArrayList<>( roots ), similarityMeasure );
+		double[][] distances = ClusterUtils.getDistanceMatrix( new ArrayList<>( roots ), getSimilarityMeasure() );
 		BranchSpotTree[] rootBranchSpots = roots.toArray( new BranchSpotTree[ 0 ] );
 		Classification< BranchSpotTree > classification = ClusterUtils.getClassificationByClassCount( rootBranchSpots, distances,
-				clusteringMethod.getLinkageStrategy(), numberOfClasses );
+				getClusteringMethod().getLinkageStrategy(), getNumberOfClasses() );
 		Map< Integer, List< BranchSpotTree > > classifiedObjects = classification.getClassifiedObjects();
 
 		// notify listeners (e.g. for visualization of dendrogram)
@@ -73,7 +73,7 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 		GlasbeyLut.next();
 		// create tagset
 		Collection< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
-		for ( int i = 0; i < numberOfClasses; i++ )
+		for ( int i = 0; i < getNumberOfClasses(); i++ )
 			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), GlasbeyLut.next().getRGB() ) );
 
 		// apply tagset
@@ -87,7 +87,7 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 				Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), model.getGraph().vertexRef() );
 				LineageTreeUtils.callDepthFirst( model.getGraph(), rootSpot,
 						spot -> {
-							if ( spot.getTimepoint() > cropEnd )
+							if ( spot.getTimepoint() > getCropEnd() )
 								return;
 							TagSetUtils.tagSpotAndLinks( model, spot, tagSet, tag );
 						} );
@@ -107,8 +107,8 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 			BranchSpot rootBranchSpot = model.getBranchGraph().getBranchVertex( root, model.getBranchGraph().vertexRef() );
 			try
 			{
-				BranchSpotTree branchSpotTree = new BranchSpotTree( rootBranchSpot, cropEnd );
-				int minTreeSize = 2 * minCellDivisions + 1;
+				BranchSpotTree branchSpotTree = new BranchSpotTree( rootBranchSpot, getCropEnd() );
+				int minTreeSize = 2 * getMinCellDivisions() + 1;
 				if ( TreeUtils.size( branchSpotTree ) < minTreeSize )
 					continue;
 				trees.add( branchSpotTree );
@@ -123,9 +123,9 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 
 	private void setDefaults()
 	{
-		cropCriterion = CropCriteria.TIMEPOINT;
-		similarityMeasure = SimilarityMeasure.NORMALIZED_DIFFERENCE;
-		clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE;
+		setCropCriterion( CropCriteria.TIMEPOINT );
+		setSimilarityMeasure( SimilarityMeasure.NORMALIZED_DIFFERENCE );
+		setClusteringMethod( ClusteringMethod.AVERAGE_LINKAGE );
 		cropStart = 0;
 		cropEnd = 0;
 		numberOfClasses = 5;
