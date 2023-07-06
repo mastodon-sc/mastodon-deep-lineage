@@ -50,6 +50,7 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 	public ClusterRootNodesControllerImpl( final Model model )
 	{
 		this.model = model;
+		listeners = new ArrayList<>();
 		setDefaults();
 	}
 
@@ -224,8 +225,6 @@ public class ClusterRootNodesControllerImpl implements ClusterRootNodesControlle
 	@Override
 	public void addListener( ClusterRootNodesListener< BranchSpotTree > listener )
 	{
-		if ( listeners == null )
-			listeners = new ArrayList<>();
 		listeners.add( listener );
 	}
 }
