@@ -45,12 +45,12 @@ public class DendrogramUtils
 	}
 
 	/**
-	 * Renames the leaves of the given cluster according to the given object mapping.<p>
-	 * @param cluster the cluster to rename
+	 * Maps the leave names of the given cluster according to the given object mapping.<p>
+	 * @param cluster the cluster to map the leave names
 	 * @param objectMapping the mapping from cluster names to objects
 	 * @param <T> the type of the objects
 	 */
-	public static < T > void renameLeaves( final Cluster cluster, final Map< String, T > objectMapping )
+	public static < T > void mapLeaveNames( final Cluster cluster, final Map< String, T > objectMapping )
 	{
 		if ( cluster == null )
 			throw new IllegalArgumentException( "Given cluster must not be null" );
@@ -59,6 +59,6 @@ public class DendrogramUtils
 		if ( cluster.isLeaf() && objectMapping.containsKey( cluster.getName() ) )
 			cluster.setName( objectMapping.get( cluster.getName() ).toString() );
 		for ( Cluster child : cluster.getChildren() )
-			renameLeaves( child, objectMapping );
+			mapLeaveNames( child, objectMapping );
 	}
 }

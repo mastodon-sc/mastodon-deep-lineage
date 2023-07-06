@@ -21,7 +21,7 @@ public class DendrogramUtilsTest
 	}
 
 	@Test
-	public void testRenameClusterLeaves()
+	public void testMapLeaveNames()
 	{
 		Cluster cluster1 = new Cluster( "1" );
 		Cluster cluster2 = new Cluster( "2" );
@@ -34,7 +34,7 @@ public class DendrogramUtilsTest
 		objectMapping.put( "2", "B" );
 		objectMapping.put( "3", "C" );
 
-		DendrogramUtils.renameLeaves( cluster1, objectMapping );
+		DendrogramUtils.mapLeaveNames( cluster1, objectMapping );
 
 		assertEquals( "1", cluster1.getName() ); // not a leaf -> not renamed
 		assertEquals( "B", cluster2.getName() );
