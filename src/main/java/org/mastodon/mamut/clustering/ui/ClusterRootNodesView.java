@@ -1,13 +1,13 @@
-package org.mastodon.mamut.clustering.ui.view;
+package org.mastodon.mamut.clustering.ui;
 
 import com.apporiented.algorithm.clustering.Cluster;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nullable;
+import org.mastodon.mamut.clustering.ClusterRootNodesListener;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
-import org.mastodon.mamut.clustering.ui.ClusterRootNodesController;
-import org.mastodon.mamut.clustering.ui.ClusterRootNodesListener;
+import org.mastodon.mamut.clustering.ClusterRootNodesController;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 
 import javax.swing.ButtonGroup;

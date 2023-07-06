@@ -1,7 +1,8 @@
-package org.mastodon.mamut.clustering.ui.view;
+package org.mastodon.mamut.clustering.ui;
 
 import org.junit.Test;
-import org.mastodon.mamut.clustering.ui.ClusterRootNodesController;
+import org.mastodon.mamut.clustering.ClusterRootNodesController;
+import org.mastodon.mamut.clustering.ui.ClusterRootNodesView;
 import org.mastodon.mamut.model.Model;
 
 import static org.junit.Assert.assertNotNull;

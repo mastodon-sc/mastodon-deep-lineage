@@ -1,8 +1,7 @@
 package org.mastodon.mamut.clustering;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
-import org.mastodon.mamut.clustering.ui.ClusterRootNodesController;
-import org.mastodon.mamut.clustering.ui.view.ClusterRootNodesView;
+import org.mastodon.mamut.clustering.ui.ClusterRootNodesView;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.plugin.MamutPluginAppModel;

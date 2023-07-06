@@ -1,4 +1,4 @@
-package org.mastodon.mamut.clustering.ui;
+package org.mastodon.mamut.clustering;
 
 import com.apporiented.algorithm.clustering.Cluster;
 

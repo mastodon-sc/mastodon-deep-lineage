@@ -1,4 +1,4 @@
-package org.mastodon.mamut.clustering.ui.view;
+package org.mastodon.mamut.clustering.ui;
 
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.visualization.DendrogramPanel;

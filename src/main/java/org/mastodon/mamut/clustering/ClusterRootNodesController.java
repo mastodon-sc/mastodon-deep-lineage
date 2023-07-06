@@ -1,10 +1,12 @@
-package org.mastodon.mamut.clustering.ui;
+package org.mastodon.mamut.clustering;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
+import org.mastodon.mamut.clustering.ui.GlasbeyLut;
+import org.mastodon.mamut.clustering.ui.TagSetUtils;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
 import org.mastodon.mamut.model.Model;

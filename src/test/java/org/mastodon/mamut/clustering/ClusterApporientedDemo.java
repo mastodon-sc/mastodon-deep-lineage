@@ -7,7 +7,7 @@ import com.apporiented.algorithm.clustering.CompleteLinkageStrategy;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.SingleLinkageStrategy;
 import net.miginfocom.swing.MigLayout;
-import org.mastodon.mamut.clustering.ui.view.DendrogramView;
+import org.mastodon.mamut.clustering.ui.DendrogramView;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
