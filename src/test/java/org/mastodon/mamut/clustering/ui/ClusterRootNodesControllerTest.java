@@ -16,7 +16,7 @@ import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
 
-public class ClusterRootNodesControllerImplTest
+public class ClusterRootNodesControllerTest
 {
 	@Test
 	public void testCreateTagSet()
@@ -35,7 +35,7 @@ public class ClusterRootNodesControllerImplTest
 		@SuppressWarnings( "unchecked" )
 		ClusterRootNodesListener< BranchSpotTree > listener = Mockito.mock( ClusterRootNodesListener.class );
 
-		ClusterRootNodesController< BranchSpotTree > controller = new ClusterRootNodesControllerImpl( model );
+		ClusterRootNodesController controller = new ClusterRootNodesController( model );
 		controller.addListener( listener );
 		controller.setClusteringMethod( ClusteringMethod.AVERAGE_LINKAGE );
 		controller.setSimilarityMeasure( SimilarityMeasure.NORMALIZED_DIFFERENCE );

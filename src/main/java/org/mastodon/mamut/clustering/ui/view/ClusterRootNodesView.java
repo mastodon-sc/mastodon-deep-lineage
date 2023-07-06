@@ -6,8 +6,9 @@ import org.jetbrains.annotations.Nullable;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
-import org.mastodon.mamut.clustering.ui.ClusterRootNodesListener;
 import org.mastodon.mamut.clustering.ui.ClusterRootNodesController;
+import org.mastodon.mamut.clustering.ui.ClusterRootNodesListener;
+import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -33,9 +34,9 @@ import java.text.NumberFormat;
 import java.util.Map;
 import java.util.Objects;
 
-public class ClusterRootNodesView< T > extends JFrame implements ClusterRootNodesListener< T >
+public class ClusterRootNodesView extends JFrame implements ClusterRootNodesListener< BranchSpotTree >
 {
-	private final ClusterRootNodesController< T > controller;
+	private final ClusterRootNodesController controller;
 
 	private final JRadioButton timepoint = new JRadioButton( "Timepoint" );
 
@@ -63,13 +64,13 @@ public class ClusterRootNodesView< T > extends JFrame implements ClusterRootNode
 
 	private final JButton createTagSet = new JButton( "Create tag set" );
 
-	public ClusterRootNodesView( @Nullable ClusterRootNodesController< T > controller )
+	public ClusterRootNodesView( @Nullable ClusterRootNodesController controller )
 	{
 		super( "Cluster Root Nodes based on lineage tree similarity" );
 		this.controller = controller;
-		initDefaults();
 		initLayout();
 		initActions();
+		updateState();
 		if ( controller != null )
 			controller.addListener( this );
 	}
@@ -165,7 +166,7 @@ public class ClusterRootNodesView< T > extends JFrame implements ClusterRootNode
 		completeLinkage.addActionListener( event -> controller.setClusteringMethod( ClusteringMethod.COMPLETE_LINKAGE ) );
 	}
 
-	private void initDefaults()
+	private void updateState()
 	{
 		if ( controller == null )
 			return;
@@ -189,9 +190,9 @@ public class ClusterRootNodesView< T > extends JFrame implements ClusterRootNode
 	}
 
 	@Override
-	public void clusterRootNodesComputed( @Nullable Cluster cluster, @Nullable Map< String, T > objectMapping, double cutoff )
+	public void clusterRootNodesComputed( @Nullable Cluster cluster, @Nullable Map< String, BranchSpotTree > objectMapping, double cutoff )
 	{
-		DendrogramView< T > dendrogramView =
+		DendrogramView< BranchSpotTree > dendrogramView =
 				new DendrogramView<>( cluster, objectMapping, cutoff, "Dendrogram of hierarchical clustering of lineages" );
 		dendrogramView.show();
 	}
