@@ -11,9 +11,11 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.spatial.SpatioTemporalIndex;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.NoSuchElementException;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -111,5 +113,27 @@ public class LineageTreeUtils {
 			}
 		} );
 		search.start( spot );
+	}
+
+	/**
+	 * Gets the first time point that has at least the given number of spots ({@code numberOfSpots})
+	 * by iterating through the given spatio-temporal index ({@code spotSpatioTemporalIndex})
+	 * from the given minimum time point ({@code minTimePoint}) to the given maximum time point ({@code maxTimePoint}).
+	 *
+	 * @param spotSpatioTemporalIndex the index to search in
+	 * @param minTimePoint the minimum time point to search in (inclusive)
+	 * @param maxTimePoint the maximum time point to search in (inclusive)
+	 * @param numberOfSpots the number of spots to search for
+	 * @return the first time point with the given number of spots (or more)
+	 * @throws NoSuchElementException if no time point with the given number of spots (or more) exists
+	 */
+	public static int getTimePointWithNSpots( @Nonnull SpatioTemporalIndex< Spot > spotSpatioTemporalIndex,
+			int minTimePoint, int maxTimePoint, int numberOfSpots )
+	{
+		for ( int timePoint = minTimePoint; timePoint <= maxTimePoint; timePoint++ )
+			if ( spotSpatioTemporalIndex.getSpatialIndex( timePoint ).size() >= numberOfSpots )
+				return timePoint;
+		throw new NoSuchElementException(
+				"No time point with at least " + numberOfSpots + " spots in the range [" + minTimePoint + ", " + maxTimePoint + "]." );
 	}
 }
