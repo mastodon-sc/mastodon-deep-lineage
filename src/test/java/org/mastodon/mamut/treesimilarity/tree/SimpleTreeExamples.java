@@ -409,6 +409,52 @@ public class SimpleTreeExamples
 		return node1;
 	}
 
+	public static SimpleTree< Double > tree2c2()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 34d );
+
+		SimpleTree< Double > node2 = addNode( 55d, node1 );
+		SimpleTree< Double > node3 = addNode( 118d, node1 );
+		SimpleTree< Double > node4 = addNode( 51d, node2 );
+		SimpleTree< Double > node5 = addNode( 159d, node2 );
+		addNode( 268d, node3 );
+		addNode( 268d, node3 );
+		SimpleTree< Double > node8 = addNode( 49d, node4 );
+		addNode( 279d, node4 );
+		addNode( 171d, node5 );
+		addNode( 171d, node5 );
+		addNode( 229d, node8 );
+		SimpleTree< Double > node13 = addNode( 46d, node8 );
+		SimpleTree< Double > node14 = addNode( 50d, node13 );
+		SimpleTree< Double > node15 = addNode( 140d, node13 );
+		SimpleTree< Double > node16 = addNode( 56d, node14 );
+		addNode( 131d, node14 );
+		addNode( 41d, node15 );
+		addNode( 41d, node15 );
+		addNode( 74d, node16 );
+		addNode( 74d, node16 );
+
+		return node1;
+	}
+
+	public static SimpleTree< Double > tree1a111()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 72d );
+
+		addNode( 349d, node1 );
+		SimpleTree< Double > node3 = addNode( 61d, node1 );
+		addNode( 287d, node3 );
+		SimpleTree< Double > node5 = addNode( 115d, node3 );
+		SimpleTree< Double > node6 = addNode( 79d, node5 );
+		addNode( 171d, node5 );
+		SimpleTree< Double > node8 = addNode( 90d, node6 );
+		addNode( 91d, node6 );
+		addNode( 0d, node8 );
+		addNode( 0d, node8 );
+
+		return node1;
+	}
+
 	private static SimpleTree< Double > addNode( double attribute, SimpleTree< Double > parentTree )
 	{
 		SimpleTree< Double > node = new SimpleTree<>( attribute );

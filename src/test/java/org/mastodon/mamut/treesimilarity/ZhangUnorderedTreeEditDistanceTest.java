@@ -258,4 +258,12 @@ public class ZhangUnorderedTreeEditDistanceTest
 		assertEquals( 0d, ZhangUnorderedTreeEditDistance.averageDistance( emptyTree, emptyTree, defaultCosts ), 0d );
 		assertEquals( 20d / 6d, ZhangUnorderedTreeEditDistance.averageDistance( tree1, tree2, defaultCosts ), 0d );
 	}
+
+	@Test
+	public void testDistanceBigTrees()
+	{
+		Tree< Double > tree1a111 = SimpleTreeExamples.tree1a111();
+		Tree< Double > tree2c2 = SimpleTreeExamples.tree2c2();
+		assertEquals( 1_654d, ZhangUnorderedTreeEditDistance.distance( tree1a111, tree2c2, defaultCosts ), 0d );
+	}
 }
