@@ -415,7 +415,7 @@ public class SimpleTreeExamples
 	 *     	 │                 │
 	 *     	 40           ┌─── 20 ─────┐
 	 *     	              │            │
-	 *     	 			 200           80
+	 *                   200           80
 	 * </pre>
 	 */
 	public static SimpleTree< Double > tree20()
@@ -436,7 +436,7 @@ public class SimpleTreeExamples
 	 *     	 │                 │
 	 *      40             ┌─ 20 ──┐
 	 *                     │       │
-	 * 	                  30      80
+	 *                    30      80
 	 * </pre>
 	 */
 	public static SimpleTree< Double > tree21()
