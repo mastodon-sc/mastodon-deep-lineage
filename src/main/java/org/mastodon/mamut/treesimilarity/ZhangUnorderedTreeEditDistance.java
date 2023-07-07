@@ -388,8 +388,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		graph.setEdgeWeight( e3, 0 );
 
 		// NB: The size of the forests is the number of their nodes minus one, since the root of the forest is not counted
-		int forest1Size = TreeUtils.size( forest1 ) - 1;
-		int forest2Size = TreeUtils.size( forest2 ) - 1;
+		int forest1Size = forest1NumberOfChildren;
+		int forest2Size = forest2NumberOfChildren;
 
 		Map< DefaultWeightedEdge, Integer > capacities = new HashMap<>();
 		capacities.put( e1, forest2Size - Math.min( forest1Size, forest2Size ) );
