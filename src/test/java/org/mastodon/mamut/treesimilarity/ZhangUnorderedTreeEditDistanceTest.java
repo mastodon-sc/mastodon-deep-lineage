@@ -260,10 +260,10 @@ public class ZhangUnorderedTreeEditDistanceTest
 	}
 
 	@Test
-	public void testDistanceBigTrees()
+	public void testDistanceBug()
 	{
-		Tree< Double > tree1a111 = SimpleTreeExamples.tree1a111();
-		Tree< Double > tree2c2 = SimpleTreeExamples.tree2c2();
-		assertEquals( 1_654d, ZhangUnorderedTreeEditDistance.distance( tree1a111, tree2c2, defaultCosts ), 0d );
+		Tree< Double > tree20 = SimpleTreeExamples.tree20();
+		Tree< Double > tree21 = SimpleTreeExamples.tree21();
+		assertEquals( 170d, ZhangUnorderedTreeEditDistance.distance( tree20, tree21, defaultCosts ), 0d );
 	}
 }

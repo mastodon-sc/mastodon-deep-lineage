@@ -409,6 +409,48 @@ public class SimpleTreeExamples
 		return node1;
 	}
 
+	/**
+	 * <pre>
+	 *     	 ┌────── 50 ───────┐
+	 *     	 │                 │
+	 *     	 40           ┌─── 20 ─────┐
+	 *     	              │            │
+	 *     	 			 200           80
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree20()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 50d );
+
+		SimpleTree< Double > node2 = addNode( 40d, node1 );
+		SimpleTree< Double > node3 = addNode( 20d, node1 );
+		SimpleTree< Double > node4 = addNode( 200d, node3 );
+		SimpleTree< Double > node5 = addNode( 80d, node3 );
+
+		return node1;
+	}
+
+	/**
+	 * <pre>
+	 *     	 ┌────── 50 ───────┐
+	 *     	 │                 │
+	 *      40             ┌─ 20 ──┐
+	 *                     │       │
+	 * 	                  30      80
+	 * </pre>
+	 */
+	public static SimpleTree< Double > tree21()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 50d );
+
+		SimpleTree< Double > node2 = addNode( 40d, node1 );
+		SimpleTree< Double > node3 = addNode( 20d, node1 );
+		SimpleTree< Double > node4 = addNode( 30d, node3 );
+		SimpleTree< Double > node5 = addNode( 80d, node3 );
+
+		return node1;
+	}
+
 	public static SimpleTree< Double > tree2c2()
 	{
 		SimpleTree< Double > node1 = new SimpleTree<>( 34d );
