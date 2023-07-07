@@ -387,14 +387,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 		graph.setEdgeWeight( e2, 0 );
 		graph.setEdgeWeight( e3, 0 );
 
-		// NB: The size of the forests is the number of their nodes minus one, since the root of the forest is not counted
-		int forest1Size = forest1NumberOfChildren;
-		int forest2Size = forest2NumberOfChildren;
-
 		Map< DefaultWeightedEdge, Integer > capacities = new HashMap<>();
-		capacities.put( e1, forest2Size - Math.min( forest1Size, forest2Size ) );
-		capacities.put( e2, Math.max( forest1Size, forest2Size ) - Math.min( forest1Size, forest2Size ) );
-		capacities.put( e3, forest1Size - Math.min( forest1Size, forest2Size ) );
+		capacities.put( e1, forest2NumberOfChildren - Math.min( forest1NumberOfChildren, forest2NumberOfChildren ) );
+		capacities.put( e2, Math.max( forest1NumberOfChildren, forest2NumberOfChildren )
+				- Math.min( forest1NumberOfChildren, forest2NumberOfChildren ) );
+		capacities.put( e3, forest1NumberOfChildren - Math.min( forest1NumberOfChildren, forest2NumberOfChildren ) );
 
 		for ( int i = 0; i < forest1NumberOfChildren; i++ )
 		{
@@ -425,7 +422,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			DefaultWeightedEdge edge = graph.addEdge( emptyTree1, forest1NumberOfChildren + j + 1 );
 			double weight = insertCosts.get( childrenForest2.get( j ) ).treeCost;
 			graph.setEdgeWeight( edge, weight );
-			capacities.put( edge, forest2Size - Math.min( forest1Size, forest2Size ) );
+			capacities.put( edge, forest2NumberOfChildren - Math.min( forest1NumberOfChildren, forest2NumberOfChildren ) );
 
 			edge = graph.addEdge( forest1NumberOfChildren + j + 1, sink );
 			graph.setEdgeWeight( edge, 0 );
