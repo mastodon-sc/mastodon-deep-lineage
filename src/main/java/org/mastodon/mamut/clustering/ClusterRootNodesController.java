@@ -6,7 +6,6 @@ import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.clustering.ui.GlasbeyLut;
-import org.mastodon.mamut.clustering.ui.TagSetUtils;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
 import org.mastodon.mamut.model.Model;
@@ -16,6 +15,7 @@ import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
 import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.util.TagSetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +123,7 @@ public class ClusterRootNodesController
 						spot -> {
 							if ( spot.getTimepoint() > getCropEnd() )
 								return;
-							TagSetUtils.tagSpotAndLinks( model, spot, tagSet, tag );
+							TagSetUtils.tagSpotAndIncomingEdges( model, spot, tagSet, tag );
 						} );
 			}
 		}
