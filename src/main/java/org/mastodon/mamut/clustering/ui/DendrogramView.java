@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -58,6 +59,8 @@ public class DendrogramView< T >
 		{
 			dendrogramPanel = new DendrogramPanelWithCutoffLine( cluster.getDistanceValue(), cutoff );
 			dendrogramPanel.setModel( cluster );
+			dendrogramPanel.setBackground( Color.WHITE );
+			dendrogramPanel.setLineColor( Color.BLACK );
 			if ( cluster.getDistanceValue() < 1d )
 				adaptScaleBar( dendrogramPanel );
 		}
