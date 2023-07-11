@@ -5,6 +5,7 @@ import com.apporiented.algorithm.clustering.LinkageStrategy;
 import org.junit.Test;
 import org.mastodon.mamut.clustering.ClusterData;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
+import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
@@ -66,7 +67,7 @@ public class ClusterUtilsTest
 		Tree< Double > tree3 = SimpleTreeExamples.tree3();
 
 		double t1t2 = 20d;
-		double t1t3 = 92d;
+		double t1t3 = 100d;
 		double t2t3 = 104d;
 
 		double[][] distanceMatrix =
@@ -76,7 +77,7 @@ public class ClusterUtilsTest
 		assertArrayEquals( new double[] { t1t3, t2t3, 0 }, distanceMatrix[ 2 ], 0d );
 
 		t1t2 = 20d / 6d;
-		t1t3 = 92d / 8d;
+		t1t3 = 100d / 8d;
 		t2t3 = 104d / 8d;
 
 		distanceMatrix = ClusterUtils.getDistanceMatrix( Arrays.asList( tree1, tree2, tree3 ),
@@ -86,7 +87,7 @@ public class ClusterUtilsTest
 		assertArrayEquals( new double[] { t1t3, t2t3, 0 }, distanceMatrix[ 2 ], 0d );
 
 		t1t2 = 20d / 120d;
-		t1t3 = 92d / 164d;
+		t1t3 = 100d / 164d;
 		t2t3 = 104d / 164d;
 		distanceMatrix = ClusterUtils.getDistanceMatrix( Arrays.asList( tree1, tree2, tree3 ),
 				SimilarityMeasure.NORMALIZED_DIFFERENCE );
