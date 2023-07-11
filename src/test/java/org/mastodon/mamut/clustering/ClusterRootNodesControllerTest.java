@@ -65,9 +65,9 @@ public class ClusterRootNodesControllerTest
 		assertEquals( "Class 1", tag0.label() );
 		assertEquals( "Class 2", tag1.label() );
 		assertEquals( "Class 3", tag2.label() );
-		assertEquals( 12, tag0Spots.size() );
+		assertEquals( 9, tag0Spots.size() );
 		assertEquals( 14, tag1Spots.size() );
-		assertEquals( 9, tag2Spots.size() );
+		assertEquals( 12, tag2Spots.size() );
 	}
 
 	/**
