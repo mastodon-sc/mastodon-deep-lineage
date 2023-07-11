@@ -5,7 +5,6 @@ import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
-import org.mastodon.mamut.clustering.ui.GlasbeyLut;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
 import org.mastodon.mamut.model.Model;
@@ -15,6 +14,7 @@ import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
 import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.util.ColorUtils;
 import org.mastodon.util.TagSetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,11 +100,9 @@ public class ClusterRootNodesController
 
 	private Collection< Pair< String, Integer > > createTagsAndColors()
 	{
-		GlasbeyLut.reset();
-		GlasbeyLut.next();
 		Collection< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
 		for ( int i = 0; i < getNumberOfClasses(); i++ )
-			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), GlasbeyLut.next().getRGB() ) );
+			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), ColorUtils.GLASBEY[ i + 1 ].getRGB() ) );
 		return tagsAndColors;
 	}
 
