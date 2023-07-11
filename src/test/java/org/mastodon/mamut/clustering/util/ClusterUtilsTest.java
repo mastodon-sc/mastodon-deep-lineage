@@ -25,7 +25,7 @@ public class ClusterUtilsTest
 	@Test
 	public void testGetClassificationByThreshold()
 	{
-		double threshold = 50d;
+		double threshold = 60d;
 		Classification< String > classification =
 				ClusterUtils.getClassificationByThreshold( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
 						threshold );
