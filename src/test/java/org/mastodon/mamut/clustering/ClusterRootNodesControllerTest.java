@@ -1,8 +1,6 @@
 package org.mastodon.mamut.clustering;
 
 import org.junit.Test;
-import org.mastodon.mamut.clustering.ClusterRootNodesController;
-import org.mastodon.mamut.clustering.ClusterRootNodesListener;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
