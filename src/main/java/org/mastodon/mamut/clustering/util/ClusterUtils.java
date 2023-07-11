@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -192,7 +193,7 @@ public class ClusterUtils
 
 	private static < T > Map< String, T > objectMapping( T[] objects )
 	{
-		Map< String, T > objectNames = new HashMap<>();
+		Map< String, T > objectNames = new LinkedHashMap<>();
 		for ( int i = 0; i < objects.length; i++ )
 			objectNames.put( String.valueOf( i ), objects[ i ] );
 		return objectNames;
