@@ -97,8 +97,9 @@ public class ClusterRootNodesView extends JFrame implements ClusterRootNodesList
 	private void addCropping()
 	{
 		add( new JLabel( "Crop tree criterion:" ), "gaptop unrelated" );
-		add( timepoint, "split 4" );
-		add( numberOfCells, "gapbefore unrelated, wrap" );
+		add( timepoint, "split 4, wrap" );
+		// add( timepoint, "split 4" );
+		// add( numberOfCells, "gapbefore unrelated, wrap" );
 		ButtonGroup cropCriteria = new ButtonGroup();
 		cropCriteria.add( timepoint );
 		cropCriteria.add( numberOfCells );
