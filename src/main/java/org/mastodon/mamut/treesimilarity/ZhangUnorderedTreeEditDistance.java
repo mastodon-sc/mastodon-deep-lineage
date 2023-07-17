@@ -287,8 +287,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
+	 * Computes the cost for edit operation (3b). see {@link ZhangUnorderedTreeEditDistance}
+	 * <p>
 	 * Costs for inserting tree2 with all but one child-tree, and changing tree1 to replace that child-tree.
-	 * (These are the costs for matching tree1 to a child-tree of tree2.)
 	 */
 	private double insertOperationCosts( Tree< T > tree1, Tree< T > tree2 )
 	{
@@ -301,8 +302,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
+	 * Computes the cost for edit operation (3a) see {@link ZhangUnorderedTreeEditDistance}
+	 * <p>
 	 * Costs for deleting tree1 but keeping a child-tree of tree1, and changing that child-tree to tree2.
-	 * (These are the costs for matching a child-tree of tree1 to tree2.)
 	 */
 	private double deleteOperationCosts( Tree< T > tree1, Tree< T > tree2 )
 	{
@@ -314,6 +316,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return deleteCosts.get( tree1 ).treeCost + Collections.min( distances );
 	}
 
+	/**
+	 * Computes the cost for edit operation (4b). see {@link ZhangUnorderedTreeEditDistance}
+	 */
 	private double getForestInsertCosts( Tree< T > forest1, Tree< T > forest2 )
 	{
 		// NB: this method should not be called on leaves.
@@ -325,17 +330,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
-	 * This effectively calculates the costs for the following edit operation that
-	 * converts forest1 to forest2:
-	 * Where the children "X1" and "Y1" of "A" are mapped to the children "X2" and "Y2" of "T2"
-	 * "A" and "B" are deleted. (The children of "B" are also removed)
-	 * <pre>
-	 *      T1             T2
-	 *     /  \           / \
-	 *    A    B   ->   X2  Y2
-	 *   / \
-	 *  X1 Y1
-	 * </pre>
+	 * Computes the cost for edit operation (4a). see {@link ZhangUnorderedTreeEditDistance}
 	 */
 	private double getForestDeleteCosts( Tree< T > forest1, Tree< T > forest2 )
 	{
