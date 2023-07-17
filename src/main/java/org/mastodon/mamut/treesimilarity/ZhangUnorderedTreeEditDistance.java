@@ -178,13 +178,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double compute( final Tree< T > tree1, final Tree< T > tree2 )
 	{
-		for ( Tree< T > t1 : subtrees1 )
-			for ( Tree< T > t2 : subtrees2 )
-				treeDistances.put( Pair.of( t1, t2 ), -1d );
-		for ( Tree< T > t1 : subtrees1 )
-			for ( Tree< T > t2 : subtrees2 )
-				forestDistances.put( Pair.of( t1, t2 ), -1d );
-
+		treeDistances.clear();
+		forestDistances.clear();
 		double distance = distanceTree( tree1, tree2, costFunction );
 
 		log();
@@ -223,7 +218,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			for ( Tree< T > t2 : subtrees2 )
 				row.add( distances.get( Pair.of( t1, t2 ) ) );
 			StringJoiner stringJoiner = new StringJoiner( ", ", "[", "]" );
-			row.forEach( entry -> stringJoiner.add( entry.toString() ) );
+			row.forEach( entry -> stringJoiner.add( entry == null ? "-" : entry.toString() ) );
 			logger.trace( "{} distance[{}] = {}", prefix, t1, stringJoiner );
 		}
 	}
@@ -233,14 +228,14 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double distanceTree( final Tree< T > tree1, final Tree< T > tree2, final BiFunction< T, T, Double > costFunction )
 	{
-		double distance = treeDistances.get( Pair.of( tree1, tree2 ) );
-		if ( distance != -1 )
+		Double distance = treeDistances.get( Pair.of( tree1, tree2 ) );
+		if ( distance != null )
 			return distance;
 
 		if ( tree1.isLeaf() && tree2.isLeaf() )
 			distance = attributeDistances.get( Pair.of( tree1, tree2 ) );
 		else
-			distance =  getMinTreeChangeCosts( tree1, tree2, costFunction );
+			distance = getMinTreeChangeCosts( tree1, tree2, costFunction );
 
 		treeDistances.put( Pair.of( tree1, tree2 ), distance );
 		return distance;
@@ -259,8 +254,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double distanceForest( final Tree< T > forest1, final Tree< T > forest2 )
 	{
-		double distance = forestDistances.get( Pair.of( forest1, forest2 ) );
-		if ( distance != -1 )
+		Double distance = forestDistances.get( Pair.of( forest1, forest2 ) );
+		if ( distance != null )
 			return distance;
 
 		if ( !forest1.isLeaf() && forest2.isLeaf() )
