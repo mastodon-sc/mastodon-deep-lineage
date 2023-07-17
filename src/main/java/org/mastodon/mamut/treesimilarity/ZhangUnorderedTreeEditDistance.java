@@ -154,12 +154,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 			}
 		}
 
-		Map< Tree< T >, Double > costTreeToNone = new HashMap<>();
-		subtrees1.forEach( tree -> costTreeToNone.put( tree, costFunction.apply( tree.getAttribute(), null ) ) );
-		subtrees2.forEach( tree -> costTreeToNone.put( tree, costFunction.apply( tree.getAttribute(), null ) ) );
-
-		insertCosts = new EditCosts( tree2, costTreeToNone ).costs;
-		deleteCosts = new EditCosts( tree1, costTreeToNone ).costs;
+		insertCosts = new EditCosts<>( tree2, costFunction ).costs;
+		deleteCosts = new EditCosts<>( tree1, costFunction ).costs;
 
 		treeDistances = new HashMap<>();
 		forestDistances = new HashMap<>();
@@ -429,12 +425,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return Math.min( Math.min( a, b ), c );
 	}
 
-	private class EditCosts
+	private static class EditCosts< T >
 	{
-		private final Map< Tree< T >, Double > costTreeToNone;
+		private final BiFunction< T, T, Double > costFunction;
 
 		private final Map< Tree< T >, TreeDetails > costs;
-
 
 		/**
 		 * Compute the costs of deleting or inserting a tree or a forest.
@@ -459,11 +454,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 		 * <i>Algorithmica (1996) 15:208</i>
 		 *
 		 * @param tree the tree or forest to compute the change costs for
-		 * @param costTreeToNone a mapping from tree to the cost of deleting or inserting the attribute of its source
+		 * @param costFunction costFunction
 		 */
-		private EditCosts( final Tree< T > tree, final Map< Tree< T >, Double > costTreeToNone )
+		private EditCosts( final Tree< T > tree, final BiFunction< T, T, Double > costFunction )
 		{
-			this.costTreeToNone = costTreeToNone;
+			this.costFunction = costFunction;
 			this.costs = new HashMap<>();
 			computeChangeCosts( tree );
 		}
@@ -479,7 +474,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 					cost += costs.get( child ).treeCost;
 				}
 			}
-			costs.put( tree, new TreeDetails( cost + costTreeToNone.get( tree ), cost ) );
+			costs.put( tree, new TreeDetails( cost + costFunction.apply( tree.getAttribute(), null ), cost ) );
 		}
 	}
 
