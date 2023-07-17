@@ -102,8 +102,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private final Map< Pair< Tree< T >, Tree< T > >, Double > attributeDistances;
 
-	private final BiFunction< T, T, Double > costFunction;
-
 	/**
 	 * Calculate the Zhang edit distance between two labeled unordered trees.
 	 *
@@ -142,7 +140,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private ZhangUnorderedTreeEditDistance( final Tree< T > tree1, final Tree< T > tree2,
 			final BiFunction< T, T, Double > costFunction )
 	{
-		this.costFunction = costFunction;
 
 		subtrees1 = TreeUtils.listOfSubtrees( tree1 );
 		subtrees2 = TreeUtils.listOfSubtrees( tree2 );
@@ -180,7 +177,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	{
 		treeDistances.clear();
 		forestDistances.clear();
-		double distance = distanceTree( tree1, tree2, costFunction );
+		double distance = distanceTree( tree1, tree2 );
 
 		log();
 
@@ -226,7 +223,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	/**
 	 * Calculate the zhang edit distance between two sub-trees
 	 */
-	private double distanceTree( final Tree< T > tree1, final Tree< T > tree2, final BiFunction< T, T, Double > costFunction )
+	private double distanceTree( final Tree< T > tree1, final Tree< T > tree2 )
 	{
 		Double distance = treeDistances.get( Pair.of( tree1, tree2 ) );
 		if ( distance != null )
@@ -235,7 +232,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		if ( tree1.isLeaf() && tree2.isLeaf() )
 			distance = attributeDistances.get( Pair.of( tree1, tree2 ) );
 		else
-			distance = getMinTreeChangeCosts( tree1, tree2, costFunction );
+			distance = getMinTreeChangeCosts( tree1, tree2 );
 
 		treeDistances.put( Pair.of( tree1, tree2 ), distance );
 		return distance;
@@ -271,11 +268,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return distance;
 	}
 
-	private double getMinTreeChangeCosts( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
+	private double getMinTreeChangeCosts( Tree< T > tree1, Tree< T > tree2 )
 	{
 		// NB: the order of the following three lines is important, changing the order will result in a wrong distance.
-		double insertOperationCosts = insertOperationCosts( tree1, tree2, costFunction );
-		double deleteOperationCosts = deleteOperationCosts( tree1, tree2, costFunction );
+		double insertOperationCosts = insertOperationCosts( tree1, tree2 );
+		double deleteOperationCosts = deleteOperationCosts( tree1, tree2 );
 		double changeCosts = distanceForest( tree1, tree2 ) + attributeDistances.get( Pair.of( tree1, tree2 ) );
 		return min( insertOperationCosts, deleteOperationCosts, changeCosts );
 	}
@@ -284,13 +281,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * Costs for inserting tree2 with all but one child-tree, and changing tree1 to replace that child-tree.
 	 * (These are the costs for matching tree1 to a child-tree of tree2.)
 	 */
-	private double insertOperationCosts( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
+	private double insertOperationCosts( Tree< T > tree1, Tree< T > tree2 )
 	{
 		if ( tree2.isLeaf() )
 			return Double.POSITIVE_INFINITY;
 		List< Double > distances = new ArrayList<>();
 		tree2.getChildren()
-				.forEach( child -> distances.add( distanceTree( tree1, child, costFunction ) - insertCosts.get( child ).treeCost ) );
+				.forEach( child -> distances.add( distanceTree( tree1, child ) - insertCosts.get( child ).treeCost ) );
 		return insertCosts.get( tree2 ).treeCost + Collections.min( distances );
 	}
 
@@ -298,13 +295,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * Costs for deleting tree1 but keeping a child-tree of tree1, and changing that child-tree to tree2.
 	 * (These are the costs for matching a child-tree of tree1 to tree2.)
 	 */
-	private double deleteOperationCosts( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
+	private double deleteOperationCosts( Tree< T > tree1, Tree< T > tree2 )
 	{
 		if ( tree1.isLeaf() )
 			return Double.POSITIVE_INFINITY;
 		List< Double > distances = new ArrayList<>();
 		tree1.getChildren()
-				.forEach( child -> distances.add( distanceTree( child, tree2, costFunction ) - deleteCosts.get( child ).treeCost ) );
+				.forEach( child -> distances.add( distanceTree( child, tree2 ) - deleteCosts.get( child ).treeCost ) );
 		return deleteCosts.get( tree1 ).treeCost + Collections.min( distances );
 	}
 
