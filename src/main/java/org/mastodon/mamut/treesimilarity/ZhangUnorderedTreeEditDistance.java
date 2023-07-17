@@ -225,17 +225,26 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double distanceTree( final Tree< T > tree1, final Tree< T > tree2 )
 	{
-		Double distance = treeDistances.get( Pair.of( tree1, tree2 ) );
-		if ( distance != null )
-			return distance;
-
-		if ( tree1.isLeaf() && tree2.isLeaf() )
-			distance = attributeDistances.get( Pair.of( tree1, tree2 ) );
-		else
-			distance = getMinTreeChangeCosts( tree1, tree2 );
-
-		treeDistances.put( Pair.of( tree1, tree2 ), distance );
+		Pair< Tree< T >, Tree< T > > pair = Pair.of( tree1, tree2 );
+		Double distance = treeDistances.get( pair );
+		if ( distance == null )
+		{
+			distance = computeDistanceTree( tree1, tree2 );
+			treeDistances.put( pair, distance );
+		}
 		return distance;
+	}
+
+	private Double computeDistanceTree( Tree< T > tree1, Tree< T > tree2 )
+	{
+		if ( tree1.isLeaf() && tree2.isLeaf() )
+			return attributeDistances.get( Pair.of( tree1, tree2 ) );
+
+		// NB: the order of the following three lines is important, changing the order will result in a wrong distance.
+		double insertOperationCosts = insertOperationCosts( tree1, tree2 );
+		double deleteOperationCosts = deleteOperationCosts( tree1, tree2 );
+		double changeCosts = distanceForest( tree1, tree2 ) + attributeDistances.get( Pair.of( tree1, tree2 ) );
+		return min( insertOperationCosts, deleteOperationCosts, changeCosts );
 	}
 
 	/**
@@ -251,30 +260,34 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double distanceForest( final Tree< T > forest1, final Tree< T > forest2 )
 	{
-		Double distance = forestDistances.get( Pair.of( forest1, forest2 ) );
-		if ( distance != null )
-			return distance;
-
-		if ( !forest1.isLeaf() && forest2.isLeaf() )
-			distance = deleteCosts.get( forest1 ).forestCost;
-		else if ( forest1.isLeaf() && !forest2.isLeaf() )
-			distance = insertCosts.get( forest2 ).forestCost;
-		else if ( !forest2.isLeaf() && !forest1.isLeaf() )
-			distance = getMinForestChangeCosts( forest1, forest2 );
-		else
-			throw new IllegalArgumentException( "The given trees are both leaves and thus they are both not forests." );
-
-		forestDistances.put( Pair.of( forest1, forest2 ), distance );
+		Pair< Tree< T >, Tree< T > > pair = Pair.of( forest1, forest2 );
+		Double distance = forestDistances.get( pair );
+		if ( distance == null )
+		{
+			distance = computeDistanceForest( forest1, forest2 );
+			forestDistances.put( pair, distance );
+		}
 		return distance;
 	}
 
-	private double getMinTreeChangeCosts( Tree< T > tree1, Tree< T > tree2 )
+	private double computeDistanceForest( Tree< T > forest1, Tree< T > forest2 )
 	{
-		// NB: the order of the following three lines is important, changing the order will result in a wrong distance.
-		double insertOperationCosts = insertOperationCosts( tree1, tree2 );
-		double deleteOperationCosts = deleteOperationCosts( tree1, tree2 );
-		double changeCosts = distanceForest( tree1, tree2 ) + attributeDistances.get( Pair.of( tree1, tree2 ) );
-		return min( insertOperationCosts, deleteOperationCosts, changeCosts );
+		boolean forest1IsLeaf = forest1.isLeaf();
+		boolean forest2IsLeaf = forest2.isLeaf();
+
+		if ( forest1IsLeaf && forest2IsLeaf )
+			throw new IllegalArgumentException( "The given trees are both leaves and thus they are both not forests." );
+
+		if ( forest1IsLeaf )
+			return insertCosts.get( forest2 ).forestCost;
+
+		if ( forest2IsLeaf )
+			return deleteCosts.get( forest1 ).forestCost;
+
+		double forestInsertCosts = getForestInsertCosts( forest1, forest2 );
+		double forestDeleteCosts = getForestDeleteCosts( forest1, forest2 );
+		double changeCosts = minCostMaxFlow( forest1, forest2 );
+		return min( forestInsertCosts, forestDeleteCosts, changeCosts );
 	}
 
 	/**
@@ -303,18 +316,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 		tree1.getChildren()
 				.forEach( child -> distances.add( distanceTree( child, tree2 ) - deleteCosts.get( child ).treeCost ) );
 		return deleteCosts.get( tree1 ).treeCost + Collections.min( distances );
-	}
-
-	private double getMinForestChangeCosts( Tree< T > forest1, Tree< T > forest2 )
-	{
-		// NB: this method should not be called on leaves.
-		if ( forest1.isLeaf() || forest2.isLeaf() )
-			throw new AssertionError();
-
-		double forestInsertCosts = getForestInsertCosts( forest1, forest2 );
-		double forestDeleteCosts = getForestDeleteCosts( forest1, forest2 );
-		double changeCosts = minCostMaxFlow( forest1, forest2 );
-		return min( forestInsertCosts, forestDeleteCosts, changeCosts );
 	}
 
 	private double getForestInsertCosts( Tree< T > forest1, Tree< T > forest2 )
