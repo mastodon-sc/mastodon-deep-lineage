@@ -243,8 +243,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		TreeMatching< T > insertOperationCosts = insertOperationCosts( tree1, tree2 );
 		TreeMatching< T > deleteOperationCosts = deleteOperationCosts( tree1, tree2 );
 		TreeMatching< T > matching = mapForest( tree1, tree2 );
-		double cost = matching.getCost() + attributeDistances.get( Pair.of( tree1, tree2 ) );
-		TreeMatching< T > changeCosts = new ComposedTreeMatching<>( cost, new SingletonTreeMatching<>( tree1, tree2, attributeDistances.get( Pair.of( tree1, tree2 ) ) ) );
+		TreeMatching< T > changeCosts = new ComposedTreeMatching<>( 0, new SingletonTreeMatching<>( tree1, tree2, attributeDistances.get( Pair.of( tree1, tree2 ) ) ), matching );
 		return min( insertOperationCosts, deleteOperationCosts, changeCosts );
 	}
 
@@ -300,11 +299,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	{
 		double insertCostTree2 = insertCosts.get( tree2 ).treeCost;
 		return findBestOperation( tree2.getChildren(), child ->
-		{
-			TreeMatching< T > matching = treeMapping( tree1, child );
-			double cost = matching.getCost() + insertCostTree2 - insertCosts.get( child ).treeCost;
-			return new ComposedTreeMatching<>( cost, matching );
-		} );
+				new ComposedTreeMatching<>( insertCostTree2 - insertCosts.get( child ).treeCost, treeMapping( tree1, child ) ) );
 	}
 
 	private TreeMatching< T > findBestOperation( Collection< Tree< T > > children, Function< Tree< T >, TreeMatching< T > > f )
@@ -327,11 +322,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private TreeMatching< T > deleteOperationCosts( Tree< T > tree1, Tree< T > tree2 )
 	{
 		double deleteCostTree1 = deleteCosts.get( tree1 ).treeCost;
-		return findBestOperation( tree1.getChildren(), child -> {
-			TreeMatching< T > matching = treeMapping( child, tree2 );
-			double cost = matching.getCost() + deleteCostTree1 - deleteCosts.get( child ).treeCost;
-			return new ComposedTreeMatching<>( cost, matching );
-		} );
+		return findBestOperation( tree1.getChildren(), child ->
+				new ComposedTreeMatching<>( deleteCostTree1 - deleteCosts.get( child ).treeCost, treeMapping( child, tree2 ) ) );
 	}
 
 	/**
@@ -341,11 +333,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	{
 		// NB: this method should not be called on leaves.
 		double insertCostForest2 = insertCosts.get( forest2 ).forestCost;
-		return findBestOperation( forest2.getChildren(), child -> {
-			TreeMatching< T > matching = mapForest( forest1, child );
-			double cost = matching.getCost() + insertCostForest2 - insertCosts.get( child ).forestCost;
-			return new ComposedTreeMatching<>( cost, matching );
-		} );
+		return findBestOperation( forest2.getChildren(), child ->
+				new ComposedTreeMatching<>( insertCostForest2 - insertCosts.get( child ).forestCost, mapForest( forest1, child ) ) );
 	}
 
 	/**
@@ -355,11 +344,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	{
 		// NB: this method should not be called on leaves.
 		double deleteCostForest1 = deleteCosts.get( forest1 ).forestCost;
-		return findBestOperation( forest1.getChildren(), child -> {
-			TreeMatching< T > matching = mapForest( child, forest2 );
-			double cost = matching.getCost() + deleteCostForest1 - deleteCosts.get( child ).forestCost;
-			return new ComposedTreeMatching<>( cost, matching );
-		} );
+		return findBestOperation( forest1.getChildren(), child ->
+				new ComposedTreeMatching<>( deleteCostForest1 - deleteCosts.get( child ).forestCost, mapForest( child, forest2 ) ) );
 	}
 
 	private TreeMatching< T > minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
@@ -570,9 +556,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		private final List< TreeMatching< T > > children;
 
 		@SafeVarargs
-		public ComposedTreeMatching( double cost, TreeMatching< T >... children )
+		public ComposedTreeMatching( double additionalCosts, TreeMatching< T >... children )
 		{
-			super( cost );
+			super( additionalCosts + Arrays.stream( children ).mapToDouble( TreeMatching::getCost ).sum() );
 			this.children = Arrays.asList( children );
 		}
 
