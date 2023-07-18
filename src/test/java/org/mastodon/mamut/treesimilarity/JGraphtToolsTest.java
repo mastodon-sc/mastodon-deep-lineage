@@ -67,7 +67,7 @@ public class JGraphtToolsTest
 		capacities.put( e11, Integer.MAX_VALUE );
 		capacities.put( e12, 6 );
 
-		double cost = JGraphtTools.maxFlowMinCost( graph, capacities, 1, 7 );
+		double cost = JGraphtTools.maxFlowMinCost( graph, capacities, 1, 7 ).getCost();
 
 		assertEquals( 373, ( int ) cost );
 	}
