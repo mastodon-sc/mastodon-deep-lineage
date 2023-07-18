@@ -4,13 +4,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Test;
+import org.mastodon.mamut.treesimilarity.tree.SimpleTree;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
@@ -26,13 +28,104 @@ public class NodeMappingTest
 	};
 
 	@Test
-	public void test()
+	public void testTree1vs2()
 	{
-		Tree< Double > tree1 = SimpleTreeExamples.tree1();
-		Tree< Double > tree2 = SimpleTreeExamples.tree2();
+		testNodeMapping( SimpleTreeExamples.tree1(), SimpleTreeExamples.tree2(),
+				20, "10->10, 20->30, 30->20" );
+	}
+
+	@Test
+	public void testTree3vs4()
+	{
+		testNodeMapping( SimpleTreeExamples.tree3(), SimpleTreeExamples.tree4(),
+				4, "1->1, 1->1, 100->100" );
+	}
+
+	@Test
+	public void testTree5vs6()
+	{
+		testNodeMapping( SimpleTreeExamples.tree5(), SimpleTreeExamples.tree6(),
+				49, "13->12, 203->227, 203->227" );
+	}
+
+	@Test
+	public void testTree5vs7()
+	{
+		testNodeMapping( SimpleTreeExamples.tree5(), SimpleTreeExamples.tree7(),
+				69, "13->12, 203->227, 203->227" );
+	}
+
+	@Test
+	public void testTree8vs9()
+	{
+		testNodeMapping( SimpleTreeExamples.tree8(), SimpleTreeExamples.tree9(),
+				1, "1->1, 2->2, 3->3, 4->4, 5->4, 8->8, 8->8" );
+	}
+
+	@Test
+	public void testTree12vs13()
+	{
+		testNodeMapping( SimpleTreeExamples.tree12(), SimpleTreeExamples.tree13(),
+				2, "100->100, 1000->1000, 200->200" );
+	}
+
+	@Test
+	public void testNonBinaryTree()
+	{
+		testNodeMapping( SimpleTreeExamples.tree14(), SimpleTreeExamples.nonBinaryTree(),
+				1_000_003, "10000->10001, 2->3, 4->5" );
+	}
+
+	@Test
+	public void testTree15vs16()
+	{
+		testNodeMapping( SimpleTreeExamples.tree15(), SimpleTreeExamples.tree16(),
+				203, "1000->1000, 200->200, 300->300" );
+	}
+
+	@Test
+	public void testTree18vs19()
+	{
+		testNodeMapping( SimpleTreeExamples.tree18(), SimpleTreeExamples.tree19(),
+				21, "100->100, 200->200, 300->300" );
+	}
+
+	@Test
+	public void testEmptyTrees()
+	{
+		testNodeMapping( SimpleTreeExamples.tree1(), null, 60, "" );
+		testNodeMapping( null, null, 0, "" );
+	}
+
+	@Test
+	public void testLeaves()
+	{
+		testNodeMapping( new SimpleTree<>( 10d ), null, 10, "" );
+		testNodeMapping( new SimpleTree<>( 10d ), new SimpleTree<>( 20d ), 10, "10->20" );
+	}
+
+	private void testNodeMapping( Tree< Double > tree1, Tree< Double > tree2, double expectedCosts, String expectedMapping )
+	{
+		testNodeMappingForward( tree1, tree2, expectedCosts, expectedMapping );
+		testNodeMappingForward( tree2, tree1, expectedCosts, revertExpectedMapping( expectedMapping ) );
+	}
+
+	private void testNodeMappingForward( Tree< Double > tree1, Tree< Double > tree2, double expectedCosts, String expectedMapping )
+	{
 		Map< Tree< Double >, Tree< Double > > mapping = ZhangUnorderedTreeEditDistance.nodeMapping( tree1, tree2, DEFAULT_COSTS );
-		assertEquals( "10->10, 20->30, 30->20", asString( mapping ) );
-		assertEquals( 20, computeCosts( tree1, tree2, mapping ), 0.0 );
+		assertEquals( expectedMapping, asString( mapping ) );
+		assertEquals( expectedCosts, computeCosts( tree1, tree2, mapping ), 0.0 );
+	}
+
+	private String revertExpectedMapping( String expectedMapping )
+	{
+		if ( expectedMapping.isEmpty() )
+			return expectedMapping;
+
+		return Stream.of( expectedMapping.split( ", " ) ).map( s -> {
+			String[] split = s.split( "->" );
+			return split[ 1 ] + "->" + split[ 0 ];
+		} ).sorted().collect( Collectors.joining( ", " ) );
 	}
 
 	private double computeCosts( Tree< Double > tree1, Tree< Double > tree2, Map< Tree< Double >, Tree< Double > > mapping )
@@ -57,18 +150,5 @@ public class NodeMappingTest
 		mapping.forEach( ( key, value ) -> strings.add( Math.round( key.getAttribute() ) + "->" + Math.round( value.getAttribute() ) ) );
 		Collections.sort( strings );
 		return String.join( ", ", strings );
-	}
-
-	private void assertAttributeMapping( String expected, Map< Tree< Double >, Tree< Double > > mapping )
-	{
-		Map< Double, Double > attributeMapping = new HashMap<>();
-		mapping.forEach( ( key, value ) -> attributeMapping.put( key.getAttribute(), value.getAttribute() ) );
-		for ( String pair : expected.split( ", *" ) )
-		{
-			String[] split = pair.split( "->" );
-			double keyAttribute = Double.parseDouble( split[ 0 ] );
-			double valueAttribute = Double.parseDouble( split[ 1 ] );
-			assertEquals( valueAttribute, attributeMapping.get( keyAttribute ), 0.0 );
-		}
 	}
 }

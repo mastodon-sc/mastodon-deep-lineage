@@ -167,7 +167,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	public static < T > Map< Tree< T >, Tree< T > > nodeMapping( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
 	{
-		if ( tree1.isLeaf() || tree2.isLeaf() )
+		if ( tree1 == null || tree2 == null )
 			return Collections.emptyMap();
 
 		TreeMatching< T > matching = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction ).treeMapping( tree1, tree2 );
