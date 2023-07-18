@@ -1,9 +1,6 @@
 package org.mastodon.mamut.treesimilarity;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.jgrapht.alg.interfaces.MinimumCostFlowAlgorithm;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
 import org.slf4j.Logger;
@@ -12,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -377,106 +375,64 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private TreeMatching< T > minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
 	{
 		// Construction of graph for max flow min cost algorithm
-		SimpleDirectedWeightedGraph< Integer, DefaultWeightedEdge > graph = new SimpleDirectedWeightedGraph<>( DefaultWeightedEdge.class );
 
-		List< Tree< T > > childrenForest1 = new ArrayList<>( forest1.getChildren() );
-		List< Tree< T > > childrenForest2 = new ArrayList<>( forest2.getChildren() );
+		Collection< Tree< T > > childrenForest1 = forest1.getChildren();
+		Collection< Tree< T > > childrenForest2 = forest2.getChildren();
 
-		int forest1NumberOfChildren = childrenForest1.size();
-		int forest2NumberOfChildren = childrenForest2.size();
+		String source = "source";
+		String sink = "sink";
+		String emptyTree1 = "empty1";
+		String emptyTree2 = "empty2";
 
-		Integer source = 0;
-		Integer sink = forest1NumberOfChildren + forest2NumberOfChildren + 1;
-		Integer emptyTree1 = forest1NumberOfChildren + forest2NumberOfChildren + 2;
-		Integer emptyTree2 = forest1NumberOfChildren + forest2NumberOfChildren + 3;
+		FlowNetwork network = new FlowNetwork();
+		network.addVertices( Arrays.asList( source, sink, emptyTree1, emptyTree2 ) );
+		network.addVertices( childrenForest1 );
+		network.addVertices( childrenForest2 );
 
-		graph.addVertex( source );
-		graph.addVertex( sink );
-		graph.addVertex( emptyTree1 );
-		graph.addVertex( emptyTree2 );
+		int n1 = childrenForest1.size();
+		int n2 = childrenForest2.size();
+		network.addEdge( source, emptyTree1, n2 - Math.min( n1, n2 ), 0 );
+		network.addEdge( emptyTree1, emptyTree2, Math.max( n1, n2 ) - Math.min( n1, n2 ), 0 ); // this edge is not needed
+		network.addEdge( emptyTree2, sink, n1 - Math.min( n1, n2 ), 0 );
 
-		DefaultWeightedEdge e1 = graph.addEdge( source, emptyTree1 );
-		DefaultWeightedEdge e2 = graph.addEdge( emptyTree1, emptyTree2 );
-		DefaultWeightedEdge e3 = graph.addEdge( emptyTree2, sink );
-
-		graph.setEdgeWeight( e1, 0 );
-		graph.setEdgeWeight( e2, 0 );
-		graph.setEdgeWeight( e3, 0 );
-
-		Map< DefaultWeightedEdge, Integer > capacities = new HashMap<>();
-		capacities.put( e1, forest2NumberOfChildren - Math.min( forest1NumberOfChildren, forest2NumberOfChildren ) );
-		capacities.put( e2, Math.max( forest1NumberOfChildren, forest2NumberOfChildren )
-				- Math.min( forest1NumberOfChildren, forest2NumberOfChildren ) );
-		capacities.put( e3, forest1NumberOfChildren - Math.min( forest1NumberOfChildren, forest2NumberOfChildren ) );
-
-		for ( int i = 0; i < forest1NumberOfChildren; i++ )
+		for ( Tree< T > child1 : childrenForest1 )
 		{
-			int nodeI = i + 1; // represents the i-th child of forest1
-			if ( !graph.containsVertex( nodeI ) )
-				graph.addVertex( nodeI );
-			DefaultWeightedEdge edge = graph.addEdge( 0, nodeI );
-			graph.setEdgeWeight( edge, 0 );
-			capacities.put( edge, 1 );
-			for ( int j = 0; j < childrenForest2.size(); j++ )
-			{
-				double edgeWeight = treeMapping( childrenForest1.get( i ), childrenForest2.get( j ) ).getCost();
-				int nodeJ = forest1NumberOfChildren + j + 1; // represents the j-th child of forest2
-				if ( !graph.containsVertex( nodeI ) )
-					graph.addVertex( nodeI );
-				if ( !graph.containsVertex( nodeJ ) )
-					graph.addVertex( nodeJ );
-				edge = graph.addEdge( nodeI, nodeJ );
-				graph.setEdgeWeight( edge, edgeWeight );
-				capacities.put( edge, 1 );
-			}
-			edge = graph.addEdge( nodeI, emptyTree2 );
-			graph.setEdgeWeight( edge, deleteCosts.get( childrenForest1.get( i ) ).treeCost );
-			capacities.put( edge, 1 );
+			network.addEdge( source, child1, 1, 0 );
+			network.addEdge( child1, emptyTree2, 1, deleteCosts.get( child1 ).treeCost );
+			for ( Tree< T > child2 : childrenForest2 )
+				network.addEdge( child1, child2, 1, treeMapping( child1, child2 ).getCost() );
 		}
-		for ( int j = 0; j < childrenForest2.size(); j++ )
-		{
-			int nodeJ = forest1NumberOfChildren + j + 1; // represents the j-th child of forest2
-			DefaultWeightedEdge edge = graph.addEdge( emptyTree1, nodeJ );
-			double weight = insertCosts.get( childrenForest2.get( j ) ).treeCost;
-			graph.setEdgeWeight( edge, weight );
-			capacities.put( edge, forest2NumberOfChildren - Math.min( forest1NumberOfChildren, forest2NumberOfChildren ) );
 
-			edge = graph.addEdge( nodeJ, sink );
-			graph.setEdgeWeight( edge, 0 );
-			capacities.put( edge, 1 );
+		for ( Tree< T > child2 : childrenForest2 )
+		{
+			network.addEdge( child2, sink, 1, 0 );
+			network.addEdge( emptyTree1, child2, 1, insertCosts.get( child2 ).treeCost );
 		}
-		MinimumCostFlowAlgorithm.MinimumCostFlow< DefaultWeightedEdge > flow =
-				JGraphtTools.maxFlowMinCost( graph, capacities, source, sink );
+
+		network.solveMaxFlowMinCost( source, sink );
 
 		ArrayList< TreeMatching< T > > childMatchings = new ArrayList<>();
 
-		for ( int i = 0; i < forest1NumberOfChildren; i++ )
-		{
-			int nodeI = i + 1; // represents the i-th child of forest1
-			Tree< T > child1 = childrenForest1.get( i );
-			if ( isFlowEqualToOne( flow.getFlow( graph.getEdge( nodeI, emptyTree2 ) ) ) )
+		for ( Tree< T > child1 : childrenForest1 )
+			if ( isFlowEqualToOne( network.getFlow( child1, emptyTree2 ) ) )
 				childMatchings.add( TreeMatching.empty( deleteCosts.get( child1 ).treeCost ) );
 
-			for ( int j = 0; j < childrenForest2.size(); j++ )
-			{
-				int nodeJ = forest1NumberOfChildren + j + 1; // represents the j-th child of forest2
-				Tree< T > child2 = childrenForest2.get( j );
-				if ( isFlowEqualToOne( flow.getFlow( graph.getEdge( nodeI, nodeJ ) ) ) )
-					childMatchings.add( treeMapping( child1, child2 ) );
-			}
-		}
-
-		for ( int j = 0; j < childrenForest2.size(); j++ )
-		{
-			int nodeJ = forest1NumberOfChildren + j + 1; // represents the j-th child of forest2
-			Tree< T > child2 = childrenForest2.get( j );
-			if ( isFlowEqualToOne( flow.getFlow( graph.getEdge( emptyTree1, nodeJ ) ) ) )
+		for ( Tree< T > child2 : childrenForest2 )
+			if ( isFlowEqualToOne( network.getFlow( emptyTree1, child2 ) ) )
 				childMatchings.add( TreeMatching.empty( insertCosts.get( child2 ).treeCost ) );
-		}
+
+		for ( Tree< T > child1 : childrenForest1 )
+			for ( Tree< T > child2 : childrenForest2 )
+				if ( isFlowEqualToOne( network.getFlow( child1, child2 ) ) )
+					childMatchings.add( treeMapping( child1, child2 ) );
 
 		return TreeMatching.compose( childMatchings );
 	}
 
+	/**
+	 * Returns true if the flow value equal to 1. Returns false if the flow value equal to 0.
+	 * Throws an {@link AssertionError} if the flow value is neither 0 nor 1.
+	 */
 	private static boolean isFlowEqualToOne( double flowValue )
 	{
 		if ( flowValue != 0.0 && flowValue != 1.0 )
