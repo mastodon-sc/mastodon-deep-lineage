@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -171,9 +170,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			return Collections.emptyMap();
 
 		TreeMatching< T > matching = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction ).treeMapping( tree1, tree2 );
-		HashMap< Tree< T >, Tree< T > > map = new HashMap<>();
-		matching.writeToMap( map );
-		return map;
+		return matching.asMap();
 	}
 
 	/**
@@ -249,14 +246,14 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private TreeMatching< T > computeDistanceTree( Tree< T > tree1, Tree< T > tree2 )
 	{
+		TreeMatching< T > attributeMapping = TreeMatching.singleton( attributeDistances.get( Pair.of( tree1, tree2 ) ), tree1, tree2 );
 		if ( tree1.isLeaf() && tree2.isLeaf() )
-			return new SingletonTreeMatching<>( tree1, tree2, attributeDistances.get( Pair.of( tree1, tree2 ) ) );
+			return attributeMapping;
 
 		// NB: the order of the following three lines is important, changing the order will result in a wrong distance.
 		TreeMatching< T > insertOperationCosts = insertOperationCosts( tree1, tree2 );
 		TreeMatching< T > deleteOperationCosts = deleteOperationCosts( tree1, tree2 );
-		TreeMatching< T > matching = mapForest( tree1, tree2 );
-		TreeMatching< T > changeCosts = new ComposedTreeMatching<>( 0, new SingletonTreeMatching<>( tree1, tree2, attributeDistances.get( Pair.of( tree1, tree2 ) ) ), matching );
+		TreeMatching< T > changeCosts = TreeMatching.compose( attributeMapping, mapForest( tree1, tree2 ) );
 		return min( insertOperationCosts, deleteOperationCosts, changeCosts );
 	}
 
@@ -292,10 +289,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 			throw new IllegalArgumentException( "The given trees are both leaves and thus they are both not forests." );
 
 		if ( forest1IsLeaf )
-			return new EmptyTreeMatching<>( insertCosts.get( forest2 ).forestCost );
+			return TreeMatching.empty( insertCosts.get( forest2 ).forestCost );
 
 		if ( forest2IsLeaf )
-			return new EmptyTreeMatching<>( deleteCosts.get( forest1 ).forestCost );
+			return TreeMatching.empty( deleteCosts.get( forest1 ).forestCost );
 
 		TreeMatching< T > forestInsertCosts = getForestInsertCosts( forest1, forest2 );
 		TreeMatching< T > forestDeleteCosts = getForestDeleteCosts( forest1, forest2 );
@@ -311,20 +308,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private TreeMatching< T > insertOperationCosts( Tree< T > tree1, Tree< T > tree2 )
 	{
 		double insertCostTree2 = insertCosts.get( tree2 ).treeCost;
-		return findBestOperation( tree2.getChildren(), child ->
-				new ComposedTreeMatching<>( insertCostTree2 - insertCosts.get( child ).treeCost, treeMapping( tree1, child ) ) );
-	}
-
-	private TreeMatching< T > findBestOperation( Collection< Tree< T > > children, Function< Tree< T >, TreeMatching< T > > f )
-	{
-		TreeMatching< T > best = new EmptyTreeMatching<>( Double.POSITIVE_INFINITY );
-		for ( Tree< T > child : children )
+		return findBestMapping( tree2.getChildren(), child ->
 		{
-			TreeMatching< T > cost = f.apply( child );
-			if ( cost.getCost() < best.getCost() )
-				best = cost;
-		}
-		return best;
+			TreeMatching< T > insertCosts = TreeMatching.empty( insertCostTree2 - this.insertCosts.get( child ).treeCost );
+			TreeMatching< T > childMapping = treeMapping( tree1, child );
+			return TreeMatching.compose( insertCosts, childMapping );
+		} );
 	}
 
 	/**
@@ -335,8 +324,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private TreeMatching< T > deleteOperationCosts( Tree< T > tree1, Tree< T > tree2 )
 	{
 		double deleteCostTree1 = deleteCosts.get( tree1 ).treeCost;
-		return findBestOperation( tree1.getChildren(), child ->
-				new ComposedTreeMatching<>( deleteCostTree1 - deleteCosts.get( child ).treeCost, treeMapping( child, tree2 ) ) );
+		return findBestMapping( tree1.getChildren(), child ->
+		{
+			TreeMatching< T > deleteCosts = TreeMatching.empty( deleteCostTree1 - this.deleteCosts.get( child ).treeCost );
+			TreeMatching< T > childMapping = treeMapping( child, tree2 );
+			return TreeMatching.compose( deleteCosts, childMapping );
+		} );
 	}
 
 	/**
@@ -346,8 +339,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 	{
 		// NB: this method should not be called on leaves.
 		double insertCostForest2 = insertCosts.get( forest2 ).forestCost;
-		return findBestOperation( forest2.getChildren(), child ->
-				new ComposedTreeMatching<>( insertCostForest2 - insertCosts.get( child ).forestCost, mapForest( forest1, child ) ) );
+		return findBestMapping( forest2.getChildren(), child ->
+		{
+			TreeMatching< T > insertCosts = TreeMatching.empty( insertCostForest2 - this.insertCosts.get( child ).forestCost );
+			TreeMatching< T > childMapping = mapForest( forest1, child );
+			return TreeMatching.compose( insertCosts, childMapping );
+		} );
 	}
 
 	/**
@@ -357,8 +354,24 @@ public class ZhangUnorderedTreeEditDistance< T >
 	{
 		// NB: this method should not be called on leaves.
 		double deleteCostForest1 = deleteCosts.get( forest1 ).forestCost;
-		return findBestOperation( forest1.getChildren(), child ->
-				new ComposedTreeMatching<>( deleteCostForest1 - deleteCosts.get( child ).forestCost, mapForest( child, forest2 ) ) );
+		return findBestMapping( forest1.getChildren(), child ->
+		{
+			TreeMatching< T > deleteCosts = TreeMatching.empty( deleteCostForest1 - this.deleteCosts.get( child ).forestCost );
+			TreeMatching< T > childMapping = mapForest( child, forest2 );
+			return TreeMatching.compose( deleteCosts, childMapping );
+		} );
+	}
+
+	private TreeMatching< T > findBestMapping( Collection< Tree< T > > children, Function< Tree< T >, TreeMatching< T > > f )
+	{
+		TreeMatching< T > best = TreeMatching.empty( Double.POSITIVE_INFINITY );
+		for ( Tree< T > child : children )
+		{
+			TreeMatching< T > cost = f.apply( child );
+			if ( cost.getCost() < best.getCost() )
+				best = cost;
+		}
+		return best;
 	}
 
 	private TreeMatching< T > minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
@@ -442,7 +455,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			int nodeI = i + 1; // represents the i-th child of forest1
 			Tree< T > child1 = childrenForest1.get( i );
 			if ( isFlowEqualToOne( flow.getFlow( graph.getEdge( nodeI, emptyTree2 ) ) ) )
-				childMatchings.add( new EmptyTreeMatching<>( deleteCosts.get( child1 ).treeCost ) );
+				childMatchings.add( TreeMatching.empty( deleteCosts.get( child1 ).treeCost ) );
 
 			for ( int j = 0; j < childrenForest2.size(); j++ )
 			{
@@ -458,10 +471,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 			int nodeJ = forest1NumberOfChildren + j + 1; // represents the j-th child of forest2
 			Tree< T > child2 = childrenForest2.get( j );
 			if ( isFlowEqualToOne( flow.getFlow( graph.getEdge( emptyTree1, nodeJ ) ) ) )
-				childMatchings.add( new EmptyTreeMatching<>( insertCosts.get( child2 ).treeCost ) );
+				childMatchings.add( TreeMatching.empty( insertCosts.get( child2 ).treeCost ) );
 		}
 
-		return new ComposedTreeMatching<>( 0.0, childMatchings );
+		return TreeMatching.compose( childMatchings );
 	}
 
 	private static boolean isFlowEqualToOne( double flowValue )
@@ -549,78 +562,4 @@ public class ZhangUnorderedTreeEditDistance< T >
 		}
 	}
 
-	private abstract static class TreeMatching< T >
-	{
-
-		private final double cost;
-
-		public TreeMatching( double cost )
-		{
-			this.cost = cost;
-		}
-
-		public double getCost()
-		{
-			return cost;
-		}
-
-		abstract public void writeToMap( Map< Tree< T >, Tree< T > > map );
-	}
-
-	private static class EmptyTreeMatching< T > extends TreeMatching< T >
-	{
-		public EmptyTreeMatching( double cost )
-		{
-			super( cost );
-		}
-
-		@Override
-		public void writeToMap( Map< Tree< T >, Tree< T > > map )
-		{
-			// do nothing
-		}
-	}
-
-	private static class SingletonTreeMatching< T > extends TreeMatching< T >
-	{
-		private final Tree< T > tree1;
-
-		private final Tree< T > tree2;
-
-		public SingletonTreeMatching( Tree< T > tree1, Tree< T > tree2, double cost )
-		{
-			super( cost );
-			this.tree1 = tree1;
-			this.tree2 = tree2;
-		}
-
-		@Override
-		public void writeToMap( Map< Tree< T >, Tree< T > > map )
-		{
-			map.put( tree1, tree2 );
-		}
-	}
-
-	private static class ComposedTreeMatching< T > extends TreeMatching< T >
-	{
-		private final List< TreeMatching< T > > children;
-
-		@SafeVarargs
-		public ComposedTreeMatching( double additionalCosts, TreeMatching< T >... children )
-		{
-			this( additionalCosts, Arrays.asList( children ) );
-		}
-
-		public ComposedTreeMatching( double additionalCosts, List< TreeMatching< T > > children )
-		{
-			super( additionalCosts + children.stream().mapToDouble( TreeMatching::getCost ).sum() );
-			this.children = children;
-		}
-
-		@Override
-		public void writeToMap( Map< Tree< T >, Tree< T > > map )
-		{
-			children.forEach( child -> child.writeToMap( map ) );
-		}
-	}
 }
