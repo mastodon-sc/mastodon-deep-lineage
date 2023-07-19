@@ -228,7 +228,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
-	 * Returns the optimal mapping with respect to zhang edit distance between two tree1 and tree2.
+	 * Returns the optimal node mapping with respect to zhang edit distance
+	 * that maps from tree1 to tree2.
 	 */
 	private NodeMapping< T > treeMapping( Tree< T > tree1, Tree< T > tree2 )
 	{
@@ -256,7 +257,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
-	 * Calculate the zhang edit distance between two sub-forests.
+	 * Returns the optimal node mapping with respect to zhang edit distance
+	 * that maps from forest1 to forest2.
+	 * <p>
 	 * <strong>What is a forest?</strong>
 	 * <p>
 	 * "Suppose that we have a numbering for each tree.
@@ -299,9 +302,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
-	 * Computes the cost for edit operation (3b). see {@link ZhangUnorderedTreeEditDistance}
+	 * Returns the best {@link NodeMapping} that uses edit operation (3b)
+	 * to map {@code tree1} to {@code tree2}. See {@link ZhangUnorderedTreeEditDistance}.
 	 * <p>
-	 * Costs for inserting tree2 with all but one child-tree, and changing tree1 to replace that child-tree.
+	 * Costs for deleting tree1 but keeping a child-tree of tree1, and changing that child-tree to tree2.
 	 */
 	private NodeMapping< T > insertOperationMapping( Tree< T > tree1, Tree< T > tree2 )
 	{
@@ -315,7 +319,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
-	 * Computes the cost for edit operation (3a) see {@link ZhangUnorderedTreeEditDistance}
+	 * Returns the best {@link NodeMapping} that uses edit operation (3a)
+	 * to map {@code tree1} to {@code tree2}. See {@link ZhangUnorderedTreeEditDistance}.
 	 * <p>
 	 * Costs for deleting tree1 but keeping a child-tree of tree1, and changing that child-tree to tree2.
 	 */
@@ -331,7 +336,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
-	 * Computes the cost for edit operation (4b). see {@link ZhangUnorderedTreeEditDistance}
+	 * Returns the best {@link NodeMapping} that uses edit operation (4b)
+	 * to map {@code forest1} to {@code forest2}. See {@link ZhangUnorderedTreeEditDistance}.
 	 */
 	private NodeMapping< T > forestInsertMapping( Tree< T > forest1, Tree< T > forest2 )
 	{
@@ -346,7 +352,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
-	 * Computes the cost for edit operation (4a). see {@link ZhangUnorderedTreeEditDistance}
+	 * Returns the best {@link NodeMapping} that uses edit operation (4a)
+	 * to map {@code forest1} to {@code forest2}. See {@link ZhangUnorderedTreeEditDistance}.
 	 */
 	private NodeMapping< T > forestDeleteMapping( Tree< T > forest1, Tree< T > forest2 )
 	{
@@ -360,14 +367,19 @@ public class ZhangUnorderedTreeEditDistance< T >
 		} );
 	}
 
-	private NodeMapping< T > findBestMapping( Collection< Tree< T > > children, Function< Tree< T >, NodeMapping< T > > f )
+	/**
+	 * Invokes the given {@code function} for each of the given {@code children}.
+	 * Each function invocation must return a {@link NodeMapping}. This method returns
+	 * the best {@link NodeMapping}, i.e. the one with the lowest cost.
+	 */
+	private NodeMapping< T > findBestMapping( Collection< Tree< T > > children, Function< Tree< T >, NodeMapping< T > > function )
 	{
 		NodeMapping< T > best = NodeMapping.empty( Double.POSITIVE_INFINITY );
 		for ( Tree< T > child : children )
 		{
-			NodeMapping< T > cost = f.apply( child );
-			if ( cost.getCost() < best.getCost() )
-				best = cost;
+			NodeMapping< T > nodeMapping = function.apply( child );
+			if ( nodeMapping.getCost() < best.getCost() )
+				best = nodeMapping;
 		}
 		return best;
 	}
