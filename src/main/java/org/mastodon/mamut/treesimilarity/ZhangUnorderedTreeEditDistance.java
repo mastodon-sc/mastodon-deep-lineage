@@ -245,14 +245,14 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private NodeMapping< T > computeTreeMapping( Tree< T > tree1, Tree< T > tree2 )
 	{
-		NodeMapping< T > attributeMapping = NodeMapping.singleton( attributeDistances.get( Pair.of( tree1, tree2 ) ), tree1, tree2 );
+		NodeMapping< T > attributeMapping = NodeMappings.singleton( attributeDistances.get( Pair.of( tree1, tree2 ) ), tree1, tree2 );
 		if ( tree1.isLeaf() && tree2.isLeaf() )
 			return attributeMapping;
 
 		// NB: the order of the following three lines is important, changing the order will result in a wrong distance.
 		NodeMapping< T > insertOperationCosts = insertOperationMapping( tree1, tree2 );
 		NodeMapping< T > deleteOperationCosts = deleteOperationMapping( tree1, tree2 );
-		NodeMapping< T > changeCosts = NodeMapping.compose( attributeMapping, forestMapping( tree1, tree2 ) );
+		NodeMapping< T > changeCosts = NodeMappings.compose( attributeMapping, forestMapping( tree1, tree2 ) );
 		return findBestMapping( insertOperationCosts, deleteOperationCosts, changeCosts );
 	}
 
@@ -290,10 +290,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 			throw new IllegalArgumentException( "The given trees are both leaves and thus they are both not forests." );
 
 		if ( forest1IsLeaf )
-			return NodeMapping.empty( insertCosts.get( forest2 ).forestCost );
+			return NodeMappings.empty( insertCosts.get( forest2 ).forestCost );
 
 		if ( forest2IsLeaf )
-			return NodeMapping.empty( deleteCosts.get( forest1 ).forestCost );
+			return NodeMappings.empty( deleteCosts.get( forest1 ).forestCost );
 
 		NodeMapping< T > forestInsertCosts = forestInsertMapping( forest1, forest2 );
 		NodeMapping< T > forestDeleteCosts = forestDeleteMapping( forest1, forest2 );
@@ -312,9 +312,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double insertCostTree2 = insertCosts.get( tree2 ).treeCost;
 		return findBestMapping( tree2.getChildren(), child ->
 		{
-			NodeMapping< T > insertCosts = NodeMapping.empty( insertCostTree2 - this.insertCosts.get( child ).treeCost );
+			NodeMapping< T > insertCosts = NodeMappings.empty( insertCostTree2 - this.insertCosts.get( child ).treeCost );
 			NodeMapping< T > childMapping = treeMapping( tree1, child );
-			return NodeMapping.compose( insertCosts, childMapping );
+			return NodeMappings.compose( insertCosts, childMapping );
 		} );
 	}
 
@@ -329,9 +329,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double deleteCostTree1 = deleteCosts.get( tree1 ).treeCost;
 		return findBestMapping( tree1.getChildren(), child ->
 		{
-			NodeMapping< T > deleteCosts = NodeMapping.empty( deleteCostTree1 - this.deleteCosts.get( child ).treeCost );
+			NodeMapping< T > deleteCosts = NodeMappings.empty( deleteCostTree1 - this.deleteCosts.get( child ).treeCost );
 			NodeMapping< T > childMapping = treeMapping( child, tree2 );
-			return NodeMapping.compose( deleteCosts, childMapping );
+			return NodeMappings.compose( deleteCosts, childMapping );
 		} );
 	}
 
@@ -345,9 +345,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double insertCostForest2 = insertCosts.get( forest2 ).forestCost;
 		return findBestMapping( forest2.getChildren(), child ->
 		{
-			NodeMapping< T > insertCosts = NodeMapping.empty( insertCostForest2 - this.insertCosts.get( child ).forestCost );
+			NodeMapping< T > insertCosts = NodeMappings.empty( insertCostForest2 - this.insertCosts.get( child ).forestCost );
 			NodeMapping< T > childMapping = forestMapping( forest1, child );
-			return NodeMapping.compose( insertCosts, childMapping );
+			return NodeMappings.compose( insertCosts, childMapping );
 		} );
 	}
 
@@ -361,9 +361,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double deleteCostForest1 = deleteCosts.get( forest1 ).forestCost;
 		return findBestMapping( forest1.getChildren(), child ->
 		{
-			NodeMapping< T > deleteCosts = NodeMapping.empty( deleteCostForest1 - this.deleteCosts.get( child ).forestCost );
+			NodeMapping< T > deleteCosts = NodeMappings.empty( deleteCostForest1 - this.deleteCosts.get( child ).forestCost );
 			NodeMapping< T > childMapping = forestMapping( child, forest2 );
-			return NodeMapping.compose( deleteCosts, childMapping );
+			return NodeMappings.compose( deleteCosts, childMapping );
 		} );
 	}
 
@@ -374,7 +374,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private NodeMapping< T > findBestMapping( Collection< Tree< T > > children, Function< Tree< T >, NodeMapping< T > > function )
 	{
-		NodeMapping< T > best = NodeMapping.empty( Double.POSITIVE_INFINITY );
+		NodeMapping< T > best = NodeMappings.empty( Double.POSITIVE_INFINITY );
 		for ( Tree< T > child : children )
 		{
 			NodeMapping< T > nodeMapping = function.apply( child );
@@ -427,18 +427,18 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		for ( Tree< T > child1 : childrenForest1 )
 			if ( isFlowEqualToOne( network.getFlow( child1, emptyTree2 ) ) )
-				childMappings.add( NodeMapping.empty( deleteCosts.get( child1 ).treeCost ) );
+				childMappings.add( NodeMappings.empty( deleteCosts.get( child1 ).treeCost ) );
 
 		for ( Tree< T > child2 : childrenForest2 )
 			if ( isFlowEqualToOne( network.getFlow( emptyTree1, child2 ) ) )
-				childMappings.add( NodeMapping.empty( insertCosts.get( child2 ).treeCost ) );
+				childMappings.add( NodeMappings.empty( insertCosts.get( child2 ).treeCost ) );
 
 		for ( Tree< T > child1 : childrenForest1 )
 			for ( Tree< T > child2 : childrenForest2 )
 				if ( isFlowEqualToOne( network.getFlow( child1, child2 ) ) )
 					childMappings.add( treeMapping( child1, child2 ) );
 
-		return NodeMapping.compose( childMappings );
+		return NodeMappings.compose( childMappings );
 	}
 
 	/**
