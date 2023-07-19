@@ -7,32 +7,32 @@ import java.util.Map;
 
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
-abstract class TreeMatching< T >
+abstract class NodeMapping< T >
 {
-	public static < T > TreeMatching< T > empty( double cost )
+	public static < T > NodeMapping< T > empty( double cost )
 	{
-		return new EmptyTreeMatching<>( cost );
+		return new EmptyNodeMapping<>( cost );
 	}
 
-	public static < T > TreeMatching< T > singleton( double cost, Tree< T > tree1, Tree< T > tree2 )
+	public static < T > NodeMapping< T > singleton( double cost, Tree< T > tree1, Tree< T > tree2 )
 	{
-		return new SingletonTreeMatching<>( tree1, tree2, cost );
+		return new SingletonNodeMapping<>( tree1, tree2, cost );
 	}
 
 	@SafeVarargs
-	public static < T > TreeMatching< T > compose( TreeMatching< T >... children )
+	public static < T > NodeMapping< T > compose( NodeMapping< T >... children )
 	{
 		return compose( Arrays.asList( children ) );
 	}
 
-	public static < T > TreeMatching< T > compose( List< TreeMatching< T > > children )
+	public static < T > NodeMapping< T > compose( List< NodeMapping< T > > children )
 	{
-		return new ComposedTreeMatching<>( children );
+		return new ComposedNodeMapping<>( children );
 	}
 
 	private final double cost;
 
-	protected TreeMatching( double cost )
+	protected NodeMapping( double cost )
 	{
 		this.cost = cost;
 	}
@@ -51,9 +51,9 @@ abstract class TreeMatching< T >
 		return map;
 	}
 
-	static class EmptyTreeMatching< T > extends TreeMatching< T >
+	static class EmptyNodeMapping< T > extends NodeMapping< T >
 	{
-		private EmptyTreeMatching( double cost )
+		private EmptyNodeMapping( double cost )
 		{
 			super( cost );
 		}
@@ -65,13 +65,13 @@ abstract class TreeMatching< T >
 		}
 	}
 
-	static class SingletonTreeMatching< T > extends TreeMatching< T >
+	static class SingletonNodeMapping< T > extends NodeMapping< T >
 	{
 		private final Tree< T > tree1;
 
 		private final Tree< T > tree2;
 
-		private SingletonTreeMatching( Tree< T > tree1, Tree< T > tree2, double cost )
+		private SingletonNodeMapping( Tree< T > tree1, Tree< T > tree2, double cost )
 		{
 			super( cost );
 			this.tree1 = tree1;
@@ -85,13 +85,13 @@ abstract class TreeMatching< T >
 		}
 	}
 
-	private static class ComposedTreeMatching< T > extends TreeMatching< T >
+	private static class ComposedNodeMapping< T > extends NodeMapping< T >
 	{
-		private final List< TreeMatching< T > > children;
+		private final List< NodeMapping< T > > children;
 
-		private ComposedTreeMatching( List< TreeMatching< T > > children )
+		private ComposedNodeMapping( List< NodeMapping< T > > children )
 		{
-			super( children.stream().mapToDouble( TreeMatching::getCost ).sum() );
+			super( children.stream().mapToDouble( NodeMapping::getCost ).sum() );
 			this.children = children;
 		}
 
