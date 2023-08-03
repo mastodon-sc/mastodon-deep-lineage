@@ -21,7 +21,12 @@ public class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > simpleTree1 = SimpleTreeExamples.tree1();
 		Tree< Double > simpleTree2 = SimpleTreeExamples.tree2();
 		assertThrows( IllegalArgumentException.class, () -> ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleTree2, null ) );
-		assertThrows( IllegalArgumentException.class, () -> ZhangUnorderedTreeEditDistance.distance( null, null, defaultCosts ) );
+	}
+
+	@Test
+	public void testNullTrees()
+	{
+		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( null, null, defaultCosts ), 0d );
 	}
 
 	@Test

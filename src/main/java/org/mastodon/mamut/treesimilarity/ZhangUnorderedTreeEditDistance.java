@@ -119,10 +119,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 	{
 		if ( costFunction == null )
 			throw new IllegalArgumentException( "The cost function is expected to be non-null, but it is null." );
-		if ( tree1 == null && tree2 == null )
-			throw new IllegalArgumentException( "Both trees are null. This is not allowed." );
 
 		// trivial cases
+		if ( tree1 == null && tree2 == null )
+			return 0;
 		if ( tree1 == null )
 			return distanceTreeToNull( tree2, costFunction );
 		else if ( tree2 == null )
