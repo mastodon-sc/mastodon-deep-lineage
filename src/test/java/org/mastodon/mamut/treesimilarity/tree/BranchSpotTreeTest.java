@@ -64,7 +64,10 @@ public class BranchSpotTreeTest
 	@Test
 	public void testToString()
 	{
-		assertEquals( "spot1", BranchSpotTreeExamples.tree1().toString() );
+		ExampleGraph2 example = new ExampleGraph2();
+		BranchSpotTree tree = new BranchSpotTree( example.branchSpotB, 20 );
+		// Note: spot3 is the first spot of branchSpotB.
+		assertEquals( example.spot3.getLabel(), tree.toString() );
 	}
 
 	@Test
