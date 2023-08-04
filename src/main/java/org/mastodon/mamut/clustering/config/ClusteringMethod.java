@@ -21,7 +21,8 @@ public enum ClusteringMethod
 		this.linkageStrategy = linkageStrategy;
 	}
 
-	public String getName()
+	@Override
+	public String toString()
 	{
 		return name;
 	}

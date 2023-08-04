@@ -24,7 +24,8 @@ public enum SimilarityMeasure
 		this.distanceFunction = distanceFunction;
 	}
 
-	public String getName()
+	@Override
+	public String toString()
 	{
 		return name;
 	}

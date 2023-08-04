@@ -38,9 +38,9 @@ public class ClusterRootNodesView extends JFrame implements ClusterRootNodesList
 {
 	private final ClusterRootNodesController controller;
 
-	private final JRadioButton timepoint = new JRadioButton( CropCriteria.TIMEPOINT.getName() );
+	private final JRadioButton timepoint = new JRadioButton( CropCriteria.TIMEPOINT.toString() );
 
-	private final JRadioButton numberOfCells = new JRadioButton( CropCriteria.NUMBER_OF_CELLS.getName() );
+	private final JRadioButton numberOfCells = new JRadioButton( CropCriteria.NUMBER_OF_CELLS.toString() );
 
 	private final JFormattedTextField start = createNumberTextField();
 
@@ -50,17 +50,17 @@ public class ClusterRootNodesView extends JFrame implements ClusterRootNodesList
 
 	private final JFormattedTextField minCellDivisions = createNumberTextField();
 
-	private final JRadioButton normalizedDifference = new JRadioButton( SimilarityMeasure.NORMALIZED_DIFFERENCE.getName() );
+	private final JRadioButton normalizedDifference = new JRadioButton( SimilarityMeasure.NORMALIZED_DIFFERENCE.toString() );
 
-	private final JRadioButton averageDifference = new JRadioButton( SimilarityMeasure.AVERAGE_DIFFERENCE_PER_CELL_LIFE_CYCLE.getName() );
+	private final JRadioButton averageDifference = new JRadioButton( SimilarityMeasure.AVERAGE_DIFFERENCE_PER_CELL_LIFE_CYCLE.toString() );
 
-	private final JRadioButton absoluteDifference = new JRadioButton( SimilarityMeasure.ABSOLUTE_DIFFERENCE.getName() );
+	private final JRadioButton absoluteDifference = new JRadioButton( SimilarityMeasure.ABSOLUTE_DIFFERENCE.toString() );
 
-	private final JRadioButton averageLinkage = new JRadioButton( ClusteringMethod.AVERAGE_LINKAGE.getName() );
+	private final JRadioButton averageLinkage = new JRadioButton( ClusteringMethod.AVERAGE_LINKAGE.toString() );
 
-	private final JRadioButton singleLinkage = new JRadioButton( ClusteringMethod.SINGLE_LINKAGE.getName() );
+	private final JRadioButton singleLinkage = new JRadioButton( ClusteringMethod.SINGLE_LINKAGE.toString() );
 
-	private final JRadioButton completeLinkage = new JRadioButton( ClusteringMethod.COMPLETE_LINKAGE.getName() );
+	private final JRadioButton completeLinkage = new JRadioButton( ClusteringMethod.COMPLETE_LINKAGE.toString() );
 
 	private final JButton createTagSet = new JButton( "Create tag set" );
 
