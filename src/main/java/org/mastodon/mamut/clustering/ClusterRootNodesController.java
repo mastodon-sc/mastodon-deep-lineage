@@ -2,17 +2,19 @@ package org.mastodon.mamut.clustering;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.graph.algorithm.RootFinder;
+import org.mastodon.graph.algorithm.traversal.DepthFirstIterator;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
-import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.ColorUtils;
 import org.mastodon.util.TagSetUtils;
@@ -117,12 +119,13 @@ public class ClusterRootNodesController
 			for ( BranchSpotTree tree : entry.getValue() )
 			{
 				Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), model.getGraph().vertexRef() );
-				LineageTreeUtils.callDepthFirst( model.getGraph(), rootSpot,
-						spot -> {
-							if ( spot.getTimepoint() > getCropEnd() )
-								return;
-							TagSetUtils.tagSpotAndIncomingEdges( model, spot, tagSet, tag );
-						} );
+				ModelGraph modelGraph = model.getGraph();
+				DepthFirstIterator< Spot, Link > iterator = new DepthFirstIterator<>( rootSpot, modelGraph );
+				iterator.forEachRemaining( spot -> {
+					if ( spot.getTimepoint() > getCropEnd() )
+						return;
+					TagSetUtils.tagSpotAndIncomingEdges( model, spot, tagSet, tag );
+				} );
 			}
 		}
 	}
