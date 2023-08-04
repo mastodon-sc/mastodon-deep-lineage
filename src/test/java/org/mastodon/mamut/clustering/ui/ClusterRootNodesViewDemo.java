@@ -1,7 +1,5 @@
 package org.mastodon.mamut.clustering.ui;
 
-import org.mastodon.mamut.clustering.ui.ClusterRootNodesView;
-
 public class ClusterRootNodesViewDemo
 {
 
