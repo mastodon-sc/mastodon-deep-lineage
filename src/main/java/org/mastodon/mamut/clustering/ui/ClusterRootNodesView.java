@@ -38,9 +38,9 @@ public class ClusterRootNodesView extends JFrame implements ClusterRootNodesList
 {
 	private final ClusterRootNodesController controller;
 
-	private final JRadioButton timepoint = new JRadioButton( "Timepoint" );
+	private final JRadioButton timepoint = new JRadioButton( CropCriteria.TIMEPOINT.getName() );
 
-	private final JRadioButton numberOfCells = new JRadioButton( "Number of cells" );
+	private final JRadioButton numberOfCells = new JRadioButton( CropCriteria.NUMBER_OF_CELLS.getName() );
 
 	private final JFormattedTextField start = createNumberTextField();
 
