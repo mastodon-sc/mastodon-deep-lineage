@@ -28,20 +28,7 @@ public class DendrogramUtils
 	 */
 	public static int countZerosAfterDecimalPoint( double number )
 	{
-		if ( number >= 1 )
-			return 0;
-		String numberString = String.valueOf( number );
-		int decimalIndex = numberString.indexOf( '.' );
-
-		int zeroCount = 0;
-		for ( int i = decimalIndex + 1; i < numberString.length(); i++ )
-		{
-			if ( numberString.charAt( i ) == '0' )
-				zeroCount++;
-			else
-				break;
-		}
-		return zeroCount;
+		return ( int ) Math.max( 0, -Math.floor( Math.log10( Math.abs( number ) ) + 1 ) );
 	}
 
 	/**
