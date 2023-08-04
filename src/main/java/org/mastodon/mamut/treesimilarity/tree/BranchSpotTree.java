@@ -14,7 +14,7 @@ public class BranchSpotTree implements Tree< Double >
 
 	private final Collection< Tree< Double > > children;
 
-	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint ) throws IllegalArgumentException
+	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
 	{
 		if ( branchSpot == null )
 			throw new IllegalArgumentException( "The given branchSpot is null." );
