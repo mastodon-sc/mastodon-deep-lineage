@@ -78,18 +78,12 @@ public class ClusterRootNodesControllerTest
 	 */
 	private static void addLineageTree1( final ModelGraph modelGraph )
 	{
-		Spot spot1 = modelGraph.addVertex();
-		spot1.init( 0, new double[ 3 ], 0 );
-		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 20, new double[ 3 ], 0 );
-		Spot spot3 = modelGraph.addVertex();
-		spot3.init( 20, new double[ 3 ], 0 );
-		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 30, new double[ 3 ], 0 );
-		Spot spot5 = modelGraph.addVertex();
-		spot5.init( 20, new double[ 3 ], 0 );
-		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 50, new double[ 3 ], 0 );
+		Spot spot1 = modelGraph.addVertex().init( 0, new double[ 3 ], 0 );
+		Spot spot2 = modelGraph.addVertex().init( 20, new double[ 3 ], 0 );
+		Spot spot3 = modelGraph.addVertex().init( 20, new double[ 3 ], 0 );
+		Spot spot4 = modelGraph.addVertex().init( 30, new double[ 3 ], 0 );
+		Spot spot5 = modelGraph.addVertex().init( 20, new double[ 3 ], 0 );
+		Spot spot6 = modelGraph.addVertex().init( 50, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -108,18 +102,12 @@ public class ClusterRootNodesControllerTest
 	 */
 	public static void addLineageTree2( final ModelGraph modelGraph )
 	{
-		Spot spot1 = modelGraph.addVertex();
-		spot1.init( 0, new double[ 3 ], 0 );
-		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 30, new double[ 3 ], 0 );
-		Spot spot3 = modelGraph.addVertex();
-		spot3.init( 30, new double[ 3 ], 0 );
-		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 40, new double[ 3 ], 0 );
-		Spot spot5 = modelGraph.addVertex();
-		spot5.init( 30, new double[ 3 ], 0 );
-		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 50, new double[ 3 ], 0 );
+		Spot spot1 = modelGraph.addVertex().init( 0, new double[ 3 ], 0 );
+		Spot spot2 = modelGraph.addVertex().init( 30, new double[ 3 ], 0 );
+		Spot spot3 = modelGraph.addVertex().init( 30, new double[ 3 ], 0 );
+		Spot spot4 = modelGraph.addVertex().init( 40, new double[ 3 ], 0 );
+		Spot spot5 = modelGraph.addVertex().init( 30, new double[ 3 ], 0 );
+		Spot spot6 = modelGraph.addVertex().init( 50, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -141,26 +129,16 @@ public class ClusterRootNodesControllerTest
 	 */
 	private static void addLineageTree3( final ModelGraph modelGraph )
 	{
-		Spot spot1 = modelGraph.addVertex();
-		spot1.init( 0, new double[ 3 ], 0 );
-		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 1, new double[ 3 ], 0 );
-		Spot spot3 = modelGraph.addVertex();
-		spot3.init( 1, new double[ 3 ], 0 );
-		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 2, new double[ 3 ], 0 );
-		Spot spot5 = modelGraph.addVertex();
-		spot5.init( 1, new double[ 3 ], 0 );
-		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 2, new double[ 3 ], 0 );
-		Spot spot7 = modelGraph.addVertex();
-		spot7.init( 2, new double[ 3 ], 0 );
-		Spot spot8 = modelGraph.addVertex();
-		spot8.init( 3, new double[ 3 ], 0 );
-		Spot spot9 = modelGraph.addVertex();
-		spot9.init( 2, new double[ 3 ], 0 );
-		Spot spot10 = modelGraph.addVertex();
-		spot10.init( 102, new double[ 3 ], 0 );
+		Spot spot1 = modelGraph.addVertex().init( 0, new double[ 3 ], 0 );
+		Spot spot2 = modelGraph.addVertex().init( 1, new double[ 3 ], 0 );
+		Spot spot3 = modelGraph.addVertex().init( 1, new double[ 3 ], 0 );
+		Spot spot4 = modelGraph.addVertex().init( 2, new double[ 3 ], 0 );
+		Spot spot5 = modelGraph.addVertex().init( 1, new double[ 3 ], 0 );
+		Spot spot6 = modelGraph.addVertex().init( 2, new double[ 3 ], 0 );
+		Spot spot7 = modelGraph.addVertex().init( 2, new double[ 3 ], 0 );
+		Spot spot8 = modelGraph.addVertex().init( 3, new double[ 3 ], 0 );
+		Spot spot9 = modelGraph.addVertex().init( 2, new double[ 3 ], 0 );
+		Spot spot10 = modelGraph.addVertex().init( 102, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -186,35 +164,21 @@ public class ClusterRootNodesControllerTest
 	 */
 	private static void addLineageTree4( final ModelGraph modelGraph )
 	{
-		Spot spot1 = modelGraph.addVertex();
-		spot1.init( 0, new double[ 3 ], 0 );
-		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 3, new double[ 3 ], 0 );
-		Spot spot3 = modelGraph.addVertex();
-		spot3.init( 3, new double[ 3 ], 0 );
-		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 11, new double[ 3 ], 0 );
-		Spot spot5 = modelGraph.addVertex();
-		spot5.init( 3, new double[ 3 ], 0 );
-		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 11, new double[ 3 ], 0 );
-		Spot spot7 = modelGraph.addVertex();
-		spot7.init( 11, new double[ 3 ], 0 );
-		Spot spot8 = modelGraph.addVertex();
-		spot8.init( 15, new double[ 3 ], 0 );
-		Spot spot9 = modelGraph.addVertex();
-		spot9.init( 11, new double[ 3 ], 0 );
-		Spot spot10 = modelGraph.addVertex();
-		spot10.init( 15, new double[ 3 ], 0 );
+		Spot spot1 = modelGraph.addVertex().init( 0, new double[ 3 ], 0 );
+		Spot spot2 = modelGraph.addVertex().init( 3, new double[ 3 ], 0 );
+		Spot spot3 = modelGraph.addVertex().init( 3, new double[ 3 ], 0 );
+		Spot spot4 = modelGraph.addVertex().init( 11, new double[ 3 ], 0 );
+		Spot spot5 = modelGraph.addVertex().init( 3, new double[ 3 ], 0 );
+		Spot spot6 = modelGraph.addVertex().init( 11, new double[ 3 ], 0 );
+		Spot spot7 = modelGraph.addVertex().init( 11, new double[ 3 ], 0 );
+		Spot spot8 = modelGraph.addVertex().init( 15, new double[ 3 ], 0 );
+		Spot spot9 = modelGraph.addVertex().init( 11, new double[ 3 ], 0 );
+		Spot spot10 = modelGraph.addVertex().init( 15, new double[ 3 ], 0 );
 
-		Spot spot11 = modelGraph.addVertex();
-		spot11.init( 11, new double[ 3 ], 0 );
-		Spot spot12 = modelGraph.addVertex();
-		spot12.init( 12, new double[ 3 ], 0 );
-		Spot spot13 = modelGraph.addVertex();
-		spot13.init( 11, new double[ 3 ], 0 );
-		Spot spot14 = modelGraph.addVertex();
-		spot14.init( 13, new double[ 3 ], 0 );
+		Spot spot11 = modelGraph.addVertex().init( 11, new double[ 3 ], 0 );
+		Spot spot12 = modelGraph.addVertex().init( 12, new double[ 3 ], 0 );
+		Spot spot13 = modelGraph.addVertex().init( 11, new double[ 3 ], 0 );
+		Spot spot14 = modelGraph.addVertex().init( 13, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -243,18 +207,12 @@ public class ClusterRootNodesControllerTest
 	 */
 	private static void addLineageTree5( final ModelGraph modelGraph )
 	{
-		Spot spot1 = modelGraph.addVertex();
-		spot1.init( 101, new double[ 3 ], 0 );
-		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 121, new double[ 3 ], 0 );
-		Spot spot3 = modelGraph.addVertex();
-		spot3.init( 121, new double[ 3 ], 0 );
-		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 131, new double[ 3 ], 0 );
-		Spot spot5 = modelGraph.addVertex();
-		spot5.init( 121, new double[ 3 ], 0 );
-		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 151, new double[ 3 ], 0 );
+		Spot spot1 = modelGraph.addVertex().init( 101, new double[ 3 ], 0 );
+		Spot spot2 = modelGraph.addVertex().init( 121, new double[ 3 ], 0 );
+		Spot spot3 = modelGraph.addVertex().init( 121, new double[ 3 ], 0 );
+		Spot spot4 = modelGraph.addVertex().init( 131, new double[ 3 ], 0 );
+		Spot spot5 = modelGraph.addVertex().init( 121, new double[ 3 ], 0 );
+		Spot spot6 = modelGraph.addVertex().init( 151, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -265,9 +223,7 @@ public class ClusterRootNodesControllerTest
 
 	private static void addEmptyTree( final ModelGraph modelGraph )
 	{
-
-		Spot spot1 = modelGraph.addVertex();
-		spot1.init( 0, new double[ 3 ], 0 );
+		Spot spot1 = modelGraph.addVertex().init( 0, new double[ 3 ], 0 );
 	}
 
 }
