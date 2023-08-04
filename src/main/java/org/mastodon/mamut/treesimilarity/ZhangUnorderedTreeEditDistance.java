@@ -167,7 +167,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 	public static < T > double averageDistance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
 			final BiFunction< T, T, Double > costFunction )
 	{
-		return distance( tree1, tree2, costFunction ) / ( TreeUtils.size( tree1 ) + TreeUtils.size( tree2 ) );
+		double denominator = ( double ) TreeUtils.size( tree1 ) + ( double ) TreeUtils.size( tree2 );
+		// NB: avoid division by zero. Two empty trees are considered equal. Two trees with zero distance are considered equal.
+		if ( denominator == 0 )
+			return 0;
+		return distance( tree1, tree2, costFunction ) / denominator;
 	}
 
 	private static < T > double distanceTreeToNull( Tree< T > tree2, BiFunction< T, T, Double > costFunction )
