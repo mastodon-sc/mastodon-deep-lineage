@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThrows;
 public class ZhangUnorderedTreeEditDistanceTest
 {
 
-	private final static BiFunction< Double, Double, Double > defaultCosts = ZhangUnorderedTreeEditDistance.getDefaultCostFunction();
+	private final static BiFunction< Double, Double, Double > defaultCosts = ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION;
 
 	@Test
 	public void testExceptions()

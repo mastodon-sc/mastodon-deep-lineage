@@ -63,7 +63,7 @@ public class ClusterUtils
 			int i = pair.getLeft();
 			int j = pair.getRight();
 			double distance = similarityMeasure.compute( trees.get( i ), trees.get( j ),
-					ZhangUnorderedTreeEditDistance.getDefaultCostFunction() );
+					ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION );
 			distances[ i ][ j ] = distance;
 			distances[ j ][ i ] = distance; // symmetric
 		} );

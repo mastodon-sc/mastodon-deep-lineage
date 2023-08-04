@@ -106,6 +106,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private final BiFunction< T, T, Double > costFunction;
 
 	/**
+	 * Simple default cost function that returns the absolute value of the difference between two costs,
+	 * if both costs exist or the cost value of the other, if one value is {@code null}.
+	 */
+	public static final BinaryOperator< Double > DEFAULT_COST_FUNCTION = ZhangUnorderedTreeEditDistance::defaultCostFunction;
+
+	/**
 	 * Calculates the absolute Zhang edit distance between two labeled unordered trees.
 	 *
 	 * @param tree1 Tree object representing the first tree.
@@ -211,16 +217,14 @@ public class ZhangUnorderedTreeEditDistance< T >
 		forestDistances = new HashMap<>();
 	}
 
-	public static BinaryOperator< Double > getDefaultCostFunction()
+	private static Double defaultCostFunction( Double o1, Double o2 )
 	{
-		return ( o1, o2 ) -> {
-			if ( o2 == null )
-				return o1;
-			else if ( o1 == null )
-				return o2;
-			else
-				return Math.abs( o1 - o2 );
-		};
+		if ( o2 == null )
+			return o1;
+		else if ( o1 == null )
+			return o2;
+		else
+			return Math.abs( o1 - o2 );
 	}
 
 	/**
