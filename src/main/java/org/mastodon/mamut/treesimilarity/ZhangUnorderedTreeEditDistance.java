@@ -454,18 +454,16 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		for ( int i = 0; i < forest1NumberOfChildren; i++ )
 		{
-			if ( !graph.containsVertex( i + 1 ) )
-				graph.addVertex( i + 1 );
+			Integer start = i + 1;
+			if ( !graph.containsVertex( start ) )
+				graph.addVertex( start );
 			DefaultWeightedEdge edge = graph.addEdge( 0, i + 1 );
 			graph.setEdgeWeight( edge, 0 );
 			capacities.put( edge, 1 );
 			for ( int j = 0; j < childrenForest2.size(); j++ )
 			{
 				double edgeWeight = treeDistances.get( Pair.of( childrenForest1.get( i ), childrenForest2.get( j ) ) );
-				Integer start = i + 1;
 				Integer target = forest1NumberOfChildren + j + 1;
-				if ( !graph.containsVertex( start ) )
-					graph.addVertex( start );
 				if ( !graph.containsVertex( target ) )
 					graph.addVertex( target );
 				edge = graph.addEdge( ( i + 1 ), ( forest1NumberOfChildren + j + 1 ) );

@@ -29,7 +29,7 @@ public class TreeUtilsTest
 	@Test
 	public void testSize()
 	{
-		assertThrows( IllegalArgumentException.class, () -> TreeUtils.size( null ) );
+		assertEquals( 0, TreeUtils.size( null ) );
 		assertEquals( 1, TreeUtils.size( SimpleTreeExamples.emptyTree() ) );
 		assertEquals( 3, TreeUtils.size( SimpleTreeExamples.tree1() ) );
 		assertEquals( 3, TreeUtils.size( SimpleTreeExamples.tree2() ) );

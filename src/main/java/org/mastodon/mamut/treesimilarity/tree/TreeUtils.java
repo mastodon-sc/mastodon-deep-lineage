@@ -32,6 +32,8 @@ public class TreeUtils
 	 */
 	public static < T > int size( final Tree< T > tree )
 	{
+		if ( tree == null )
+			return 0;
 		return listOfSubtrees( tree ).size();
 	}
 }

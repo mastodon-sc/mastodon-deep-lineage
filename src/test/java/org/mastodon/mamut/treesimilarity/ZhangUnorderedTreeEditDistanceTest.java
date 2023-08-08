@@ -250,6 +250,7 @@ public class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > emptyTree = SimpleTreeExamples.emptyTree();
 		Tree< Double > tree1 = SimpleTreeExamples.tree1();
 		Tree< Double > tree2 = SimpleTreeExamples.tree2();
+		assertEquals( 0d, ZhangUnorderedTreeEditDistance.normalizedDistance( null, null, defaultCosts ), 0d );
 		assertEquals( 0d, ZhangUnorderedTreeEditDistance.normalizedDistance( emptyTree, emptyTree, defaultCosts ), 0d );
 		assertEquals( 20d / 120d, ZhangUnorderedTreeEditDistance.normalizedDistance( tree1, tree2, defaultCosts ), 0d );
 	}
@@ -260,6 +261,7 @@ public class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > emptyTree = SimpleTreeExamples.emptyTree();
 		Tree< Double > tree1 = SimpleTreeExamples.tree1();
 		Tree< Double > tree2 = SimpleTreeExamples.tree2();
+		assertEquals( 0d, ZhangUnorderedTreeEditDistance.averageDistance( null, null, defaultCosts ), 0d );
 		assertEquals( 0d, ZhangUnorderedTreeEditDistance.averageDistance( emptyTree, emptyTree, defaultCosts ), 0d );
 		assertEquals( 20d / 6d, ZhangUnorderedTreeEditDistance.averageDistance( tree1, tree2, defaultCosts ), 0d );
 	}
@@ -286,5 +288,11 @@ public class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > tree1a111 = SimpleTreeExamples.tree1a111();
 		Tree< Double > tree2c2 = SimpleTreeExamples.tree2c2();
 		assertEquals( 1_654d, ZhangUnorderedTreeEditDistance.distance( tree1a111, tree2c2, defaultCosts ), 0d );
+	}
+
+	@Test
+	public void testException()
+	{
+
 	}
 }
