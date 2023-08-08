@@ -12,8 +12,15 @@ public enum CropCriteria
 		this.name = name;
 	}
 
-	@Override
-	public String toString()
+    public static CropCriteria getByName(final String name) {
+        for (final CropCriteria criteria : values())
+            if (criteria.getName().equals(name))
+                return criteria;
+
+        return null;
+    }
+
+    public String getName()
 	{
 		return name;
 	}

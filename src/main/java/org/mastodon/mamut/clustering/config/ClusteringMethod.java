@@ -21,10 +21,17 @@ public enum ClusteringMethod
 		this.linkageStrategy = linkageStrategy;
 	}
 
-	@Override
-	public String toString()
+	public String getName()
 	{
 		return name;
+	}
+
+	public static ClusteringMethod getByName(final String name) {
+		for (final ClusteringMethod method : values())
+			if (method.getName().equals(name))
+				return method;
+
+		return null;
 	}
 
 	public LinkageStrategy getLinkageStrategy()
