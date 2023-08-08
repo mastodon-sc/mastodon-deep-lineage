@@ -12,10 +12,11 @@ import org.mastodon.model.tag.TagSetStructure;
 import java.util.Collection;
 import java.util.List;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ClusterRootNodesControllerTest
 {
