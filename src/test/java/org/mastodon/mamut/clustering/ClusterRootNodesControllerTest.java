@@ -7,14 +7,15 @@ import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.model.tag.TagSetStructure;
-import org.mockito.Mockito;
 
 import java.util.Collection;
 import java.util.List;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 
 public class ClusterRootNodesControllerTest
 {
@@ -50,6 +51,8 @@ public class ClusterRootNodesControllerTest
 		Collection< Spot > tag1Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag1 );
 		Collection< Spot > tag2Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag2 );
 
+		assertNotNull( controller.getClassification() );
+		assertTrue( controller.isValidParams() );
 		assertEquals( 1, tagSets.size() );
 		assertEquals( 3, tags.size() );
 		assertEquals( "Class 1", tag0.label() );
@@ -58,6 +61,19 @@ public class ClusterRootNodesControllerTest
 		assertEquals( 9, tag0Spots.size() );
 		assertEquals( 14, tag1Spots.size() );
 		assertEquals( 12, tag2Spots.size() );
+	}
+
+	@Test
+	public void testGetFeedback()
+	{
+		Model model = new Model();
+		ClusterRootNodesController controller = new ClusterRootNodesController( model );
+		controller.setParams(
+				new ClusterRootNodesController.InputParams( CropCriteria.TIMEPOINT, 1, 0, 1 ),
+				new ClusterRootNodesController.ComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 0 )
+		);
+		assertEquals( 1, controller.getFeedback().size() );
+		assertFalse( controller.isValidParams() );
 	}
 
 	/**

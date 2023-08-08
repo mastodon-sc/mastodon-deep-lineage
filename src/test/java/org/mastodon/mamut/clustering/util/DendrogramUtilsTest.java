@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class DendrogramUtilsTest
 {
@@ -45,5 +46,8 @@ public class DendrogramUtilsTest
 		assertEquals( "1", cluster1.getName() ); // not a leaf -> not renamed
 		assertEquals( "B", cluster2.getName() );
 		assertEquals( "C", cluster3.getName() );
+
+		assertThrows( IllegalArgumentException.class, () -> DendrogramUtils.mapLeaveNames( cluster1, null ) );
+		assertThrows( IllegalArgumentException.class, () -> DendrogramUtils.mapLeaveNames( null, objectMapping ) );
 	}
 }
