@@ -32,18 +32,11 @@ public class ClusterRootNodesControllerTest
 		addLineageTree5( modelGraph );
 		addEmptyTree( modelGraph );
 
-		@SuppressWarnings( "unchecked" )
-		ClusterRootNodesListener< BranchSpotTree > listener = Mockito.mock( ClusterRootNodesListener.class );
-
 		ClusterRootNodesController controller = new ClusterRootNodesController( model );
-		controller.addListener( listener );
-		controller.setClusteringMethod( ClusteringMethod.AVERAGE_LINKAGE );
-		controller.setSimilarityMeasure( SimilarityMeasure.NORMALIZED_DIFFERENCE );
-		controller.setCropCriterion( CropCriteria.TIMEPOINT );
-		controller.setCropStart( 0 );
-		controller.setCropEnd( 100 );
-		controller.setMinCellDivisions( 1 );
-		controller.setNumberOfClasses( 3 );
+		controller.setParams(
+				new ClusterRootNodesController.InputParams( CropCriteria.TIMEPOINT, 0, 100, 1 ),
+				new ClusterRootNodesController.ComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 )
+		);
 		controller.createTagSet();
 
 		List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
@@ -57,7 +50,6 @@ public class ClusterRootNodesControllerTest
 		Collection< Spot > tag1Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag1 );
 		Collection< Spot > tag2Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag2 );
 
-		Mockito.verify( listener, Mockito.times( 1 ) ).clusterRootNodesComputed( Mockito.any(), Mockito.any(), Mockito.anyDouble() );
 		assertEquals( 1, tagSets.size() );
 		assertEquals( 3, tags.size() );
 		assertEquals( "Class 1", tag0.label() );

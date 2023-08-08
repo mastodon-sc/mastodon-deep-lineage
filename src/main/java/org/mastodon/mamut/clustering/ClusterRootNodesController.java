@@ -50,7 +50,7 @@ public class ClusterRootNodesController
 
 	private int minCellDivisions;
 
-	private final List< ClusterRootNodesListener< BranchSpotTree > > listeners = new ArrayList<>();
+	private Classification< BranchSpotTree > classification;
 
 	private boolean running = false;
 
@@ -82,11 +82,7 @@ public class ClusterRootNodesController
 	{
 		model.getBranchGraph().graphRebuilt();
 		List< BranchSpotTree > roots = getRoots();
-		Classification< BranchSpotTree > classification = classifyLineageTrees( roots );
-
-		// notify view to start dendrogram visualisation
-		listeners.forEach( listener -> listener.clusterRootNodesComputed( classification.getAlgorithmResult(),
-				classification.getObjectMapping(), classification.getCutoff() ) );
+		classification = classifyLineageTrees( roots );
 
 		Collection< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
 		applyClassification( classification, tagsAndColors );
@@ -94,16 +90,17 @@ public class ClusterRootNodesController
 
 	private Classification< BranchSpotTree > classifyLineageTrees( List< BranchSpotTree > roots )
 	{
-		double[][] distances = ClusterUtils.getDistanceMatrix( new ArrayList<>( roots ), getSimilarityMeasure() );
+		double[][] distances = ClusterUtils.getDistanceMatrix( new ArrayList<>( roots ), similarityMeasure );
 		BranchSpotTree[] rootBranchSpots = roots.toArray( new BranchSpotTree[ 0 ] );
 		return ClusterUtils.getClassificationByClassCount( rootBranchSpots, distances,
-				getClusteringMethod().getLinkageStrategy(), getNumberOfClasses() );
+				clusteringMethod.getLinkageStrategy(), numberOfClasses
+		);
 	}
 
 	private Collection< Pair< String, Integer > > createTagsAndColors()
 	{
 		Collection< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
-		for ( int i = 0; i < getNumberOfClasses(); i++ )
+		for ( int i = 0; i < numberOfClasses; i++ )
 			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), ColorUtils.GLASBEY[ i + 1 ].getRGB() ) );
 		return tagsAndColors;
 	}
@@ -122,7 +119,7 @@ public class ClusterRootNodesController
 				ModelGraph modelGraph = model.getGraph();
 				DepthFirstIterator< Spot, Link > iterator = new DepthFirstIterator<>( rootSpot, modelGraph );
 				iterator.forEachRemaining( spot -> {
-					if ( spot.getTimepoint() > getCropEnd() )
+					if ( spot.getTimepoint() > cropEnd )
 						return;
 					TagSetUtils.tagSpotAndIncomingEdges( model, spot, tagSet, tag );
 				} );
@@ -139,8 +136,8 @@ public class ClusterRootNodesController
 			BranchSpot rootBranchSpot = model.getBranchGraph().getBranchVertex( root, model.getBranchGraph().vertexRef() );
 			try
 			{
-				BranchSpotTree branchSpotTree = new BranchSpotTree( rootBranchSpot, getCropEnd() );
-				int minTreeSize = 2 * getMinCellDivisions() + 1;
+				BranchSpotTree branchSpotTree = new BranchSpotTree( rootBranchSpot, cropEnd );
+				int minTreeSize = 2 * minCellDivisions + 1;
 				if ( TreeUtils.size( branchSpotTree ) < minTreeSize )
 					continue;
 				trees.add( branchSpotTree );
@@ -155,97 +152,78 @@ public class ClusterRootNodesController
 
 	private void setDefaults()
 	{
-		setCropCriterion( CropCriteria.TIMEPOINT );
-		setSimilarityMeasure( SimilarityMeasure.NORMALIZED_DIFFERENCE );
-		setClusteringMethod( ClusteringMethod.AVERAGE_LINKAGE );
-		cropStart = 0;
-		cropEnd = 0;
-		numberOfClasses = 5;
-		minCellDivisions = 1;
+		setParams(
+				new InputParams( CropCriteria.TIMEPOINT, 0, 0, 1 ),
+				new ComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 5 )
+		);
 	}
 
-	public void setCropCriterion( final CropCriteria cropCriterion )
+	public void setParams( final InputParams inputParams, final ComputeParams computeParams )
 	{
-		if ( this.cropCriterion != null && this.cropCriterion.equals( cropCriterion ) )
-			return;
-		this.cropCriterion = cropCriterion;
-		resetStartEnd();
+		cropCriterion = inputParams.cropCriterion;
+		cropStart = inputParams.cropStart;
+		cropEnd = inputParams.cropEnd;
+		minCellDivisions = inputParams.minCellDivisions;
+		similarityMeasure = computeParams.similarityMeasure;
+		clusteringMethod = computeParams.clusteringMethod;
+		numberOfClasses = computeParams.numberOfClasses;
 	}
 
-	private void resetStartEnd()
+	public Classification< BranchSpotTree > getClassification()
 	{
-		setCropStart( 0 );
-		setCropEnd( 0 );
-		listeners.forEach( listener -> listener.cropCriterionChanged( getCropStart(), getCropEnd() ) );
+		return classification;
 	}
 
-	public void setSimilarityMeasure( final SimilarityMeasure similarityMeasure )
+	public List< String > getFeedback()
 	{
-		this.similarityMeasure = similarityMeasure;
+		List< String > feedback = new ArrayList<>();
+		if ( cropStart > cropEnd )
+			feedback.add( "Crop start must be smaller than crop end" );
+		// TODO: include start, end and min cell divisions in this feedback
+		//if ( numberOfClasses > RootFinder.getRoots( model.getGraph() ).size() )
+		//	feedback.add( "Number of classes must not be larger than number of roots" );
+		return feedback;
 	}
 
-	public void setClusteringMethod( final ClusteringMethod clusteringMethod )
+	public boolean isValidParams()
 	{
-		this.clusteringMethod = clusteringMethod;
+		return getFeedback().isEmpty();
 	}
 
-	public void setCropStart( final int cropStart )
+	public static class InputParams
 	{
-		this.cropStart = cropStart;
+		private final CropCriteria cropCriterion;
+
+		private final int cropStart;
+
+		private final int cropEnd;
+
+		private final int minCellDivisions;
+
+		public InputParams( final CropCriteria cropCriterion, final int cropStart, final int cropEnd, final int minCellDivisions )
+		{
+			this.cropCriterion = cropCriterion;
+			this.cropStart = cropStart;
+			this.cropEnd = cropEnd;
+			this.minCellDivisions = minCellDivisions;
+		}
 	}
 
-	public void setCropEnd( final int cropEnd )
+	public static class ComputeParams
 	{
-		this.cropEnd = cropEnd;
-	}
+		private final SimilarityMeasure similarityMeasure;
 
-	public void setNumberOfClasses( final int numberOfClasses )
-	{
-		this.numberOfClasses = numberOfClasses;
-	}
+		private final ClusteringMethod clusteringMethod;
 
-	public void setMinCellDivisions( final int minCellDivisions )
-	{
-		this.minCellDivisions = minCellDivisions;
-	}
+		private final int numberOfClasses;
 
-	public CropCriteria getCropCriterion()
-	{
-		return cropCriterion;
-	}
-
-	public SimilarityMeasure getSimilarityMeasure()
-	{
-		return similarityMeasure;
-	}
-
-	public ClusteringMethod getClusteringMethod()
-	{
-		return clusteringMethod;
-	}
-
-	public int getCropStart()
-	{
-		return cropStart;
-	}
-
-	public int getCropEnd()
-	{
-		return cropEnd;
-	}
-
-	public int getNumberOfClasses()
-	{
-		return numberOfClasses;
-	}
-
-	public int getMinCellDivisions()
-	{
-		return minCellDivisions;
-	}
-
-	public void addListener( final ClusterRootNodesListener< BranchSpotTree > listener )
-	{
-		listeners.add( listener );
+		public ComputeParams(
+				final SimilarityMeasure similarityMeasure, final ClusteringMethod clusteringMethod, final int numberOfClasses
+		)
+		{
+			this.similarityMeasure = similarityMeasure;
+			this.clusteringMethod = clusteringMethod;
+			this.numberOfClasses = numberOfClasses;
+		}
 	}
 }
