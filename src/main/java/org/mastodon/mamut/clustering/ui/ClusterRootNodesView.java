@@ -74,15 +74,15 @@ public class ClusterRootNodesView extends InteractiveCommand
 	private boolean showDendrogram;
 
 	@SuppressWarnings("unused")
-	@Parameter(visibility = ItemVisibility.MESSAGE, required = false)
+	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false)
 	private String paramFeedback;
 
 	@SuppressWarnings("unused")
-	@Parameter(visibility = ItemVisibility.MESSAGE, required = false)
+	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false)
 	private String computeFeedback;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Create tag set", callback = "createTagSet")
+	@Parameter(label = "Create tag set", callback = "createTagSet", persist = false)
 	private Button createTagSet;
 
 	/**
