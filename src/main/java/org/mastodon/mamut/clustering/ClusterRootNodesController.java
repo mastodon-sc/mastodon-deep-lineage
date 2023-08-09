@@ -159,9 +159,11 @@ public class ClusterRootNodesController
 		cropEnd = inputParams.cropEnd;
 		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_CELLS ) )
 		{
+			logger.debug( "Crop criterion cells, crop start cells: {}, crop end cells: {}", cropStart, cropEnd );
 			cropStart = LineageTreeUtils.getFirstTimepointWithNSpots( model, inputParams.cropStart );
 			cropEnd = LineageTreeUtils.getFirstTimepointWithNSpots( model, inputParams.cropEnd );
 		}
+		logger.debug( "Crop criterion {}, start timepoint: {}, crop end timepoint: {}", cropCriterion, cropStart, cropEnd );
 		minCellDivisions = inputParams.minCellDivisions;
 		similarityMeasure = computeParams.similarityMeasure;
 		clusteringMethod = computeParams.clusteringMethod;
@@ -186,7 +188,7 @@ public class ClusterRootNodesController
 		int roots = getRoots().size();
 		if ( numberOfClasses > roots )
 		{
-			String message = "Number of classes (" + numberOfClasses + ") must not be larger than number of roots (" + roots + ")";
+			String message = "Number of classes (" + numberOfClasses + ") must not be larger than number of valid roots (" + roots + ")";
 			feedback.add( message );
 			logger.debug( message );
 		}
