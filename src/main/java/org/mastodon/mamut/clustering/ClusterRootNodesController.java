@@ -66,7 +66,7 @@ public class ClusterRootNodesController
 		if ( running )
 			return;
 		if ( !isValidParams() )
-			return;
+			throw new IllegalArgumentException( "Invalid parameters." );
 		ReentrantReadWriteLock.WriteLock writeLock = model.getGraph().getLock().writeLock();
 		writeLock.lock();
 		try
