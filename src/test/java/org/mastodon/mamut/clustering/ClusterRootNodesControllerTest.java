@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
@@ -16,6 +17,7 @@ import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public class ClusterRootNodesControllerTest
@@ -67,14 +69,15 @@ public class ClusterRootNodesControllerTest
 	@Test
 	public void testGetFeedback()
 	{
-		Model model = new Model();
-		ClusterRootNodesController controller = new ClusterRootNodesController( model );
+		ExampleGraph2 exampleGraph = new ExampleGraph2();
+		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel() );
 		controller.setParams(
-				new ClusterRootNodesController.InputParams( CropCriteria.TIMEPOINT, 1, 0, 1 ),
+				new ClusterRootNodesController.InputParams( CropCriteria.NUMBER_OF_CELLS, 1, 0, 1 ),
 				new ClusterRootNodesController.ComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 1 )
 		);
 		assertEquals( 2, controller.getFeedback().size() );
 		assertFalse( controller.isValidParams() );
+		assertThrows( IllegalArgumentException.class, controller::createTagSet );
 	}
 
 	/**
