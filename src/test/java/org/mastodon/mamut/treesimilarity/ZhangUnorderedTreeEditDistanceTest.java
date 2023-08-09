@@ -15,6 +15,7 @@ public class ZhangUnorderedTreeEditDistanceTest
 
 	private final static BiFunction< Double, Double, Double > defaultCosts = ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION;
 
+	@SuppressWarnings("all")
 	@Test
 	public void testExceptions()
 	{
@@ -288,11 +289,5 @@ public class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > tree1a111 = SimpleTreeExamples.tree1a111();
 		Tree< Double > tree2c2 = SimpleTreeExamples.tree2c2();
 		assertEquals( 1_654d, ZhangUnorderedTreeEditDistance.distance( tree1a111, tree2c2, defaultCosts ), 0d );
-	}
-
-	@Test
-	public void testException()
-	{
-
 	}
 }
