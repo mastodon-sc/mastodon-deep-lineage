@@ -4,8 +4,6 @@ import org.mastodon.mamut.clustering.ClusterRootNodesController;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
-import org.mastodon.mamut.clustering.util.Classification;
-import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 import org.scijava.ItemVisibility;
 import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
@@ -101,7 +99,8 @@ public class ClusterRootNodesView extends InteractiveCommand
 		controller.setParams(
 				new InputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions ),
 				new ComputeParams(
-						SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses )
+						SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses ),
+				showDendrogram
 		);
 		if ( controller.isValidParams() )
 			paramFeedback = "<html><body><font color=\"green\">Parameters are valid.</font></body></html>";
@@ -120,7 +119,6 @@ public class ClusterRootNodesView extends InteractiveCommand
 			try
 			{
 				controller.createTagSet();
-				showDendrogram( controller.getClassification() );
 				computeFeedback = "<html><body><font color=\"green\">Tag set created.</font></body></html>";
 			}
 			catch ( IllegalArgumentException e )
@@ -128,17 +126,5 @@ public class ClusterRootNodesView extends InteractiveCommand
 				computeFeedback = "<html><body><font color=\"red\">" + e.getMessage() + "</font></body></html>";
 			}
 		}
-	}
-
-	public void showDendrogram( Classification< BranchSpotTree > classification )
-	{
-		if ( !showDendrogram )
-			return;
-		DendrogramView< BranchSpotTree > dendrogramView =
-				new DendrogramView<>(
-						classification.getAlgorithmResult(), classification.getObjectMapping(), classification.getCutoff(),
-						"Dendrogram of hierarchical clustering of lineages"
-				);
-		dendrogramView.show();
 	}
 }

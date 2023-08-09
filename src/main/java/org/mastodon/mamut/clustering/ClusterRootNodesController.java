@@ -6,6 +6,7 @@ import org.mastodon.graph.algorithm.traversal.DepthFirstIterator;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
+import org.mastodon.mamut.clustering.ui.DendrogramView;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
 import org.mastodon.mamut.model.Link;
@@ -53,6 +54,8 @@ public class ClusterRootNodesController
 
 	private boolean running = false;
 
+	private boolean showDendrogram = true;
+
 	public ClusterRootNodesController( final Model model )
 	{
 		this.model = model;
@@ -85,6 +88,18 @@ public class ClusterRootNodesController
 
 		Collection< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
 		applyClassification( classification, tagsAndColors );
+		if ( showDendrogram )
+			showDendrogram();
+	}
+
+	private void showDendrogram()
+	{
+		DendrogramView< BranchSpotTree > dendrogramView =
+				new DendrogramView<>(
+						classification.getAlgorithmResult(), classification.getObjectMapping(), classification.getCutoff(),
+						"Dendrogram of hierarchical clustering of lineages"
+				);
+		dendrogramView.show();
 	}
 
 	private Classification< BranchSpotTree > classifyLineageTrees( List< BranchSpotTree > roots )
@@ -152,7 +167,7 @@ public class ClusterRootNodesController
 		return trees;
 	}
 
-	public void setParams( final InputParams inputParams, final ComputeParams computeParams )
+	public void setParams( final InputParams inputParams, final ComputeParams computeParams, boolean showDendrogram )
 	{
 		CropCriteria cropCriterion = inputParams.cropCriterion;
 		cropStart = inputParams.cropStart;
@@ -168,11 +183,7 @@ public class ClusterRootNodesController
 		similarityMeasure = computeParams.similarityMeasure;
 		clusteringMethod = computeParams.clusteringMethod;
 		numberOfClasses = computeParams.numberOfClasses;
-	}
-
-	public Classification< BranchSpotTree > getClassification()
-	{
-		return classification;
+		this.showDendrogram = showDendrogram;
 	}
 
 	public List< String > getFeedback()

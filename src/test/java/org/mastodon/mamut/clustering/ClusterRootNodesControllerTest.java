@@ -15,7 +15,6 @@ import java.util.List;
 
 
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -39,7 +38,10 @@ public class ClusterRootNodesControllerTest
 		ClusterRootNodesController controller = new ClusterRootNodesController( model );
 		controller.setParams(
 				new ClusterRootNodesController.InputParams( CropCriteria.TIMEPOINT, 0, 100, 1 ),
-				new ClusterRootNodesController.ComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 )
+				new ClusterRootNodesController.ComputeParams(
+						SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 ),
+				false
+
 		);
 		controller.createTagSet();
 
@@ -54,7 +56,6 @@ public class ClusterRootNodesControllerTest
 		Collection< Spot > tag1Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag1 );
 		Collection< Spot > tag2Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag2 );
 
-		assertNotNull( controller.getClassification() );
 		assertTrue( controller.isValidParams() );
 		assertEquals( 1, tagSets.size() );
 		assertEquals( 3, tags.size() );
@@ -73,7 +74,9 @@ public class ClusterRootNodesControllerTest
 		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel() );
 		controller.setParams(
 				new ClusterRootNodesController.InputParams( CropCriteria.NUMBER_OF_CELLS, 1, 0, 1 ),
-				new ClusterRootNodesController.ComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 1 )
+				new ClusterRootNodesController.ComputeParams(
+						SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 1 ),
+				false
 		);
 		assertEquals( 2, controller.getFeedback().size() );
 		assertFalse( controller.isValidParams() );
