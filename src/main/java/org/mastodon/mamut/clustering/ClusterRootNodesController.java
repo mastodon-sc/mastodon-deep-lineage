@@ -64,6 +64,8 @@ public class ClusterRootNodesController
 	{
 		if ( running )
 			return;
+		if ( !isValidParams() )
+			return;
 		ReentrantReadWriteLock.WriteLock writeLock = model.getGraph().getLock().writeLock();
 		writeLock.lock();
 		try
