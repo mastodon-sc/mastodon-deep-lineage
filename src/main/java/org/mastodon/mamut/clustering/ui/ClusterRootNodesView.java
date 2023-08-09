@@ -65,7 +65,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 	private String clusteringMethod;
 
 	@SuppressWarnings("unused")
-	@Parameter(choices = "Cell life")
+	@Parameter(label = "Feature", choices = "Cell lifetime")
 	private String cellLifeTime;
 	// NB: dynamic choices: https://github.com/imagej/tutorials/blob/c78764438d774295d00fc8a4273e4c4f25c8ad46/maven-projects/dynamic-commands/src/main/java/DynamicCallbacks.java
 
