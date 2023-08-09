@@ -72,6 +72,38 @@ public class LineageTreeUtils {
 	}
 
 	/**
+	 * Gets the minimum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * @param model the {@link Model}
+	 * @return the timepoint
+	 */
+	public static int getMinTimepoint( final Model model )
+	{
+		PoolCollectionWrapper< Spot > spots = model.getGraph().vertices();
+		int minTimepoint = Integer.MAX_VALUE;
+		for ( Spot spot : spots )
+			if ( spot.getTimepoint() < minTimepoint )
+				minTimepoint = spot.getTimepoint();
+
+		return minTimepoint;
+	}
+
+	/**
+	 * Gets the maximum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
+	 * @param model the {@link Model}
+	 * @return the timepoint
+	 */
+	public static int getMaxTimepoint( final Model model )
+	{
+		PoolCollectionWrapper< Spot > spots = model.getGraph().vertices();
+		int maxTimepoint = Integer.MIN_VALUE;
+		for ( Spot spot : spots )
+			if ( spot.getTimepoint() > maxTimepoint )
+				maxTimepoint = spot.getTimepoint();
+
+		return maxTimepoint;
+	}
+
+	/**
 	 * Gets the first time point that has at least the given number of spots ({@code numberOfSpots})
 	 * by iterating through the given spatio-temporal index ({@code spotSpatioTemporalIndex})
 	 * from the given minimum time point ({@code minTimePoint}) to the given maximum time point ({@code maxTimePoint}).
