@@ -15,6 +15,7 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
+import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.ColorUtils;
 import org.mastodon.util.TagSetUtils;
@@ -167,6 +168,11 @@ public class ClusterRootNodesController
 		cropCriterion = inputParams.cropCriterion;
 		cropStart = inputParams.cropStart;
 		cropEnd = inputParams.cropEnd;
+		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_CELLS ) )
+		{
+			cropStart = LineageTreeUtils.getFirstTimepointWithNSpots( model, inputParams.cropStart );
+			cropEnd = LineageTreeUtils.getFirstTimepointWithNSpots( model, inputParams.cropEnd );
+		}
 		minCellDivisions = inputParams.minCellDivisions;
 		similarityMeasure = computeParams.similarityMeasure;
 		clusteringMethod = computeParams.clusteringMethod;
