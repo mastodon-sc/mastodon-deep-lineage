@@ -112,7 +112,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 	}
 
 	@SuppressWarnings("unused")
-	public void createTagSet()
+	private void createTagSet()
 	{
 		if ( controller.isValidParams() )
 		{
