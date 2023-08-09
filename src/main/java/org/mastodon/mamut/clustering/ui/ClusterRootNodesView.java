@@ -12,6 +12,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.Button;
 
+import javax.swing.SwingUtilities;
+
 import static org.mastodon.mamut.clustering.ClusterRootNodesController.ComputeParams;
 import static org.mastodon.mamut.clustering.ClusterRootNodesController.InputParams;
 
@@ -91,7 +93,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 	@Override
 	public void run()
 	{
-		update();
+		SwingUtilities.invokeLater( this::update );
 	}
 
 	private void update()
