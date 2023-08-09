@@ -71,9 +71,9 @@ public class ClusterRootNodesControllerTest
 		ClusterRootNodesController controller = new ClusterRootNodesController( model );
 		controller.setParams(
 				new ClusterRootNodesController.InputParams( CropCriteria.TIMEPOINT, 1, 0, 1 ),
-				new ClusterRootNodesController.ComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 0 )
+				new ClusterRootNodesController.ComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 1 )
 		);
-		assertEquals( 1, controller.getFeedback().size() );
+		assertEquals( 2, controller.getFeedback().size() );
 		assertFalse( controller.isValidParams() );
 	}
 
