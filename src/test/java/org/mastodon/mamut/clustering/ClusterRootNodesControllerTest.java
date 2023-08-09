@@ -235,7 +235,7 @@ public class ClusterRootNodesControllerTest
 
 	private static void addEmptyTree( final ModelGraph modelGraph )
 	{
-		Spot spot1 = modelGraph.addVertex().init( 0, new double[ 3 ], 0 );
+		modelGraph.addVertex().init( 0, new double[ 3 ], 0 );
 	}
 
 }
