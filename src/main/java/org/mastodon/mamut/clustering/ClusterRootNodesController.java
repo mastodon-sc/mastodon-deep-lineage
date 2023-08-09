@@ -121,6 +121,8 @@ public class ClusterRootNodesController
 				ModelGraph modelGraph = model.getGraph();
 				DepthFirstIterator< Spot, Link > iterator = new DepthFirstIterator<>( rootSpot, modelGraph );
 				iterator.forEachRemaining( spot -> {
+					if ( spot.getTimepoint() < cropStart )
+						return;
 					if ( spot.getTimepoint() > cropEnd )
 						return;
 					TagSetUtils.tagSpotAndIncomingEdges( model, spot, tagSet, tag );
