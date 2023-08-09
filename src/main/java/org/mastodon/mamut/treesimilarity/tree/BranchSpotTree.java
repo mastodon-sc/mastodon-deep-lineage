@@ -27,6 +27,8 @@ public class BranchSpotTree implements Tree< Double >
 		for ( BranchLink branchLink : branchSpot.outgoingEdges() )
 		{
 			BranchSpot child = branchLink.getTarget();
+			if ( branchSpot.equals( child ) )
+				continue;
 			if ( child.getFirstTimePoint() <= this.endTimepoint )
 				this.children.add( new BranchSpotTree( child, this.endTimepoint ) );
 		}
