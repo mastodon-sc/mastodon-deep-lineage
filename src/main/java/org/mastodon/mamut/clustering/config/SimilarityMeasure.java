@@ -5,6 +5,7 @@ import org.apache.commons.lang3.function.TriFunction;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
+import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 
@@ -32,7 +33,7 @@ public enum SimilarityMeasure
 			if (measure.getName().equals(name))
 				return measure;
 
-		return null;
+		throw new NoSuchElementException();
 	}
 
 	public double compute( Tree< Double > tree1, Tree< Double > tree2, BinaryOperator< Double > costFunction )

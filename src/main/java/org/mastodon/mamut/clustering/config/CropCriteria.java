@@ -1,5 +1,7 @@
 package org.mastodon.mamut.clustering.config;
 
+import java.util.NoSuchElementException;
+
 public enum CropCriteria
 {
 	TIMEPOINT( "Timepoint" ),
@@ -17,7 +19,7 @@ public enum CropCriteria
             if (criteria.getName().equals(name))
                 return criteria;
 
-        return null;
+		throw new NoSuchElementException();
     }
 
     public String getName()

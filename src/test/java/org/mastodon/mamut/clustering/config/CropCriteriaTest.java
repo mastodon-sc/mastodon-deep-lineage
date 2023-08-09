@@ -2,6 +2,8 @@ package org.mastodon.mamut.clustering.config;
 
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
+
 import static org.junit.Assert.*;
 
 public class CropCriteriaTest
@@ -17,5 +19,6 @@ public class CropCriteriaTest
 	public void testGetByName()
 	{
 		assertEquals( CropCriteria.TIMEPOINT, CropCriteria.getByName( "Timepoint" ) );
+		assertThrows( NoSuchElementException.class, () -> CropCriteria.getByName( "foo" ) );
 	}
 }

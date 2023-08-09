@@ -2,6 +2,8 @@ package org.mastodon.mamut.clustering.config;
 
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
+
 import static org.junit.Assert.*;
 
 public class SimilarityMeasureTest
@@ -17,6 +19,7 @@ public class SimilarityMeasureTest
 	public void testGetByName()
 	{
 		assertEquals( SimilarityMeasure.NORMALIZED_DIFFERENCE, SimilarityMeasure.getByName( "Normalized difference" ) );
+		assertThrows( NoSuchElementException.class, () -> SimilarityMeasure.getByName( "foo" ) );
 	}
 
 }

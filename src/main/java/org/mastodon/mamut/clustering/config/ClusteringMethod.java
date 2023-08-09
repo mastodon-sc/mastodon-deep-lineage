@@ -5,6 +5,8 @@ import com.apporiented.algorithm.clustering.CompleteLinkageStrategy;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
 import com.apporiented.algorithm.clustering.SingleLinkageStrategy;
 
+import java.util.NoSuchElementException;
+
 public enum ClusteringMethod
 {
 	AVERAGE_LINKAGE( "Average linkage", new AverageLinkageStrategy() ),
@@ -31,7 +33,7 @@ public enum ClusteringMethod
 			if (method.getName().equals(name))
 				return method;
 
-		return null;
+		throw new NoSuchElementException();
 	}
 
 	public LinkageStrategy getLinkageStrategy()
