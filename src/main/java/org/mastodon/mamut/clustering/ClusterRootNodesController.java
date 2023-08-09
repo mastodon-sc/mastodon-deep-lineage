@@ -56,7 +56,6 @@ public class ClusterRootNodesController
 	public ClusterRootNodesController( final Model model )
 	{
 		this.model = model;
-		setDefaults();
 	}
 
 	public void createTagSet()
@@ -64,7 +63,7 @@ public class ClusterRootNodesController
 		if ( running )
 			return;
 		if ( !isValidParams() )
-			throw new IllegalArgumentException( "Invalid parameters." );
+			throw new IllegalArgumentException( "Invalid parameters settings." );
 		ReentrantReadWriteLock.WriteLock writeLock = model.getGraph().getLock().writeLock();
 		writeLock.lock();
 		try
@@ -151,14 +150,6 @@ public class ClusterRootNodesController
 			}
 		}
 		return trees;
-	}
-
-	private void setDefaults()
-	{
-		setParams(
-				new InputParams( CropCriteria.TIMEPOINT, 0, 0, 1 ),
-				new ComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 5 )
-		);
 	}
 
 	public void setParams( final InputParams inputParams, final ComputeParams computeParams )
