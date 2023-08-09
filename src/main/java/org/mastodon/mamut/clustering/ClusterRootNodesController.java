@@ -37,8 +37,6 @@ public class ClusterRootNodesController
 
 	private final Model model;
 
-	private CropCriteria cropCriterion = CropCriteria.TIMEPOINT;
-
 	private SimilarityMeasure similarityMeasure = SimilarityMeasure.NORMALIZED_DIFFERENCE;
 
 	private ClusteringMethod clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE;
@@ -165,7 +163,7 @@ public class ClusterRootNodesController
 
 	public void setParams( final InputParams inputParams, final ComputeParams computeParams )
 	{
-		cropCriterion = inputParams.cropCriterion;
+		CropCriteria cropCriterion = inputParams.cropCriterion;
 		cropStart = inputParams.cropStart;
 		cropEnd = inputParams.cropEnd;
 		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_CELLS ) )
