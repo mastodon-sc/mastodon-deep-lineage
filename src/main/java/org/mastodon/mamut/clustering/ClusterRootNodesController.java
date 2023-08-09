@@ -146,7 +146,7 @@ public class ClusterRootNodesController
 			}
 			catch ( IllegalArgumentException e )
 			{
-				logger.debug( "Could not create tree for root {}. Message: {}", root, e.getMessage() );
+				logger.trace( "Could not create tree for root {}. Message: {}", root, e.getMessage() );
 			}
 		}
 		return trees;
