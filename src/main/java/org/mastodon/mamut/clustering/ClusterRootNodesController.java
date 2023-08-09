@@ -188,10 +188,10 @@ public class ClusterRootNodesController
 	{
 		List< String > feedback = new ArrayList<>();
 		if ( cropStart > cropEnd )
-			feedback.add( "Crop start must be smaller than crop end" );
-		// TODO: include start, end and min cell divisions in this feedback
-		//if ( numberOfClasses > RootFinder.getRoots( model.getGraph() ).size() )
-		//	feedback.add( "Number of classes must not be larger than number of roots" );
+			feedback.add( "Crop start (timepoint=" + cropStart + ") must be smaller than crop end (timepoint=" + cropEnd + ")" );
+		int roots = getRoots().size();
+		if ( numberOfClasses > roots )
+			feedback.add( "Number of classes (" + numberOfClasses + ") must not be larger than number of roots (" + roots + ")" );
 		return feedback;
 	}
 
