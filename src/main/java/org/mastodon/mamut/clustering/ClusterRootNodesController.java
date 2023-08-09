@@ -178,7 +178,7 @@ public class ClusterRootNodesController
 	public List< String > getFeedback()
 	{
 		List< String > feedback = new ArrayList<>();
-		if ( cropStart > cropEnd )
+		if ( cropStart >= cropEnd )
 		{
 			String message = "Crop start (timepoint=" + cropStart + ") must be smaller than crop end (timepoint=" + cropEnd + ")";
 			feedback.add( message );
