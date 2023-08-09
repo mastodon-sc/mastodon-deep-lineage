@@ -5,10 +5,9 @@ import org.mastodon.mamut.clustering.ui.ClusterRootNodesView;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.plugin.MamutPluginAppModel;
-import org.scijava.Context;
 import org.scijava.command.CommandService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.UIService;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
@@ -29,6 +28,9 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 	private final AbstractNamedAction cluserRootNodesAction;
 
 	private Model model;
+
+	@Parameter
+	private CommandService commandService;
 
 	public ClusterRootNodesPlugin()
 	{
@@ -55,13 +57,6 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 
 	private void clusterRootNodes()
 	{
-		try (Context context = new Context())
-		{
-			UIService ui = context.service( UIService.class );
-			CommandService cmd = context.service( CommandService.class );
-
-			ui.showUI();
-			cmd.run( ClusterRootNodesView.class, true, "controller", new ClusterRootNodesController( model ) );
-		}
+		commandService.run( ClusterRootNodesView.class, true, "controller", new ClusterRootNodesController( model ) );
 	}
 }
