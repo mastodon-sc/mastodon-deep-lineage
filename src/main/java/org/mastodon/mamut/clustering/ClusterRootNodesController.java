@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ClusterRootNodesController
@@ -92,12 +93,25 @@ public class ClusterRootNodesController
 			showDendrogram();
 	}
 
+	private String getParameters()
+	{
+		StringJoiner joiner = new StringJoiner( ", " );
+		joiner.add( "Crop start: " + cropStart );
+		joiner.add( "Crop end: " + cropEnd );
+		joiner.add( "Number of classes: " + numberOfClasses );
+		joiner.add( "Minimum cell divisions: " + minCellDivisions );
+		joiner.add( "Similarity measure: " + similarityMeasure.getName() );
+		joiner.add( "Clustering method: " + clusteringMethod.getName() );
+		return joiner.toString();
+	}
+
 	private void showDendrogram()
 	{
+
+		String header = "<html><body>Dendrogram of hierarchical clustering of lineages<br>" + getParameters() + "</body></html>";
 		DendrogramView< BranchSpotTree > dendrogramView =
-				new DendrogramView<>(
-						classification.getAlgorithmResult(), classification.getObjectMapping(), classification.getCutoff(),
-						"Dendrogram of hierarchical clustering of lineages"
+				new DendrogramView<>( classification.getAlgorithmResult(), classification.getObjectMapping(), classification.getCutoff(),
+						header
 				);
 		dendrogramView.show();
 	}
