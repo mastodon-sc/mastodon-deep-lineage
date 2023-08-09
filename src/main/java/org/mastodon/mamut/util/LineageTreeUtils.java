@@ -5,11 +5,12 @@ import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
+import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.spatial.SpatioTemporalIndex;
+import org.mastodon.pool.PoolCollectionWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -105,23 +106,22 @@ public class LineageTreeUtils {
 
 	/**
 	 * Gets the first time point that has at least the given number of spots ({@code numberOfSpots})
-	 * by iterating through the given spatio-temporal index ({@code spotSpatioTemporalIndex})
-	 * from the given minimum time point ({@code minTimePoint}) to the given maximum time point ({@code maxTimePoint}).
+	 * by iterating through the {@link org.mastodon.spatial.SpatioTemporalIndex} of the given {@link Model}.
 	 *
-	 * @param spotSpatioTemporalIndex the index to search in
-	 * @param minTimePoint the minimum time point to search in (inclusive)
-	 * @param maxTimePoint the maximum time point to search in (inclusive)
+	 * @param model the {@link Model} to search in
 	 * @param numberOfSpots the number of spots to search for
-	 * @return the first time point with the given number of spots (or more)
-	 * @throws NoSuchElementException if no time point with the given number of spots (or more) exists
+	 * @return the first time point with at least the given number of spots
+	 * @throws NoSuchElementException if no time point with at least the given number of spots exists
 	 */
-	public static int getTimePointWithNSpots( @Nonnull SpatioTemporalIndex< Spot > spotSpatioTemporalIndex,
-			int minTimePoint, int maxTimePoint, int numberOfSpots )
+	public static int getFirstTimepointWithNSpots( final Model model, final int numberOfSpots )
 	{
-		for ( int timePoint = minTimePoint; timePoint <= maxTimePoint; timePoint++ )
-			if ( spotSpatioTemporalIndex.getSpatialIndex( timePoint ).size() >= numberOfSpots )
-				return timePoint;
+		int minTimepoint = getMinTimepoint( model );
+		int maxTimepoint = getMaxTimepoint( model );
+		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
+			if ( model.getSpatioTemporalIndex().getSpatialIndex( timepoint ).size() >= numberOfSpots )
+				return timepoint;
 		throw new NoSuchElementException(
-				"No time point with at least " + numberOfSpots + " spots in the range [" + minTimePoint + ", " + maxTimePoint + "]." );
+				"No time point with at least " + numberOfSpots + " spots in the range [minTimepoint=" + minTimepoint + ", maxTimepoint="
+						+ maxTimepoint + "]." );
 	}
 }
