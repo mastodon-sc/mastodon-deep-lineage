@@ -83,7 +83,6 @@ public class ClusterRootNodesController
 
 	private void runClassification()
 	{
-		model.getBranchGraph().graphRebuilt();
 		List< BranchSpotTree > roots = getRoots();
 		classification = classifyLineageTrees( roots );
 
@@ -134,6 +133,7 @@ public class ClusterRootNodesController
 
 	private List< BranchSpotTree > getRoots()
 	{
+		model.getBranchGraph().graphRebuilt();
 		Set< Spot > roots = RootFinder.getRoots( model.getGraph() );
 		List< BranchSpotTree > trees = new ArrayList<>();
 		for ( Spot root : roots )
@@ -193,6 +193,7 @@ public class ClusterRootNodesController
 			feedback.add( message );
 			logger.debug( message );
 		}
+
 		int roots = getRoots().size();
 		if ( numberOfClasses > roots )
 		{
@@ -200,6 +201,7 @@ public class ClusterRootNodesController
 			feedback.add( message );
 			logger.debug( message );
 		}
+
 		return feedback;
 	}
 
