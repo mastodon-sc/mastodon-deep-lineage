@@ -47,11 +47,11 @@ public class ClusterRootNodesView extends InteractiveCommand
 	private int end;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Number of classes", min = "1")
+	@Parameter(label = "Number of classes", min = "1", callback = "update")
 	private int numberOfClasses;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Minimum number of cell divisions", min = "0")
+	@Parameter(label = "Minimum number of cell divisions", min = "0", callback = "update")
 	private int numberOfCellDivisions;
 
 	@SuppressWarnings("unused")
@@ -105,8 +105,8 @@ public class ClusterRootNodesView extends InteractiveCommand
 			paramFeedback = "<html><body><font color=\"green\">Parameters are valid.</font></body></html>";
 		else
 		{
-			paramFeedback = String.join( "\n", controller.getFeedback() );
-			paramFeedback = "<html><body><font color=\"red\">" + paramFeedback + "\nPlease fix it.</font></body></html>";
+			paramFeedback = String.join( "<p>", controller.getFeedback() );
+			paramFeedback = "<html><body><font color=\"red\">" + paramFeedback + "\n<p>Please change settings.</font></body></html>";
 		}
 	}
 
