@@ -1,11 +1,11 @@
 package org.mastodon.mamut.clustering.util;
 
 import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
+import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
 import org.junit.Test;
 import org.mastodon.mamut.clustering.ClusterData;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
-import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
@@ -123,7 +123,7 @@ public class ClusterUtilsTest
 	}
 
 	@Test
-	public void testTrivialCase()
+	public void testBasicExample()
 	{
 		Classification< String > classification =
 				ClusterUtils
@@ -141,5 +141,40 @@ public class ClusterUtilsTest
 		assertArrayEquals( new String[] { "J" }, classifiedObjects.get( 9 ).toArray() );
 		assertNull( classification.getObjectMapping() );
 		assertNull( classification.getAlgorithmResult() );
+	}
+
+	@Test
+	public void testTrivialExample()
+	{
+		String[] names = { "1", "2", "3" };
+		double[][] distances = new double[][] {
+				{ 0, 2, 4 },
+				{ 2, 0, 8 },
+				{ 4, 8, 0 }
+		};
+		Classification< String > classification =
+				ClusterUtils
+						.getClassificationByClassCount( names, distances, new AverageLinkageStrategy(), 2 );
+		Cluster cluster = classification.getAlgorithmResult();
+		assertNotNull( cluster );
+		Cluster child0 = cluster.getChildren().get( 0 );
+		Cluster child1 = cluster.getChildren().get( 1 );
+		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
+		assertNotNull( classification.getObjectMapping() );
+		assertNotNull( cluster );
+		assertArrayEquals( new String[] { "3" }, classifiedObjects.get( 0 ).toArray() );
+		assertArrayEquals( new String[] { "1", "2" }, classifiedObjects.get( 1 ).toArray() );
+		assertEquals( 6, cluster.getDistanceValue(), 0d );
+		assertEquals( 6, cluster.getDistance().getDistance(), 0d );
+		assertEquals( 6, cluster.getTotalDistance(), 0d );
+		assertEquals( 0, child0.getDistanceValue(), 0d );
+		assertEquals( 2, child1.getDistanceValue(), 0d );
+		assertEquals( 2, child1.getChildren().size() );
+	}
+
+	@Test
+	public void testAverageLinkageClustering()
+	{
+
 	}
 }
