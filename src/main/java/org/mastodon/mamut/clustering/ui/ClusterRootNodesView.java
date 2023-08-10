@@ -72,11 +72,11 @@ public class ClusterRootNodesView extends InteractiveCommand
 	private boolean showDendrogram;
 
 	@SuppressWarnings("unused")
-	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false)
+	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false, label = " ")
 	private String paramFeedback;
 
 	@SuppressWarnings("unused")
-	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false)
+	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false, label = " ")
 	private String computeFeedback;
 
 	@SuppressWarnings("unused")
