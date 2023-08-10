@@ -13,6 +13,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
@@ -39,6 +40,8 @@ public class ClusterRootNodesController
 
 	private final Model model;
 
+	private final BranchGraphSynchronizer synchronizer;
+
 	private SimilarityMeasure similarityMeasure = SimilarityMeasure.NORMALIZED_DIFFERENCE;
 
 	private ClusteringMethod clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE;
@@ -57,9 +60,10 @@ public class ClusterRootNodesController
 
 	private boolean showDendrogram = true;
 
-	public ClusterRootNodesController( final Model model )
+	public ClusterRootNodesController( final Model model, final BranchGraphSynchronizer synchronizer )
 	{
 		this.model = model;
+		this.synchronizer = synchronizer;
 	}
 
 	public void createTagSet()
@@ -159,7 +163,8 @@ public class ClusterRootNodesController
 
 	private List< BranchSpotTree > getRoots()
 	{
-		model.getBranchGraph().graphRebuilt();
+		if ( !synchronizer.isUptodate() )
+			model.getBranchGraph().graphRebuilt();
 		Set< Spot > roots = RootFinder.getRoots( model.getGraph() );
 		List< BranchSpotTree > trees = new ArrayList<>();
 		for ( Spot root : roots )

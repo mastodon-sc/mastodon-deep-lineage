@@ -1,8 +1,8 @@
 package org.mastodon.mamut.clustering;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.clustering.ui.ClusterRootNodesView;
-import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.plugin.MamutPluginAppModel;
 import org.scijava.command.CommandService;
@@ -18,6 +18,7 @@ import java.util.List;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
+@SuppressWarnings("unused")
 @Plugin( type = MamutPlugin.class )
 public class ClusterRootNodesPlugin implements MamutPlugin
 {
@@ -27,11 +28,13 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 
 	private final AbstractNamedAction cluserRootNodesAction;
 
-	private Model model;
+	private MamutAppModel appModel;
 
+	@SuppressWarnings("unused")
 	@Parameter
 	private CommandService commandService;
 
+	@SuppressWarnings("unused")
 	public ClusterRootNodesPlugin()
 	{
 		cluserRootNodesAction = new RunnableAction( CLUSTER_ROOT_NODES, this::clusterRootNodes );
@@ -40,7 +43,7 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 	@Override
 	public void setAppPluginModel( MamutPluginAppModel pluginAppModel )
 	{
-		this.model = pluginAppModel.getAppModel().getModel();
+		this.appModel = pluginAppModel.getAppModel();
 	}
 
 	@Override
@@ -57,6 +60,7 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 
 	private void clusterRootNodes()
 	{
-		commandService.run( ClusterRootNodesView.class, true, "controller", new ClusterRootNodesController( model ) );
+		ClusterRootNodesController controller = new ClusterRootNodesController( appModel.getModel(), appModel.getBranchGraphSync() );
+		commandService.run( ClusterRootNodesView.class, true, "controller", controller );
 	}
 }

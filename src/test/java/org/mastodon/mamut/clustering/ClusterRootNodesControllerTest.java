@@ -8,6 +8,7 @@ import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 import org.mastodon.model.tag.TagSetStructure;
 
 import java.util.Collection;
@@ -26,6 +27,8 @@ public class ClusterRootNodesControllerTest
 	{
 		final Model model = new Model();
 
+		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
+
 		final ModelGraph modelGraph = model.getGraph();
 
 		addLineageTree1( modelGraph );
@@ -35,7 +38,7 @@ public class ClusterRootNodesControllerTest
 		addLineageTree5( modelGraph );
 		addEmptyTree( modelGraph );
 
-		ClusterRootNodesController controller = new ClusterRootNodesController( model );
+		ClusterRootNodesController controller = new ClusterRootNodesController( model, synchronizer );
 		controller.setParams(
 				new ClusterRootNodesController.InputParams( CropCriteria.TIMEPOINT, 0, 100, 1 ),
 				new ClusterRootNodesController.ComputeParams(
@@ -71,7 +74,8 @@ public class ClusterRootNodesControllerTest
 	public void testGetFeedback()
 	{
 		ExampleGraph2 exampleGraph = new ExampleGraph2();
-		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel() );
+		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
+		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel(), synchronizer );
 		controller.setParams(
 				new ClusterRootNodesController.InputParams( CropCriteria.NUMBER_OF_CELLS, 1, 0, 1 ),
 				new ClusterRootNodesController.ComputeParams(
