@@ -173,8 +173,25 @@ public class ClusterUtilsTest
 	}
 
 	@Test
-	public void testAverageLinkageClustering()
+	public void testAverageLinkageClustering1()
 	{
-
+		String[] names = { "1", "2", "3", "4" };
+		double[][] distances = new double[][] {
+				{ 0, 5, 10, 15 },
+				{ 5, 0, 20, 25 },
+				{ 10, 20, 0, 10 },
+				{ 15, 25, 10, 0 }
+		};
+		Classification< String > classification =
+				ClusterUtils
+						.getClassificationByClassCount( names, distances, new AverageLinkageStrategy(), 2 );
+		Cluster cluster = classification.getAlgorithmResult();
+		assertNotNull( cluster );
+		Cluster child0 = cluster.getChildren().get( 0 );
+		Cluster child1 = cluster.getChildren().get( 1 );
+		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
+		assertEquals( 17.5, cluster.getDistanceValue(), 0d );
+		assertEquals( 5, child0.getDistance().getDistance(), 0d );
+		assertEquals( 10, child1.getDistance().getDistance(), 0d );
 	}
 }
