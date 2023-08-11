@@ -13,7 +13,7 @@ import org.scijava.widget.Button;
 import static org.mastodon.mamut.clustering.ClusterRootNodesController.ComputeParams;
 import static org.mastodon.mamut.clustering.ClusterRootNodesController.InputParams;
 
-@Plugin(type = InteractiveCommand.class, visible = false, label = "Classification of Lineage Trees", initializer = "update")
+@Plugin(type = InteractiveCommand.class, visible = false, label = "Classification of Lineage Trees")
 public class ClusterRootNodesView extends InteractiveCommand
 {
 
@@ -95,17 +95,12 @@ public class ClusterRootNodesView extends InteractiveCommand
 	@SuppressWarnings("unused")
 	private void update()
 	{
-		InputParams inputParams = null;
-		if ( cropCriterion != null )
-			inputParams = new InputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
-		ComputeParams computeParams = null;
-		if ( similarityMeasure != null && clusteringMethod != null )
-			computeParams =
+		InputParams inputParams = new InputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
+		ComputeParams computeParams =
 					new ComputeParams( SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ),
 							numberOfClasses
 					);
-		if ( inputParams != null && computeParams != null )
-			controller.setParams( inputParams, computeParams, showDendrogram );
+		controller.setParams( inputParams, computeParams, showDendrogram );
 
 		if ( controller.isValidParams() )
 			paramFeedback = "<html><body><font color=\"green\">Parameters are valid.</font></body></html>";
