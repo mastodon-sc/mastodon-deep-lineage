@@ -17,6 +17,11 @@ import static org.mastodon.mamut.clustering.ClusterRootNodesController.InputPara
 public class ClusterRootNodesView extends InteractiveCommand
 {
 
+	private static final int WIDTH = 15;
+
+	private static final int WIDTH_INPUT = 7;
+
+
 	@SuppressWarnings("unused")
 	@Parameter
 	private ClusterRootNodesController controller;
@@ -24,7 +29,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 	@SuppressWarnings("all")
 	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false)
 	private String documentation = "<html>\n"
-			+ "<body width=15cm align=left>\n"
+			+ "<body width=" + WIDTH + "cm align=left>\n"
 			+ "<h1>Classification of Lineage Trees</h1>\n"
 			+ "<p>This plugin is capable in grouping similar lineage trees together. This is done by creating a tag set an assigning subtrees that are similar to each other with the same tag.</p>\n"
 			+ "<p>The similarity between two subtrees is computed based on the Zhang edit distance for unordered trees <a href=\"https://doi.org/10.1007/BF01975866\">(Zhang, K. Algorithmica 15, 205–222, 1996)</a>. The similarity measure uses the attribute the cell lifetime, which is computed as a difference of timepoints between to subsequent divisions. It is possible to apply the <i>absolute difference</i>, <i>average difference</i> or the <i>normalized difference</i> of cell lifetimes.</p>\n"
@@ -102,13 +107,14 @@ public class ClusterRootNodesView extends InteractiveCommand
 					);
 		controller.setParams( inputParams, computeParams, showDendrogram );
 
+		paramFeedback = "<html><body width=" + WIDTH_INPUT + "cm>";
 		if ( controller.isValidParams() )
-			paramFeedback = "<html><body><font color=\"green\">Parameters are valid.</font></body></html>";
+			paramFeedback += "<font color=green>Parameters are valid.";
 		else
 		{
-			paramFeedback = String.join( "<p>", controller.getFeedback() );
-			paramFeedback = "<html><body><font color=\"red\">" + paramFeedback + "\n<p>Please change settings.</font></body></html>";
+			paramFeedback += "<font color=green>" + String.join( "<p>", controller.getFeedback() );
 		}
+		paramFeedback += "</font></body></html>";
 	}
 
 	@SuppressWarnings("unused")
@@ -116,15 +122,17 @@ public class ClusterRootNodesView extends InteractiveCommand
 	{
 		if ( controller.isValidParams() )
 		{
+			String feedback;
 			try
 			{
 				controller.createTagSet();
-				computeFeedback = "<html><body><font color=\"green\">Tag set created.</font></body></html>";
+				feedback = "Tag set created.";
 			}
 			catch ( IllegalArgumentException e )
 			{
-				computeFeedback = "<html><body><font color=\"red\">" + e.getMessage() + "</font></body></html>";
+				feedback = e.getMessage();
 			}
+			computeFeedback = "<html><body width=" + WIDTH_INPUT + "cm><font color=\"green\">" + feedback + "</font></body></html>";
 		}
 	}
 }
