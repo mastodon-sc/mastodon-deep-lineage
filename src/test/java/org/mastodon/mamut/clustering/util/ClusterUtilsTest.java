@@ -173,7 +173,7 @@ public class ClusterUtilsTest
 	}
 
 	@Test
-	public void testAverageLinkageClustering1()
+	public void testAverageLinkageClustering()
 	{
 		String[] names = { "1", "2", "3", "4" };
 		double[][] distances = new double[][] {
@@ -189,9 +189,63 @@ public class ClusterUtilsTest
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
-		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
 		assertEquals( 17.5, cluster.getDistanceValue(), 0d );
 		assertEquals( 5, child0.getDistance().getDistance(), 0d );
 		assertEquals( 10, child1.getDistance().getDistance(), 0d );
+	}
+
+	/**
+	 * Step 1: the distance matrix - get the minimum distance (i.e. distance between "1" and "2")
+	 *  <pre>
+	 *  | -  1  2  3  4 |
+	 *  | 1  0          |
+	 *  | 2 *2* 0       |
+	 *  | 3  4  4  0    |
+	 *  | 4  8  8  10 0 |
+	 *  </pre>
+	 *
+	 *  Step 2: merge the two closest clusters (i.e. "1" and "2" and update the distance matrix) and find the next minimum distance (i.e. distance between "1,2" and "3")
+	 *  <pre>
+	 * 	   | -   1,2  3  4 |
+	 * 	   | 1,2  0        |
+	 * 	   | 3   *4*  0    |
+	 * 	   | 4    8   10 0 |
+	 * 	</pre>
+	 *
+	 * 	Step 3: merge the two closest clusters (i.e. "1,2" and "3" and update the distance matrix) and find the next minimum distance (i.e. distance between "1,2,3" and "4")
+	 * 	 <pre>
+	 * 	    | -     1,2,3  4 |
+	 * 	    | 1,2,3   0      |
+	 * 	    | 4      *9*    0 |
+	 * 	 </pre>
+	 *
+	 * 	 End. No further merging possible.
+	 *
+	 * @see <a href="https://www.youtube.com/watch?v=T1ObCUpjq3o">Example how to compute hierarchical clustering with average linkage</a>
+	 */
+	@Test
+	public void testAverageLinkageClusteringWithDocumentation()
+	{
+		String[] names = { "1", "2", "3", "4" };
+		double[][] distances = new double[][] {
+				{ 0, 2, 4, 8 },
+				{ 2, 0, 4, 8 },
+				{ 4, 4, 0, 10 },
+				{ 8, 8, 10, 0 }
+		};
+		Classification< String > classification =
+				ClusterUtils
+						.getClassificationByClassCount( names, distances, new AverageLinkageStrategy(), 2 );
+		Cluster cluster = classification.getAlgorithmResult();
+		assertNotNull( cluster );
+		Cluster child0 = cluster.getChildren().get( 0 );
+		Cluster child1 = cluster.getChildren().get( 1 );
+		Cluster child10 = child1.getChildren().get( 0 );
+		Cluster child11 = child1.getChildren().get( 1 );
+		assertEquals( 9d, cluster.getDistanceValue(), 0d );
+		assertEquals( 4d, Math.max( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
+		assertEquals( 0d, Math.min( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
+		assertEquals( 2d, Math.max( child10.getDistanceValue(), child11.getDistanceValue() ), 0d );
+		assertEquals( 0d, Math.min( child10.getDistanceValue(), child11.getDistanceValue() ), 0d );
 	}
 }
