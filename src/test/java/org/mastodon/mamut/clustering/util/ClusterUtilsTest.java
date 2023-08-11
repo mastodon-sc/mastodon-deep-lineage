@@ -4,6 +4,7 @@ import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.CompleteLinkageStrategy;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
+import com.apporiented.algorithm.clustering.SingleLinkageStrategy;
 import org.junit.Test;
 import org.mastodon.mamut.clustering.ClusterData;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
@@ -85,6 +86,35 @@ public class ClusterUtilsTest
 		assertEquals( 95, cluster.getDistanceValue(), 0d );
 		assertEquals( 94, Math.max( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
 		assertEquals( 68, Math.min( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
+		assertNotNull( classification.getAlgorithmResult() );
+	}
+
+	@Test
+	public void testGetClassificationByClassCountSingleLinkage()
+	{
+		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
+				new SingleLinkageStrategy(), 5
+		);
+		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
+		Map< String, String > objectMapping = classification.getObjectMapping();
+		double cutoff = classification.getCutoff();
+
+		Cluster cluster = classification.getAlgorithmResult();
+		assertNotNull( cluster );
+		Cluster child0 = cluster.getChildren().get( 0 );
+		Cluster child1 = cluster.getChildren().get( 1 );
+
+		assertArrayEquals( new String[] { "F" }, classifiedObjects.get( 0 ).toArray() );
+		assertArrayEquals( new String[] { "G" }, classifiedObjects.get( 1 ).toArray() );
+		assertArrayEquals( new String[] { "I" }, classifiedObjects.get( 2 ).toArray() );
+		assertArrayEquals( new String[] { "C", "D", "J" }, classifiedObjects.get( 3 ).toArray() );
+		assertArrayEquals( new String[] { "A", "B", "E", "H" }, classifiedObjects.get( 4 ).toArray() );
+		assertNotNull( objectMapping );
+		assertEquals( ClusterData.names.length, objectMapping.size() );
+		assertEquals( 21, cutoff, 0d );
+		assertEquals( 29, cluster.getDistanceValue(), 0d );
+		assertEquals( 26, Math.max( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
+		assertEquals( 0, Math.min( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
 		assertNotNull( classification.getAlgorithmResult() );
 	}
 
