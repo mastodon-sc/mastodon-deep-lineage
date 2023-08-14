@@ -1,4 +1,4 @@
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.treesimilarity.util;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import org.jgrapht.alg.interfaces.MinimumCostFlowAlgorithm;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
-class FlowNetwork
+public class FlowNetwork
 {
 
 	private final SimpleDirectedWeightedGraph< Object, DefaultWeightedEdge > graph = new SimpleDirectedWeightedGraph<>( DefaultWeightedEdge.class );
