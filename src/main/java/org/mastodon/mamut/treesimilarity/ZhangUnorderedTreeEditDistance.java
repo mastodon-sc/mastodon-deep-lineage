@@ -404,9 +404,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		int numberOfChildrenForest1 = childrenForest1.size();
 		int numberOfChildrenForest2 = childrenForest2.size();
 		int minNumberOfChildren = Math.min( numberOfChildrenForest1, numberOfChildrenForest2 );
-		int maxNumberOfChildren = Math.max( numberOfChildrenForest1, numberOfChildrenForest2 );
 		network.addEdge( source, emptyTree1, numberOfChildrenForest2 - minNumberOfChildren, 0 );
-		network.addEdge( emptyTree1, emptyTree2, maxNumberOfChildren - minNumberOfChildren, 0 ); // this edge is not needed
 		network.addEdge( emptyTree2, sink, numberOfChildrenForest1 - minNumberOfChildren, 0 );
 
 		for ( Tree< T > child1 : childrenForest1 )
