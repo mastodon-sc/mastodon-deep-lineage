@@ -396,6 +396,33 @@ public class ZhangUnorderedTreeEditDistance< T >
 		String emptyTree1 = "empty1";
 		String emptyTree2 = "empty2";
 
+		FlowNetwork network = buildFlowNetwork( source, sink, emptyTree1, emptyTree2, childrenForest1, childrenForest2 );
+
+		network.solveMaxFlowMinCost( source, sink );
+
+		ArrayList< NodeMapping< T > > childMappings = new ArrayList<>();
+
+		for ( Tree< T > child1 : childrenForest1 )
+			if ( isFlowEqualToOne( network.getFlow( child1, emptyTree2 ) ) )
+				childMappings.add( NodeMappings.empty( deleteCosts.get( child1 ).treeCost ) );
+
+		for ( Tree< T > child2 : childrenForest2 )
+			if ( isFlowEqualToOne( network.getFlow( emptyTree1, child2 ) ) )
+				childMappings.add( NodeMappings.empty( insertCosts.get( child2 ).treeCost ) );
+
+		for ( Tree< T > child1 : childrenForest1 )
+			for ( Tree< T > child2 : childrenForest2 )
+				if ( isFlowEqualToOne( network.getFlow( child1, child2 ) ) )
+					childMappings.add( treeMapping( child1, child2 ) );
+
+		return NodeMappings.compose( childMappings );
+	}
+
+	private FlowNetwork buildFlowNetwork(
+			String source, String sink, String emptyTree1, String emptyTree2, Collection< Tree< T > > childrenForest1,
+			Collection< Tree< T > > childrenForest2
+	)
+	{
 		FlowNetwork network = new FlowNetwork();
 		network.addVertices( Arrays.asList( source, sink, emptyTree1, emptyTree2 ) );
 		network.addVertices( childrenForest1 );
@@ -420,25 +447,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			network.addEdge( child2, sink, 1, 0 );
 			network.addEdge( emptyTree1, child2, 1, insertCosts.get( child2 ).treeCost );
 		}
-
-		network.solveMaxFlowMinCost( source, sink );
-
-		ArrayList< NodeMapping< T > > childMappings = new ArrayList<>();
-
-		for ( Tree< T > child1 : childrenForest1 )
-			if ( isFlowEqualToOne( network.getFlow( child1, emptyTree2 ) ) )
-				childMappings.add( NodeMappings.empty( deleteCosts.get( child1 ).treeCost ) );
-
-		for ( Tree< T > child2 : childrenForest2 )
-			if ( isFlowEqualToOne( network.getFlow( emptyTree1, child2 ) ) )
-				childMappings.add( NodeMappings.empty( insertCosts.get( child2 ).treeCost ) );
-
-		for ( Tree< T > child1 : childrenForest1 )
-			for ( Tree< T > child2 : childrenForest2 )
-				if ( isFlowEqualToOne( network.getFlow( child1, child2 ) ) )
-					childMappings.add( treeMapping( child1, child2 ) );
-
-		return NodeMappings.compose( childMappings );
+		return network;
 	}
 
 	/**
