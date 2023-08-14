@@ -21,14 +21,14 @@ public class JGraphtTools
 	}
 
 	/**
-	 * Computes a maximum (source, sink)-flow of minimum cost and returns its cost.
-	 * G is a digraph with edge costs and capacities. There is a source node s and a sink node t. This function finds a maximum flow from s to t whose total cost is minimized.
+	 * Computes a maximum (source, sink)-flow of minimum cost and returns it.
+	 * Assuming {@code graph} is a digraph with edge costs and capacities. There is a source node s and a sink node t. This function finds a maximum flow from s to t whose total cost is minimized.
 	 *
 	 * @param graph      a directed graph with edge costs (i.e. edge weights)
 	 * @param capacities a map from edges to their capacities
 	 * @param source     the source node
 	 * @param sink       the sink node
-	 * @return the minimum cost of the maximum flow
+	 * @return the maximum flow of minimum cost
 	 */
 	public static < V > MinimumCostFlowAlgorithm.MinimumCostFlow< DefaultWeightedEdge > maxFlowMinCost( final SimpleDirectedWeightedGraph< V, DefaultWeightedEdge > graph,
 			final Map< DefaultWeightedEdge, Integer > capacities, final V source, final V sink )
