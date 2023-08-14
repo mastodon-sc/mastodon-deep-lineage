@@ -65,6 +65,8 @@ public class FlowNetwork
 	 */
 	public double getFlow( Object source, Object target )
 	{
+		if ( flow == null )
+			throw new IllegalStateException( "Flow is not defined. Call solveMaxFlowMinCost() first." );
 		return flow.getFlow( graph.getEdge( source, target ) );
 	}
 }
