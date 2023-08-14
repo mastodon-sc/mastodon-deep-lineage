@@ -38,9 +38,9 @@ public class NodeMappings
 	}
 
 	/**
-	 * @return A {@link NodeMapping} that represents a composed that contains
-	 * all the map entries of the given {@code children}. The costs of the
-	 * composed mapping is the sum of the costs of the children.
+	 * @return A {@link NodeMapping} that represents a composed mapping that
+	 * contains all the map entries of the given {@code children}. The costs of
+	 * the composed mapping is the sum of the costs of the children.
 	 */
 	@SafeVarargs
 	public static < T > NodeMapping< T > compose( NodeMapping< T >... children )
@@ -49,9 +49,9 @@ public class NodeMappings
 	}
 
 	/**
-	 * @return A {@link NodeMapping} that represents a composed that contains
-	 * all the map entries of the given {@code children}. The costs of the
-	 * composed mapping is the sum of the costs of the children.
+	 * @return A {@link NodeMapping} that represents a composed mapping that
+	 * contains all the map entries of the given {@code children}. The costs of
+	 * the composed mapping is the sum of the costs of the children.
 	 */
 	public static < T > NodeMapping< T > compose( List< NodeMapping< T > > children )
 	{
