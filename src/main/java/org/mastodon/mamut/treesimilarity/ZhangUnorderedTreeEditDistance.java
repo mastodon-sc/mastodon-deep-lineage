@@ -167,8 +167,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		if ( tree1 == null || tree2 == null )
 			return Collections.emptyMap();
 
-		NodeMapping< T > matching = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction ).treeMapping( tree1, tree2 );
-		return matching.asMap();
+		NodeMapping< T > mapping = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction ).treeMapping( tree1, tree2 );
+		return mapping.asMap();
 	}
 
 	/**
