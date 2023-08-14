@@ -401,11 +401,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 		network.addVertices( childrenForest1 );
 		network.addVertices( childrenForest2 );
 
-		int n1 = childrenForest1.size();
-		int n2 = childrenForest2.size();
-		network.addEdge( source, emptyTree1, n2 - Math.min( n1, n2 ), 0 );
-		network.addEdge( emptyTree1, emptyTree2, Math.max( n1, n2 ) - Math.min( n1, n2 ), 0 ); // this edge is not needed
-		network.addEdge( emptyTree2, sink, n1 - Math.min( n1, n2 ), 0 );
+		int numberOfChildrenForest1 = childrenForest1.size();
+		int numberOfChildrenForest2 = childrenForest2.size();
+		int minNumberOfChildren = Math.min( numberOfChildrenForest1, numberOfChildrenForest2 );
+		int maxNumberOfChildren = Math.max( numberOfChildrenForest1, numberOfChildrenForest2 );
+		network.addEdge( source, emptyTree1, numberOfChildrenForest2 - minNumberOfChildren, 0 );
+		network.addEdge( emptyTree1, emptyTree2, maxNumberOfChildren - minNumberOfChildren, 0 ); // this edge is not needed
+		network.addEdge( emptyTree2, sink, numberOfChildrenForest1 - minNumberOfChildren, 0 );
 
 		for ( Tree< T > child1 : childrenForest1 )
 		{
