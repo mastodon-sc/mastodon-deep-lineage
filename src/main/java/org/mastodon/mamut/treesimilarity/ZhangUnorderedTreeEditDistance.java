@@ -312,9 +312,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double insertCostTree2 = insertCosts.get( tree2 ).treeCost;
 		return findBestMapping( tree2.getChildren(), child ->
 		{
-			NodeMapping< T > insertCosts = NodeMappings.empty( insertCostTree2 - this.insertCosts.get( child ).treeCost );
+			NodeMapping< T > insertMapping = NodeMappings.empty( insertCostTree2 - this.insertCosts.get( child ).treeCost );
 			NodeMapping< T > childMapping = treeMapping( tree1, child );
-			return NodeMappings.compose( insertCosts, childMapping );
+			return NodeMappings.compose( insertMapping, childMapping );
 		} );
 	}
 
@@ -329,9 +329,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double deleteCostTree1 = deleteCosts.get( tree1 ).treeCost;
 		return findBestMapping( tree1.getChildren(), child ->
 		{
-			NodeMapping< T > deleteCosts = NodeMappings.empty( deleteCostTree1 - this.deleteCosts.get( child ).treeCost );
+			NodeMapping< T > deleteMapping = NodeMappings.empty( deleteCostTree1 - this.deleteCosts.get( child ).treeCost );
 			NodeMapping< T > childMapping = treeMapping( child, tree2 );
-			return NodeMappings.compose( deleteCosts, childMapping );
+			return NodeMappings.compose( deleteMapping, childMapping );
 		} );
 	}
 
@@ -345,9 +345,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double insertCostForest2 = insertCosts.get( forest2 ).forestCost;
 		return findBestMapping( forest2.getChildren(), child ->
 		{
-			NodeMapping< T > insertCosts = NodeMappings.empty( insertCostForest2 - this.insertCosts.get( child ).forestCost );
+			NodeMapping< T > insertMapping = NodeMappings.empty( insertCostForest2 - this.insertCosts.get( child ).forestCost );
 			NodeMapping< T > childMapping = forestMapping( forest1, child );
-			return NodeMappings.compose( insertCosts, childMapping );
+			return NodeMappings.compose( insertMapping, childMapping );
 		} );
 	}
 
@@ -361,9 +361,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double deleteCostForest1 = deleteCosts.get( forest1 ).forestCost;
 		return findBestMapping( forest1.getChildren(), child ->
 		{
-			NodeMapping< T > deleteCosts = NodeMappings.empty( deleteCostForest1 - this.deleteCosts.get( child ).forestCost );
+			NodeMapping< T > deleteMapping = NodeMappings.empty( deleteCostForest1 - this.deleteCosts.get( child ).forestCost );
 			NodeMapping< T > childMapping = forestMapping( child, forest2 );
-			return NodeMappings.compose( deleteCosts, childMapping );
+			return NodeMappings.compose( deleteMapping, childMapping );
 		} );
 	}
 
