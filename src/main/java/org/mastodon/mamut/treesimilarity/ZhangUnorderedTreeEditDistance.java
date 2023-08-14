@@ -4,6 +4,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
 import org.mastodon.mamut.treesimilarity.util.FlowNetwork;
+import org.mastodon.mamut.treesimilarity.util.NodeMapping;
+import org.mastodon.mamut.treesimilarity.util.NodeMappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

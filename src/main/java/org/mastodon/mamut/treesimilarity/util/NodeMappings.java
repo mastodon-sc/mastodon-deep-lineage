@@ -1,16 +1,17 @@
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.treesimilarity.util;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
 /**
  * Utility class for {@link ZhangUnorderedTreeEditDistance} that provides
  * static factory methods for the easy creation of {@link NodeMapping}s.
  */
-class NodeMappings
+public class NodeMappings
 {
 	private NodeMappings()
 	{
