@@ -19,8 +19,7 @@ class FlowNetwork
 
 	public void addVertices( Collection< ? > vertices )
 	{
-		for ( Object v : vertices )
-			graph.addVertex( v );
+		vertices.forEach( graph::addVertex );
 	}
 
 	public void addEdge( Object source, Object target, int capacity, double weight )
