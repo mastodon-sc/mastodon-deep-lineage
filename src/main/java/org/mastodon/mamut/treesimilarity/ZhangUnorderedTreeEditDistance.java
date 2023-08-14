@@ -133,6 +133,23 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return zhang.compute( tree1, tree2 );
 	}
 
+	/**
+	 * Calculates a mapping between nodes in the given two trees ({@code tree1} and {@code tree2}) that links the nodes from the two trees, which have the minimum tree edit distance to each other.<p>
+	 * The required minimum tree edit distance is calculated using the Zhang unordered edit distance.
+	 * @param tree1 The first tree.
+	 * @param tree2 The second tree.
+	 * @param costFunction The cost function.
+	 * @return The mapping between nodes.
+	 */
+	public static < T > Map< Tree< T >, Tree< T > > nodeMapping( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
+	{
+		if ( tree1 == null || tree2 == null )
+			return Collections.emptyMap();
+
+		NodeMapping< T > mapping = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction ).treeMapping( tree1, tree2 );
+		return mapping.asMap();
+	}
+
 	private static < T > double distanceTreeToNull( Tree< T > tree2, BiFunction< T, T, Double > costFunction )
 	{
 		double distance = 0;
@@ -163,15 +180,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		treeDistances = new HashMap<>();
 		forestDistances = new HashMap<>();
-	}
-
-	public static < T > Map< Tree< T >, Tree< T > > nodeMapping( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
-	{
-		if ( tree1 == null || tree2 == null )
-			return Collections.emptyMap();
-
-		NodeMapping< T > mapping = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction ).treeMapping( tree1, tree2 );
-		return mapping.asMap();
 	}
 
 	/**
