@@ -71,10 +71,6 @@ class NodeMappings
 		{
 			return cost;
 		}
-
-		@Override
-		public abstract void writeToMap( Map< Tree< T >, Tree< T > > map );
-
 	}
 
 	private static class EmptyNodeMapping< T > extends AbstractNodeMapping< T >
