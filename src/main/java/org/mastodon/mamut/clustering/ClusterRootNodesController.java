@@ -166,6 +166,7 @@ public class ClusterRootNodesController
 	{
 		if ( !synchronizer.isUptodate() )
 			model.getBranchGraph().graphRebuilt();
+		// TODO: take into account crop start - there may be more roots if the crop start is > 0
 		Set< Spot > roots = RootFinder.getRoots( model.getGraph() );
 		List< BranchSpotTree > trees = new ArrayList<>();
 		for ( Spot root : roots )
