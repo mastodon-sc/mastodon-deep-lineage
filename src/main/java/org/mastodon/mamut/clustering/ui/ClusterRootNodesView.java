@@ -112,7 +112,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 			paramFeedback += "<font color=green>Parameters are valid.";
 		else
 		{
-			paramFeedback += "<font color=green>" + String.join( "<p>", controller.getFeedback() );
+			paramFeedback += "<font color=red>" + String.join( "<p>", controller.getFeedback() );
 		}
 		paramFeedback += "</font></body></html>";
 	}
