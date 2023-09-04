@@ -41,7 +41,7 @@ import org.scijava.plugin.Plugin;
 
 @Plugin(type = MamutFeatureComputer.class)
 @SuppressWarnings({ "UnusedDeclaration" })
-public class SpotBranchSpotIDFeatureComputer extends CancelableImpl implements MamutFeatureComputer
+public class SpotBranchIDFeatureComputer extends CancelableImpl implements MamutFeatureComputer
 {
 
 	@Parameter
@@ -53,13 +53,13 @@ public class SpotBranchSpotIDFeatureComputer extends CancelableImpl implements M
 	private ModelBranchGraph branchGraph;
 
 	@Parameter(type = ItemIO.OUTPUT)
-	private SpotBranchSpotIDFeature output;
+	private SpotBranchIDFeature output;
 
 	@Override
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new SpotBranchSpotIDFeature( new IntPropertyMap<>( graph.vertices().getRefPool(), -1 ) );
+			output = new SpotBranchIDFeature( new IntPropertyMap<>( graph.vertices().getRefPool(), -1 ) );
 	}
 
 	@Override

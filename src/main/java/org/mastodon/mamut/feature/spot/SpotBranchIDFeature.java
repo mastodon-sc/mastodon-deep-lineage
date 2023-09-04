@@ -18,30 +18,30 @@ import java.util.Set;
 
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
-public class SpotBranchSpotIDFeature implements Feature< Spot >
+public class SpotBranchIDFeature implements Feature< Spot >
 {
 
 	public static final String KEY = "Branch spot ID";
 
-	private static final String HELP_STRING = "Returns the ID of the branch spot each spot belongs to.";
+	private static final String HELP_STRING = "Returns the ID of the branch each spot belongs to.";
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
 
-	public static final SpotBranchSpotIDFeature.Spec SPEC = new SpotBranchSpotIDFeature.Spec();
+	public static final SpotBranchIDFeature.Spec SPEC = new SpotBranchIDFeature.Spec();
 
 	final IntPropertyMap< Spot > map;
 
 	private final IntFeatureProjection< Spot > projection;
 
 	@Plugin(type = FeatureSpec.class)
-	public static class Spec extends FeatureSpec< SpotBranchSpotIDFeature, Spot >
+	public static class Spec extends FeatureSpec< SpotBranchIDFeature, Spot >
 	{
 		public Spec()
 		{
 			super(
 					KEY,
 					HELP_STRING,
-					SpotBranchSpotIDFeature.class,
+					SpotBranchIDFeature.class,
 					Spot.class,
 					Multiplicity.SINGLE,
 					PROJECTION_SPEC
@@ -49,7 +49,7 @@ public class SpotBranchSpotIDFeature implements Feature< Spot >
 		}
 	}
 
-	SpotBranchSpotIDFeature( final IntPropertyMap< Spot > map )
+	SpotBranchIDFeature( final IntPropertyMap< Spot > map )
 	{
 		this.map = map;
 		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );
@@ -73,7 +73,7 @@ public class SpotBranchSpotIDFeature implements Feature< Spot >
 	}
 
 	@Override
-	public SpotBranchSpotIDFeature.Spec getSpec()
+	public SpotBranchIDFeature.Spec getSpec()
 	{
 		return SPEC;
 	}

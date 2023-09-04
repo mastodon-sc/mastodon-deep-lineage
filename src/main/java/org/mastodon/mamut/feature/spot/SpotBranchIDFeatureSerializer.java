@@ -43,18 +43,18 @@ import java.io.ObjectOutputStream;
 
 @Plugin(type = FeatureSerializer.class)
 @SuppressWarnings({ "UnusedDeclaration" })
-public class SpotBranchSpotIDFeatureSerializer implements FeatureSerializer< SpotBranchSpotIDFeature, Spot >
+public class SpotBranchIDFeatureSerializer implements FeatureSerializer< SpotBranchIDFeature, Spot >
 {
 
 	@Override
-	public SpotBranchSpotIDFeature.Spec getFeatureSpec()
+	public SpotBranchIDFeature.Spec getFeatureSpec()
 	{
-		return SpotBranchSpotIDFeature.SPEC;
+		return SpotBranchIDFeature.SPEC;
 	}
 
 	@Override
 	public void serialize(
-			final SpotBranchSpotIDFeature feature, final ObjectToFileIdMap< Spot > idmap,
+			final SpotBranchIDFeature feature, final ObjectToFileIdMap< Spot > idmap,
 			final ObjectOutputStream oos
 	) throws IOException
 	{
@@ -63,7 +63,7 @@ public class SpotBranchSpotIDFeatureSerializer implements FeatureSerializer< Spo
 	}
 
 	@Override
-	public SpotBranchSpotIDFeature deserialize(
+	public SpotBranchIDFeature deserialize(
 			final FileIdToObjectMap< Spot > idmap, final RefCollection< Spot > pool,
 			final ObjectInputStream ois
 	) throws IOException, ClassNotFoundException
@@ -71,6 +71,6 @@ public class SpotBranchSpotIDFeatureSerializer implements FeatureSerializer< Spo
 		final IntPropertyMap< Spot > map = new IntPropertyMap<>( pool, -1 );
 		final IntPropertyMapSerializer< Spot > propertyMapSerializer = new IntPropertyMapSerializer<>( map );
 		propertyMapSerializer.readPropertyMap( idmap, ois );
-		return new SpotBranchSpotIDFeature( map );
+		return new SpotBranchIDFeature( map );
 	}
 }

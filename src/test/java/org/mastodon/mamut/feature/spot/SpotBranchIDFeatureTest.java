@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-public class SpotBranchSpotIDFeatureTest extends AbstractFeatureTest< Spot >
+public class SpotBranchIDFeatureTest extends AbstractFeatureTest< Spot >
 {
 	private Feature< Spot > feature;
 
@@ -29,7 +29,7 @@ public class SpotBranchSpotIDFeatureTest extends AbstractFeatureTest< Spot >
 	{
 		try (Context context = new Context())
 		{
-			feature = FeatureComputerTestUtils.getFeature( context, graph.getModel(), SpotBranchSpotIDFeature.SPEC );
+			feature = FeatureComputerTestUtils.getFeature( context, graph.getModel(), SpotBranchIDFeature.SPEC );
 		}
 	}
 
@@ -37,7 +37,7 @@ public class SpotBranchSpotIDFeatureTest extends AbstractFeatureTest< Spot >
 	@Test
 	public void testFeatureComputation()
 	{
-		FeatureProjection< Spot > featureProjection = getProjection( feature, SpotBranchSpotIDFeature.PROJECTION_SPEC );
+		FeatureProjection< Spot > featureProjection = getProjection( feature, SpotBranchIDFeature.PROJECTION_SPEC );
 		assertEquals( graph.branchSpotA.getInternalPoolIndex(), ( int ) featureProjection.value( graph.spot0 ) );
 		assertEquals( graph.branchSpotE.getInternalPoolIndex(), ( int ) featureProjection.value( graph.spot10 ) );
 	}
@@ -46,10 +46,10 @@ public class SpotBranchSpotIDFeatureTest extends AbstractFeatureTest< Spot >
 	@Test
 	public void testFeatureSerialization() throws IOException
 	{
-		SpotBranchSpotIDFeature featureReloaded;
+		SpotBranchIDFeature featureReloaded;
 		try (Context context = new Context())
 		{
-			featureReloaded = ( SpotBranchSpotIDFeature ) FeatureSerializerTestUtils.saveAndReload( context, graph.getModel(), feature );
+			featureReloaded = ( SpotBranchIDFeature ) FeatureSerializerTestUtils.saveAndReload( context, graph.getModel(), feature );
 		}
 		// check that the feature has correct values after saving and reloading
 		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( feature, featureReloaded,
@@ -63,12 +63,12 @@ public class SpotBranchSpotIDFeatureTest extends AbstractFeatureTest< Spot >
 	{
 		Spot spot = graph.spot0;
 		// test, if features have a non "-1" value before invalidation
-		assertNotEquals( -1, ( int ) getProjection( feature, SpotBranchSpotIDFeature.PROJECTION_SPEC ).value( spot ) );
+		assertNotEquals( -1, ( int ) getProjection( feature, SpotBranchIDFeature.PROJECTION_SPEC ).value( spot ) );
 
 		// invalidate feature
 		feature.invalidate( spot );
 
 		// test, if features are "-1" after invalidation
-		assertEquals( -1, ( int ) getProjection( feature, SpotBranchSpotIDFeature.PROJECTION_SPEC ).value( spot ) );
+		assertEquals( -1, ( int ) getProjection( feature, SpotBranchIDFeature.PROJECTION_SPEC ).value( spot ) );
 	}
 }
