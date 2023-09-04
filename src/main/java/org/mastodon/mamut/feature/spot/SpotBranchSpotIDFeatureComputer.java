@@ -34,14 +34,10 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-
-import java.util.Iterator;
-import java.util.function.Consumer;
 
 @Plugin(type = MamutFeatureComputer.class)
 @SuppressWarnings({ "UnusedDeclaration" })
@@ -76,11 +72,15 @@ public class SpotBranchSpotIDFeatureComputer extends CancelableImpl implements M
 		if ( branchGraph.vertices().isEmpty() )
 			return;
 
-		Consumer< BranchSpot > action = branchSpot -> {
-			final Iterator< Spot > spotIterator = branchGraph.vertexBranchIterator( branchSpot );
-			while ( spotIterator.hasNext() )
-				output.map.set( spotIterator.next(), branchSpot.getInternalPoolIndex() );
-		};
-		LineageTreeUtils.callDepthFirst( branchGraph, action, this::isCanceled );
+		BranchSpot ref = branchGraph.vertexRef();
+		for ( Spot spot : graph.vertices() )
+		{
+			if ( isCanceled() )
+				return;
+			final BranchSpot branchSpot = branchGraph.getBranchVertex( spot, ref );
+			if ( branchSpot != null )
+				output.map.set( spot, branchSpot.getInternalPoolIndex() );
+		}
+		branchGraph.releaseRef( ref );
 	}
 }
