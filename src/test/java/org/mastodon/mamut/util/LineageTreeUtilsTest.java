@@ -35,7 +35,6 @@ public class LineageTreeUtilsTest
 
 		assertEquals( 5, LineageTreeUtils.getFirstTimepointWithNSpots( model, 3 ) );
 		assertEquals( 3, LineageTreeUtils.getFirstTimepointWithNSpots( model, 2 ) );
-		assertEquals( 3, LineageTreeUtils.getFirstTimepointWithNSpots( model, 2 ) );
 		assertThrows( NoSuchElementException.class, () -> LineageTreeUtils.getFirstTimepointWithNSpots( model, 5 ) );
 	}
 }
