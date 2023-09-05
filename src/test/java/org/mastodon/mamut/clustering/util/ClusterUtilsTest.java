@@ -1,6 +1,5 @@
 package org.mastodon.mamut.clustering.util;
 
-import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.CompleteLinkageStrategy;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
@@ -29,7 +28,7 @@ public class ClusterUtilsTest
 	{
 		double threshold = 60d;
 		Classification< String > classification =
-				ClusterUtils.getClassificationByThreshold( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
+				ClusterUtils.getClassificationByThreshold( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageWPGMAStrategy(),
 						threshold );
 		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
 		Map< String, String > objectMapping = classification.getObjectMapping();
@@ -47,7 +46,7 @@ public class ClusterUtilsTest
 	public void testGetClassificationByClassCountAverageLinkage()
 	{
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
-				new AverageLinkageStrategy(), 3 );
+				new AverageLinkageWPGMAStrategy(), 3 );
 		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
 		Map< String, String > objectMapping = classification.getObjectMapping();
 		double cutoff = classification.getCutoff();
@@ -158,7 +157,7 @@ public class ClusterUtilsTest
 	@Test
 	public void testExceptions()
 	{
-		LinkageStrategy linkageStrategy = new AverageLinkageStrategy();
+		LinkageStrategy linkageStrategy = new AverageLinkageWPGMAStrategy();
 		// zero classes
 		assertThrows( IllegalArgumentException.class,
 				() -> ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, linkageStrategy, 0 ) );
@@ -174,7 +173,7 @@ public class ClusterUtilsTest
 	public void testOneClass()
 	{
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
-				new AverageLinkageStrategy(), 1 );
+				new AverageLinkageWPGMAStrategy(), 1 );
 		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
 		assertArrayEquals( new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" }, classifiedObjects.get( 0 ).toArray() );
 		assertNull( classification.getObjectMapping() );
@@ -186,7 +185,8 @@ public class ClusterUtilsTest
 	{
 		Classification< String > classification =
 				ClusterUtils
-						.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(), 10 );
+						.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageWPGMAStrategy(),
+								10 );
 		Map< Integer, List< String > > classifiedObjects = classification.getClassifiedObjects();
 		assertArrayEquals( new String[] { "A" }, classifiedObjects.get( 0 ).toArray() );
 		assertArrayEquals( new String[] { "B" }, classifiedObjects.get( 1 ).toArray() );
@@ -213,7 +213,7 @@ public class ClusterUtilsTest
 		};
 		Classification< String > classification =
 				ClusterUtils
-						.getClassificationByClassCount( names, distances, new AverageLinkageStrategy(), 2 );
+						.getClassificationByClassCount( names, distances, new AverageLinkageWPGMAStrategy(), 2 );
 		Cluster cluster = classification.getAlgorithmResult();
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
@@ -243,7 +243,7 @@ public class ClusterUtilsTest
 		};
 		Classification< String > classification =
 				ClusterUtils
-						.getClassificationByClassCount( names, distances, new AverageLinkageStrategy(), 2 );
+						.getClassificationByClassCount( names, distances, new AverageLinkageWPGMAStrategy(), 2 );
 		Cluster cluster = classification.getAlgorithmResult();
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
@@ -280,7 +280,7 @@ public class ClusterUtilsTest
 	 *
 	 * 	 End. No further merging possible.
 	 *
-	 * @see <a href="https://www.youtube.com/watch?v=T1ObCUpjq3o">Example how to compute hierarchical clustering with average linkage</a>
+	 * @see <a href="https://www.youtube.com/watch?v=T1ObCUpjq3o">Example how to compute hierarchical clustering with average linkage</a>. NB: the video falsely states that UPGMA is used, while it is actually explaining WPGMA.
 	 */
 	@Test
 	public void testAverageLinkageClusteringWithDocumentation()
@@ -294,7 +294,7 @@ public class ClusterUtilsTest
 		};
 		Classification< String > classification =
 				ClusterUtils
-						.getClassificationByClassCount( names, distances, new AverageLinkageStrategy(), 2 );
+						.getClassificationByClassCount( names, distances, new AverageLinkageWPGMAStrategy(), 2 );
 		Cluster cluster = classification.getAlgorithmResult();
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
@@ -302,6 +302,32 @@ public class ClusterUtilsTest
 		Cluster child10 = child1.getChildren().get( 0 );
 		Cluster child11 = child1.getChildren().get( 1 );
 		assertEquals( 9d, cluster.getDistanceValue(), 0d );
+		assertEquals( 4d, Math.max( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
+		assertEquals( 0d, Math.min( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
+		assertEquals( 2d, Math.max( child10.getDistanceValue(), child11.getDistanceValue() ), 0d );
+		assertEquals( 0d, Math.min( child10.getDistanceValue(), child11.getDistanceValue() ), 0d );
+	}
+
+	@Test
+	public void testAverageLinkageClusteringUPGMA()
+	{
+		String[] names = { "1", "2", "3", "4" };
+		double[][] distances = new double[][] {
+				{ 0, 2, 4, 8 },
+				{ 2, 0, 4, 8 },
+				{ 4, 4, 0, 10 },
+				{ 8, 8, 10, 0 }
+		};
+		Classification< String > classification =
+				ClusterUtils
+						.getClassificationByClassCount( names, distances, new AverageLinkageUPGMAStrategy(), 2 );
+		Cluster cluster = classification.getAlgorithmResult();
+		assertNotNull( cluster );
+		Cluster child0 = cluster.getChildren().get( 0 );
+		Cluster child1 = cluster.getChildren().get( 1 );
+		Cluster child10 = child1.getChildren().get( 0 );
+		Cluster child11 = child1.getChildren().get( 1 );
+		assertEquals( 8.6667d, cluster.getDistanceValue(), 0.0001d );
 		assertEquals( 4d, Math.max( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
 		assertEquals( 0d, Math.min( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
 		assertEquals( 2d, Math.max( child10.getDistanceValue(), child11.getDistanceValue() ), 0d );
