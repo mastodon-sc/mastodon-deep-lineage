@@ -1,15 +1,15 @@
 package org.mastodon.mamut.clustering.config;
 
-import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.CompleteLinkageStrategy;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
 import com.apporiented.algorithm.clustering.SingleLinkageStrategy;
+import org.mastodon.mamut.clustering.util.AverageLinkageUPGMAStrategy;
 
 import java.util.NoSuchElementException;
 
 public enum ClusteringMethod
 {
-	AVERAGE_LINKAGE( "Average linkage", new AverageLinkageStrategy() ),
+	AVERAGE_LINKAGE( "Average linkage", new AverageLinkageUPGMAStrategy() ),
 	SINGLE_LINKAGE( "Single Linkage", new SingleLinkageStrategy() ),
 	COMPLETE_LINKAGE( "Complete Linkage", new CompleteLinkageStrategy() );
 
