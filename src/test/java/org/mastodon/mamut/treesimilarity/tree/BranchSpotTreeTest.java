@@ -71,6 +71,7 @@ public class BranchSpotTreeTest
 	}
 
 	@Test
+	@SuppressWarnings("all")
 	public void testBranchSpot()
 	{
 		ExampleGraph2 example = new ExampleGraph2();
