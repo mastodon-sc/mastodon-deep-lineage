@@ -74,6 +74,7 @@ public class BranchSpotTreeTest
 	public void testBranchSpot()
 	{
 		ExampleGraph2 example = new ExampleGraph2();
+		// NB: 2 is not a timepoint of branchSpotB, it only starts at 4.
 		assertThrows( IllegalArgumentException.class, () -> new BranchSpotTree( example.branchSpotB, 2 ) );
 		assertThrows( IllegalArgumentException.class, () -> new BranchSpotTree( null, 0 ) );
 	}
