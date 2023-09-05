@@ -14,15 +14,16 @@ public enum CropCriteria
 		this.name = name;
 	}
 
-    public static CropCriteria getByName(final String name) {
-        for (final CropCriteria criteria : values())
-            if (criteria.getName().equals(name))
-                return criteria;
+	public static CropCriteria getByName( final String name )
+	{
+		for ( final CropCriteria criteria : values() )
+			if ( criteria.getName().equals( name ) )
+				return criteria;
 
 		throw new NoSuchElementException();
-    }
+	}
 
-    public String getName()
+	public String getName()
 	{
 		return name;
 	}
