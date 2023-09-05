@@ -1,8 +1,9 @@
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.treesimilarity.util;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
 /**
@@ -15,7 +16,7 @@ import org.mastodon.mamut.treesimilarity.tree.Tree;
  *
  * @see NodeMappings
  */
-interface NodeMapping< T >
+public interface NodeMapping< T >
 {
 
 	/**

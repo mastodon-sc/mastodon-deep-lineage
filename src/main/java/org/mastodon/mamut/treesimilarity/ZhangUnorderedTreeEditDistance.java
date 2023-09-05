@@ -3,6 +3,9 @@ package org.mastodon.mamut.treesimilarity;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
+import org.mastodon.mamut.treesimilarity.util.FlowNetwork;
+import org.mastodon.mamut.treesimilarity.util.NodeMapping;
+import org.mastodon.mamut.treesimilarity.util.NodeMappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,6 +133,23 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return zhang.compute( tree1, tree2 );
 	}
 
+	/**
+	 * Calculates a mapping between nodes in the given two trees ({@code tree1} and {@code tree2}) that links the nodes from the two trees, which have the minimum tree edit distance to each other.<p>
+	 * The required minimum tree edit distance is calculated using the Zhang unordered edit distance.
+	 * @param tree1 The first tree.
+	 * @param tree2 The second tree.
+	 * @param costFunction The cost function.
+	 * @return The mapping between nodes.
+	 */
+	public static < T > Map< Tree< T >, Tree< T > > nodeMapping( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
+	{
+		if ( tree1 == null || tree2 == null )
+			return Collections.emptyMap();
+
+		NodeMapping< T > mapping = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction ).treeMapping( tree1, tree2 );
+		return mapping.asMap();
+	}
+
 	private static < T > double distanceTreeToNull( Tree< T > tree2, BiFunction< T, T, Double > costFunction )
 	{
 		double distance = 0;
@@ -160,15 +180,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		treeDistances = new HashMap<>();
 		forestDistances = new HashMap<>();
-	}
-
-	public static < T > Map< Tree< T >, Tree< T > > nodeMapping( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
-	{
-		if ( tree1 == null || tree2 == null )
-			return Collections.emptyMap();
-
-		NodeMapping< T > matching = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction ).treeMapping( tree1, tree2 );
-		return matching.asMap();
 	}
 
 	/**
@@ -312,9 +323,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double insertCostTree2 = insertCosts.get( tree2 ).treeCost;
 		return findBestMapping( tree2.getChildren(), child ->
 		{
-			NodeMapping< T > insertCosts = NodeMappings.empty( insertCostTree2 - this.insertCosts.get( child ).treeCost );
+			NodeMapping< T > insertMapping = NodeMappings.empty( insertCostTree2 - this.insertCosts.get( child ).treeCost );
 			NodeMapping< T > childMapping = treeMapping( tree1, child );
-			return NodeMappings.compose( insertCosts, childMapping );
+			return NodeMappings.compose( insertMapping, childMapping );
 		} );
 	}
 
@@ -329,9 +340,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double deleteCostTree1 = deleteCosts.get( tree1 ).treeCost;
 		return findBestMapping( tree1.getChildren(), child ->
 		{
-			NodeMapping< T > deleteCosts = NodeMappings.empty( deleteCostTree1 - this.deleteCosts.get( child ).treeCost );
+			NodeMapping< T > deleteMapping = NodeMappings.empty( deleteCostTree1 - this.deleteCosts.get( child ).treeCost );
 			NodeMapping< T > childMapping = treeMapping( child, tree2 );
-			return NodeMappings.compose( deleteCosts, childMapping );
+			return NodeMappings.compose( deleteMapping, childMapping );
 		} );
 	}
 
@@ -345,9 +356,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double insertCostForest2 = insertCosts.get( forest2 ).forestCost;
 		return findBestMapping( forest2.getChildren(), child ->
 		{
-			NodeMapping< T > insertCosts = NodeMappings.empty( insertCostForest2 - this.insertCosts.get( child ).forestCost );
+			NodeMapping< T > insertMapping = NodeMappings.empty( insertCostForest2 - this.insertCosts.get( child ).forestCost );
 			NodeMapping< T > childMapping = forestMapping( forest1, child );
-			return NodeMappings.compose( insertCosts, childMapping );
+			return NodeMappings.compose( insertMapping, childMapping );
 		} );
 	}
 
@@ -361,9 +372,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 		double deleteCostForest1 = deleteCosts.get( forest1 ).forestCost;
 		return findBestMapping( forest1.getChildren(), child ->
 		{
-			NodeMapping< T > deleteCosts = NodeMappings.empty( deleteCostForest1 - this.deleteCosts.get( child ).forestCost );
+			NodeMapping< T > deleteMapping = NodeMappings.empty( deleteCostForest1 - this.deleteCosts.get( child ).forestCost );
 			NodeMapping< T > childMapping = forestMapping( child, forest2 );
-			return NodeMappings.compose( deleteCosts, childMapping );
+			return NodeMappings.compose( deleteMapping, childMapping );
 		} );
 	}
 
@@ -396,30 +407,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		String emptyTree1 = "empty1";
 		String emptyTree2 = "empty2";
 
-		FlowNetwork network = new FlowNetwork();
-		network.addVertices( Arrays.asList( source, sink, emptyTree1, emptyTree2 ) );
-		network.addVertices( childrenForest1 );
-		network.addVertices( childrenForest2 );
-
-		int n1 = childrenForest1.size();
-		int n2 = childrenForest2.size();
-		network.addEdge( source, emptyTree1, n2 - Math.min( n1, n2 ), 0 );
-		network.addEdge( emptyTree1, emptyTree2, Math.max( n1, n2 ) - Math.min( n1, n2 ), 0 ); // this edge is not needed
-		network.addEdge( emptyTree2, sink, n1 - Math.min( n1, n2 ), 0 );
-
-		for ( Tree< T > child1 : childrenForest1 )
-		{
-			network.addEdge( source, child1, 1, 0 );
-			network.addEdge( child1, emptyTree2, 1, deleteCosts.get( child1 ).treeCost );
-			for ( Tree< T > child2 : childrenForest2 )
-				network.addEdge( child1, child2, 1, treeMapping( child1, child2 ).getCost() );
-		}
-
-		for ( Tree< T > child2 : childrenForest2 )
-		{
-			network.addEdge( child2, sink, 1, 0 );
-			network.addEdge( emptyTree1, child2, 1, insertCosts.get( child2 ).treeCost );
-		}
+		FlowNetwork network = buildFlowNetwork( source, sink, emptyTree1, emptyTree2, childrenForest1, childrenForest2 );
 
 		network.solveMaxFlowMinCost( source, sink );
 
@@ -439,6 +427,38 @@ public class ZhangUnorderedTreeEditDistance< T >
 					childMappings.add( treeMapping( child1, child2 ) );
 
 		return NodeMappings.compose( childMappings );
+	}
+
+	private FlowNetwork buildFlowNetwork(
+			String source, String sink, String emptyTree1, String emptyTree2, Collection< Tree< T > > childrenForest1,
+			Collection< Tree< T > > childrenForest2
+	)
+	{
+		FlowNetwork network = new FlowNetwork();
+		network.addVertices( Arrays.asList( source, sink, emptyTree1, emptyTree2 ) );
+		network.addVertices( childrenForest1 );
+		network.addVertices( childrenForest2 );
+
+		int numberOfChildrenForest1 = childrenForest1.size();
+		int numberOfChildrenForest2 = childrenForest2.size();
+		int minNumberOfChildren = Math.min( numberOfChildrenForest1, numberOfChildrenForest2 );
+		network.addEdge( source, emptyTree1, numberOfChildrenForest2 - minNumberOfChildren, 0 );
+		network.addEdge( emptyTree2, sink, numberOfChildrenForest1 - minNumberOfChildren, 0 );
+
+		for ( Tree< T > child1 : childrenForest1 )
+		{
+			network.addEdge( source, child1, 1, 0 );
+			network.addEdge( child1, emptyTree2, 1, deleteCosts.get( child1 ).treeCost );
+			for ( Tree< T > child2 : childrenForest2 )
+				network.addEdge( child1, child2, 1, treeMapping( child1, child2 ).getCost() );
+		}
+
+		for ( Tree< T > child2 : childrenForest2 )
+		{
+			network.addEdge( child2, sink, 1, 0 );
+			network.addEdge( emptyTree1, child2, 1, insertCosts.get( child2 ).treeCost );
+		}
+		return network;
 	}
 
 	/**

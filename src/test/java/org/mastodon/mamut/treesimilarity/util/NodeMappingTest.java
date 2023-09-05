@@ -1,4 +1,4 @@
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.treesimilarity.util;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Test;
+import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTree;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;

@@ -1,16 +1,17 @@
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.treesimilarity.util;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
 /**
  * Utility class for {@link ZhangUnorderedTreeEditDistance} that provides
  * static factory methods for the easy creation of {@link NodeMapping}s.
  */
-class NodeMappings
+public class NodeMappings
 {
 	private NodeMappings()
 	{
@@ -37,9 +38,9 @@ class NodeMappings
 	}
 
 	/**
-	 * @return A {@link NodeMapping} that represents a composed that contains
-	 * all the map entries of the given {@code children}. The costs of the
-	 * composed mapping is the sum of the costs of the children.
+	 * @return A {@link NodeMapping} that represents a composed mapping that
+	 * contains all the map entries of the given {@code children}. The costs of
+	 * the composed mapping is the sum of the costs of the children.
 	 */
 	@SafeVarargs
 	public static < T > NodeMapping< T > compose( NodeMapping< T >... children )
@@ -48,9 +49,9 @@ class NodeMappings
 	}
 
 	/**
-	 * @return A {@link NodeMapping} that represents a composed that contains
-	 * all the map entries of the given {@code children}. The costs of the
-	 * composed mapping is the sum of the costs of the children.
+	 * @return A {@link NodeMapping} that represents a composed mapping that
+	 * contains all the map entries of the given {@code children}. The costs of
+	 * the composed mapping is the sum of the costs of the children.
 	 */
 	public static < T > NodeMapping< T > compose( List< NodeMapping< T > > children )
 	{
@@ -71,10 +72,6 @@ class NodeMappings
 		{
 			return cost;
 		}
-
-		@Override
-		public abstract void writeToMap( Map< Tree< T >, Tree< T > > map );
-
 	}
 
 	private static class EmptyNodeMapping< T > extends AbstractNodeMapping< T >
