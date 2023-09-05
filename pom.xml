@@ -104,11 +104,14 @@
             <artifactId>ui-behaviour</artifactId>
         </dependency>
 
+        <!-- hierarchical clustering, tests only -->
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>
             <artifactId>weka-dev</artifactId>
+            <scope>test</scope>
         </dependency>
 
+        <!-- hierarchical clustering -->
         <dependency>
             <groupId>com.apporiented</groupId>
             <artifactId>hierarchical-clustering</artifactId>
