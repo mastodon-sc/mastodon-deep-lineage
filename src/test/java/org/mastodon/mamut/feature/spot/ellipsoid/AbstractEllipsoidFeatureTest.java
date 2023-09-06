@@ -1,16 +1,11 @@
 package org.mastodon.mamut.feature.spot.ellipsoid;
 
-import org.mastodon.feature.Feature;
-import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureProjectionKey;
-import org.mastodon.feature.FeatureProjectionSpec;
+import org.mastodon.mamut.feature.AbstractFeatureTest;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 
-import java.io.IOException;
-
-public abstract class AbstractEllipsoidFeatureTest
+public abstract class AbstractEllipsoidFeatureTest extends AbstractFeatureTest< Spot >
 {
 	protected final Model model = new Model();
 
@@ -36,16 +31,4 @@ public abstract class AbstractEllipsoidFeatureTest
 		spot.setCovariance( new double[][] { { 6, 2, 3 }, { 2, 7, 4 }, { 3, 4, 8 } } );
 		return spot;
 	}
-
-	protected static FeatureProjection< Spot > getProjection( Feature< Spot > ellipsoidFeature,
-			FeatureProjectionSpec featureProjectionSpec )
-	{
-		return ellipsoidFeature.project( FeatureProjectionKey.key( featureProjectionSpec ) );
-	}
-
-	abstract void testFeatureComputation();
-
-	abstract void testFeatureSerialization() throws IOException;
-
-	abstract void testFeatureInvalidate();
 }
