@@ -1,9 +1,10 @@
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.treesimilarity.util;
 
 import org.jgrapht.alg.flow.PushRelabelMFImpl;
 import org.jgrapht.alg.flow.mincost.CapacityScalingMinimumCostFlow;
 import org.jgrapht.alg.flow.mincost.MinimumCostFlowProblem;
 import org.jgrapht.alg.interfaces.MaximumFlowAlgorithm;
+import org.jgrapht.alg.interfaces.MinimumCostFlowAlgorithm;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
@@ -20,15 +21,16 @@ public class JGraphtTools
 	}
 
 	/**
-	 * Computes a maximum (source, sink)-flow of minimum cost and returns its cost.
-	 * G is a digraph with edge costs and capacities. There is a source node s and a sink node t. This function finds a maximum flow from s to t whose total cost is minimized.
-	 * @param graph a directed graph with edge costs (i.e. edge weights)
+	 * Computes a maximum (source, sink)-flow of minimum cost and returns it.
+	 * Assuming {@code graph} is a digraph with edge costs and capacities. There is a source node s and a sink node t. This function finds a maximum flow from s to t whose total cost is minimized.
+	 *
+	 * @param graph      a directed graph with edge costs (i.e. edge weights)
 	 * @param capacities a map from edges to their capacities
-	 * @param source the source node
-	 * @param sink the sink node
-	 * @return the minimum cost of the maximum flow
+	 * @param source     the source node
+	 * @param sink       the sink node
+	 * @return the maximum flow of minimum cost
 	 */
-	public static < V > double maxFlowMinCost( final SimpleDirectedWeightedGraph< V, DefaultWeightedEdge > graph,
+	public static < V > MinimumCostFlowAlgorithm.MinimumCostFlow< DefaultWeightedEdge > maxFlowMinCost( final SimpleDirectedWeightedGraph< V, DefaultWeightedEdge > graph,
 			final Map< DefaultWeightedEdge, Integer > capacities, final V source, final V sink )
 	{
 		// Intermediately save the edge weights, since they need to be overwritten with capacities for the maximum flow algorithm
@@ -63,6 +65,6 @@ public class JGraphtTools
 				new MinimumCostFlowProblem.MinimumCostFlowProblemImpl<>( graph, supplies, capacities::get );
 		CapacityScalingMinimumCostFlow< V, DefaultWeightedEdge > minimumCostFlowAlgorithm =
 				new CapacityScalingMinimumCostFlow<>();
-		return minimumCostFlowAlgorithm.getMinimumCostFlow( problem ).getCost();
+		return minimumCostFlowAlgorithm.getMinimumCostFlow( problem );
 	}
 }

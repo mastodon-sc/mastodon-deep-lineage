@@ -1,6 +1,7 @@
 package org.mastodon.mamut.treesimilarity.tree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TreeUtils
@@ -18,7 +19,7 @@ public class TreeUtils
 	public static < T > List< Tree< T > > listOfSubtrees( final Tree< T > tree )
 	{
 		if ( tree == null )
-			throw new IllegalArgumentException( "Given tree must not be null" );
+			return Collections.emptyList();
 		List< Tree< T > > list = new ArrayList<>();
 		list.add( tree );
 		for ( Tree< T > child : tree.getChildren() )

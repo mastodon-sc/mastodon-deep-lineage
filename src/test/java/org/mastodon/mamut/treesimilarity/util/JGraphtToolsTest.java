@@ -1,9 +1,8 @@
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.treesimilarity.util;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.junit.Test;
-import org.mastodon.mamut.treesimilarity.JGraphtTools;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +66,7 @@ public class JGraphtToolsTest
 		capacities.put( e11, Integer.MAX_VALUE );
 		capacities.put( e12, 6 );
 
-		double cost = JGraphtTools.maxFlowMinCost( graph, capacities, 1, 7 );
+		double cost = JGraphtTools.maxFlowMinCost( graph, capacities, 1, 7 ).getCost();
 
 		assertEquals( 373, ( int ) cost );
 	}
