@@ -144,7 +144,7 @@ public class ClusterRootNodesController
 		int i = 0;
 		for ( Set< BranchSpotTree > entry : classifiedObjects )
 		{
-			logger.info( "Class {} has {} trees", i++, entry.size() );
+			logger.info( "Class {} has {} trees", i, entry.size() );
 			TagSetStructure.Tag tag = tagSet.getTags().get( i );
 			for ( BranchSpotTree tree : entry )
 			{
@@ -159,6 +159,7 @@ public class ClusterRootNodesController
 					TagSetUtils.tagSpotAndIncomingEdges( model, spot, tagSet, tag );
 				} );
 			}
+			i++;
 		}
 	}
 
