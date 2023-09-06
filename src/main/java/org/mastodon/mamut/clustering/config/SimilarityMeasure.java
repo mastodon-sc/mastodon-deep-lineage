@@ -10,9 +10,9 @@ import java.util.function.BinaryOperator;
 
 public enum SimilarityMeasure
 {
-	NORMALIZED_DIFFERENCE( "Normalized Zhang tree edit distance", ZhangUnorderedTreeEditDistance::normalizedDistance ),
-	AVERAGE_DIFFERENCE_PER_CELL_LIFE_CYCLE( "Per cell Zhang tree edit distance", ZhangUnorderedTreeEditDistance::averageDistance ),
-	ABSOLUTE_DIFFERENCE( "Zhang tree edit distance", ZhangUnorderedTreeEditDistance::distance );
+	NORMALIZED_DIFFERENCE( "Normalized Zhang Tree Distance", ZhangUnorderedTreeEditDistance::normalizedDistance ),
+	AVERAGE_DIFFERENCE_PER_CELL_LIFE_CYCLE( "Per Cell Zhang Tree Distance", ZhangUnorderedTreeEditDistance::averageDistance ),
+	ABSOLUTE_DIFFERENCE( "Zhang Tree Distance", ZhangUnorderedTreeEditDistance::distance );
 
 	private final String name;
 

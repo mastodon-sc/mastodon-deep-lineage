@@ -58,7 +58,10 @@ public class ClusterRootNodesView extends InteractiveCommand
 	private int numberOfCellDivisions;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Similarity measure", choices = { "Normalized difference", "Average difference", "Absolute difference" })
+	@Parameter(
+			label = "Similarity measure", choices = { "Normalized Zhang Tree Distance", "Per cell Zhang Tree Distance",
+			"Zhang Tree Distance" }
+	)
 	private String similarityMeasure;
 
 	@SuppressWarnings("unused")
