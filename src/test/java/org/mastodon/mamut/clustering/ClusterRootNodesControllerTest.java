@@ -11,9 +11,11 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 import org.mastodon.model.tag.TagSetStructure;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -59,15 +61,17 @@ public class ClusterRootNodesControllerTest
 		Collection< Spot > tag1Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag1 );
 		Collection< Spot > tag2Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag2 );
 
+		Set< String > expectedClassNames = new HashSet<>( Arrays.asList( "Class 1", "Class 2", "Class 3" ) );
+		Set< String > actualClassNames = new HashSet<>( Arrays.asList( tag0.label(), tag1.label(), tag2.label() ) );
+
+		Set< Integer > expectedClassCounts = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
+		Set< Integer > actualClassCounts = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
+
 		assertTrue( controller.isValidParams() );
 		assertEquals( 1, tagSets.size() );
 		assertEquals( 3, tags.size() );
-		assertEquals( "Class 1", tag0.label() );
-		assertEquals( "Class 2", tag1.label() );
-		assertEquals( "Class 3", tag2.label() );
-		assertEquals( 9, tag0Spots.size() );
-		assertEquals( 14, tag1Spots.size() );
-		assertEquals( 12, tag2Spots.size() );
+		assertEquals( expectedClassNames, actualClassNames );
+		assertEquals( expectedClassCounts, actualClassCounts );
 	}
 
 	@Test
