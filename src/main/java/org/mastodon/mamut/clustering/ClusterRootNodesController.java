@@ -28,7 +28,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -140,13 +139,14 @@ public class ClusterRootNodesController
 
 	private void applyClassification( Classification< BranchSpotTree > classification, Collection< Pair< String, Integer > > tagsAndColors )
 	{
-		Map< Integer, List< BranchSpotTree > > classifiedObjects = classification.getClassifiedObjects();
+		Set< Set< BranchSpotTree > > classifiedObjects = classification.getClassifiedObjects();
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, "Classification", tagsAndColors );
-		for ( Map.Entry< Integer, List< BranchSpotTree > > entry : classifiedObjects.entrySet() )
+		int i = 0;
+		for ( Set< BranchSpotTree > entry : classifiedObjects )
 		{
-			logger.info( "Class {} has {} trees", entry.getKey(), entry.getValue().size() );
-			TagSetStructure.Tag tag = tagSet.getTags().get( entry.getKey() );
-			for ( BranchSpotTree tree : entry.getValue() )
+			logger.info( "Class {} has {} trees", i++, entry.size() );
+			TagSetStructure.Tag tag = tagSet.getTags().get( i );
+			for ( BranchSpotTree tree : entry )
 			{
 				Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), model.getGraph().vertexRef() );
 				ModelGraph modelGraph = model.getGraph();
