@@ -1,7 +1,9 @@
 package org.mastodon.mamut.clustering.ui;
 
 import com.apporiented.algorithm.clustering.Cluster;
+import com.apporiented.algorithm.clustering.visualization.ClusterComponent;
 import com.apporiented.algorithm.clustering.visualization.DendrogramPanel;
+import com.apporiented.algorithm.clustering.visualization.VCoord;
 import net.miginfocom.swing.MigLayout;
 import org.mastodon.mamut.clustering.util.DendrogramUtils;
 
@@ -85,9 +87,9 @@ public class DendrogramView< T >
 		dendrogramPanel.setScaleValueDecimals( zeros + 1 );
 	}
 
-	private static class DendrogramPanelWithCutoffLine extends DendrogramPanel
+	private class DendrogramPanelWithCutoffLine extends DendrogramPanel
 	{
-		private final double maxDistance;
+		private final double maxValue;
 
 		private final double cutoff;
 
@@ -116,12 +118,15 @@ public class DendrogramView< T >
 			{
 				Stroke stroke = new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5, 5 }, 0 );
 				g2.setStroke( stroke );
-				int yDendrogramOrigin = 2 * getBorderBottom();
-				int height = getHeight() - getBorderBottom();
-				int width = getWidth() - getBorderRight();
-				int cutoffX = width - ( int ) ( cutoff / maxDistance * width );
-
-				g.drawLine( cutoffX, yDendrogramOrigin, cutoffX, height );
+				int yDendrogramOrigin = getBorderBottom() + getBorderTop();
+				int yDendrogramEnd = getHeight() - getBorderBottom();
+				ClusterComponent component = new ClusterComponent( cluster, false, new VCoord( 0, 0 ) );
+				int maxLabelWidth = DendrogramUtils.getMaxLeafNameWidth( g2, cluster ) + component.getNamePadding();
+				int screenWidth = getWidth() - getBorderLeft() - getBorderRight() - maxLabelWidth;
+				double xFactor = screenWidth / maxValue;
+				int xOffset = getBorderLeft();
+				int cutoffX = xOffset + ( int ) ( ( maxValue - cutoff ) * xFactor );
+				g.drawLine( cutoffX, yDendrogramOrigin, cutoffX, yDendrogramEnd );
 			}
 			finally
 			{
