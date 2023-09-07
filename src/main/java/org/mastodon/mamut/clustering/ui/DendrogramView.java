@@ -91,10 +91,10 @@ public class DendrogramView< T >
 
 		private final double cutoff;
 
-		private DendrogramPanelWithCutoffLine( double maxDistance, double cutoff )
+		private DendrogramPanelWithCutoffLine( double maxValue, double cutoff )
 		{
 			super();
-			this.maxDistance = maxDistance;
+			this.maxValue = maxValue;
 			this.cutoff = cutoff;
 		}
 
