@@ -106,6 +106,8 @@ public class DendrogramView< T >
 				return;
 			if ( !( g instanceof Graphics2D ) )
 				return;
+			if ( cluster == null )
+				return;
 
 			Graphics2D g2 = ( Graphics2D ) g;
 			Stroke defaultStroke = g2.getStroke();
