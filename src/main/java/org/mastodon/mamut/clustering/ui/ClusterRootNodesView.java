@@ -10,9 +10,6 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.Button;
 
-import static org.mastodon.mamut.clustering.ClusterRootNodesController.ComputeParams;
-import static org.mastodon.mamut.clustering.ClusterRootNodesController.InputParams;
-
 @Plugin(type = InteractiveCommand.class, visible = false, label = "Classification of Lineage Trees")
 public class ClusterRootNodesView extends InteractiveCommand
 {
@@ -103,12 +100,10 @@ public class ClusterRootNodesView extends InteractiveCommand
 	@SuppressWarnings("unused")
 	private void update()
 	{
-		InputParams inputParams = new InputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
-		ComputeParams computeParams =
-					new ComputeParams( SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ),
-							numberOfClasses
-					);
-		controller.setParams( inputParams, computeParams, showDendrogram );
+		controller.setInputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
+		controller.setComputeParams(
+				SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses );
+		controller.showDendrogram( showDendrogram );
 
 		paramFeedback = "<html><body width=" + WIDTH_INPUT + "cm>";
 		if ( controller.isValidParams() )

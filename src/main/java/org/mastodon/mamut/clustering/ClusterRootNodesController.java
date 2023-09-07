@@ -189,22 +189,29 @@ public class ClusterRootNodesController
 		return trees;
 	}
 
-	public void setParams( final InputParams inputParams, final ComputeParams computeParams, boolean showDendrogram )
+	public void setInputParams( CropCriteria cropCriterion, int cropStart, int cropEnd, int minCellDivisions )
 	{
-		CropCriteria cropCriterion = inputParams.cropCriterion;
-		cropStart = inputParams.cropStart;
-		cropEnd = inputParams.cropEnd;
+		this.cropStart = cropStart;
+		this.cropEnd = cropEnd;
+		this.minCellDivisions = minCellDivisions;
 		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_CELLS ) )
 		{
 			logger.debug( "Crop criterion cells, crop start cells: {}, crop end cells: {}", cropStart, cropEnd );
-			cropStart = LineageTreeUtils.getFirstTimepointWithNSpots( model, inputParams.cropStart );
-			cropEnd = LineageTreeUtils.getFirstTimepointWithNSpots( model, inputParams.cropEnd );
+			cropStart = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
+			cropEnd = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
 		}
 		logger.debug( "Crop criterion {}, start timepoint: {}, crop end timepoint: {}", cropCriterion, cropStart, cropEnd );
-		minCellDivisions = inputParams.minCellDivisions;
-		similarityMeasure = computeParams.similarityMeasure;
-		clusteringMethod = computeParams.clusteringMethod;
-		numberOfClasses = computeParams.numberOfClasses;
+	}
+
+	public void setComputeParams( SimilarityMeasure similarityMeasure, ClusteringMethod clusteringMethod, int numberOfClasses )
+	{
+		this.similarityMeasure = similarityMeasure;
+		this.clusteringMethod = clusteringMethod;
+		this.numberOfClasses = numberOfClasses;
+	}
+
+	public void showDendrogram( boolean showDendrogram )
+	{
 		this.showDendrogram = showDendrogram;
 	}
 
@@ -232,42 +239,5 @@ public class ClusterRootNodesController
 	public boolean isValidParams()
 	{
 		return getFeedback().isEmpty();
-	}
-
-	public static class InputParams
-	{
-		private final CropCriteria cropCriterion;
-
-		private final int cropStart;
-
-		private final int cropEnd;
-
-		private final int minCellDivisions;
-
-		public InputParams( final CropCriteria cropCriterion, final int cropStart, final int cropEnd, final int minCellDivisions )
-		{
-			this.cropCriterion = cropCriterion;
-			this.cropStart = cropStart;
-			this.cropEnd = cropEnd;
-			this.minCellDivisions = minCellDivisions;
-		}
-	}
-
-	public static class ComputeParams
-	{
-		private final SimilarityMeasure similarityMeasure;
-
-		private final ClusteringMethod clusteringMethod;
-
-		private final int numberOfClasses;
-
-		public ComputeParams(
-				final SimilarityMeasure similarityMeasure, final ClusteringMethod clusteringMethod, final int numberOfClasses
-		)
-		{
-			this.similarityMeasure = similarityMeasure;
-			this.clusteringMethod = clusteringMethod;
-			this.numberOfClasses = numberOfClasses;
-		}
 	}
 }

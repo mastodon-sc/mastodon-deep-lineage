@@ -41,13 +41,9 @@ public class ClusterRootNodesControllerTest
 		addEmptyTree( modelGraph );
 
 		ClusterRootNodesController controller = new ClusterRootNodesController( model, synchronizer );
-		controller.setParams(
-				new ClusterRootNodesController.InputParams( CropCriteria.TIMEPOINT, 0, 100, 1 ),
-				new ClusterRootNodesController.ComputeParams(
-						SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 ),
-				false
-
-		);
+		controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
+		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
+		controller.showDendrogram( false );
 		controller.createTagSet();
 
 		List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
@@ -80,12 +76,9 @@ public class ClusterRootNodesControllerTest
 		ExampleGraph2 exampleGraph = new ExampleGraph2();
 		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
 		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel(), synchronizer );
-		controller.setParams(
-				new ClusterRootNodesController.InputParams( CropCriteria.NUMBER_OF_CELLS, 1, 0, 1 ),
-				new ClusterRootNodesController.ComputeParams(
-						SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 1 ),
-				false
-		);
+		controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
+		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
+		controller.showDendrogram( false );
 		assertEquals( 2, controller.getFeedback().size() );
 		assertFalse( controller.isValidParams() );
 		assertThrows( IllegalArgumentException.class, controller::createTagSet );
