@@ -62,7 +62,7 @@ public class ClusterUtilsTest
 		assertEquals( expectedClasses, classifiedObjects );
 		assertNotNull( objectMapping );
 		assertEquals( ClusterData.names.length, objectMapping.size() );
-		assertEquals( 57.75d, cutoff, 0.000001d );
+		assertEquals( 55.375d, cutoff, 0.000001d );
 		assertNotNull( classification.getAlgorithmResult() );
 	}
 
@@ -91,7 +91,7 @@ public class ClusterUtilsTest
 		assertEquals( expectedClasses, classifiedObjects );
 		assertNotNull( objectMapping );
 		assertEquals( ClusterData.names.length, objectMapping.size() );
-		assertEquals( 82, cutoff, 0d );
+		assertEquals( 75, cutoff, 0d );
 		assertEquals( 95, cluster.getDistanceValue(), 0d );
 		assertEquals( 94, Math.max( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
 		assertEquals( 68, Math.min( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
@@ -122,7 +122,7 @@ public class ClusterUtilsTest
 		assertEquals( expectedClasses, classifiedObjects );
 		assertNotNull( objectMapping );
 		assertEquals( ClusterData.names.length, objectMapping.size() );
-		assertEquals( 21, cutoff, 0d );
+		assertEquals( 20, cutoff, 0d );
 		assertEquals( 29, cluster.getDistanceValue(), 0d );
 		assertEquals( 26, Math.max( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
 		assertEquals( 0, Math.min( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );

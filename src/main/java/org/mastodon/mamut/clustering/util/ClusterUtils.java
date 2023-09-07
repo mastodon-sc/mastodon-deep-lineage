@@ -12,6 +12,7 @@ import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,16 +90,28 @@ public class ClusterUtils
 	 * @param threshold the threshold for the distance for building clusters
 	 * @return a mapping from cluster id objects
 	 */
-	public static < T > Classification< T > getClassificationByThreshold( T[] objects, double[][] distances,
-			LinkageStrategy linkageStrategy, double threshold )
+	public static < T > Classification< T > getClassificationByThreshold(
+			final T[] objects, final double[][] distances, final LinkageStrategy linkageStrategy, final double threshold
+	)
+	{
+		return getClassificationByThreshold( objects, distances, linkageStrategy, threshold, null, null, null );
+	}
+
+	private static < T > Classification< T > getClassificationByThreshold(
+			final T[] objects, final double[][] distances, final LinkageStrategy linkageStrategy, final double threshold,
+			@Nullable Map< String, T > objectMapping, @Nullable Cluster algorithmResult, @Nullable List< Cluster > sortedClusters
+	)
 	{
 		if ( threshold < 0 )
 			throw new IllegalArgumentException( "threshold must be greater than or equal to zero" );
 
-		Map< String, T > objectMapping = objectMapping( objects );
-		Cluster algorithmResult = performClustering( distances, linkageStrategy, objectMapping );
+		if ( objectMapping == null )
+			objectMapping = objectMapping( objects );
+		if ( algorithmResult == null )
+			algorithmResult = performClustering( distances, linkageStrategy, objectMapping );
+		if ( sortedClusters == null )
+			sortedClusters = sortClusters( algorithmResult );
 
-		List< Cluster > sortedClusters = sortClusters( algorithmResult );
 		Set< Cluster > resultClusters = new HashSet<>();
 		for ( Cluster cluster : sortedClusters )
 		{
@@ -132,8 +145,10 @@ public class ClusterUtils
 	 * @param classCount the number of classes to be built
 	 * @return a mapping from cluster id objects
 	 */
-	public static < T > Classification< T > getClassificationByClassCount( T[] objects, double[][] distances,
-			LinkageStrategy linkageStrategy, int classCount )
+	public static < T > Classification< T > getClassificationByClassCount(
+			final T[] objects, final double[][] distances,
+			final LinkageStrategy linkageStrategy, final int classCount
+	)
 	{
 		if ( classCount < 1 )
 			throw new IllegalArgumentException( "number of classes (" + classCount + ") must be greater than zero." );
@@ -155,25 +170,20 @@ public class ClusterUtils
 		// NB: the cluster algorithm needs unique names instead of objects
 		Map< String, T > objectMapping = objectMapping( objects );
 		Cluster algorithmResult = performClustering( distances, linkageStrategy, objectMapping );
-
 		List< Cluster > sortedClusters = sortClusters( algorithmResult );
-		Set< Cluster > resultClusters = new HashSet<>();
-		double cutoff = sortedClusters.get( 0 ).getDistanceValue();
-		for ( Cluster cluster : sortedClusters )
-		{
-			resultClusters.add( cluster );
-			if ( resultClusters.size() == classCount - 1 )
-			{
-				cutoff = cluster.getDistanceValue();
-				break;
-			}
-		}
+		double threshold = getThreshold( sortedClusters, classCount );
 
-		// convert the clusters back to classes containing the original objects
-		Set< Set< T > > classifiedObjects = convertClustersToClasses( resultClusters, objectMapping );
+		return getClassificationByThreshold(
+				objects, distances, linkageStrategy, threshold, objectMapping, algorithmResult, sortedClusters );
+	}
 
-		log( classifiedObjects );
-		return new Classification<>( classifiedObjects, algorithmResult, objectMapping, cutoff );
+	private static double getThreshold( final List< Cluster > sortedClusters, int classCount )
+	{
+		double threshold = sortedClusters.get( classCount - 2 ).getDistanceValue();
+		if ( sortedClusters.size() < classCount )
+			return threshold;
+		else
+			return ( threshold + sortedClusters.get( classCount - 1 ).getDistanceValue() ) / 2d;
 	}
 
 	private static < T > Cluster performClustering( double[][] distances, LinkageStrategy linkageStrategy,
