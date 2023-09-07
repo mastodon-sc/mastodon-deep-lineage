@@ -322,10 +322,10 @@ public class ClusterUtilsTest
 		Cluster child10 = child1.getChildren().get( 0 );
 		Cluster child11 = child1.getChildren().get( 1 );
 		assertEquals( 9d, cluster.getDistanceValue(), 0d );
-		assertEquals( 4d, Math.max( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
-		assertEquals( 0d, Math.min( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
-		assertEquals( 2d, Math.max( child10.getDistanceValue(), child11.getDistanceValue() ), 0d );
-		assertEquals( 0d, Math.min( child10.getDistanceValue(), child11.getDistanceValue() ), 0d );
+		assertEquals( 0d, child0.getDistanceValue(), 0d );
+		assertEquals( 4d, child1.getDistanceValue(), 0d );
+		assertEquals( 0d, child10.getDistanceValue(), 0d );
+		assertEquals( 2d, child11.getDistanceValue(), 0d );
 	}
 
 	@Test
