@@ -76,7 +76,7 @@ public class ClusterRootNodesControllerTest
 		ExampleGraph2 exampleGraph = new ExampleGraph2();
 		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
 		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel(), synchronizer );
-		controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
+		controller.setInputParams( CropCriteria.TIMEPOINT, 1, 0, 1 );
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
 		controller.showDendrogram( false );
 		assertEquals( 2, controller.getFeedback().size() );
