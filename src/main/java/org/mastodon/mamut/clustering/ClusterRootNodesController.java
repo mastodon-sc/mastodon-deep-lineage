@@ -1,7 +1,7 @@
 package org.mastodon.mamut.clustering;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.mastodon.graph.algorithm.RootFinder;
+import org.mastodon.collection.RefSet;
 import org.mastodon.graph.algorithm.traversal.DepthFirstIterator;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
@@ -167,8 +167,7 @@ public class ClusterRootNodesController
 	{
 		if ( !synchronizer.isUptodate() )
 			model.getBranchGraph().graphRebuilt();
-		// TODO: take into account crop start - there may be more roots if the crop start is > 0
-		Set< Spot > roots = RootFinder.getRoots( model.getGraph() );
+		RefSet< Spot > roots = LineageTreeUtils.getRoots( model.getGraph(), cropStart );
 		List< BranchSpotTree > trees = new ArrayList<>();
 		for ( Spot root : roots )
 		{
@@ -197,8 +196,8 @@ public class ClusterRootNodesController
 		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_CELLS ) )
 		{
 			logger.debug( "Crop criterion cells, crop start cells: {}, crop end cells: {}", cropStart, cropEnd );
-			cropStart = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
-			cropEnd = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
+			this.cropStart = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
+			this.cropEnd = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
 		}
 		logger.debug( "Crop criterion {}, start timepoint: {}, crop end timepoint: {}", cropCriterion, cropStart, cropEnd );
 	}
