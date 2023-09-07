@@ -2,6 +2,7 @@ package org.mastodon.mamut.clustering.util;
 
 import com.apporiented.algorithm.clustering.Cluster;
 
+import java.awt.Graphics2D;
 import java.util.Map;
 
 public class DendrogramUtils
@@ -47,5 +48,23 @@ public class DendrogramUtils
 			cluster.setName( objectMapping.get( cluster.getName() ).toString() );
 		for ( Cluster child : cluster.getChildren() )
 			mapLeaveNames( child, objectMapping );
+	}
+
+	/**
+	 * Gets the maximum width of the leave names in screen coordinates of the given cluster.<p>
+	 * @param g the graphics context to provide the font metrics
+	 * @param cluster the cluster to get the maximum leave name width
+	 * @return the maximum width of the leave names of the given cluster
+	 */
+	public static int getMaxLeafNameWidth( final Graphics2D g, final Cluster cluster )
+	{
+		int nameWidth = cluster.isLeaf() ? ( int ) g.getFontMetrics().getStringBounds( cluster.getName(), g ).getWidth() : 0;
+		for ( Cluster child : cluster.getChildren() )
+		{
+			int childWidth = getMaxLeafNameWidth( g, child );
+			if ( childWidth > nameWidth )
+				nameWidth = childWidth;
+		}
+		return nameWidth;
 	}
 }
