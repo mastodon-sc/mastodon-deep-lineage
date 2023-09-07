@@ -35,7 +35,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 			+ "</html>\n";
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Crop criterion", choices = { "Timepoint", "Number of cells" })
+	@Parameter(label = "Crop criterion", choices = { "Timepoint", "Number of cells" }, callback = "update")
 	private String cropCriterion;
 
 	@SuppressWarnings("unused")
@@ -57,23 +57,24 @@ public class ClusterRootNodesView extends InteractiveCommand
 	@SuppressWarnings("unused")
 	@Parameter(
 			label = "Similarity measure", choices = { "Normalized Zhang Tree Distance", "Per cell Zhang Tree Distance",
-			"Zhang Tree Distance" }
+			"Zhang Tree Distance" }, callback = "update"
 	)
 	private String similarityMeasure;
 
 	@SuppressWarnings("unused")
 	@Parameter(
-			label = "Linkage strategy for hierarchical clustering", choices = { "Average linkage", "Single Linkage", "Complete Linkage" }
+			label = "Linkage strategy for hierarchical clustering", choices = { "Average linkage", "Single Linkage",
+			"Complete Linkage" }, callback = "update"
 	)
 	private String clusteringMethod;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Feature", choices = "Cell lifetime")
+	@Parameter(label = "Feature", choices = "Cell lifetime", callback = "update")
 	private String cellLifeTime;
 	// NB: dynamic choices: https://github.com/imagej/tutorials/blob/c78764438d774295d00fc8a4273e4c4f25c8ad46/maven-projects/dynamic-commands/src/main/java/DynamicCallbacks.java
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Show dendrogram of clustering")
+	@Parameter(label = "Show dendrogram of clustering", callback = "update")
 	private boolean showDendrogram;
 
 	@SuppressWarnings("unused")
