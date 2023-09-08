@@ -26,7 +26,7 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 
 	private static final String[] CLUSTER_ROOT_NODES_KEYS = { "not mapped" };
 
-	private final AbstractNamedAction cluserRootNodesAction;
+	private final AbstractNamedAction clusterRootNodesAction;
 
 	private MamutAppModel appModel;
 
@@ -37,7 +37,7 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 	@SuppressWarnings("unused")
 	public ClusterRootNodesPlugin()
 	{
-		cluserRootNodesAction = new RunnableAction( CLUSTER_ROOT_NODES, this::clusterRootNodes );
+		clusterRootNodesAction = new RunnableAction( CLUSTER_ROOT_NODES, this::clusterRootNodes );
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 	@Override
 	public void installGlobalActions( Actions actions )
 	{
-		actions.namedAction( cluserRootNodesAction, CLUSTER_ROOT_NODES_KEYS );
+		actions.namedAction( clusterRootNodesAction, CLUSTER_ROOT_NODES_KEYS );
 	}
 
 	private void clusterRootNodes()
