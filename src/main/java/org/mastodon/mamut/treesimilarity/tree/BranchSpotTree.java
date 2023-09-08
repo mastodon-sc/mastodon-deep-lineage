@@ -16,12 +16,19 @@ public class BranchSpotTree implements Tree< Double >
 
 	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
 	{
+		if ( branchSpot == null )
+			throw new IllegalArgumentException( "The given branchSpot is null." );
+		if ( branchSpot.getFirstTimePoint() > endTimepoint )
+			throw new IllegalArgumentException( "The first timepoint of the given branchSpot " + branchSpot.getFirstTimePoint()
+					+ " is greater than the endTimepoint (" + endTimepoint + ")." );
 		this.branchSpot = branchSpot;
 		this.endTimepoint = endTimepoint;
 		this.children = new ArrayList<>();
 		for ( BranchLink branchLink : branchSpot.outgoingEdges() )
 		{
 			BranchSpot child = branchLink.getTarget();
+			if ( branchSpot.equals( child ) )
+				continue;
 			if ( child.getFirstTimePoint() <= this.endTimepoint )
 				this.children.add( new BranchSpotTree( child, this.endTimepoint ) );
 		}
@@ -43,5 +50,11 @@ public class BranchSpotTree implements Tree< Double >
 	public BranchSpot getBranchSpot()
 	{
 		return branchSpot;
+	}
+
+	@Override
+	public String toString()
+	{
+		return branchSpot.getFirstLabel();
 	}
 }

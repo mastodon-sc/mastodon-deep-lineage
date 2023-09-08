@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
 /**
@@ -107,23 +108,29 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private final Map< Pair< Tree< T >, Tree< T > >, Double > attributeDistances;
 
 	/**
-	 * Calculate the Zhang edit distance between two labeled unordered trees.
+	 * Simple default cost function that returns the absolute value of the difference between two costs,
+	 * if both costs exist or the cost value of the other, if one value is {@code null}.
+	 */
+	public static final BinaryOperator< Double > DEFAULT_COST_FUNCTION = ZhangUnorderedTreeEditDistance::defaultCostFunction;
+
+	/**
+	 * Calculates the absolute Zhang edit distance between two labeled unordered trees.
 	 *
 	 * @param tree1 Tree object representing the first tree.
 	 * @param tree2 Tree object representing the second tree.
 	 * @param costFunction mandatory cost function.
 	 *
-	 * @return The Zhang edit distance between tree1 and tree2.
+	 * @return The absolute Zhang edit distance between tree1 and tree2.
 	 */
 	public static < T > double distance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
 			final BiFunction< T, T, Double > costFunction )
 	{
 		if ( costFunction == null )
 			throw new IllegalArgumentException( "The cost function is expected to be non-null, but it is null." );
-		if ( tree1 == null && tree2 == null )
-			throw new IllegalArgumentException( "Both trees are null. This is not allowed." );
 
 		// trivial cases
+		if ( tree1 == null && tree2 == null )
+			return 0;
 		if ( tree1 == null )
 			return distanceTreeToNull( tree2, costFunction );
 		else if ( tree2 == null )
@@ -131,6 +138,48 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		ZhangUnorderedTreeEditDistance< T > zhang = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction );
 		return zhang.compute( tree1, tree2 );
+	}
+
+	/**
+	 * Calculates the normalized Zhang edit distance between two labeled unordered trees.
+	 * <p>
+	 * The normalized distance is defined as the absolute distance divided by the sum of the distances to empty/null trees.
+	 *
+	 * @param tree1 Tree object representing the first tree.
+	 * @param tree2 Tree object representing the second tree.
+	 * @param costFunction mandatory cost function.
+	 *
+	 * @return The normalized Zhang edit distance between tree1 and tree2.
+	 */
+	public static < T > double normalizedDistance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
+			final BiFunction< T, T, Double > costFunction )
+	{
+		double denominator = distance( tree1, null, costFunction ) + distance( null, tree2, costFunction );
+		// NB: avoid division by zero. Two empty trees are considered equal. Two trees with zero distance are considered equal.
+		if ( denominator == 0 )
+			return 0;
+		return distance( tree1, tree2, costFunction ) / denominator;
+	}
+
+	/**
+	 * Calculates the normalized Zhang edit distance between two labeled unordered trees.
+	 * <p>
+	 * The average distance is defined as the absolute distance divided by the sum of the sizes (i.e. number of nodes) of the trees.
+	 *
+	 * @param tree1 Tree object representing the first tree.
+	 * @param tree2 Tree object representing the second tree.
+	 * @param costFunction mandatory cost function.
+	 *
+	 * @return The average Zhang edit distance between tree1 and tree2.
+	 */
+	public static < T > double averageDistance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
+			final BiFunction< T, T, Double > costFunction )
+	{
+		double denominator = ( double ) TreeUtils.size( tree1 ) + ( double ) TreeUtils.size( tree2 );
+		// NB: avoid division by zero. Two empty trees are considered equal. Two trees with zero distance are considered equal.
+		if ( denominator == 0 )
+			return 0;
+		return distance( tree1, tree2, costFunction ) / denominator;
 	}
 
 	/**
@@ -180,6 +229,16 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		treeDistances = new HashMap<>();
 		forestDistances = new HashMap<>();
+	}
+
+	private static Double defaultCostFunction( Double o1, Double o2 )
+	{
+		if ( o2 == null )
+			return o1;
+		else if ( o1 == null )
+			return o2;
+		else
+			return Math.abs( o1 - o2 );
 	}
 
 	/**

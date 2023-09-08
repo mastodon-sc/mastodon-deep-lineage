@@ -8,11 +8,27 @@ import org.mastodon.mamut.treesimilarity.tree.Tree;
 import java.util.function.BiFunction;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class ZhangUnorderedTreeEditDistanceTest
 {
 
-	private final static BiFunction< Double, Double, Double > defaultCosts = getCostFunction();
+	private final static BiFunction< Double, Double, Double > defaultCosts = ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION;
+
+	@SuppressWarnings("all")
+	@Test
+	public void testExceptions()
+	{
+		Tree< Double > simpleTree1 = SimpleTreeExamples.tree1();
+		Tree< Double > simpleTree2 = SimpleTreeExamples.tree2();
+		assertThrows( IllegalArgumentException.class, () -> ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleTree2, null ) );
+	}
+
+	@Test
+	public void testNullTrees()
+	{
+		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( null, null, defaultCosts ), 0d );
+	}
 
 	@Test
 	public void testDistance()
@@ -157,16 +173,6 @@ public class ZhangUnorderedTreeEditDistanceTest
 		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( branchSpotTree7, branchSpotTree5, costFunction ), 0d );
 	}
 
-	private static BiFunction< Double, Double, Double > getCostFunction()
-	{
-		return ( o1, o2 ) -> {
-			if ( o2 == null )
-				return o1;
-			else
-				return Math.abs( o1 - o2 );
-		};
-	}
-
 	/**
 	 * Tests the remove subtree operation (3a)
 	 * Special case: the root node is removed
@@ -237,5 +243,51 @@ public class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > tree19 = SimpleTreeExamples.tree19();
 		// The edit path is to remove the nodes with weights: 1, 2, 3, 4, 5, 6 (cost 21 = 1 + 2 + 3 + 4 + 5 + 6)
 		assertEquals( 21, ZhangUnorderedTreeEditDistance.distance( tree18, tree19, defaultCosts ), 0d );
+	}
+
+	@Test
+	public void testNormalizedDistance()
+	{
+		Tree< Double > emptyTree = SimpleTreeExamples.emptyTree();
+		Tree< Double > tree1 = SimpleTreeExamples.tree1();
+		Tree< Double > tree2 = SimpleTreeExamples.tree2();
+		assertEquals( 0d, ZhangUnorderedTreeEditDistance.normalizedDistance( null, null, defaultCosts ), 0d );
+		assertEquals( 0d, ZhangUnorderedTreeEditDistance.normalizedDistance( emptyTree, emptyTree, defaultCosts ), 0d );
+		assertEquals( 20d / 120d, ZhangUnorderedTreeEditDistance.normalizedDistance( tree1, tree2, defaultCosts ), 0d );
+	}
+
+	@Test
+	public void testAverageDistance()
+	{
+		Tree< Double > emptyTree = SimpleTreeExamples.emptyTree();
+		Tree< Double > tree1 = SimpleTreeExamples.tree1();
+		Tree< Double > tree2 = SimpleTreeExamples.tree2();
+		assertEquals( 0d, ZhangUnorderedTreeEditDistance.averageDistance( null, null, defaultCosts ), 0d );
+		assertEquals( 0d, ZhangUnorderedTreeEditDistance.averageDistance( emptyTree, emptyTree, defaultCosts ), 0d );
+		assertEquals( 20d / 6d, ZhangUnorderedTreeEditDistance.averageDistance( tree1, tree2, defaultCosts ), 0d );
+	}
+
+	@Test
+	public void testDistanceBug()
+	{
+		Tree< Double > tree20 = SimpleTreeExamples.tree20();
+		Tree< Double > tree21 = SimpleTreeExamples.tree21();
+		assertEquals( 170d, ZhangUnorderedTreeEditDistance.distance( tree20, tree21, defaultCosts ), 0d );
+	}
+
+	@Test
+	public void testChangeLabelOperation()
+	{
+		Tree< Double > tree22 = SimpleTreeExamples.tree22();
+		Tree< Double > tree23 = SimpleTreeExamples.tree23();
+		assertEquals( 20d, ZhangUnorderedTreeEditDistance.distance( tree22, tree23, defaultCosts ), 0d );
+	}
+
+	@Test
+	public void testComplexExample()
+	{
+		Tree< Double > tree1a111 = SimpleTreeExamples.tree1a111();
+		Tree< Double > tree2c2 = SimpleTreeExamples.tree2c2();
+		assertEquals( 1_654d, ZhangUnorderedTreeEditDistance.distance( tree1a111, tree2c2, defaultCosts ), 0d );
 	}
 }

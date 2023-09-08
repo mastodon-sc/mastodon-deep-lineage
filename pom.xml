@@ -89,6 +89,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- tree similarity -->
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
@@ -102,6 +103,21 @@
             <groupId>org.scijava</groupId>
             <artifactId>ui-behaviour</artifactId>
         </dependency>
+
+        <!-- hierarchical clustering, tests only -->
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-dev</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- hierarchical clustering -->
+        <dependency>
+            <groupId>com.apporiented</groupId>
+            <artifactId>hierarchical-clustering</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
 
         <!-- Test dependencies -->
         <dependency>

@@ -1,11 +1,18 @@
 package org.mastodon.mamut.treesimilarity.tree;
 
 import org.junit.Test;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public class BranchSpotTreeTest
@@ -52,5 +59,24 @@ public class BranchSpotTreeTest
 		assertEquals( 13d, BranchSpotTreeExamples.tree5().getBranchSpot().getTimepoint(), 0d );
 		assertEquals( 12d, BranchSpotTreeExamples.tree6().getBranchSpot().getTimepoint(), 0d );
 		assertEquals( 12d, BranchSpotTreeExamples.tree7().getBranchSpot().getTimepoint(), 0d );
+	}
+
+	@Test
+	public void testToString()
+	{
+		ExampleGraph2 example = new ExampleGraph2();
+		BranchSpotTree tree = new BranchSpotTree( example.branchSpotB, 20 );
+		// Note: spot3 is the first spot of branchSpotB.
+		assertEquals( example.spot3.getLabel(), tree.toString() );
+	}
+
+	@Test
+	@SuppressWarnings("all")
+	public void testBranchSpot()
+	{
+		ExampleGraph2 example = new ExampleGraph2();
+		// NB: 2 is not a timepoint of branchSpotB, it only starts at 4.
+		assertThrows( IllegalArgumentException.class, () -> new BranchSpotTree( example.branchSpotB, 2 ) );
+		assertThrows( IllegalArgumentException.class, () -> new BranchSpotTree( null, 0 ) );
 	}
 }
