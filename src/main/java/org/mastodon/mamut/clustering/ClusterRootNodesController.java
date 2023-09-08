@@ -209,7 +209,7 @@ public class ClusterRootNodesController
 		this.numberOfClasses = numberOfClasses;
 	}
 
-	public void showDendrogram( boolean showDendrogram )
+	public void setShowDendrogram( boolean showDendrogram )
 	{
 		this.showDendrogram = showDendrogram;
 	}

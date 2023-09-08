@@ -104,7 +104,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 		controller.setInputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
 		controller.setComputeParams(
 				SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses );
-		controller.showDendrogram( showDendrogram );
+		controller.setShowDendrogram( showDendrogram );
 
 		paramFeedback = "<html><body width=" + WIDTH_INPUT + "cm>";
 		if ( controller.isValidParams() )
