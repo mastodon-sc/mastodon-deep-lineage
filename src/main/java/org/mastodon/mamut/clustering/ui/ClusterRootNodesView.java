@@ -95,7 +95,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 	@Override
 	public void run()
 	{
-		// NB: not implemented. Update method is called via callback on parameter change and in initializer.
+		// NB: not implemented. Update method is called via callback on each parameter change.
 	}
 
 	@SuppressWarnings("unused")
