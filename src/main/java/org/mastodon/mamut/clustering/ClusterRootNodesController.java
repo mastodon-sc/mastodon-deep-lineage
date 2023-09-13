@@ -199,7 +199,7 @@ public class ClusterRootNodesController
 			this.cropStart = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
 			this.cropEnd = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
 		}
-		logger.debug( "Crop criterion {}, start timepoint: {}, crop end timepoint: {}", cropCriterion, cropStart, cropEnd );
+		logger.debug( "Crop criterion {}, start timepoint: {}, crop end timepoint: {}", cropCriterion, this.cropStart, this.cropEnd );
 	}
 
 	public void setComputeParams( SimilarityMeasure similarityMeasure, ClusteringMethod clusteringMethod, int numberOfClasses )
