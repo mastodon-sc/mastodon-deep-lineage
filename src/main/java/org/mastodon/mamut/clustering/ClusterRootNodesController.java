@@ -102,7 +102,7 @@ public class ClusterRootNodesController
 			showDendrogram();
 	}
 
-	private String getParameters()
+	String getParameters()
 	{
 		StringJoiner joiner = new StringJoiner( ", " );
 		joiner.add( "Crop criterion: " + cropCriterion.getName() );
@@ -112,7 +112,7 @@ public class ClusterRootNodesController
 		joiner.add( "Minimum cell divisions: " + minCellDivisions );
 		joiner.add( "Similarity measure: " + similarityMeasure.getName() );
 		joiner.add( "Clustering method: " + clusteringMethod.getName() );
-		joiner.add( "Resulting root nodes: " + getRoots().size() );
+		joiner.add( "Resulting lineage trees: " + getRoots().size() );
 		return joiner.toString();
 	}
 

@@ -85,6 +85,21 @@ public class ClusterRootNodesControllerTest
 		assertThrows( IllegalArgumentException.class, controller::createTagSet );
 	}
 
+	@Test
+	public void testGetParameters()
+	{
+		ExampleGraph2 exampleGraph = new ExampleGraph2();
+		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
+		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel(), synchronizer );
+		controller.setInputParams( CropCriteria.TIMEPOINT, 1, 10, 1 );
+		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
+
+		assertEquals(
+				"Crop criterion: Timepoint, Crop start: 1, Crop end: 10, Number of classes: 3, Minimum cell divisions: 1, Similarity measure: Normalized Zhang Tree Distance, Clustering method: Average linkage, Resulting lineage trees: 1",
+				controller.getParameters()
+		);
+	}
+
 	/**
 	 * <pre>
 	 *                             branchSpot1(lifespan=20)
