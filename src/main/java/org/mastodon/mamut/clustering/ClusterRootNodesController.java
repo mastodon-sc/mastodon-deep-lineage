@@ -147,7 +147,7 @@ public class ClusterRootNodesController
 	private void applyClassification( Classification< BranchSpotTree > classification, Collection< Pair< String, Integer > > tagsAndColors )
 	{
 		Set< Set< BranchSpotTree > > classifiedObjects = classification.getClassifiedObjects();
-		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, "Classification", tagsAndColors );
+		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, getTagSetName(), tagsAndColors );
 		int i = 0;
 		for ( Set< BranchSpotTree > entry : classifiedObjects )
 		{
