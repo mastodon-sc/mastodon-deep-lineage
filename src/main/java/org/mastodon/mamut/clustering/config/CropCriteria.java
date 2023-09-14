@@ -4,14 +4,17 @@ import java.util.NoSuchElementException;
 
 public enum CropCriteria
 {
-	TIMEPOINT( "Timepoint" ),
-	NUMBER_OF_CELLS( "Number of cells" );
+	TIMEPOINT( "Timepoint", "time" ),
+	NUMBER_OF_CELLS( "Number of cells", "cells" );
 
 	private final String name;
 
-	CropCriteria( String name )
+	private final String nameShort;
+
+	CropCriteria( String name, String nameShort )
 	{
 		this.name = name;
+		this.nameShort = nameShort;
 	}
 
 	public static CropCriteria getByName( final String name )
@@ -26,5 +29,10 @@ public enum CropCriteria
 	public String getName()
 	{
 		return name;
+	}
+
+	public String getNameShort()
+	{
+		return nameShort;
 	}
 }
