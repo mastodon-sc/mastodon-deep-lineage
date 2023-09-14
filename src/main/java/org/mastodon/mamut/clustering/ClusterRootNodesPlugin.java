@@ -22,7 +22,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 @Plugin( type = MamutPlugin.class )
 public class ClusterRootNodesPlugin implements MamutPlugin
 {
-	private static final String CLUSTER_ROOT_NODES = "Cluster root nodes";
+	private static final String CLUSTER_ROOT_NODES = "Classification of Lineage Trees";
 
 	private static final String[] CLUSTER_ROOT_NODES_KEYS = { "not mapped" };
 
