@@ -249,4 +249,20 @@ public class ClusterRootNodesController
 	{
 		return getFeedback().isEmpty();
 	}
+
+	private String getTagSetName()
+	{
+		return "Classification"
+				+ " ("
+				+ cropCriterion.getNameShort()
+				+ ": "
+				+ cropStart
+				+ "-"
+				+ cropEnd
+				+ ", classes: "
+				+ numberOfClasses
+				+ ", min. div: "
+				+ minCellDivisions
+				+ ") ";
+	}
 }

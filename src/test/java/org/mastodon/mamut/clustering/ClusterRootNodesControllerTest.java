@@ -63,6 +63,7 @@ public class ClusterRootNodesControllerTest
 		Set< Integer > expectedClassCounts = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
 		Set< Integer > actualClassCounts = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
 
+		assertEquals( "Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet0.getName() );
 		assertTrue( controller.isValidParams() );
 		assertEquals( 1, tagSets.size() );
 		assertEquals( 3, tags.size() );
