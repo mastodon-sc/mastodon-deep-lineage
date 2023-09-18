@@ -63,6 +63,7 @@ public class ClusterRootNodesControllerTest
 		Set< Integer > expectedClassCounts = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
 		Set< Integer > actualClassCounts = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
 
+		assertEquals( "Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet0.getName() );
 		assertTrue( controller.isValidParams() );
 		assertEquals( 1, tagSets.size() );
 		assertEquals( 3, tags.size() );
@@ -82,6 +83,21 @@ public class ClusterRootNodesControllerTest
 		assertEquals( 2, controller.getFeedback().size() );
 		assertFalse( controller.isValidParams() );
 		assertThrows( IllegalArgumentException.class, controller::createTagSet );
+	}
+
+	@Test
+	public void testGetParameters()
+	{
+		ExampleGraph2 exampleGraph = new ExampleGraph2();
+		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
+		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel(), synchronizer );
+		controller.setInputParams( CropCriteria.TIMEPOINT, 1, 10, 1 );
+		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
+
+		assertEquals(
+				"Crop criterion: Timepoint, Crop start: 1, Crop end: 10, Number of classes: 3, Minimum cell divisions: 1, Similarity measure: Normalized Zhang Tree Distance, Clustering method: Average linkage, Resulting lineage trees: 1",
+				controller.getParameters()
+		);
 	}
 
 	/**

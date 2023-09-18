@@ -45,9 +45,15 @@ public class ClusterRootNodesController
 
 	private ClusteringMethod clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE;
 
+	private CropCriteria cropCriterion;
+
 	private int cropStart;
 
 	private int cropEnd;
+
+	private int cropStartTime;
+
+	private int cropEndTime;
 
 	private int numberOfClasses;
 
@@ -96,16 +102,17 @@ public class ClusterRootNodesController
 			showDendrogram();
 	}
 
-	private String getParameters()
+	String getParameters()
 	{
 		StringJoiner joiner = new StringJoiner( ", " );
+		joiner.add( "Crop criterion: " + cropCriterion.getName() );
 		joiner.add( "Crop start: " + cropStart );
 		joiner.add( "Crop end: " + cropEnd );
 		joiner.add( "Number of classes: " + numberOfClasses );
 		joiner.add( "Minimum cell divisions: " + minCellDivisions );
 		joiner.add( "Similarity measure: " + similarityMeasure.getName() );
 		joiner.add( "Clustering method: " + clusteringMethod.getName() );
-		joiner.add( "Resulting root nodes: " + getRoots().size() );
+		joiner.add( "Resulting lineage trees: " + getRoots().size() );
 		return joiner.toString();
 	}
 
@@ -140,7 +147,7 @@ public class ClusterRootNodesController
 	private void applyClassification( Classification< BranchSpotTree > classification, Collection< Pair< String, Integer > > tagsAndColors )
 	{
 		Set< Set< BranchSpotTree > > classifiedObjects = classification.getClassifiedObjects();
-		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, "Classification", tagsAndColors );
+		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, getTagSetName(), tagsAndColors );
 		int i = 0;
 		for ( Set< BranchSpotTree > entry : classifiedObjects )
 		{
@@ -167,14 +174,14 @@ public class ClusterRootNodesController
 	{
 		if ( !synchronizer.isUptodate() )
 			model.getBranchGraph().graphRebuilt();
-		RefSet< Spot > roots = LineageTreeUtils.getRoots( model.getGraph(), cropStart );
+		RefSet< Spot > roots = LineageTreeUtils.getRoots( model.getGraph(), cropStartTime );
 		List< BranchSpotTree > trees = new ArrayList<>();
 		for ( Spot root : roots )
 		{
 			BranchSpot rootBranchSpot = model.getBranchGraph().getBranchVertex( root, model.getBranchGraph().vertexRef() );
 			try
 			{
-				BranchSpotTree branchSpotTree = new BranchSpotTree( rootBranchSpot, cropEnd );
+				BranchSpotTree branchSpotTree = new BranchSpotTree( rootBranchSpot, cropEndTime );
 				int minTreeSize = 2 * minCellDivisions + 1;
 				if ( TreeUtils.size( branchSpotTree ) < minTreeSize )
 					continue;
@@ -190,16 +197,19 @@ public class ClusterRootNodesController
 
 	public void setInputParams( CropCriteria cropCriterion, int cropStart, int cropEnd, int minCellDivisions )
 	{
+		this.cropCriterion = cropCriterion;
 		this.cropStart = cropStart;
 		this.cropEnd = cropEnd;
-		this.minCellDivisions = minCellDivisions;
+		this.cropStartTime = cropStart;
+		this.cropEndTime = cropEnd;
 		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_CELLS ) )
 		{
-			logger.debug( "Crop criterion cells, crop start cells: {}, crop end cells: {}", cropStart, cropEnd );
-			this.cropStart = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
-			this.cropEnd = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
+			this.cropStartTime = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
+			this.cropEndTime = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
 		}
-		logger.debug( "Crop criterion {}, start timepoint: {}, crop end timepoint: {}", cropCriterion, this.cropStart, this.cropEnd );
+		this.minCellDivisions = minCellDivisions;
+		logger.debug( "Crop criterion {}, start: {}, end: {}", cropCriterion.getName(), this.cropStart, this.cropEnd );
+		logger.debug( "Crop time, start: {}, end: {}", this.cropStartTime, this.cropEndTime );
 	}
 
 	public void setComputeParams( SimilarityMeasure similarityMeasure, ClusteringMethod clusteringMethod, int numberOfClasses )
@@ -219,7 +229,7 @@ public class ClusterRootNodesController
 		List< String > feedback = new ArrayList<>();
 		if ( cropStart >= cropEnd )
 		{
-			String message = "Crop start (timepoint=" + cropStart + ") must be smaller than crop end (timepoint=" + cropEnd + ")";
+			String message = "Crop start (" + cropStart + ") must be smaller than crop end (" + cropEnd + ")";
 			feedback.add( message );
 			logger.debug( message );
 		}
@@ -238,5 +248,21 @@ public class ClusterRootNodesController
 	public boolean isValidParams()
 	{
 		return getFeedback().isEmpty();
+	}
+
+	private String getTagSetName()
+	{
+		return "Classification"
+				+ " ("
+				+ cropCriterion.getNameShort()
+				+ ": "
+				+ cropStart
+				+ "-"
+				+ cropEnd
+				+ ", classes: "
+				+ numberOfClasses
+				+ ", min. div: "
+				+ minCellDivisions
+				+ ") ";
 	}
 }
