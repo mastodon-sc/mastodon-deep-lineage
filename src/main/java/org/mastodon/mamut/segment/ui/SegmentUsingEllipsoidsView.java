@@ -1,5 +1,6 @@
-package org.mastodon.mamut.segment;
+package org.mastodon.mamut.segment.ui;
 
+import org.mastodon.mamut.segment.SegmentUsingEllipsoidsController;
 import org.mastodon.mamut.segment.config.LabelOptions;
 import org.mastodon.mamut.segment.config.SegmentationTask;
 import org.scijava.Initializable;
