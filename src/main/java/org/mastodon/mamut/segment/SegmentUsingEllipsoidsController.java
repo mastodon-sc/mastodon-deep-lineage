@@ -29,6 +29,7 @@ import org.mastodon.mamut.feature.EllipsoidIterable;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.segment.config.LabelOptions;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;

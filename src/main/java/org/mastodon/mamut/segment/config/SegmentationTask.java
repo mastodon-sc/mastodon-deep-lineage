@@ -1,4 +1,4 @@
-package org.mastodon.mamut.segment;
+package org.mastodon.mamut.segment.config;
 
 import java.util.NoSuchElementException;
 

@@ -1,5 +1,7 @@
 package org.mastodon.mamut.segment;
 
+import org.mastodon.mamut.segment.config.LabelOptions;
+import org.mastodon.mamut.segment.config.SegmentationTask;
 import org.scijava.Initializable;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
