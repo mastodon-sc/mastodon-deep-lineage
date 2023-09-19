@@ -31,7 +31,6 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.segment.config.LabelOptions;
 import org.mastodon.spatial.SpatialIndex;
-import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.slf4j.Logger;
@@ -49,16 +48,21 @@ public class SegmentUsingEllipsoidsController
 
 	private final Model model;
 
-	private final StatusService statusService;
+	private final List< TimePoint > timePoints;
 
-	private final SharedBigDataViewerData bdvData;
+	private final Source< RealType< ? > > source;
+
+	private final StatusService statusService;
 
 	private final ImgSaver saver;
 
-	public SegmentUsingEllipsoidsController( final Model model, final SharedBigDataViewerData bdvData, final Context context )
+	public SegmentUsingEllipsoidsController(
+			final Model model, final List< TimePoint > timePoints, final Source< RealType< ? > > source, final Context context
+	)
 	{
 		this.model = model;
-		this.bdvData = bdvData;
+		this.timePoints = timePoints;
+		this.source = source;
 		this.statusService = context.service( StatusService.class );
 		this.saver = new ImgSaver( context );
 	}
@@ -81,22 +85,20 @@ public class SegmentUsingEllipsoidsController
 
 		logger.info( "Save ellipsoid segmentation to file. Label options: {}, file: {}", labelOption, file.getAbsolutePath() );
 		long[] spatialDimensions = getDimensionsSpimSource();
-		List< TimePoint > timepoints = bdvData.getSpimData().getSequenceDescription().getTimePoints().getTimePointsOrdered();
-		int frames = timepoints.size();
+		int frames = timePoints.size();
 		logger.debug( "number of frames: {}", frames );
-		DiskCachedCellImg< IntType, ? > img = createCachedImage( spatialDimensions, timepoints.size() );
+		DiskCachedCellImg< IntType, ? > img = createCachedImage( spatialDimensions, frames );
 
-		for ( TimePoint timepoint : timepoints )
+		for ( TimePoint timepoint : timePoints )
 		{
 			int timepointId = timepoint.getId();
 			AffineTransform3D transform = new AffineTransform3D();
-			Source< ? > bdvSource = bdvData.getSources().get( 0 ).getSpimSource();
-			bdvSource.getSourceTransform( timepointId, 0, transform );
+			source.getSourceTransform( timepointId, 0, transform );
 			IntervalView< IntType > slice = Views.hyperSlice( img, 3, timepointId );
 			AbstractSource< IntType > sliceSource = new RandomAccessibleIntervalSource<>( slice, new IntType(), transform, "Segmentation" );
 			if ( withBackground )
 			{
-				RandomAccessible< RealType< ? > > bdvRandomAccessible = Cast.unchecked( bdvSource.getSource( timepointId, 0 ) );
+				RandomAccessible< RealType< ? > > bdvRandomAccessible = Cast.unchecked( source.getSource( timepointId, 0 ) );
 				RandomAccessibleInterval< IntType > sliceRai = sliceSource.getSource( 0, 0 );
 				RealTypeConverters.copyFromTo( bdvRandomAccessible, sliceRai );
 			}
@@ -121,12 +123,10 @@ public class SegmentUsingEllipsoidsController
 			throw new IllegalArgumentException( "Cannot show ellipsoid segmentation in BDV. Given label options are null." );
 		logger.info( "Show ellipsoid segmentation in BDV. Use label option: {}", labelOptions );
 
-		final Source< RealType< ? > > source = Cast.unchecked( bdvData.getSources().get( 0 ).getSpimSource() );
 		final EllipsoidIterable< RealType< ? > > ellipsoidIterable = new EllipsoidIterable<>( source );
 
-		List< TimePoint > timepoints = bdvData.getSpimData().getSequenceDescription().getTimePoints().getTimePointsOrdered();
-		int frames = timepoints.size();
-		timepoints.forEach( timepoint -> segmentAllSpotsOfTimepoint( ellipsoidIterable, labelOptions, timepoint.getId(), frames ) );
+		int frames = timePoints.size();
+		timePoints.forEach( timepoint -> segmentAllSpotsOfTimepoint( ellipsoidIterable, labelOptions, timepoint.getId(), frames ) );
 		logger.info( "Done labelling ellipsoids BDV." );
 	}
 
@@ -148,13 +148,11 @@ public class SegmentUsingEllipsoidsController
 
 	private long[] getDimensionsSpimSource()
 	{
-		// NB: Use the dimensions of the first source and the first timepoint only without checking if they are equal in other sources and timepoints.
-		int source = 0;
+		// NB: Use the dimensions of the first timepoint only without checking if they are equal in other timepoints.
 		int timepoint = 0;
 		// NB: the midmaplevel 0 is supposed to be the highest resolution
 		int midMipmapLevel = 0;
-		long[] dimensions =
-				bdvData.getSources().get( source ).getSpimSource().getSource( timepoint, midMipmapLevel ).dimensionsAsLongArray();
+		long[] dimensions = this.source.getSource( timepoint, midMipmapLevel ).dimensionsAsLongArray();
 		logger.debug( "spim source, number of dimensions: {}", dimensions.length );
 		Arrays.stream( dimensions ).forEach( value -> logger.debug( "dimension: {}", value ) );
 		return dimensions;
