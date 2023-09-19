@@ -2,6 +2,8 @@ package org.mastodon.mamut.segment.config;
 
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
+
 import static org.junit.Assert.*;
 
 public class SegmentationTaskTest
@@ -11,6 +13,8 @@ public class SegmentationTaskTest
 	public void getByName()
 	{
 		assertEquals( SegmentationTask.SEGMENT_ELLIPSOIDS_BDV, SegmentationTask.getByName( "Show segmentation in BigDataViewer" ) );
+		assertEquals( SegmentationTask.SEGMENT_ELLIPSOIDS_IMAGEJ, SegmentationTask.getByName( "Save segmentation result to file" ) );
+		assertThrows( NoSuchElementException.class, () -> SegmentationTask.getByName( "Foo" ) );
 	}
 
 	@Test
