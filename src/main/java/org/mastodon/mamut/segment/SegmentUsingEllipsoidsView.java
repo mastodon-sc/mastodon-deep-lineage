@@ -5,9 +5,11 @@ import org.mastodon.mamut.segment.config.SegmentationTask;
 import org.scijava.Initializable;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 import java.io.File;
 
+@Plugin(type = Command.class, label = "Run segmentation using ellipsoids")
 public class SegmentUsingEllipsoidsView implements Command, Initializable
 {
 
