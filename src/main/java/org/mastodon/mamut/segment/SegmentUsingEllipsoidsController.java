@@ -204,12 +204,22 @@ public class SegmentUsingEllipsoidsController
 
 	private int getLabelId( final Spot spot, final LabelOptions option )
 	{
-		if ( labelOptions.equals( LabelOptions.SPOT_ID ) )
+		switch ( option )
+		{
+		case SPOT_ID:
 			return spot.getInternalPoolIndex();
-		BranchSpot ref = model.getBranchGraph().vertexRef();
-		int branchSpotId = model.getBranchGraph().getBranchVertex( spot, ref ).getInternalPoolIndex();
-		model.getBranchGraph().releaseRef( ref ); // NB: optional, but increases performance, when this method is called often
-		return branchSpotId;
+		case BRANCH_SPOT_ID:
+			BranchSpot ref = model.getBranchGraph().vertexRef();
+			int branchSpotId = model.getBranchGraph().getBranchVertex( spot, ref ).getInternalPoolIndex();
+			model.getBranchGraph().releaseRef( ref ); // NB: optional, but increases performance, when this method is called often
+			return branchSpotId;
+		case TRACK_ID:
+			if ( trackIdProjection == null )
+				trackIdProjection = getTrackIDFeatureProjection( context, model );
+			return ( int ) trackIdProjection.value( spot );
+		default:
+			throw new IllegalArgumentException( "Unknown label option: " + option );
+		}
 	}
 
 	private static ImgPlus< IntType > createImgPlus( final Img< IntType > img )
