@@ -66,20 +66,25 @@ public class SegmentUsingEllipsoidsControllerTest
 				new SegmentUsingEllipsoidsController( model, timePoints, Cast.unchecked( source ), context );
 		File outputSpot = getTempFile( "resultSpot" );
 		File outputBranchSpot = getTempFile( "resultBranchSpot" );
+		File outputTrack = getTempFile( "resultTrack" );
 		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, outputSpot, true, false );
 		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, true, false );
+		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.TRACK_ID, outputTrack, true, false );
 
 		ImgOpener imgOpener = new ImgOpener( context );
 		SCIFIOImgPlus< IntType > imgSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputSpot );
 		SCIFIOImgPlus< IntType > imgBranchSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputBranchSpot );
+		SCIFIOImgPlus< IntType > imgTrack = getIntTypeSCIFIOImgPlus( imgOpener, outputTrack );
 
 		// check that the random content has been replaced by the spot id in the center of the spot
 		assertEquals( spot.getInternalPoolIndex(), imgSpot.getAt( center ).get() );
 		assertEquals( branchSpot.getInternalPoolIndex(), imgBranchSpot.getAt( center ).get() );
+		assertEquals( 0, imgTrack.getAt( center ).get() );
 		// check that the random content has NOT been replaced outside the ellipsoid of the spot
 		long[] corner = new long[] { 0, 0, 0 };
 		assertNotEquals( spot.getInternalPoolIndex(), imgSpot.getAt( corner ).get() );
 		assertNotEquals( branchSpot.getInternalPoolIndex(), imgBranchSpot.getAt( corner ).get() );
+		assertNotEquals( 0, imgTrack.getAt( corner ).get() );
 	}
 
 	private static SCIFIOImgPlus< IntType > getIntTypeSCIFIOImgPlus( ImgOpener imgOpener, File outputSpot )
