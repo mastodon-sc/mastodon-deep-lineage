@@ -30,7 +30,7 @@ public class SegmentUsingEllipsoidsView implements Command
 	private File saveTo;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Show result")
+	@Parameter(label = "Show result in ImageJ window")
 	private boolean showResult;
 
 	@SuppressWarnings("unused")
