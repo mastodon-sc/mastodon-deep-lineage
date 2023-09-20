@@ -45,6 +45,7 @@ import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 
 public class SegmentUsingEllipsoidsController
@@ -96,6 +97,8 @@ public class SegmentUsingEllipsoidsController
 		logger.debug( "number of frames: {}", frames );
 		DiskCachedCellImg< IntType, ? > img = createCachedImage( spatialDimensions, frames );
 
+		ReentrantReadWriteLock.WriteLock lock = getWriteLock( labelOption );
+		lock.lock();
 		for ( TimePoint timepoint : timePoints )
 		{
 			int timepointId = timepoint.getId();
@@ -108,6 +111,7 @@ public class SegmentUsingEllipsoidsController
 			final EllipsoidIterable< IntType > ellipsoidIterable = new EllipsoidIterable<>( sliceSource );
 			segmentAllSpotsOfTimepoint( ellipsoidIterable, labelOption, timepointId, frames );
 		}
+		lock.unlock();
 
 		ImgPlus< IntType > imgplus = createImgPlus( img );
 		if ( showResult )
@@ -133,6 +137,20 @@ public class SegmentUsingEllipsoidsController
 		logger.info( "Done labelling ellipsoids BDV." );
 	}
 
+	private ReentrantReadWriteLock.WriteLock getWriteLock( LabelOptions labelOption )
+	{
+		switch ( labelOption )
+		{
+		case SPOT_ID:
+		case TRACK_ID:
+			return model.getGraph().getLock().writeLock();
+		case BRANCH_SPOT_ID:
+			return model.getBranchGraph().getLock().writeLock();
+		default:
+			throw new IllegalArgumentException( "Unknown label option: " + labelOption );
+		}
+	}
+
 	private void addBackground( int timepointId, AbstractSource< IntType > sliceSource )
 	{
 		RandomAccessible< RealType< ? > > bdvRandomAccessible = Cast.unchecked( source.getSource( timepointId, 0 ) );
@@ -151,7 +169,7 @@ public class SegmentUsingEllipsoidsController
 		for ( Spot spot : spots )
 		{
 			iterable.reset( spot );
-			iterable.forEach( ( Consumer< RealType< ? > > ) pixel -> pixel.setReal( getId( spot, option ) ) );
+			iterable.forEach( ( Consumer< RealType< ? > > ) pixel -> pixel.setReal( getLabelId( spot, option ) ) );
 		}
 		statusService.showProgress( oneBasedTimepointId, frames );
 	}
@@ -184,7 +202,7 @@ public class SegmentUsingEllipsoidsController
 		return factory.create( dimensionsWithTime, options );
 	}
 
-	private int getId( final Spot spot, final LabelOptions labelOptions )
+	private int getLabelId( final Spot spot, final LabelOptions option )
 	{
 		if ( labelOptions.equals( LabelOptions.SPOT_ID ) )
 			return spot.getInternalPoolIndex();
