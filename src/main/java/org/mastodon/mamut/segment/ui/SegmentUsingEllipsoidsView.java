@@ -3,7 +3,6 @@ package org.mastodon.mamut.segment.ui;
 import org.mastodon.mamut.segment.SegmentUsingEllipsoidsController;
 import org.mastodon.mamut.segment.config.LabelOptions;
 import org.mastodon.mamut.segment.config.SegmentationTask;
-import org.scijava.Initializable;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -11,7 +10,7 @@ import org.scijava.plugin.Plugin;
 import java.io.File;
 
 @Plugin(type = Command.class, label = "Run segmentation using ellipsoids")
-public class SegmentUsingEllipsoidsView implements Command, Initializable
+public class SegmentUsingEllipsoidsView implements Command
 {
 
 	@SuppressWarnings("unused")
