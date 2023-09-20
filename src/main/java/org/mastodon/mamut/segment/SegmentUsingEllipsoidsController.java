@@ -104,11 +104,7 @@ public class SegmentUsingEllipsoidsController
 			IntervalView< IntType > slice = Views.hyperSlice( img, 3, timepointId );
 			AbstractSource< IntType > sliceSource = new RandomAccessibleIntervalSource<>( slice, new IntType(), transform, "Segmentation" );
 			if ( withBackground )
-			{
-				RandomAccessible< RealType< ? > > bdvRandomAccessible = Cast.unchecked( source.getSource( timepointId, 0 ) );
-				RandomAccessibleInterval< IntType > sliceRai = sliceSource.getSource( 0, 0 );
-				RealTypeConverters.copyFromTo( bdvRandomAccessible, sliceRai );
-			}
+				addBackground( timepointId, sliceSource );
 			final EllipsoidIterable< IntType > ellipsoidIterable = new EllipsoidIterable<>( sliceSource );
 			segmentAllSpotsOfTimepoint( ellipsoidIterable, labelOption, timepointId, frames );
 		}
@@ -135,6 +131,13 @@ public class SegmentUsingEllipsoidsController
 		int frames = timePoints.size();
 		timePoints.forEach( timepoint -> segmentAllSpotsOfTimepoint( ellipsoidIterable, labelOptions, timepoint.getId(), frames ) );
 		logger.info( "Done labelling ellipsoids BDV." );
+	}
+
+	private void addBackground( int timepointId, AbstractSource< IntType > sliceSource )
+	{
+		RandomAccessible< RealType< ? > > bdvRandomAccessible = Cast.unchecked( source.getSource( timepointId, 0 ) );
+		RandomAccessibleInterval< IntType > sliceRai = sliceSource.getSource( 0, 0 );
+		RealTypeConverters.copyFromTo( bdvRandomAccessible, sliceRai );
 	}
 
 	private void segmentAllSpotsOfTimepoint(
