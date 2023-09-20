@@ -25,7 +25,12 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.util.Cast;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
+import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.mamut.feature.EllipsoidIterable;
+import org.mastodon.mamut.feature.MamutFeatureComputerService;
+import org.mastodon.mamut.feature.SpotTrackIDFeature;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
@@ -206,5 +211,21 @@ public class SegmentUsingEllipsoidsController
 		SCIFIOConfig config = new SCIFIOConfig();
 		config.writerSetCompression( CompressionType.LZW );
 		saver.saveImg( file.getAbsolutePath(), imgplus, config );
+	}
+
+	private static FeatureProjection< Spot > getTrackIDFeatureProjection( final Context context, final Model model )
+	{
+		final MamutFeatureComputerService featureComputerService = getMamutFeatureComputerService( context, model );
+		SpotTrackIDFeature spotTrackIDFeature =
+				Cast.unchecked( featureComputerService.compute( true, SpotTrackIDFeature.SPEC ).get( SpotTrackIDFeature.SPEC ) );
+		FeatureProjectionKey key = FeatureProjectionKey.key( new FeatureProjectionSpec( SpotTrackIDFeature.KEY ) );
+		return spotTrackIDFeature.project( key );
+	}
+
+	private static MamutFeatureComputerService getMamutFeatureComputerService( final Context context, final Model model )
+	{
+		final MamutFeatureComputerService featureComputerService = MamutFeatureComputerService.newInstance( context );
+		featureComputerService.setModel( model );
+		return featureComputerService;
 	}
 }
