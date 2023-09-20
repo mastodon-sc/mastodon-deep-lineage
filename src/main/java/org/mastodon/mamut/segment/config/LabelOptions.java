@@ -6,7 +6,10 @@ import java.util.NoSuchElementException;
 public enum LabelOptions
 {
 	SPOT_ID( "Spot Id" ),
-	BRANCH_SPOT_ID( "BranchSpot Id" );
+
+	BRANCH_SPOT_ID( "BranchSpot Id" ),
+
+	TRACK_ID( "Track Id" );
 
 	private final String name;
 
