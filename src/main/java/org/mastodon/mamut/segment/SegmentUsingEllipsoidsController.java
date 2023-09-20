@@ -59,7 +59,9 @@ public class SegmentUsingEllipsoidsController
 
 	private final StatusService statusService;
 
-	private final ImgSaver saver;
+	private final Context context;
+
+	private FeatureProjection< Spot > trackIdProjection = null;
 
 	public SegmentUsingEllipsoidsController(
 			final Model model, final List< TimePoint > timePoints, final Source< RealType< ? > > source, final Context context
@@ -68,8 +70,8 @@ public class SegmentUsingEllipsoidsController
 		this.model = model;
 		this.timePoints = timePoints;
 		this.source = source;
+		this.context = context;
 		this.statusService = context.service( StatusService.class );
-		this.saver = new ImgSaver( context );
 	}
 
 	/**
@@ -210,6 +212,7 @@ public class SegmentUsingEllipsoidsController
 	{
 		SCIFIOConfig config = new SCIFIOConfig();
 		config.writerSetCompression( CompressionType.LZW );
+		ImgSaver saver = new ImgSaver( context );
 		saver.saveImg( file.getAbsolutePath(), imgplus, config );
 	}
 
