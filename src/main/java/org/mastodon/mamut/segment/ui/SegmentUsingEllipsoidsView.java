@@ -22,7 +22,7 @@ public class SegmentUsingEllipsoidsView implements Command
 	private String task;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Label Id", choices = { "BranchSpot Id", "Spot Id" })
+	@Parameter(label = "Label Id", choices = { "Track Id", "BranchSpot Id", "Spot Id" })
 	private String option;
 
 	@SuppressWarnings("unused")
