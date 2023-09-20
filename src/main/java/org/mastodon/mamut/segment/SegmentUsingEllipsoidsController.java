@@ -122,18 +122,18 @@ public class SegmentUsingEllipsoidsController
 
 	/**
 	 * Renders ellipsoids of all timepoints into the BigDataViewer using the selected {@link LabelOptions}.
-	 * @param labelOptions the {@link LabelOptions} to use
+	 * @param labelOption the {@link LabelOptions} to use
 	 */
-	public void showEllipsoidSegmentationInBDV( final LabelOptions labelOptions )
+	public void showEllipsoidSegmentationInBDV( final LabelOptions labelOption )
 	{
-		if ( labelOptions == null )
+		if ( labelOption == null )
 			throw new IllegalArgumentException( "Cannot show ellipsoid segmentation in BDV. Given label options are null." );
-		logger.info( "Show ellipsoid segmentation in BDV. Use label option: {}", labelOptions );
+		logger.info( "Show ellipsoid segmentation in BDV. Use label option: {}", labelOption );
 
 		final EllipsoidIterable< RealType< ? > > ellipsoidIterable = new EllipsoidIterable<>( source );
 
 		int frames = timePoints.size();
-		timePoints.forEach( timepoint -> segmentAllSpotsOfTimepoint( ellipsoidIterable, labelOptions, timepoint.getId(), frames ) );
+		timePoints.forEach( timepoint -> segmentAllSpotsOfTimepoint( ellipsoidIterable, labelOption, timepoint.getId(), frames ) );
 		logger.info( "Done labelling ellipsoids BDV." );
 	}
 
