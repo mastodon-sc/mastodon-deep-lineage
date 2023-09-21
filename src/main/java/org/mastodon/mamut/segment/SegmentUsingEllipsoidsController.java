@@ -164,7 +164,7 @@ public class SegmentUsingEllipsoidsController
 	{
 		SpatialIndex< Spot > spots = model.getSpatioTemporalIndex().getSpatialIndex( timepointId );
 		int oneBasedTimepointId = timepointId + 1;
-		logger.info( "timepoint: {}/{}, spots: {}", oneBasedTimepointId, frames, spots.size() );
+		logger.trace( "timepoint: {}/{}, spots: {}", oneBasedTimepointId, frames, spots.size() );
 
 		for ( Spot spot : spots )
 		{
