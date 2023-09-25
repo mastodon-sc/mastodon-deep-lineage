@@ -224,11 +224,7 @@ public class SegmentUsingEllipsoidsController
 
 	private static ImgPlus< IntType > createImgPlus( final Img< IntType > img )
 	{
-		final AxisType[] axesType = new AxisType[ 4 ];
-		axesType[ 0 ] = Axes.X;
-		axesType[ 1 ] = Axes.Y;
-		axesType[ 2 ] = Axes.Z;
-		axesType[ 3 ] = Axes.TIME;
+		final AxisType[] axesType = { Axes.X, Axes.Y, Axes.Z, Axes.TIME };
 
 		return new ImgPlus<>( img, "Result", axesType );
 	}
