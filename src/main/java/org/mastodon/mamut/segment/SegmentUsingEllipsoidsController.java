@@ -153,7 +153,7 @@ public class SegmentUsingEllipsoidsController
 
 	private void addBackground( int timepointId, AbstractSource< IntType > sliceSource )
 	{
-		RandomAccessible< RealType< ? > > bdvRandomAccessible = Cast.unchecked( source.getSource( timepointId, 0 ) );
+		RandomAccessible< RealType< ? > > bdvRandomAccessible = source.getSource( timepointId, 0 );
 		RandomAccessibleInterval< IntType > sliceRai = sliceSource.getSource( 0, 0 );
 		RealTypeConverters.copyFromTo( bdvRandomAccessible, sliceRai );
 	}
