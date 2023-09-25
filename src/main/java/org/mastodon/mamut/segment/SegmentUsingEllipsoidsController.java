@@ -97,7 +97,7 @@ public class SegmentUsingEllipsoidsController
 		logger.debug( "number of frames: {}", frames );
 		DiskCachedCellImg< IntType, ? > img = createCachedImage( spatialDimensions, frames );
 
-		ReentrantReadWriteLock.WriteLock lock = getWriteLock( labelOption );
+		ReentrantReadWriteLock.ReadLock lock = getReadLock( labelOption );
 		lock.lock();
 		for ( TimePoint timepoint : timePoints )
 		{
@@ -137,15 +137,15 @@ public class SegmentUsingEllipsoidsController
 		logger.info( "Done labelling ellipsoids BDV." );
 	}
 
-	private ReentrantReadWriteLock.WriteLock getWriteLock( LabelOptions labelOption )
+	private ReentrantReadWriteLock.ReadLock getReadLock( LabelOptions labelOption )
 	{
 		switch ( labelOption )
 		{
 		case SPOT_ID:
 		case TRACK_ID:
-			return model.getGraph().getLock().writeLock();
+			return model.getGraph().getLock().readLock();
 		case BRANCH_SPOT_ID:
-			return model.getBranchGraph().getLock().writeLock();
+			return model.getBranchGraph().getLock().readLock();
 		default:
 			throw new IllegalArgumentException( "Unknown label option: " + labelOption );
 		}
