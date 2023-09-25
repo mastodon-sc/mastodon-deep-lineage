@@ -104,11 +104,11 @@ public class SegmentUsingEllipsoidsController
 			int timepointId = timepoint.getId();
 			AffineTransform3D transform = new AffineTransform3D();
 			source.getSourceTransform( timepointId, 0, transform );
-			IntervalView< IntType > slice = Views.hyperSlice( img, 3, timepointId );
-			AbstractSource< IntType > sliceSource = new RandomAccessibleIntervalSource<>( slice, new IntType(), transform, "Segmentation" );
+			IntervalView< IntType > frame = Views.hyperSlice( img, 3, timepointId );
+			AbstractSource< IntType > frameSource = new RandomAccessibleIntervalSource<>( frame, new IntType(), transform, "Segmentation" );
 			if ( withBackground )
-				addBackground( timepointId, sliceSource );
-			final EllipsoidIterable< IntType > ellipsoidIterable = new EllipsoidIterable<>( sliceSource );
+				addBackground( timepointId, frameSource );
+			final EllipsoidIterable< IntType > ellipsoidIterable = new EllipsoidIterable<>( frameSource );
 			segmentAllSpotsOfTimepoint( ellipsoidIterable, labelOption, timepointId, frames );
 		}
 		lock.unlock();
