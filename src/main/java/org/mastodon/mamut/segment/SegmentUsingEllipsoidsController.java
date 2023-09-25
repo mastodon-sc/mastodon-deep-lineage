@@ -92,7 +92,7 @@ public class SegmentUsingEllipsoidsController
 			throw new IllegalArgumentException( "Cannot write ellipsoid segmentation to file. Given label options are null." );
 
 		logger.info( "Save ellipsoid segmentation to file. Label options: {}, file: {}", labelOption, file.getAbsolutePath() );
-		long[] spatialDimensions = getDimensionsSpimSource();
+		long[] spatialDimensions = getDimensionsOfSource();
 		int frames = timePoints.size();
 		logger.debug( "number of frames: {}", frames );
 		DiskCachedCellImg< IntType, ? > img = createCachedImage( spatialDimensions, frames );
@@ -174,7 +174,7 @@ public class SegmentUsingEllipsoidsController
 		statusService.showProgress( oneBasedTimepointId, frames );
 	}
 
-	private long[] getDimensionsSpimSource()
+	private long[] getDimensionsOfSource()
 	{
 		// NB: Use the dimensions of the first timepoint only without checking if they are equal in other timepoints.
 		int timepoint = 0;
