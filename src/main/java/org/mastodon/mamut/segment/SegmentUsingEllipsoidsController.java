@@ -181,7 +181,7 @@ public class SegmentUsingEllipsoidsController
 		// NB: the midmaplevel 0 is supposed to be the highest resolution
 		int midMipmapLevel = 0;
 		long[] dimensions = this.source.getSource( timepoint, midMipmapLevel ).dimensionsAsLongArray();
-		logger.debug( "spim source, number of dimensions: {}", dimensions.length );
+		logger.debug( "number of dimensions in source: {}", dimensions.length );
 		Arrays.stream( dimensions ).forEach( value -> logger.debug( "dimension: {}", value ) );
 		return dimensions;
 	}
