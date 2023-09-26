@@ -11,12 +11,9 @@ import mpicbg.spim.data.sequence.TimePoint;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
-import net.imglib2.RandomAccessible;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.cache.img.DiskCachedCellImg;
 import net.imglib2.cache.img.DiskCachedCellImgFactory;
 import net.imglib2.cache.img.DiskCachedCellImgOptions;
-import net.imglib2.converter.RealTypeConverters;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -89,12 +86,9 @@ public class SegmentUsingEllipsoidsController
 	 * Renders ellipsoids of all timepoints into an ImageJ image using the selected {@link LabelOptions} and saves it to a file.
 	 * @param labelOption the {@link LabelOptions} to use
 	 * @param file the file to save the image to
-	 * @param withBackground whether to keep the background of the image
 	 * @param showResult whether to show the result in ImageJ
 	 */
-	public void saveEllipsoidSegmentationToFile(
-			final LabelOptions labelOption, final File file, boolean withBackground, boolean showResult
-	)
+	public void saveEllipsoidSegmentationToFile( final LabelOptions labelOption, final File file, boolean showResult )
 	{
 		if ( file == null )
 			throw new IllegalArgumentException( "Cannot write ellipsoid segmentation to file. Given file is null." );
@@ -116,8 +110,6 @@ public class SegmentUsingEllipsoidsController
 			source.getSourceTransform( timepointId, 0, transform );
 			IntervalView< IntType > frame = Views.hyperSlice( img, 3, timepointId );
 			AbstractSource< IntType > frameSource = new RandomAccessibleIntervalSource<>( frame, new IntType(), transform, "Segmentation" );
-			if ( withBackground )
-				addBackground( timepointId, frameSource );
 			final EllipsoidIterable< IntType > ellipsoidIterable = new EllipsoidIterable<>( frameSource );
 			segmentAllSpotsOfTimepoint( ellipsoidIterable, labelOption, timepointId, frames );
 		}
@@ -142,13 +134,6 @@ public class SegmentUsingEllipsoidsController
 		default:
 			throw new IllegalArgumentException( "Unknown label option: " + labelOption );
 		}
-	}
-
-	private void addBackground( int timepointId, AbstractSource< IntType > sliceSource )
-	{
-		RandomAccessible< RealType< ? > > bdvRandomAccessible = source.getSource( timepointId, 0 );
-		RandomAccessibleInterval< IntType > sliceRai = sliceSource.getSource( 0, 0 );
-		RealTypeConverters.copyFromTo( bdvRandomAccessible, sliceRai );
 	}
 
 	private void segmentAllSpotsOfTimepoint(

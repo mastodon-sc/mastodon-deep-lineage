@@ -47,7 +47,8 @@ public class SegmentUsingEllipsoidsControllerTest
 	{
 		model = new Model();
 		ModelGraph modelGraph = model.getGraph();
-		spot = modelGraph.addVertex();
+		modelGraph.addVertex(); // NB: dummy vertex with internal pool index 0
+		spot = modelGraph.addVertex(); // NB: internal pool index is 1
 		ModelBranchGraph modelBranchGraph = model.getBranchGraph();
 		modelBranchGraph.graphRebuilt();
 		branchSpot = modelBranchGraph.getBranchVertex( spot, modelBranchGraph.vertexRef() );
@@ -67,24 +68,24 @@ public class SegmentUsingEllipsoidsControllerTest
 		File outputSpot = getTempFile( "resultSpot" );
 		File outputBranchSpot = getTempFile( "resultBranchSpot" );
 		File outputTrack = getTempFile( "resultTrack" );
-		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, outputSpot, true, false );
-		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, true, false );
-		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.TRACK_ID, outputTrack, true, false );
+		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, outputSpot, false );
+		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, false );
+		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.TRACK_ID, outputTrack, false );
 
 		ImgOpener imgOpener = new ImgOpener( context );
 		SCIFIOImgPlus< IntType > imgSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputSpot );
 		SCIFIOImgPlus< IntType > imgBranchSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputBranchSpot );
 		SCIFIOImgPlus< IntType > imgTrack = getIntTypeSCIFIOImgPlus( imgOpener, outputTrack );
 
-		// check that the random content has been replaced by the spot id in the center of the spot
+		// check that the spot id / branchSpot id / track id is used as value in the center of the spot
 		assertEquals( spot.getInternalPoolIndex(), imgSpot.getAt( center ).get() );
 		assertEquals( branchSpot.getInternalPoolIndex(), imgBranchSpot.getAt( center ).get() );
-		assertEquals( 0, imgTrack.getAt( center ).get() );
-		// check that the random content has NOT been replaced outside the ellipsoid of the spot
+		assertEquals( 1, imgTrack.getAt( center ).get() );
+		// check that there is no value set outside the ellipsoid of the spot
 		long[] corner = new long[] { 0, 0, 0 };
-		assertNotEquals( spot.getInternalPoolIndex(), imgSpot.getAt( corner ).get() );
-		assertNotEquals( branchSpot.getInternalPoolIndex(), imgBranchSpot.getAt( corner ).get() );
-		assertNotEquals( 0, imgTrack.getAt( corner ).get() );
+		assertEquals( 0, imgSpot.getAt( corner ).get() );
+		assertEquals( 0, imgBranchSpot.getAt( corner ).get() );
+		assertEquals( 0, imgTrack.getAt( corner ).get() );
 	}
 
 	private static SCIFIOImgPlus< IntType > getIntTypeSCIFIOImgPlus( ImgOpener imgOpener, File outputSpot )
@@ -110,9 +111,9 @@ public class SegmentUsingEllipsoidsControllerTest
 		file.deleteOnExit();
 		assertThrows(
 				IllegalArgumentException.class,
-				() -> controller.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, null, true, false )
+				() -> controller.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, null, false )
 		);
-		assertThrows( IllegalArgumentException.class, () -> controller.saveEllipsoidSegmentationToFile( null, file, true, false ) );
+		assertThrows( IllegalArgumentException.class, () -> controller.saveEllipsoidSegmentationToFile( null, file, false ) );
 	}
 
 	private static AbstractSource< IntType > createRandomSource()

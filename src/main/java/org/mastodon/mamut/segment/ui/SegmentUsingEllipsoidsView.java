@@ -26,10 +26,6 @@ public class SegmentUsingEllipsoidsView implements Command
 	private boolean showResult;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Keep background")
-	private boolean withBackground;
-
-	@SuppressWarnings("unused")
 	@Parameter
 	private MamutAppModel appModel;
 
@@ -42,6 +38,6 @@ public class SegmentUsingEllipsoidsView implements Command
 	{
 		SegmentUsingEllipsoidsController controller = new SegmentUsingEllipsoidsController( appModel, context );
 		LabelOptions selectedOption = LabelOptions.getByName( option );
-		controller.saveEllipsoidSegmentationToFile( selectedOption, saveTo, showResult, withBackground );
+		controller.saveEllipsoidSegmentationToFile( selectedOption, saveTo, showResult );
 	}
 }
