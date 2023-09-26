@@ -28,6 +28,7 @@ import net.imglib2.view.Views;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.feature.EllipsoidIterable;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.feature.SpotTrackIDFeature;
@@ -64,7 +65,16 @@ public class SegmentUsingEllipsoidsController
 
 	private FeatureProjection< Spot > trackIdProjection = null;
 
-	public SegmentUsingEllipsoidsController(
+	public SegmentUsingEllipsoidsController( final MamutAppModel appModel, final Context context )
+	{
+		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
+		this( appModel.getModel(),
+				appModel.getSharedBdvData().getSpimData().getSequenceDescription().getTimePoints().getTimePointsOrdered(),
+				Cast.unchecked( appModel.getSharedBdvData().getSources().get( 0 ).getSpimSource() ), context
+		);
+	}
+
+	protected SegmentUsingEllipsoidsController(
 			final Model model, final List< TimePoint > timePoints, final Source< RealType< ? > > source, final Context context
 	)
 	{

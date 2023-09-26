@@ -39,8 +39,6 @@ public class SegmentByEllipsoidsPlugin implements MamutPlugin
 	@Parameter
 	private CommandService commandService;
 
-	@Parameter
-	private Context context;
 
 	@SuppressWarnings("unused")
 	public SegmentByEllipsoidsPlugin()
@@ -68,12 +66,6 @@ public class SegmentByEllipsoidsPlugin implements MamutPlugin
 
 	private void segmentUsingEllipsoids()
 	{
-		// NB: Use the dimensions of the first source and the first timepoint only without checking if they are equal in other sources and timepoints.
-		Source< RealType< ? > > source = Cast.unchecked( appModel.getSharedBdvData().getSources().get( 0 ).getSpimSource() );
-		final List< TimePoint > timePoints = appModel.getSharedBdvData().getSpimData().getSequenceDescription().getTimePoints()
-				.getTimePointsOrdered();
-		SegmentUsingEllipsoidsController controller =
-				new SegmentUsingEllipsoidsController( appModel.getModel(), timePoints, source, context );
-		commandService.run( SegmentUsingEllipsoidsView.class, true, "controller", controller );
+		commandService.run( SegmentUsingEllipsoidsView.class, true, "appModel", appModel );
 	}
 }

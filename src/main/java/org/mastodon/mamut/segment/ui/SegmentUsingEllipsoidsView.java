@@ -1,8 +1,10 @@
 package org.mastodon.mamut.segment.ui;
 
+import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.segment.SegmentUsingEllipsoidsController;
 import org.mastodon.mamut.segment.config.LabelOptions;
 import org.mastodon.mamut.segment.config.SegmentationTask;
+import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -12,10 +14,6 @@ import java.io.File;
 @Plugin(type = Command.class, label = "Run segmentation using ellipsoids")
 public class SegmentUsingEllipsoidsView implements Command
 {
-
-	@SuppressWarnings("unused")
-	@Parameter
-	private SegmentUsingEllipsoidsController controller;
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Task", choices = { "Save segmentation result to file", "Show segmentation in BigDataViewer" })
@@ -37,9 +35,18 @@ public class SegmentUsingEllipsoidsView implements Command
 	@Parameter(label = "Keep background")
 	private boolean withBackground;
 
+	@SuppressWarnings("unused")
+	@Parameter
+	private MamutAppModel appModel;
+
+	@SuppressWarnings("unused")
+	@Parameter
+	private Context context;
+
 	@Override
 	public void run()
 	{
+		SegmentUsingEllipsoidsController controller = new SegmentUsingEllipsoidsController( appModel, context );
 		LabelOptions selectedOption = LabelOptions.getByName( option );
 		SegmentationTask selectedTask = SegmentationTask.getByName( task );
 		if ( selectedTask.equals( SegmentationTask.SEGMENT_ELLIPSOIDS_BDV ) )
