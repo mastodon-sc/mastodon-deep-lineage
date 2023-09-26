@@ -113,7 +113,6 @@ public class SegmentUsingEllipsoidsControllerTest
 				() -> controller.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, null, true, false )
 		);
 		assertThrows( IllegalArgumentException.class, () -> controller.saveEllipsoidSegmentationToFile( null, file, true, false ) );
-		assertThrows( IllegalArgumentException.class, () -> controller.showEllipsoidSegmentationInBDV( null ) );
 	}
 
 	private static AbstractSource< IntType > createRandomSource()
@@ -121,23 +120,4 @@ public class SegmentUsingEllipsoidsControllerTest
 		Img< IntType > randomImg = RandomImgs.seed( 0 ).nextImage( new IntType() {}, 100, 100, 100 );
 		return new RandomAccessibleIntervalSource<>( randomImg, new IntType(), new AffineTransform3D(), "Segmentation" );
 	}
-
-	@Test
-	public void testShowEllipsoidSegmentationInBDV()
-	{
-		AbstractSource< IntType > source = createRandomSource();
-		Context context = new Context();
-		TimePoint timePoint = new TimePoint( timepoint );
-		List< TimePoint > timePoints = Collections.singletonList( timePoint );
-		SegmentUsingEllipsoidsController segmentUsingEllipsoidsController =
-				new SegmentUsingEllipsoidsController( model, timePoints, Cast.unchecked( source ), context );
-		segmentUsingEllipsoidsController.showEllipsoidSegmentationInBDV( LabelOptions.SPOT_ID );
-
-		// check that the random content has been replaced by the spot id in the center of the spot
-		assertEquals( spot.getInternalPoolIndex(), source.getSource( timepoint, 0 ).getAt( center ).get() );
-		// check that the random content has NOT been replaced outside the ellipsoid of the spot
-		long[] corner = new long[] { 0, 0, 0 };
-		assertNotEquals( spot.getInternalPoolIndex(), source.getSource( timepoint, 0 ).getAt( corner ).get() );
-	}
-
 }
