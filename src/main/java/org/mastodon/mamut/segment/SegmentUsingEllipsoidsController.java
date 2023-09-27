@@ -48,6 +48,9 @@ import java.util.function.Consumer;
 
 public class SegmentUsingEllipsoidsController
 {
+
+	public static final int LABEL_ID_OFFSET = 1;
+
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final Model model;
@@ -185,16 +188,16 @@ public class SegmentUsingEllipsoidsController
 		switch ( option )
 		{
 		case SPOT_ID:
-			return spot.getInternalPoolIndex();
+			return spot.getInternalPoolIndex() + LABEL_ID_OFFSET;
 		case BRANCH_SPOT_ID:
 			BranchSpot ref = model.getBranchGraph().vertexRef();
 			int branchSpotId = model.getBranchGraph().getBranchVertex( spot, ref ).getInternalPoolIndex();
 			model.getBranchGraph().releaseRef( ref ); // NB: optional, but increases performance, when this method is called often
-			return branchSpotId;
+			return branchSpotId + LABEL_ID_OFFSET;
 		case TRACK_ID:
 			if ( trackIdProjection == null )
 				trackIdProjection = getTrackIDFeatureProjection( context, model );
-			return ( int ) trackIdProjection.value( spot );
+			return ( int ) trackIdProjection.value( spot ) + LABEL_ID_OFFSET;
 		default:
 			throw new IllegalArgumentException( "Unknown label option: " + option );
 		}

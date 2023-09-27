@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
 public class SegmentUsingEllipsoidsControllerTest
@@ -47,8 +46,7 @@ public class SegmentUsingEllipsoidsControllerTest
 	{
 		model = new Model();
 		ModelGraph modelGraph = model.getGraph();
-		modelGraph.addVertex(); // NB: dummy vertex with internal pool index 0
-		spot = modelGraph.addVertex(); // NB: internal pool index is 1
+		spot = modelGraph.addVertex();
 		ModelBranchGraph modelBranchGraph = model.getBranchGraph();
 		modelBranchGraph.graphRebuilt();
 		branchSpot = modelBranchGraph.getBranchVertex( spot, modelBranchGraph.vertexRef() );
@@ -78,9 +76,10 @@ public class SegmentUsingEllipsoidsControllerTest
 		SCIFIOImgPlus< IntType > imgTrack = getIntTypeSCIFIOImgPlus( imgOpener, outputTrack );
 
 		// check that the spot id / branchSpot id / track id is used as value in the center of the spot
-		assertEquals( spot.getInternalPoolIndex(), imgSpot.getAt( center ).get() );
-		assertEquals( branchSpot.getInternalPoolIndex(), imgBranchSpot.getAt( center ).get() );
-		assertEquals( 1, imgTrack.getAt( center ).get() );
+		assertEquals( spot.getInternalPoolIndex() + SegmentUsingEllipsoidsController.LABEL_ID_OFFSET, imgSpot.getAt( center ).get() );
+		assertEquals(
+				branchSpot.getInternalPoolIndex() + SegmentUsingEllipsoidsController.LABEL_ID_OFFSET, imgBranchSpot.getAt( center ).get() );
+		assertEquals( SegmentUsingEllipsoidsController.LABEL_ID_OFFSET, imgTrack.getAt( center ).get() );
 		// check that there is no value set outside the ellipsoid of the spot
 		long[] corner = new long[] { 0, 0, 0 };
 		assertEquals( 0, imgSpot.getAt( corner ).get() );
