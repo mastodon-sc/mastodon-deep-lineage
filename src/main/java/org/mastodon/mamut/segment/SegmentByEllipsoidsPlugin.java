@@ -1,15 +1,10 @@
 package org.mastodon.mamut.segment;
 
-import bdv.viewer.Source;
-import mpicbg.spim.data.sequence.TimePoint;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.util.Cast;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.plugin.MamutPluginAppModel;
 import org.mastodon.mamut.segment.ui.SegmentUsingEllipsoidsView;
-import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
