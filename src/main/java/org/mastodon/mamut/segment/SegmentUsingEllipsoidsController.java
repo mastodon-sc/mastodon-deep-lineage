@@ -80,8 +80,8 @@ public class SegmentUsingEllipsoidsController
 	}
 
 	protected SegmentUsingEllipsoidsController(
-			final Model model, final List< TimePoint > timePoints, final Source< RealType< ? > > source, final Context context, final
-	VoxelDimensions voxelDimensions
+			final Model model, final List< TimePoint > timePoints, final Source< RealType< ? > > source, final Context context,
+			final VoxelDimensions voxelDimensions
 	)
 	{
 		this.model = model;
