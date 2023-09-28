@@ -8,9 +8,11 @@ import io.scif.codec.CompressionType;
 import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgSaver;
 import mpicbg.spim.data.sequence.TimePoint;
+import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
-import net.imagej.axis.AxisType;
+import net.imagej.axis.CalibratedAxis;
+import net.imagej.axis.DefaultLinearAxis;
 import net.imglib2.cache.img.DiskCachedCellImg;
 import net.imglib2.cache.img.DiskCachedCellImgFactory;
 import net.imglib2.cache.img.DiskCachedCellImgOptions;
@@ -63,6 +65,8 @@ public class SegmentUsingEllipsoidsController
 
 	private final Context context;
 
+	private final VoxelDimensions voxelDimensions;
+
 	private FeatureProjection< Spot > trackIdProjection = null;
 
 	public SegmentUsingEllipsoidsController( final MamutAppModel appModel, final Context context )
@@ -70,12 +74,14 @@ public class SegmentUsingEllipsoidsController
 		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
 		this( appModel.getModel(),
 				appModel.getSharedBdvData().getSpimData().getSequenceDescription().getTimePoints().getTimePointsOrdered(),
-				Cast.unchecked( appModel.getSharedBdvData().getSources().get( 0 ).getSpimSource() ), context
+				Cast.unchecked( appModel.getSharedBdvData().getSources().get( 0 ).getSpimSource() ), context,
+				appModel.getSharedBdvData().getSpimData().getSequenceDescription().getViewSetups().get( 0 ).getVoxelSize()
 		);
 	}
 
 	protected SegmentUsingEllipsoidsController(
-			final Model model, final List< TimePoint > timePoints, final Source< RealType< ? > > source, final Context context
+			final Model model, final List< TimePoint > timePoints, final Source< RealType< ? > > source, final Context context, final
+	VoxelDimensions voxelDimensions
 	)
 	{
 		this.model = model;
@@ -83,6 +89,7 @@ public class SegmentUsingEllipsoidsController
 		this.source = source;
 		this.context = context;
 		this.statusService = context.service( StatusService.class );
+		this.voxelDimensions = voxelDimensions;
 	}
 
 	/**
@@ -203,11 +210,15 @@ public class SegmentUsingEllipsoidsController
 		}
 	}
 
-	private static ImgPlus< IntType > createImgPlus( final Img< IntType > img )
+	private ImgPlus< IntType > createImgPlus( final Img< IntType > img )
 	{
-		final AxisType[] axesType = { Axes.X, Axes.Y, Axes.Z, Axes.TIME };
-
-		return new ImgPlus<>( img, "Result", axesType );
+		final CalibratedAxis[] axes = { new DefaultLinearAxis( Axes.X, voxelDimensions.dimension( 0 ) ),
+				new DefaultLinearAxis( Axes.Y, voxelDimensions.dimension( 1 ) ),
+				new DefaultLinearAxis( Axes.Z, voxelDimensions.dimension( 2 ) ), new DefaultLinearAxis( Axes.TIME ) };
+		logger.debug( "voxelDimensions size: {}", voxelDimensions.numDimensions() );
+		for ( int i = 0; i < voxelDimensions.numDimensions(); i++ )
+			logger.debug( "voxelDimensions: {}:{}", i, voxelDimensions.dimension( i ) );
+		return new ImgPlus<>( img, "Result", axes );
 	}
 
 	private static void showImgPlus( ImgPlus< IntType > imgplus )

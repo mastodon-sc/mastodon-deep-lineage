@@ -4,7 +4,9 @@ import bdv.util.AbstractSource;
 import bdv.util.RandomAccessibleIntervalSource;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
+import mpicbg.spim.data.sequence.DefaultVoxelDimensions;
 import mpicbg.spim.data.sequence.TimePoint;
+import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.img.Img;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.test.RandomImgs;
@@ -61,8 +63,10 @@ public class SegmentUsingEllipsoidsControllerTest
 		Context context = new Context();
 		TimePoint timePoint = new TimePoint( timepoint );
 		List< TimePoint > timePoints = Collections.singletonList( timePoint );
+		VoxelDimensions voxelDimensions = new DefaultVoxelDimensions( 3 );
+		voxelDimensions.dimensions( new double[] { 1, 1, 1 } );
 		SegmentUsingEllipsoidsController segmentUsingEllipsoidsController =
-				new SegmentUsingEllipsoidsController( model, timePoints, Cast.unchecked( source ), context );
+				new SegmentUsingEllipsoidsController( model, timePoints, Cast.unchecked( source ), context, voxelDimensions );
 		File outputSpot = getTempFile( "resultSpot" );
 		File outputBranchSpot = getTempFile( "resultBranchSpot" );
 		File outputTrack = getTempFile( "resultTrack" );
@@ -105,7 +109,7 @@ public class SegmentUsingEllipsoidsControllerTest
 	public void testExceptions() throws IOException
 	{
 		SegmentUsingEllipsoidsController controller =
-				new SegmentUsingEllipsoidsController( model, Collections.emptyList(), null, new Context() );
+				new SegmentUsingEllipsoidsController( model, Collections.emptyList(), null, new Context(), null );
 		File file = File.createTempFile( "foo", "foo" );
 		file.deleteOnExit();
 		assertThrows(
