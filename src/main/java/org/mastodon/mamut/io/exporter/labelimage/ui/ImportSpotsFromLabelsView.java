@@ -30,7 +30,7 @@ public class ImportSpotsFromLabelsView implements Command
 	@Parameter
 	private Context context;
 
-	@Parameter(label = "Channel index of labels", persist = true)
+	@Parameter(label = "Channel index of labels", min = "0")
 	private int labelChannelIndex = 0;
 
 	@Override
