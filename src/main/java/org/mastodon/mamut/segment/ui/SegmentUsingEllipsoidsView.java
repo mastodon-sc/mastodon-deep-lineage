@@ -32,6 +32,10 @@ public class SegmentUsingEllipsoidsView implements Command
 	private String option;
 
 	@SuppressWarnings("unused")
+	@Parameter(label = "Frame rate reduction", description = "Only use every n-th frame for segmentation. 1 means no reduction.")
+	private int frameRateReduction;
+
+	@SuppressWarnings("unused")
 	@Parameter(label = "Save to")
 	private File saveTo;
 
@@ -52,6 +56,6 @@ public class SegmentUsingEllipsoidsView implements Command
 	{
 		SegmentUsingEllipsoidsController controller = new SegmentUsingEllipsoidsController( appModel, context );
 		LabelOptions selectedOption = LabelOptions.getByName( option );
-		controller.saveEllipsoidSegmentationToFile( selectedOption, saveTo, showResult );
+		controller.saveEllipsoidSegmentationToFile( selectedOption, saveTo, showResult, frameRateReduction );
 	}
 }

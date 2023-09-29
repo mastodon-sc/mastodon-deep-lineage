@@ -97,8 +97,11 @@ public class SegmentUsingEllipsoidsController
 	 * @param labelOption the {@link LabelOptions} to use
 	 * @param file the file to save the image to
 	 * @param showResult whether to show the result in ImageJ
+	 * @param frameRateReduction only use every n-th frame for segmentation. 1 means no reduction.
 	 */
-	public void saveEllipsoidSegmentationToFile( final LabelOptions labelOption, final File file, boolean showResult )
+	public void saveEllipsoidSegmentationToFile(
+			final LabelOptions labelOption, final File file, boolean showResult, int frameRateReduction
+	)
 	{
 		if ( file == null )
 			throw new IllegalArgumentException( "Cannot write ellipsoid segmentation to file. Given file is null." );
@@ -107,7 +110,7 @@ public class SegmentUsingEllipsoidsController
 
 		logger.info( "Save ellipsoid segmentation to file. Label options: {}, file: {}", labelOption, file.getAbsolutePath() );
 		long[] spatialDimensions = getDimensionsOfSource();
-		int frames = timePoints.size();
+		int frames = timePoints.size() / frameRateReduction;
 		logger.debug( "number of frames: {}", frames );
 		DiskCachedCellImg< IntType, ? > img = createCachedImage( spatialDimensions, frames );
 
@@ -115,15 +118,19 @@ public class SegmentUsingEllipsoidsController
 		lock.lock();
 		for ( TimePoint timepoint : timePoints )
 		{
-			int timepointId = timepoint.getId();
+			int frameId = timepoint.getId();
+			if ( frameId % frameRateReduction != 0 )
+				continue;
 			AffineTransform3D transform = new AffineTransform3D();
-			source.getSourceTransform( timepointId, 0, transform );
-			IntervalView< IntType > frame = Views.hyperSlice( img, 3, timepointId );
+			source.getSourceTransform( frameId, 0, transform );
+			int targetFrameId = frameId / frameRateReduction;
+			IntervalView< IntType > frame = Views.hyperSlice( img, 3, targetFrameId );
 			AbstractSource< IntType > frameSource = new RandomAccessibleIntervalSource<>( frame, new IntType(), transform, "Segmentation" );
 			final EllipsoidIterable< IntType > ellipsoidIterable = new EllipsoidIterable<>( frameSource );
-			segmentAllSpotsOfTimepoint( ellipsoidIterable, labelOption, timepointId, frames );
+			segmentAllSpotsOfFrame( ellipsoidIterable, labelOption, targetFrameId, frames );
 		}
 		lock.unlock();
+		logger.debug( "Segmentation finished." );
 
 		ImgPlus< IntType > imgplus = createImgPlus( img );
 		if ( showResult )
@@ -146,20 +153,20 @@ public class SegmentUsingEllipsoidsController
 		}
 	}
 
-	private void segmentAllSpotsOfTimepoint(
-			final EllipsoidIterable< ? extends RealType< ? > > iterable, final LabelOptions option, final int timepointId, final int frames
+	private void segmentAllSpotsOfFrame(
+			final EllipsoidIterable< ? extends RealType< ? > > iterable, final LabelOptions option, final int frameId, final int frames
 	)
 	{
-		SpatialIndex< Spot > spots = model.getSpatioTemporalIndex().getSpatialIndex( timepointId );
-		int oneBasedTimepointId = timepointId + 1;
-		logger.trace( "timepoint: {}/{}, spots: {}", oneBasedTimepointId, frames, spots.size() );
+		SpatialIndex< Spot > spots = model.getSpatioTemporalIndex().getSpatialIndex( frameId );
+		int oneBasedFrameId = frameId + 1;
+		logger.trace( "frame: {}/{}, spots: {}", oneBasedFrameId, frames, spots.size() );
 
 		for ( Spot spot : spots )
 		{
 			iterable.reset( spot );
 			iterable.forEach( ( Consumer< RealType< ? > > ) pixel -> pixel.setReal( getLabelId( spot, option ) ) );
 		}
-		statusService.showProgress( oneBasedTimepointId, frames );
+		statusService.showProgress( oneBasedFrameId, frames );
 	}
 
 	private long[] getDimensionsOfSource()

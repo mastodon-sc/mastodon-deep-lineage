@@ -70,9 +70,9 @@ public class SegmentUsingEllipsoidsControllerTest
 		File outputSpot = getTempFile( "resultSpot" );
 		File outputBranchSpot = getTempFile( "resultBranchSpot" );
 		File outputTrack = getTempFile( "resultTrack" );
-		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, outputSpot, false );
-		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, false );
-		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.TRACK_ID, outputTrack, false );
+		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, outputSpot, false, 1 );
+		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, false, 1 );
+		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.TRACK_ID, outputTrack, false, 1 );
 
 		ImgOpener imgOpener = new ImgOpener( context );
 		SCIFIOImgPlus< IntType > imgSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputSpot );
@@ -114,9 +114,9 @@ public class SegmentUsingEllipsoidsControllerTest
 		file.deleteOnExit();
 		assertThrows(
 				IllegalArgumentException.class,
-				() -> controller.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, null, false )
+				() -> controller.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, null, false, 1 )
 		);
-		assertThrows( IllegalArgumentException.class, () -> controller.saveEllipsoidSegmentationToFile( null, file, false ) );
+		assertThrows( IllegalArgumentException.class, () -> controller.saveEllipsoidSegmentationToFile( null, file, false, 1 ) );
 	}
 
 	private static AbstractSource< IntType > createRandomSource()
