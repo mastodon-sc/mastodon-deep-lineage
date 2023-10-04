@@ -33,10 +33,13 @@ public class ImportSpotsFromLabelsView implements Command
 	@Parameter(label = "Channel index of labels", min = "0")
 	private int labelChannelIndex = 0;
 
+	@Parameter(label = "Sigma", min = "0", description = "#deviations from center to form border")
+	private double sigma = 2.2;
+
 	@Override
 	public void run()
 	{
-		ImportSpotFromLabelsController controller = new ImportSpotFromLabelsController( appModel, context, labelChannelIndex );
+		ImportSpotFromLabelsController controller = new ImportSpotFromLabelsController( appModel, context, labelChannelIndex, sigma );
 		controller.createSpotsFromLabels();
 	}
 
