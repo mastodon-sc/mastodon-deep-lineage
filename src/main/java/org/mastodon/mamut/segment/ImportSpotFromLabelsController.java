@@ -22,7 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.math.BigInteger;
 import java.util.List;
+
+import static java.math.BigInteger.valueOf;
 
 public class ImportSpotFromLabelsController
 {
@@ -92,7 +95,7 @@ public class ImportSpotFromLabelsController
 		int numLabels = minAndMax.getB() - minAndMax.getA();
 		int[]      count = 	  new int[numLabels];        // counts the number of pixels in each label, for normalization
 		long[][]   sum =      new long[numLabels][3];    // sums up the positions of the label pixels, used for the 1D means
-		long[][][] mixedSum = new long[numLabels][3][3]; // sums up the estimates of mixed coordinates (like xy). Used for covariances.
+		BigInteger[][][] mixedSum = new BigInteger[numLabels][3][3]; // sums up the estimates of mixed coordinates (like xy). Used for covariances.
 
 		readImageSumPositions(img, count, sum, mixedSum, minAndMax.getA());
 
@@ -138,7 +141,7 @@ public class ImportSpotFromLabelsController
 	 *           I removed it, but it might be neccesary for some reason.
 	 * @author Noam Dori
 	 */
-	private void createSpotsFromSums(int timepointId, int numLabels, int[] count, long[][] sum, long[][][] mixedSum) {
+	private void createSpotsFromSums(int timepointId, int numLabels, int[] count, long[][] sum, BigInteger[][][] mixedSum) {
 		// combine the sums into mean and covariance matrices, then add the corresponding spot
 		logger.debug("adding spots for the {} labels found", numLabels);
 		double[] mean = new double[3];
@@ -147,8 +150,9 @@ public class ImportSpotFromLabelsController
 			for (int i = 0; i < 3; i++) {
 				mean[i] = sum[labelIdx][i] / (double) count[labelIdx] * voxelDimensions.dimension(i);
 				for (int j = i; j < 3; j++) { // the covariance matrix is symmetric!
-					cov[i][j] = mixedSum[labelIdx][i][j] / (double) count[labelIdx] -
-							sum[labelIdx][i] * sum[labelIdx][j] / Math.pow(count[labelIdx], 2);
+					cov[i][j] = mixedSum[labelIdx][i][j].multiply(valueOf(count[labelIdx]))
+							.subtract(valueOf(sum[labelIdx][i]).multiply(valueOf(sum[labelIdx][j])))
+							.doubleValue() / Math.pow(count[labelIdx], 2);
 					cov[i][j] *= Math.pow(sigma, 2) * voxelDimensions.dimension(i) * voxelDimensions.dimension(j);
 					if (i != j) {
 						cov[j][i] = cov[i][j];
@@ -170,7 +174,7 @@ public class ImportSpotFromLabelsController
 	 * @author Noam Dori
 	 */
 	private static void readImageSumPositions(RandomAccessibleInterval<IntegerType<?>> img, int[] count,
-											  long[][] sum, long[][][] mixedSum, int bg) {
+											  long[][] sum, BigInteger[][][] mixedSum, int bg) {
 		// read the picture to sum everything up
 		int[] position = new int[3];
 		Cursor<IntegerType<?>> cursor = Views.iterable(img).cursor();
@@ -185,7 +189,8 @@ public class ImportSpotFromLabelsController
 			for (int i = 0; i < 3; i++) {
 				sum[labelIdx][i] += position[i];
 				for (int j = i; j < 3; j++) { // the covariance matrix is symmetric!
-					mixedSum[labelIdx][i][j] += (long)position[i] * position[j];
+					mixedSum[labelIdx][i][j] =
+							mixedSum[labelIdx][i][j].add(valueOf(position[i]).multiply(valueOf(position[j])));
 				}
 			}
 		}
