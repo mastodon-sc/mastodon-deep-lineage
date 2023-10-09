@@ -53,7 +53,7 @@ public class ImportSpotFromLabelsController
 
 	protected ImportSpotFromLabelsController(
 			final Model model, final List< TimePoint > timePoints, final Source< ? extends RealType< ? > > source, final Context context,
-			VoxelDimensions voxelDimensions, double sigma
+			final VoxelDimensions voxelDimensions, double sigma
 	)
 	{
 		this.modelGraph = model.getGraph();
@@ -142,7 +142,7 @@ public class ImportSpotFromLabelsController
 	private void createSpotsFromSums( int timepointId, int numLabels, int[] count, long[][] sum, BigInteger[][][] mixedSum )
 	{
 		// combine the sums into mean and covariance matrices, then add the corresponding spot
-		logger.debug( "adding spots for the {} labels found", numLabels );
+		logger.debug( "Found {} labels. Adding a spot for each label.", numLabels );
 		double[] mean = new double[ 3 ];
 		double[][] cov = new double[ 3 ][ 3 ];
 		for ( int labelIdx = 0; labelIdx < numLabels; labelIdx++ )
