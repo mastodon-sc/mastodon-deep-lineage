@@ -46,7 +46,7 @@ public class ImportSpotFromLabelsControllerTest
 	{
 		AbstractSource< IntType > img = createImage();
 
-		Context context = new Context( true );
+		Context context = new Context();
 		TimePoint timePoint = new TimePoint( timepoint );
 		List< TimePoint > timePoints = Collections.singletonList( timePoint );
 		VoxelDimensions voxelDimensions = new FinalVoxelDimensions( "um", 1, 1, 1 );
