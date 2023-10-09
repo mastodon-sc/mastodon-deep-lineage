@@ -39,32 +39,34 @@ public class ImportSpotFromLabelsControllerTest
 	}
 
 	@Test
-	public void testGetEllipsoidFromImage() {
-		AbstractSource<IntType> img = createImage();
+	public void testGetEllipsoidFromImage()
+	{
+		AbstractSource< IntType > img = createImage();
 
-		Context context = new Context(true);
+		Context context = new Context( true );
 		TimePoint timePoint = new TimePoint( timepoint );
 		List< TimePoint > timePoints = Collections.singletonList( timePoint );
-		VoxelDimensions voxelDimensions = new FinalVoxelDimensions("um", 0.16, 0.16, 1);
-		ImportSpotFromLabelsController controller = new ImportSpotFromLabelsController(model, timePoints, img, context, voxelDimensions, 2.2);
+		VoxelDimensions voxelDimensions = new FinalVoxelDimensions( "um", 0.16, 0.16, 1 );
+		ImportSpotFromLabelsController controller =
+				new ImportSpotFromLabelsController( model, timePoints, img, context, voxelDimensions, 2.2 );
 
 		controller.createSpotsFromLabels();
 
-		Iterator<Spot> iter = model.getGraph().vertices().iterator();
-		assertTrue(iter.hasNext());
+		Iterator< Spot > iter = model.getGraph().vertices().iterator();
+		assertTrue( iter.hasNext() );
 
 		Spot s = iter.next();
 
-		s.getDoublePosition(0);
+		s.getDoublePosition( 0 );
 	}
 
 	private static AbstractSource< IntType > createImage()
 	{
-		Img<IntType> img = new ArrayImgFactory<>(new IntType()).create(4, 4, 4);
-		RandomAccess<IntType> ra = img.randomAccess();
-		ra.setPositionAndGet(1, 1, 1).set(1);
-		ra.setPositionAndGet(2, 2, 2).set(1);
-		ra.setPositionAndGet(3, 3, 3).set(1);
+		Img< IntType > img = new ArrayImgFactory<>( new IntType() ).create( 4, 4, 4 );
+		RandomAccess< IntType > ra = img.randomAccess();
+		ra.setPositionAndGet( 1, 1, 1 ).set( 1 );
+		ra.setPositionAndGet( 2, 2, 2 ).set( 1 );
+		ra.setPositionAndGet( 3, 3, 3 ).set( 1 );
 
 		return new RandomAccessibleIntervalSource<>( img, new IntType(), new AffineTransform3D(), "Segmentation" );
 	}

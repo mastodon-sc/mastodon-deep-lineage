@@ -49,12 +49,14 @@ public class ImportSpotFromLabelsController
 		this( appModel.getModel(),
 				appModel.getSharedBdvData().getSpimData().getSequenceDescription().getTimePoints().getTimePointsOrdered(),
 				Cast.unchecked( appModel.getSharedBdvData().getSources().get( labelChannelIndex ).getSpimSource() ), context,
-				appModel.getSharedBdvData().getSpimData().getSequenceDescription().getViewSetups().get( 0 ).getVoxelSize(), sigma);
+				appModel.getSharedBdvData().getSpimData().getSequenceDescription().getViewSetups().get( 0 ).getVoxelSize(), sigma
+		);
 	}
 
 	protected ImportSpotFromLabelsController(
 			final Model model, final List< TimePoint > timePoints, final Source< ? extends RealType< ? > > source, final Context context,
-			VoxelDimensions voxelDimensions, double sigma)
+			VoxelDimensions voxelDimensions, double sigma
+	)
 	{
 		this.modelGraph = model.getGraph();
 		this.timePoints = timePoints;
@@ -72,34 +74,37 @@ public class ImportSpotFromLabelsController
 		{
 			int frameId = frame.getId();
 			long[] dimensions = source.getSource( frameId, 0 ).dimensionsAsLongArray();
-			final RandomAccessibleInterval< IntegerType< ? > > img = Cast.unchecked(source.getSource( frameId, 0 ));
+			final RandomAccessibleInterval< IntegerType< ? > > img = Cast.unchecked( source.getSource( frameId, 0 ) );
 			for ( int d = 0; d < dimensions.length; d++ )
 				logger.debug( "Dimension {}, : {}", d, dimensions[ d ] );
 
-			createSpotsFromLabelImage(img, frameId);
-			if (statusService != null) {
-				statusService.showProgress(frameId + 1, numTimepoints);
+			createSpotsFromLabelImage( img, frameId );
+			if ( statusService != null )
+			{
+				statusService.showProgress( frameId + 1, numTimepoints );
 			}
 
 		}
 	}
 
-	private void createSpotsFromLabelImage(@NotNull RandomAccessibleInterval<IntegerType<?>> img, int timepointId) {
-		logger.debug("Computing mean, covariance of all labels at time-point t={}", timepointId);
+	private void createSpotsFromLabelImage( @NotNull RandomAccessibleInterval< IntegerType< ? > > img, int timepointId )
+	{
+		logger.debug( "Computing mean, covariance of all labels at time-point t={}", timepointId );
 
 		// get the maximum value possible to learn how many objects need to be instantiated
 		// this is fine because we expect maximum occupancy here.
 		// we also subtract the background to truly get the number of elements.
-		Pair<Integer, Integer> minAndMax = getPixelValueInterval(img);
+		Pair< Integer, Integer > minAndMax = getPixelValueInterval( img );
 
 		int numLabels = minAndMax.getB() - minAndMax.getA();
-		int[]      count = 	  new int[numLabels];        // counts the number of pixels in each label, for normalization
-		long[][]   sum =      new long[numLabels][3];    // sums up the positions of the label pixels, used for the 1D means
-		BigInteger[][][] mixedSum = new BigInteger[numLabels][3][3]; // sums up the estimates of mixed coordinates (like xy). Used for covariances.
+		int[] count = new int[ numLabels ]; // counts the number of pixels in each label, for normalization
+		long[][] sum = new long[ numLabels ][ 3 ]; // sums up the positions of the label pixels, used for the 1D means
+		BigInteger[][][] mixedSum =
+				new BigInteger[ numLabels ][ 3 ][ 3 ]; // sums up the estimates of mixed coordinates (like xy). Used for covariances.
 
-		readImageSumPositions(img, count, sum, mixedSum, minAndMax.getA());
+		readImageSumPositions( img, count, sum, mixedSum, minAndMax.getA() );
 
-		createSpotsFromSums(timepointId, numLabels, count, sum, mixedSum);
+		createSpotsFromSums( timepointId, numLabels, count, sum, mixedSum );
 	}
 
 	/**
@@ -109,22 +114,25 @@ public class ImportSpotFromLabelsController
 	 * @author Noam Dori
 	 */
 	@Contract("_ -> new")
-	private static @NotNull Pair<Integer, Integer> getPixelValueInterval(RandomAccessibleInterval<IntegerType<?>> img) {
+	private static @NotNull Pair< Integer, Integer > getPixelValueInterval( RandomAccessibleInterval< IntegerType< ? > > img )
+	{
 		// read the picture to sum everything up
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
-		Cursor<IntegerType<?>> cursor = Views.iterable(img).cursor();
-		while (cursor.hasNext())
+		Cursor< IntegerType< ? > > cursor = Views.iterable( img ).cursor();
+		while ( cursor.hasNext() )
 		{
 			int val = cursor.next().getInteger(); // we ignore 0 as it is BG
-			if (min > val) {
+			if ( min > val )
+			{
 				min = val;
 			}
-			if (max < val) {
+			if ( max < val )
+			{
 				max = val;
 			}
 		}
-		return new ValuePair<>(min, max);
+		return new ValuePair<>( min, max );
 	}
 
 	/**
@@ -141,25 +149,30 @@ public class ImportSpotFromLabelsController
 	 *           I removed it, but it might be neccesary for some reason.
 	 * @author Noam Dori
 	 */
-	private void createSpotsFromSums(int timepointId, int numLabels, int[] count, long[][] sum, BigInteger[][][] mixedSum) {
+	private void createSpotsFromSums( int timepointId, int numLabels, int[] count, long[][] sum, BigInteger[][][] mixedSum )
+	{
 		// combine the sums into mean and covariance matrices, then add the corresponding spot
-		logger.debug("adding spots for the {} labels found", numLabels);
-		double[] mean = new double[3];
-		double[][] cov = new double[3][3];
-		for (int labelIdx = 0; labelIdx < numLabels; labelIdx++) {
-			for (int i = 0; i < 3; i++) {
-				mean[i] = sum[labelIdx][i] / (double) count[labelIdx] * voxelDimensions.dimension(i);
-				for (int j = i; j < 3; j++) { // the covariance matrix is symmetric!
-					cov[i][j] = mixedSum[labelIdx][i][j].multiply(valueOf(count[labelIdx]))
-							.subtract(valueOf(sum[labelIdx][i]).multiply(valueOf(sum[labelIdx][j])))
-							.doubleValue() / Math.pow(count[labelIdx], 2);
-					cov[i][j] *= Math.pow(sigma, 2) * voxelDimensions.dimension(i) * voxelDimensions.dimension(j);
-					if (i != j) {
-						cov[j][i] = cov[i][j];
+		logger.debug( "adding spots for the {} labels found", numLabels );
+		double[] mean = new double[ 3 ];
+		double[][] cov = new double[ 3 ][ 3 ];
+		for ( int labelIdx = 0; labelIdx < numLabels; labelIdx++ )
+		{
+			for ( int i = 0; i < 3; i++ )
+			{
+				mean[ i ] = sum[ labelIdx ][ i ] / ( double ) count[ labelIdx ] * voxelDimensions.dimension( i );
+				for ( int j = i; j < 3; j++ )
+				{ // the covariance matrix is symmetric!
+					cov[ i ][ j ] = mixedSum[ labelIdx ][ i ][ j ].multiply( valueOf( count[ labelIdx ] ) )
+							.subtract( valueOf( sum[ labelIdx ][ i ] ).multiply( valueOf( sum[ labelIdx ][ j ] ) ) )
+							.doubleValue() / Math.pow( count[ labelIdx ], 2 );
+					cov[ i ][ j ] *= Math.pow( sigma, 2 ) * voxelDimensions.dimension( i ) * voxelDimensions.dimension( j );
+					if ( i != j )
+					{
+						cov[ j ][ i ] = cov[ i ][ j ];
 					}
 				}
 			}
-			modelGraph.addVertex().init(timepointId, mean, cov);
+			modelGraph.addVertex().init( timepointId, mean, cov );
 		}
 	}
 
@@ -173,24 +186,30 @@ public class ImportSpotFromLabelsController
 	 * @param bg the pixel value of the background. Since unsigned is annoying in Fiji, this subtracts the bg value from the label.
 	 * @author Noam Dori
 	 */
-	private static void readImageSumPositions(RandomAccessibleInterval<IntegerType<?>> img, int[] count,
-											  long[][] sum, BigInteger[][][] mixedSum, int bg) {
+	private static void readImageSumPositions(
+			RandomAccessibleInterval< IntegerType< ? > > img, int[] count,
+			long[][] sum, BigInteger[][][] mixedSum, int bg
+	)
+	{
 		// read the picture to sum everything up
-		int[] position = new int[3];
-		Cursor<IntegerType<?>> cursor = Views.iterable(img).cursor();
-		while (cursor.hasNext())
+		int[] position = new int[ 3 ];
+		Cursor< IntegerType< ? > > cursor = Views.iterable( img ).cursor();
+		while ( cursor.hasNext() )
 		{
 			int labelIdx = cursor.next().getInteger() - bg - 1; // we ignore 0 as it is BG
-			if (labelIdx < 0) {
+			if ( labelIdx < 0 )
+			{
 				continue;
 			}
-			cursor.localize(position);
-			count[labelIdx]++;
-			for (int i = 0; i < 3; i++) {
-				sum[labelIdx][i] += position[i];
-				for (int j = i; j < 3; j++) { // the covariance matrix is symmetric!
-					mixedSum[labelIdx][i][j] =
-							mixedSum[labelIdx][i][j].add(valueOf(position[i]).multiply(valueOf(position[j])));
+			cursor.localize( position );
+			count[ labelIdx ]++;
+			for ( int i = 0; i < 3; i++ )
+			{
+				sum[ labelIdx ][ i ] += position[ i ];
+				for ( int j = i; j < 3; j++ )
+				{ // the covariance matrix is symmetric!
+					mixedSum[ labelIdx ][ i ][ j ] =
+							mixedSum[ labelIdx ][ i ][ j ].add( valueOf( position[ i ] ).multiply( valueOf( position[ j ] ) ) );
 				}
 			}
 		}

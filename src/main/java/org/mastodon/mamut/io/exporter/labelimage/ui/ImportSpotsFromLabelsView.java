@@ -39,7 +39,8 @@ public class ImportSpotsFromLabelsView implements Command
 	@Override
 	public void run()
 	{
-		ImportSpotFromLabelsController controller = new ImportSpotFromLabelsController( appModel, context, labelChannelIndex, sigma );
+		ImportSpotFromLabelsController controller =
+				new ImportSpotFromLabelsController( appModel, context, labelChannelIndex, sigma );
 		controller.createSpotsFromLabels();
 	}
 
