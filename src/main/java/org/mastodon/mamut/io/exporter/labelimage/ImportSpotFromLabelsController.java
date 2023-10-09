@@ -32,13 +32,14 @@ public class ImportSpotFromLabelsController
 
 	private final ModelGraph modelGraph;
 
-	private final List< TimePoint > timePoints;
+	private final List< TimePoint > frames;
 
 	private final Source< ? extends RealType< ? > > source;
 
 	private final StatusService statusService;
 
 	private final VoxelDimensions voxelDimensions;
+
 	private final double sigma;
 
 	public ImportSpotFromLabelsController( final MamutAppModel appModel, final Context context, int labelChannelIndex, double sigma )
@@ -52,12 +53,12 @@ public class ImportSpotFromLabelsController
 	}
 
 	protected ImportSpotFromLabelsController(
-			final Model model, final List< TimePoint > timePoints, final Source< ? extends RealType< ? > > source, final Context context,
+			final Model model, final List< TimePoint > frames, final Source< ? extends RealType< ? > > source, final Context context,
 			final VoxelDimensions voxelDimensions, double sigma
 	)
 	{
 		this.modelGraph = model.getGraph();
-		this.timePoints = timePoints;
+		this.frames = frames;
 		this.source = source;
 		this.statusService = context.getService( StatusService.class );
 		this.voxelDimensions = voxelDimensions;
@@ -66,9 +67,9 @@ public class ImportSpotFromLabelsController
 
 	public void createSpotsFromLabels()
 	{
-		int numTimepoints = timePoints.size();
+		int numTimepoints = frames.size();
 
-		for ( TimePoint frame : timePoints )
+		for ( TimePoint frame : frames )
 		{
 			int frameId = frame.getId();
 			long[] dimensions = source.getSource( frameId, 0 ).dimensionsAsLongArray();
@@ -82,9 +83,9 @@ public class ImportSpotFromLabelsController
 		}
 	}
 
-	private void createSpotsFromLabelImage( RandomAccessibleInterval< IntegerType< ? > > img, int timepointId )
+	private void createSpotsFromLabelImage( RandomAccessibleInterval< IntegerType< ? > > img, int frameId )
 	{
-		logger.debug( "Computing mean, covariance of all labels at time-point t={}", timepointId );
+		logger.debug( "Computing mean, covariance of all labels at frame {}", frameId );
 
 		// get the maximum value possible to learn how many objects need to be instantiated
 		// this is fine because we expect maximum occupancy here.
@@ -99,7 +100,7 @@ public class ImportSpotFromLabelsController
 
 		readImageSumPositions( img, count, sum, mixedSum, minAndMax.getA() );
 
-		createSpotsFromSums( timepointId, numLabels, count, sum, mixedSum );
+		createSpotsFromSums( frameId, numLabels, count, sum, mixedSum );
 	}
 
 	/**
@@ -127,7 +128,7 @@ public class ImportSpotFromLabelsController
 
 	/**
 	 * Use the gathered information to generate all the spots for the given timepoint.
-	 * @param timepointId the timepoint of the image the spots should belong to.
+	 * @param frame the frame of the image the spots should belong to.
 	 * @param numLabels the maximum value encountered in the image. Also equal to the number of labels.
 	 * @param count the 0D sums (counts). Dimensions: [labelIdx].
 	 * @param sum the 1D sums, i.e S[X]. Dimensions: [labelIdx, coord]
@@ -139,7 +140,7 @@ public class ImportSpotFromLabelsController
 	 *           I removed it, but it might be neccesary for some reason.
 	 * @author Noam Dori
 	 */
-	private void createSpotsFromSums( int timepointId, int numLabels, int[] count, long[][] sum, BigInteger[][][] mixedSum )
+	private void createSpotsFromSums( int frame, int numLabels, int[] count, long[][] sum, BigInteger[][][] mixedSum )
 	{
 		// combine the sums into mean and covariance matrices, then add the corresponding spot
 		logger.debug( "Found {} labels. Adding a spot for each label.", numLabels );
@@ -160,7 +161,7 @@ public class ImportSpotFromLabelsController
 						cov[ j ][ i ] = cov[ i ][ j ];
 				}
 			}
-			modelGraph.addVertex().init( timepointId, mean, cov );
+			modelGraph.addVertex().init( frame, mean, cov );
 		}
 	}
 
