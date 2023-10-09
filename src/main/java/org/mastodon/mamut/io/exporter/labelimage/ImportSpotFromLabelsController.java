@@ -11,8 +11,6 @@ import net.imglib2.util.Cast;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.mastodon.mamut.MamutAppModel;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -87,7 +85,7 @@ public class ImportSpotFromLabelsController
 		}
 	}
 
-	private void createSpotsFromLabelImage( @NotNull RandomAccessibleInterval< IntegerType< ? > > img, int timepointId )
+	private void createSpotsFromLabelImage( RandomAccessibleInterval< IntegerType< ? > > img, int timepointId )
 	{
 		logger.debug( "Computing mean, covariance of all labels at time-point t={}", timepointId );
 
@@ -113,8 +111,7 @@ public class ImportSpotFromLabelsController
 	 * @return A pair of values (min, max) that represent the minimum and maximum pixel values in the image
 	 * @author Noam Dori
 	 */
-	@Contract("_ -> new")
-	private static @NotNull Pair< Integer, Integer > getPixelValueInterval( RandomAccessibleInterval< IntegerType< ? > > img )
+	private static Pair< Integer, Integer > getPixelValueInterval( RandomAccessibleInterval< IntegerType< ? > > img )
 	{
 		// read the picture to sum everything up
 		int min = Integer.MAX_VALUE;
