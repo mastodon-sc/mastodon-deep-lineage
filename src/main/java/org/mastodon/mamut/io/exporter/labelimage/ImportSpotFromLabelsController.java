@@ -103,7 +103,6 @@ public class ImportSpotFromLabelsController
 				new BigInteger[ numLabels ][ 3 ][ 3 ]; // sums up the estimates of mixed coordinates (like xy). Used for covariances.
 
 		readImageSumPositions( img, count, sum, mixedSum, minAndMax.getA() );
-
 		createSpotsFromSums( frameId, numLabels, count, sum, mixedSum );
 	}
 
@@ -121,7 +120,7 @@ public class ImportSpotFromLabelsController
 		Cursor< IntegerType< ? > > cursor = Views.iterable( img ).cursor();
 		while ( cursor.hasNext() )
 		{
-			int val = cursor.next().getInteger(); // we ignore 0 as it is BG
+			int val = cursor.next().getInteger(); // we ignore 0 as it is background
 			if ( min > val )
 				min = val;
 			if ( max < val )
@@ -176,12 +175,11 @@ public class ImportSpotFromLabelsController
 	 * @param count an empty array to store the 0D sums (counts). Dimensions: [labelIdx].
 	 * @param sum an empty array to store the 1D sums, i.e S[X]. Dimensions: [labelIdx, coord]
 	 * @param mixedSum an empty array to store the 2D sums, i.e S[XY]. Dimensions: [labelIdx, coord, coord]
-	 * @param bg the pixel value of the background. Since unsigned is annoying in Fiji, this subtracts the bg value from the label.
+	 * @param background the pixel value of the background. Since unsigned is annoying in Fiji, this subtracts the bg value from the label.
 	 * @author Noam Dori
 	 */
 	private static void readImageSumPositions(
-			RandomAccessibleInterval< IntegerType< ? > > img, int[] count,
-			long[][] sum, BigInteger[][][] mixedSum, int bg
+			RandomAccessibleInterval< IntegerType< ? > > img, int[] count, long[][] sum, BigInteger[][][] mixedSum, int background
 	)
 	{
 		// read all pixels of the picture to sum everything up
@@ -189,7 +187,7 @@ public class ImportSpotFromLabelsController
 		Cursor< IntegerType< ? > > cursor = Views.iterable( img ).cursor();
 		while ( cursor.hasNext() )
 		{
-			int labelIdx = cursor.next().getInteger() - bg - 1; // we ignore 0 as it is BG
+			int labelIdx = cursor.next().getInteger() - background - 1; // we ignore 0 as it is BG
 			if ( labelIdx < 0 )
 				continue;
 			cursor.localize( pixel );
