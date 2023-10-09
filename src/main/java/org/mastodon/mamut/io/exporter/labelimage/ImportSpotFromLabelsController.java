@@ -179,23 +179,25 @@ public class ImportSpotFromLabelsController
 			long[][] sum, BigInteger[][][] mixedSum, int bg
 	)
 	{
-		// read the picture to sum everything up
-		int[] position = new int[ 3 ];
+		// read all pixels of the picture to sum everything up
+		int[] pixel = new int[ 3 ];
 		Cursor< IntegerType< ? > > cursor = Views.iterable( img ).cursor();
 		while ( cursor.hasNext() )
 		{
 			int labelIdx = cursor.next().getInteger() - bg - 1; // we ignore 0 as it is BG
 			if ( labelIdx < 0 )
 				continue;
-			cursor.localize( position );
+			cursor.localize( pixel );
 			count[ labelIdx ]++;
 			for ( int i = 0; i < 3; i++ )
 			{
-				sum[ labelIdx ][ i ] += position[ i ];
+				sum[ labelIdx ][ i ] += pixel[ i ];
 				for ( int j = i; j < 3; j++ )
 				{ // the covariance matrix is symmetric!
+					if ( mixedSum[ labelIdx ][ i ][ j ] == null )
+						mixedSum[ labelIdx ][ i ][ j ] = BigInteger.ZERO;
 					mixedSum[ labelIdx ][ i ][ j ] =
-							mixedSum[ labelIdx ][ i ][ j ].add( valueOf( position[ i ] ).multiply( valueOf( position[ j ] ) ) );
+							mixedSum[ labelIdx ][ i ][ j ].add( valueOf( pixel[ i ] ).multiply( valueOf( pixel[ j ] ) ) );
 				}
 			}
 		}
