@@ -30,9 +30,11 @@ public class ImportSpotsFromLabelsView implements Command
 	@Parameter
 	private Context context;
 
+	@SuppressWarnings("all")
 	@Parameter(label = "Channel index of labels", min = "0")
 	private int labelChannelIndex = 0;
 
+	@SuppressWarnings("all")
 	@Parameter(label = "Sigma", min = "0", description = "#deviations from center to form border")
 	private double sigma = 2.2;
 
