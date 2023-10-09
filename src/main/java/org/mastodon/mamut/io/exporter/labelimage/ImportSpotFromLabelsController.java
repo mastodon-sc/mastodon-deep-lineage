@@ -78,10 +78,7 @@ public class ImportSpotFromLabelsController
 
 			createSpotsFromLabelImage( img, frameId );
 			if ( statusService != null )
-			{
 				statusService.showProgress( frameId + 1, numTimepoints );
-			}
-
 		}
 	}
 
@@ -121,13 +118,9 @@ public class ImportSpotFromLabelsController
 		{
 			int val = cursor.next().getInteger(); // we ignore 0 as it is BG
 			if ( min > val )
-			{
 				min = val;
-			}
 			if ( max < val )
-			{
 				max = val;
-			}
 		}
 		return new ValuePair<>( min, max );
 	}
@@ -164,9 +157,7 @@ public class ImportSpotFromLabelsController
 							.doubleValue() / Math.pow( count[ labelIdx ], 2 );
 					cov[ i ][ j ] *= Math.pow( sigma, 2 ) * voxelDimensions.dimension( i ) * voxelDimensions.dimension( j );
 					if ( i != j )
-					{
 						cov[ j ][ i ] = cov[ i ][ j ];
-					}
 				}
 			}
 			modelGraph.addVertex().init( timepointId, mean, cov );
@@ -195,9 +186,7 @@ public class ImportSpotFromLabelsController
 		{
 			int labelIdx = cursor.next().getInteger() - bg - 1; // we ignore 0 as it is BG
 			if ( labelIdx < 0 )
-			{
 				continue;
-			}
 			cursor.localize( position );
 			count[ labelIdx ]++;
 			for ( int i = 0; i < 3; i++ )
