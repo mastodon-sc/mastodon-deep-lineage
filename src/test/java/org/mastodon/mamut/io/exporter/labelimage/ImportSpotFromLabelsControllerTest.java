@@ -15,13 +15,16 @@ import org.junit.Test;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.scijava.Context;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 public class ImportSpotFromLabelsControllerTest
 {
@@ -46,27 +49,52 @@ public class ImportSpotFromLabelsControllerTest
 		Context context = new Context( true );
 		TimePoint timePoint = new TimePoint( timepoint );
 		List< TimePoint > timePoints = Collections.singletonList( timePoint );
-		VoxelDimensions voxelDimensions = new FinalVoxelDimensions( "um", 0.16, 0.16, 1 );
+		VoxelDimensions voxelDimensions = new FinalVoxelDimensions( "um", 1, 1, 1 );
 		ImportSpotFromLabelsController controller =
-				new ImportSpotFromLabelsController( model, timePoints, img, context, voxelDimensions, 2.2 );
+				new ImportSpotFromLabelsController( model, timePoints, img, context, voxelDimensions, 1 );
 
 		controller.createSpotsFromLabels();
 
 		Iterator< Spot > iter = model.getGraph().vertices().iterator();
-		assertTrue( iter.hasNext() );
+		Spot spot = iter.next();
+		double[][] covarianceMatrix = new double[ 3 ][ 3 ];
+		spot.getCovariance( covarianceMatrix );
+		final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
+		eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
+		final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
+		double axisA = Math.sqrt( eigenValues[ 0 ] );
+		double axisB = Math.sqrt( eigenValues[ 1 ] );
+		double axisC = Math.sqrt( eigenValues[ 2 ] );
+		double radiusSquared = spot.getBoundingSphereRadiusSquared();
 
-		Spot s = iter.next();
-
-		s.getDoublePosition( 0 );
+		assertNotNull( spot );
+		assertEquals( 0, spot.getTimepoint() );
+		assertEquals( 2, spot.getDoublePosition( 0 ), 0.01 );
+		assertEquals( 2, spot.getDoublePosition( 1 ), 0.01 );
+		assertEquals( 2, spot.getDoublePosition( 2 ), 0.01 );
+		assertEquals( 0, spot.getInternalPoolIndex() );
+		assertEquals( "0", spot.getLabel() );
+		assertEquals( 1, axisA, 0.01d );
+		assertEquals( 1, axisB, 0.01d );
+		assertEquals( 1, axisC, 0.01d );
+		assertEquals( 1, radiusSquared, 0.01d );
+		assertFalse( iter.hasNext() );
 	}
 
 	private static AbstractSource< IntType > createImage()
 	{
 		Img< IntType > img = new ArrayImgFactory<>( new IntType() ).create( 4, 4, 4 );
 		RandomAccess< IntType > ra = img.randomAccess();
-		ra.setPositionAndGet( 1, 1, 1 ).set( 1 );
-		ra.setPositionAndGet( 2, 2, 2 ).set( 1 );
-		ra.setPositionAndGet( 3, 3, 3 ).set( 1 );
+		int label = 1;
+		// 8 corners of a cube
+		ra.setPositionAndGet( 1, 1, 1 ).set( label );
+		ra.setPositionAndGet( 1, 3, 1 ).set( label );
+		ra.setPositionAndGet( 3, 1, 1 ).set( label );
+		ra.setPositionAndGet( 3, 3, 1 ).set( label );
+		ra.setPositionAndGet( 1, 1, 3 ).set( label );
+		ra.setPositionAndGet( 1, 3, 3 ).set( label );
+		ra.setPositionAndGet( 3, 1, 3 ).set( label );
+		ra.setPositionAndGet( 3, 3, 3 ).set( label );
 
 		return new RandomAccessibleIntervalSource<>( img, new IntType(), new AffineTransform3D(), "Segmentation" );
 	}
