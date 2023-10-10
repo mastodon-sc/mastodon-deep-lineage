@@ -110,7 +110,7 @@ public class SegmentUsingEllipsoidsController
 
 		logger.info( "Save ellipsoid segmentation to file. Label options: {}, file: {}", labelOption, file.getAbsolutePath() );
 		long[] spatialDimensions = getDimensionsOfSource();
-		int frames = timePoints.size() / frameRateReduction;
+		int frames = timePoints.size() / frameRateReduction + 1;
 		logger.debug( "number of frames: {}", frames );
 		DiskCachedCellImg< IntType, ? > img = createCachedImage( spatialDimensions, frames );
 
@@ -124,6 +124,7 @@ public class SegmentUsingEllipsoidsController
 			AffineTransform3D transform = new AffineTransform3D();
 			source.getSourceTransform( frameId, 0, transform );
 			int targetFrameId = frameId / frameRateReduction;
+			logger.trace( "frameId: {}, targetFrameId: {}", frameId, targetFrameId );
 			IntervalView< IntType > frame = Views.hyperSlice( img, 3, targetFrameId );
 			AbstractSource< IntType > frameSource = new RandomAccessibleIntervalSource<>( frame, new IntType(), transform, "Segmentation" );
 			final EllipsoidIterable< IntType > ellipsoidIterable = new EllipsoidIterable<>( frameSource );
