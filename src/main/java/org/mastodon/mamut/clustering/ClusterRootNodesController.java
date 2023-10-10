@@ -27,7 +27,9 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -50,10 +52,6 @@ public class ClusterRootNodesController
 	private int cropStart;
 
 	private int cropEnd;
-
-	private int cropStartTime;
-
-	private int cropEndTime;
 
 	private int numberOfClasses;
 
@@ -174,6 +172,22 @@ public class ClusterRootNodesController
 	{
 		if ( !synchronizer.isUptodate() )
 			model.getBranchGraph().graphRebuilt();
+
+		int cropStartTime = cropStart;
+		int cropEndTime = cropEnd;
+		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_CELLS ) )
+		{
+			try
+			{
+				cropStartTime = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
+				cropEndTime = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
+				logger.debug( "Crop time, start: {}, end: {}", cropStartTime, cropEndTime );
+			}
+			catch ( NoSuchElementException e )
+			{
+				return Collections.emptyList();
+			}
+		}
 		RefSet< Spot > roots = LineageTreeUtils.getRoots( model.getGraph(), cropStartTime );
 		List< BranchSpotTree > trees = new ArrayList<>();
 		for ( Spot root : roots )
@@ -195,21 +209,13 @@ public class ClusterRootNodesController
 		return trees;
 	}
 
-	public void setInputParams( CropCriteria cropCriterion, int cropStart, int cropEnd, int minCellDivisions )
+	public void setInputParams( final CropCriteria cropCriterion, final int cropStart, final int cropEnd, final int minCellDivisions )
 	{
 		this.cropCriterion = cropCriterion;
 		this.cropStart = cropStart;
 		this.cropEnd = cropEnd;
-		this.cropStartTime = cropStart;
-		this.cropEndTime = cropEnd;
-		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_CELLS ) )
-		{
-			this.cropStartTime = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
-			this.cropEndTime = LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
-		}
 		this.minCellDivisions = minCellDivisions;
 		logger.debug( "Crop criterion {}, start: {}, end: {}", cropCriterion.getName(), this.cropStart, this.cropEnd );
-		logger.debug( "Crop time, start: {}, end: {}", this.cropStartTime, this.cropEndTime );
 	}
 
 	public void setComputeParams( SimilarityMeasure similarityMeasure, ClusteringMethod clusteringMethod, int numberOfClasses )
@@ -241,7 +247,29 @@ public class ClusterRootNodesController
 			feedback.add( message );
 			logger.debug( message );
 		}
-
+		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_CELLS ) )
+		{
+			try
+			{
+				LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
+			}
+			catch ( NoSuchElementException e )
+			{
+				String message = e.getMessage();
+				feedback.add( message );
+				logger.debug( message );
+			}
+			try
+			{
+				LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
+			}
+			catch ( NoSuchElementException e )
+			{
+				String message = e.getMessage();
+				feedback.add( message );
+				logger.debug( message );
+			}
+		}
 		return feedback;
 	}
 
