@@ -111,7 +111,9 @@ public class SegmentUsingEllipsoidsController
 		logger.info( "Save ellipsoid segmentation to file. Label options: {}, file: {}", labelOption, file.getAbsolutePath() );
 		long[] spatialDimensions = getDimensionsOfSource();
 		int numTimePoints = timePoints.size();
-		int frames = numTimePoints / frameRateReduction + 1;
+		int frames = numTimePoints / frameRateReduction;
+		if ( numTimePoints > frameRateReduction )
+			frames++;
 		logger.debug(
 				"number of timepoints: {}, frame rate reduction: {}, resulting frames: {}", numTimePoints, frameRateReduction, frames );
 		DiskCachedCellImg< IntType, ? > img = createCachedImage( spatialDimensions, frames );

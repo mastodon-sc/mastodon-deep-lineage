@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 
 public class SegmentUsingEllipsoidsControllerTest
@@ -80,6 +81,11 @@ public class SegmentUsingEllipsoidsControllerTest
 		SCIFIOImgPlus< IntType > imgTrack = getIntTypeSCIFIOImgPlus( imgOpener, outputTrack );
 
 		// check that the spot id / branchSpot id / track id is used as value in the center of the spot
+		assertNotNull( imgSpot );
+		assertEquals( 3, imgSpot.dimensionsAsLongArray().length );
+		assertEquals( 100, imgSpot.dimension( 0 ) );
+		assertEquals( 100, imgSpot.dimension( 1 ) );
+		assertEquals( 100, imgSpot.dimension( 2 ) );
 		assertEquals( spot.getInternalPoolIndex() + SegmentUsingEllipsoidsController.LABEL_ID_OFFSET, imgSpot.getAt( center ).get() );
 		assertEquals(
 				branchSpot.getInternalPoolIndex() + SegmentUsingEllipsoidsController.LABEL_ID_OFFSET, imgBranchSpot.getAt( center ).get() );
