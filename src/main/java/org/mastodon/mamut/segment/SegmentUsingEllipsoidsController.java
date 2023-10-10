@@ -238,6 +238,7 @@ public class SegmentUsingEllipsoidsController
 	{
 		SCIFIOConfig config = new SCIFIOConfig();
 		config.writerSetCompression( CompressionType.LZW );
+		config.writerSetFailIfOverwriting( false );
 		ImgSaver saver = new ImgSaver( context );
 		saver.saveImg( file.getAbsolutePath(), imgplus, config );
 	}
