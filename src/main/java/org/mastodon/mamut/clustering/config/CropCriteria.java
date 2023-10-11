@@ -45,22 +45,14 @@ public enum CropCriteria
 		this.nameShort = nameShort;
 	}
 
-	public static CropCriteria getByName( final String name )
-	{
-		for ( final CropCriteria criteria : values() )
-			if ( criteria.getName().equals( name ) )
-				return criteria;
-
-		throw new NoSuchElementException();
-	}
-
-	public String getName()
-	{
-		return name;
-	}
-
 	public String getNameShort()
 	{
 		return nameShort;
+	}
+
+	@Override
+	public String toString()
+	{
+		return name;
 	}
 }

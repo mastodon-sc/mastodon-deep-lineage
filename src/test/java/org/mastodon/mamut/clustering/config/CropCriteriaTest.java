@@ -40,13 +40,6 @@ public class CropCriteriaTest
 	@Test
 	public void testGetName()
 	{
-		assertEquals( "Timepoint", CropCriteria.TIMEPOINT.getName() );
-	}
-
-	@Test
-	public void testGetByName()
-	{
-		assertEquals( CropCriteria.TIMEPOINT, CropCriteria.getByName( "Timepoint" ) );
-		assertThrows( NoSuchElementException.class, () -> CropCriteria.getByName( "foo" ) );
+		assertEquals( "Timepoint", CropCriteria.TIMEPOINT.toString() );
 	}
 }

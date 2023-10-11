@@ -63,8 +63,8 @@ public class ClusterRootNodesView extends InteractiveCommand
 			+ "</html>\n";
 
 	@SuppressWarnings("all")
-	@Parameter(label = "Crop criterion", choices = { "Timepoint", "Number of cells" }, callback = "update")
-	private String cropCriterion = CropCriteria.TIMEPOINT.getName();
+	@Parameter(label = "Crop criterion", callback = "update")
+	private CropCriteria cropCriterion = CropCriteria.TIMEPOINT;
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Crop start", min = "0", callback = "update")
@@ -83,18 +83,12 @@ public class ClusterRootNodesView extends InteractiveCommand
 	private int numberOfCellDivisions;
 
 	@SuppressWarnings("all")
-	@Parameter(
-			label = "Similarity measure", choices = { "Normalized Zhang Tree Distance", "Per Branch Spot Zhang Tree Distance",
-			"Zhang Tree Distance" }, callback = "update"
-	)
-	private String similarityMeasure = SimilarityMeasure.NORMALIZED_DIFFERENCE.getName();
+	@Parameter(label = "Similarity measure", callback = "update")
+	private SimilarityMeasure similarityMeasure = SimilarityMeasure.NORMALIZED_DIFFERENCE;
 
 	@SuppressWarnings("all")
-	@Parameter(
-			label = "Linkage strategy for hierarchical clustering", choices = { "Average linkage", "Single Linkage",
-			"Complete Linkage" }, callback = "update"
-	)
-	private String clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE.getName();
+	@Parameter(label = "Linkage strategy for hierarchical clustering", callback = "update")
+	private ClusteringMethod clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE;
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Feature", choices = "Branch duration", callback = "update")
@@ -129,9 +123,8 @@ public class ClusterRootNodesView extends InteractiveCommand
 	@SuppressWarnings("unused")
 	private void update()
 	{
-		controller.setInputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
-		controller.setComputeParams(
-				SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses );
+		controller.setInputParams( cropCriterion, start, end, numberOfCellDivisions );
+		controller.setComputeParams( similarityMeasure, clusteringMethod, numberOfClasses );
 		controller.setShowDendrogram( showDendrogram );
 
 		paramFeedback = "<html><body width=" + WIDTH_INPUT + "cm>";

@@ -40,13 +40,7 @@ public class ClusteringMethodTest
 	@Test
 	public void testGetName()
 	{
-		assertEquals( "Average linkage", ClusteringMethod.AVERAGE_LINKAGE.getName() );
+		assertEquals( "Average linkage", ClusteringMethod.AVERAGE_LINKAGE.toString() );
 	}
 
-	@Test
-	public void testGetByName()
-	{
-		assertEquals( ClusteringMethod.AVERAGE_LINKAGE, ClusteringMethod.getByName( "Average linkage" ) );
-		assertThrows( NoSuchElementException.class, () -> ClusteringMethod.getByName( "foo" ) );
-	}
 }

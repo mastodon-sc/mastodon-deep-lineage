@@ -51,17 +51,10 @@ public enum ClusteringMethod
 		this.linkageStrategy = linkageStrategy;
 	}
 
-	public String getName()
+	@Override
+	public String toString()
 	{
 		return name;
-	}
-
-	public static ClusteringMethod getByName(final String name) {
-		for (final ClusteringMethod method : values())
-			if (method.getName().equals(name))
-				return method;
-
-		throw new NoSuchElementException();
 	}
 
 	public LinkageStrategy getLinkageStrategy()
