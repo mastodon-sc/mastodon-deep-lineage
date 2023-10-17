@@ -28,10 +28,14 @@ public class BranchSpotTreeExamples
 
 	/**
 	 * <pre>
-	 *                             branchSpot1(lifespan=20)
-	 *                    ┌-─────────┴─────────────┐
-	 *                    │                        │
-	 *                  branchSpot2(lifespan=10)    branchSpot3(lifespan=30)
+	 *                           branchSpot1(lifespan=20)
+	 *                                 │
+	 *                                 │
+	 *                    ┌-───────────┴─────────────┐
+	 *                    │                          │
+	 *              branchSpot2(lifespan=10)         │
+	 *                                               │
+	 *                                         branchSpot3(lifespan=30)
 	 * </pre>
 	 */
 	public static BranchSpotTree tree1()
@@ -70,10 +74,14 @@ public class BranchSpotTreeExamples
 
 	/**
 	 * <pre>
-	 *                               branchSpot1(lifespan=30)
-	 *                      ┌-─────────┴─────────────┐
-	 *                      │                        │
-	 *                    branchSpot2(lifespan=10) branchSpot3(lifespan=20)
+	 *                             branchSpot1(lifespan=30)
+	 *                                   │
+	 *                                   │
+	 *                                   │
+	 *                      ┌-───────────┴─────────────┐
+	 *                      │                          │
+	 *                branchSpot2(lifespan=10)         │
+	 *                                           branchSpot3(lifespan=20)
 	 * </pre>
 	 */
 	public static BranchSpotTree tree2()
