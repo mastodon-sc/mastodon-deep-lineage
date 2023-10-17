@@ -97,6 +97,8 @@ public class ImportSpotFromLabelsController
 		Pair< Integer, Integer > minAndMax = getPixelValueInterval( img );
 
 		int numLabels = minAndMax.getB() - minAndMax.getA();
+		if ( numLabels > 10_000 ) // 10_000 is arbitrary, but we shouldn't expect this many labels from one image
+			logger.warn( "found {} labels, are you sure you used the correct channel?", numLabels );
 		int[] count = new int[ numLabels ]; // counts the number of pixels in each label, for normalization
 		long[][] sum = new long[ numLabels ][ 3 ]; // sums up the positions of the label pixels, used for the 1D means
 		BigInteger[][][] mixedSum =
