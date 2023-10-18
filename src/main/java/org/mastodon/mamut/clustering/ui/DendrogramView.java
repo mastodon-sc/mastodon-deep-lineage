@@ -63,7 +63,7 @@ public class DendrogramView< T >
 			dendrogramPanel.setModel( cluster );
 			dendrogramPanel.setBackground( Color.WHITE );
 			dendrogramPanel.setLineColor( Color.BLACK );
-			if ( cluster.getDistanceValue() < 1d )
+			if ( cluster.getDistanceValue() <= 1d )
 				adaptScaleBar( dendrogramPanel );
 		}
 
