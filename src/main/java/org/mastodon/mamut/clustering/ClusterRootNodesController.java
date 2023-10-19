@@ -241,9 +241,9 @@ public class ClusterRootNodesController
 		}
 
 		int roots = getRoots().size();
-		if ( numberOfClasses > roots )
+		if ( numberOfClasses >= roots )
 		{
-			String message = "Number of classes (" + numberOfClasses + ") must not be larger than number of valid roots (" + roots + ")";
+			String message = "Number of classes (" + numberOfClasses + ") must be smaller than number of valid roots (" + roots + ")";
 			feedback.add( message );
 			logger.debug( message );
 		}
