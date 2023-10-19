@@ -47,7 +47,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 	private int end;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Number of classes", min = "1", callback = "update")
+	@Parameter(label = "Number of classes", min = "2", callback = "update")
 	private int numberOfClasses;
 
 	@SuppressWarnings("unused")
