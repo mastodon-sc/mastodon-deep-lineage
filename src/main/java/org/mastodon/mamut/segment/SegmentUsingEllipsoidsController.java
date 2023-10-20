@@ -112,7 +112,7 @@ public class SegmentUsingEllipsoidsController
 		long[] spatialDimensions = getDimensionsOfSource();
 		int numTimePoints = timePoints.size();
 		int frames = numTimePoints / frameRateReduction;
-		if ( numTimePoints > frameRateReduction )
+		if ( numTimePoints > frameRateReduction && frameRateReduction > 1 )
 			frames++;
 		logger.debug(
 				"number of timepoints: {}, frame rate reduction: {}, resulting frames: {}", numTimePoints, frameRateReduction, frames );
