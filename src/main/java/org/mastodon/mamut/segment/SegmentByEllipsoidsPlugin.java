@@ -22,7 +22,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 @Plugin(type = MamutPlugin.class)
 public class SegmentByEllipsoidsPlugin implements MamutPlugin
 {
-	private static final String SEGMENT_USING_ELLIPSOIDS = "Segment using ellipsoids";
+	private static final String SEGMENT_USING_ELLIPSOIDS = "Export label image using ellipsoids";
 
 	private static final String[] LABEL_ELLIPSOIDS_IMAGE_J_KEYS = { "not mapped" };
 

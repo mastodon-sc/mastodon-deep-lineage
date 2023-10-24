@@ -236,7 +236,7 @@ public class SegmentUsingEllipsoidsController
 
 	private static void showImgPlus( ImgPlus< IntType > imgplus )
 	{
-		ImagePlus result = ImageJFunctions.wrap( imgplus, "Segmentation using ellipsoids" );
+		ImagePlus result = ImageJFunctions.wrap( imgplus, "Label image representing ellipsoids" );
 		result.show();
 	}
 
