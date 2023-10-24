@@ -86,7 +86,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 	private String computeFeedback;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Create tag set", callback = "createTagSet", persist = false)
+	@Parameter(label = "Classify lineage trees", callback = "createTagSet", persist = false)
 	private Button createTagSet;
 
 	/**
@@ -126,7 +126,8 @@ public class ClusterRootNodesView extends InteractiveCommand
 			try
 			{
 				controller.createTagSet();
-				feedback = "Tag set created.";
+				feedback = "Classified lineage trees.<p>";
+				feedback += "Tag set created.";
 			}
 			catch ( IllegalArgumentException e )
 			{
