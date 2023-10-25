@@ -238,6 +238,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		else if ( o1 == null )
 			return o2;
 		else
+			// TODO: standardize the cost function?
+			// return Math.abs( o1 - o2) / (o1 + o2);
 			return Math.abs( o1 - o2 );
 	}
 
