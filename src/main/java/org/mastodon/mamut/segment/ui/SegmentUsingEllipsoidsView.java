@@ -1,6 +1,6 @@
 package org.mastodon.mamut.segment.ui;
 
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.segment.SegmentUsingEllipsoidsController;
 import org.mastodon.mamut.segment.config.LabelOptions;
 import org.scijava.Context;
@@ -45,7 +45,7 @@ public class SegmentUsingEllipsoidsView implements Command
 
 	@SuppressWarnings("unused")
 	@Parameter
-	private MamutAppModel appModel;
+	private ProjectModel projectModel;
 
 	@SuppressWarnings("unused")
 	@Parameter
@@ -54,7 +54,7 @@ public class SegmentUsingEllipsoidsView implements Command
 	@Override
 	public void run()
 	{
-		SegmentUsingEllipsoidsController controller = new SegmentUsingEllipsoidsController( appModel, context );
+		SegmentUsingEllipsoidsController controller = new SegmentUsingEllipsoidsController( projectModel, context );
 		LabelOptions selectedOption = LabelOptions.getByName( option );
 		controller.saveEllipsoidSegmentationToFile( selectedOption, saveTo, showResult, frameRateReduction );
 	}

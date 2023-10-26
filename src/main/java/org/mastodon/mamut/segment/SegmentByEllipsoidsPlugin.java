@@ -1,9 +1,8 @@
 package org.mastodon.mamut.segment;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.plugin.MamutPlugin;
-import org.mastodon.mamut.plugin.MamutPluginAppModel;
 import org.mastodon.mamut.segment.ui.SegmentUsingEllipsoidsView;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
@@ -28,7 +27,7 @@ public class SegmentByEllipsoidsPlugin implements MamutPlugin
 
 	private final AbstractNamedAction segmentUsingEllipsoids;
 
-	private MamutAppModel appModel;
+	private ProjectModel projectModel;
 
 	@SuppressWarnings("unused")
 	@Parameter
@@ -42,9 +41,9 @@ public class SegmentByEllipsoidsPlugin implements MamutPlugin
 	}
 
 	@Override
-	public void setAppPluginModel( MamutPluginAppModel pluginAppModel )
+	public void setAppPluginModel( final ProjectModel projectModel )
 	{
-		this.appModel = pluginAppModel.getAppModel();
+		this.projectModel = projectModel;
 	}
 
 	@Override
@@ -61,6 +60,6 @@ public class SegmentByEllipsoidsPlugin implements MamutPlugin
 
 	private void segmentUsingEllipsoids()
 	{
-		commandService.run( SegmentUsingEllipsoidsView.class, true, "appModel", appModel );
+		commandService.run( SegmentUsingEllipsoidsView.class, true, "projectModel", projectModel );
 	}
 }
