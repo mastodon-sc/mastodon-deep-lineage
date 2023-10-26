@@ -125,6 +125,13 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- include imagej-legacy at test runtime -->
+        <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>imagej-legacy</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <mailingLists>
