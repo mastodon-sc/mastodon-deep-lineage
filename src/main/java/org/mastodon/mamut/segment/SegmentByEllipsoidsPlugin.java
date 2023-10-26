@@ -49,7 +49,8 @@ public class SegmentByEllipsoidsPlugin implements MamutPlugin
 	@Override
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
-		return Collections.singletonList( menu( "Plugins", item( SEGMENT_USING_ELLIPSOIDS ) ) );
+		return Collections.singletonList(
+				menu( "Plugins", menu( "Exports", item( SEGMENT_USING_ELLIPSOIDS ) ) ) );
 	}
 
 	@Override
