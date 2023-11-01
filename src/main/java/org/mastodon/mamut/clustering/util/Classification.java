@@ -3,12 +3,13 @@ package org.mastodon.mamut.clustering.util;
 import com.apporiented.algorithm.clustering.Cluster;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class Classification< T >
 {
-	private final Set< Set< T > > classifiedObjects;
+	private final List< Set< T > > classifiedObjects;
 
 	@Nullable
 	private final Cluster algorithmResult;
@@ -16,19 +17,24 @@ public class Classification< T >
 	@Nullable
 	private final Map< String, T > objectMapping;
 
+	@Nullable
+	private final Map< Integer, Cluster > clusterClasses;
+
 	private final double cutoff;
 
 	public Classification(
-			final Set< Set< T > > classifiedObjects, @Nullable final Cluster algorithmResult,
-			@Nullable final Map< String, T > objectMapping, double cutoff )
+			final List< Set< T > > classifiedObjects, @Nullable final Cluster algorithmResult,
+			@Nullable final Map< String, T > objectMapping, double cutoff, @Nullable final Map< Integer, Cluster > clusterClasses
+	)
 	{
 		this.classifiedObjects = classifiedObjects;
 		this.algorithmResult = algorithmResult;
 		this.objectMapping = objectMapping;
+		this.clusterClasses = clusterClasses;
 		this.cutoff = cutoff;
 	}
 
-	public Set< Set< T > > getClassifiedObjects()
+	public List< Set< T > > getClassifiedObjects()
 	{
 		return classifiedObjects;
 	}
@@ -48,5 +54,11 @@ public class Classification< T >
 	public double getCutoff()
 	{
 		return cutoff;
+	}
+
+	@Nullable
+	public Map< Integer, Cluster > getClusterClasses()
+	{
+		return clusterClasses;
 	}
 }

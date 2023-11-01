@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
+import org.mastodon.util.ColorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,9 +121,11 @@ public class ClusterUtils
 			resultClusters.add( cluster );
 		}
 
-		Set< Set< T > > classifiedObjects = convertClustersToClasses( resultClusters, objectMapping );
+		Pair< List< Set< T > >, Map< Integer, Cluster > > clusterAndClasses = convertClustersToClasses( resultClusters, objectMapping );
+		List< Set< T > > classifiedObjects = clusterAndClasses.getLeft();
+		Map< Integer, Cluster > clusterClasses = clusterAndClasses.getRight();
 		log( classifiedObjects );
-		return new Classification<>( classifiedObjects, algorithmResult, objectMapping, threshold );
+		return new Classification<>( classifiedObjects, algorithmResult, objectMapping, threshold, clusterClasses );
 	}
 
 	/**
@@ -157,14 +160,14 @@ public class ClusterUtils
 					"number of classes (" + classCount + ") must be less than or equal to the number of objects to be classified ("
 							+ objects.length + ")." );
 		else if ( classCount == 1 )
-			return new Classification<>( Collections.singleton( new HashSet<>( Arrays.asList( objects ) ) ), null, null, 0d );
+			return new Classification<>( Collections.singletonList( new HashSet<>( Arrays.asList( objects ) ) ), null, null, 0d, null );
 
-		Set< Set< T > > classes = new HashSet<>();
+		List< Set< T > > classes = new ArrayList<>();
 		if ( classCount == objects.length )
 		{
 			for ( T name : objects )
 				classes.add( Collections.singleton( name ) );
-			return new Classification<>( classes, null, null, 0d );
+			return new Classification<>( classes, null, null, 0d, null );
 		}
 
 		// NB: the cluster algorithm needs unique names instead of objects
@@ -230,19 +233,27 @@ public class ClusterUtils
 		return objectNames;
 	}
 
-	private static < T > Set< Set< T > > convertClustersToClasses( Set< Cluster > output, Map< String, T > objectNames )
+	private static < T > Pair< List< Set< T > >, Map< Integer, Cluster > > convertClustersToClasses(
+			Set< Cluster > output, Map< String, T > objectNames
+	)
 	{
-		int clusterId = 0;
+		int classId = 0;
 		Map< Integer, List< String > > classes = new HashMap<>();
+		Map< Integer, Cluster > clusterClasses = new HashMap<>();
 		for ( Cluster cluster : output )
 		{
 			for ( Cluster child : cluster.getChildren() )
 			{
 				if ( !output.contains( child ) )
-					classes.put( clusterId++, leaveNames( child ) );
+				{
+					classes.put( classId, leaveNames( child ) );
+					clusterClasses.put( classId, child );
+					classId++;
+					logger.trace( "classId: {}, clusterName: {}", classId, child.getName() );
+				}
 			}
 		}
-		Set< Set< T > > classifiedObjects = new HashSet<>();
+		List< Set< T > > classifiedObjects = new ArrayList<>();
 		for ( Map.Entry< Integer, List< String > > entry : classes.entrySet() )
 		{
 			Set< T > objects = new HashSet<>();
@@ -250,10 +261,10 @@ public class ClusterUtils
 				objects.add( objectNames.get( name ) );
 			classifiedObjects.add( objects );
 		}
-		return classifiedObjects;
+		return Pair.of( classifiedObjects, clusterClasses );
 	}
 
-	private static < T > void log( Set< Set< T > > objectsToClusterIds )
+	private static < T > void log( List< Set< T > > objectsToClusterIds )
 	{
 		int i = 0;
 		for ( Set< T > entry : objectsToClusterIds )

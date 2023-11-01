@@ -11,9 +11,12 @@ import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.util.ColorUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,13 +36,13 @@ public class ClusterUtilsTest
 		Classification< String > classification =
 				ClusterUtils.getClassificationByThreshold( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageUPGMAStrategy(),
 						threshold );
-		Set< Set< String > > classifiedObjects = classification.getClassifiedObjects();
+		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
 		Map< String, String > objectMapping = classification.getObjectMapping();
 
 		Set< String > class1 = new HashSet<>( Collections.singletonList( "F" ) );
 		Set< String > class2 = new HashSet<>( Arrays.asList( "A", "B", "E", "G", "H" ) );
 		Set< String > class3 = new HashSet<>( Arrays.asList( "C", "D", "I", "J" ) );
-		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList( class1, class2, class3 ) );
+		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList( class1, class2, class3 ) );
 		assertEquals( expectedClasses, classifiedObjects );
 		assertEquals( threshold, classification.getCutoff(), 0d );
 		assertNotNull( objectMapping );
@@ -52,14 +55,14 @@ public class ClusterUtilsTest
 	{
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
 				new AverageLinkageUPGMAStrategy(), 3 );
-		Set< Set< String > > classifiedObjects = classification.getClassifiedObjects();
+		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
 		Map< String, String > objectMapping = classification.getObjectMapping();
 		double cutoff = classification.getCutoff();
 
 		Set< String > class1 = new HashSet<>( Collections.singletonList( "F" ) );
 		Set< String > class2 = new HashSet<>( Arrays.asList( "A", "B", "E", "G", "H" ) );
 		Set< String > class3 = new HashSet<>( Arrays.asList( "C", "D", "I", "J" ) );
-		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList( class1, class2, class3 ) );
+		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList( class1, class2, class3 ) );
 		assertEquals( expectedClasses, classifiedObjects );
 		assertNotNull( objectMapping );
 		assertEquals( ClusterData.names.length, objectMapping.size() );
@@ -74,7 +77,7 @@ public class ClusterUtilsTest
 				new CompleteLinkageStrategy(), 4
 		);
 
-		Set< Set< String > > classifiedObjects = classification.getClassifiedObjects();
+		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
 		Map< String, String > objectMapping = classification.getObjectMapping();
 		double cutoff = classification.getCutoff();
 
@@ -89,7 +92,7 @@ public class ClusterUtilsTest
 		Set< String > class4 = new HashSet<>( Arrays.asList( "C", "D", "J" ) );
 		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList( class1, class2, class3, class4 ) );
 
-		assertEquals( expectedClasses, classifiedObjects );
+		assertEquals( expectedClasses, new HashSet<>( classifiedObjects ) );
 		assertNotNull( objectMapping );
 		assertEquals( ClusterData.names.length, objectMapping.size() );
 		assertEquals( 75, cutoff, 0d );
@@ -105,7 +108,7 @@ public class ClusterUtilsTest
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
 				new SingleLinkageStrategy(), 5
 		);
-		Set< Set< String > > classifiedObjects = classification.getClassifiedObjects();
+		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
 		Map< String, String > objectMapping = classification.getObjectMapping();
 		double cutoff = classification.getCutoff();
 
@@ -120,7 +123,7 @@ public class ClusterUtilsTest
 		Set< String > class4 = new HashSet<>( Arrays.asList( "C", "D", "J" ) );
 		Set< String > class5 = new HashSet<>( Arrays.asList( "A", "B", "E", "H" ) );
 		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList( class1, class2, class3, class4, class5 ) );
-		assertEquals( expectedClasses, classifiedObjects );
+		assertEquals( expectedClasses, new HashSet<>( classifiedObjects ) );
 		assertNotNull( objectMapping );
 		assertEquals( ClusterData.names.length, objectMapping.size() );
 		assertEquals( 20, cutoff, 0d );
@@ -187,9 +190,9 @@ public class ClusterUtilsTest
 	{
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
 				new AverageLinkageUPGMAStrategy(), 1 );
-		Set< Set< String > > classifiedObjects = classification.getClassifiedObjects();
+		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
 		Set< String > expected = new HashSet<>( Arrays.asList( ClusterData.names ) );
-		Set< Set< String > > expectedClasses = new HashSet<>( Collections.singletonList( expected ) );
+		List< Set< String > > expectedClasses = new ArrayList<>( Collections.singletonList( expected ) );
 		assertEquals( expectedClasses, classifiedObjects );
 		assertNull( classification.getObjectMapping() );
 		assertNull( classification.getAlgorithmResult() );
@@ -202,8 +205,8 @@ public class ClusterUtilsTest
 				ClusterUtils
 						.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageUPGMAStrategy(),
 								10 );
-		Set< Set< String > > classifiedObjects = classification.getClassifiedObjects();
-		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList(
+		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
+		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList(
 				new HashSet<>( Collections.singletonList( "A" ) ),
 				new HashSet<>( Collections.singletonList( "B" ) ),
 				new HashSet<>( Collections.singletonList( "C" ) ),
@@ -236,8 +239,8 @@ public class ClusterUtilsTest
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
-		Set< Set< String > > classifiedObjects = classification.getClassifiedObjects();
-		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList(
+		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
+		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList(
 				new HashSet<>( Collections.singletonList( "3" ) ),
 				new HashSet<>( Arrays.asList( "1", "2" ) )
 		) );
