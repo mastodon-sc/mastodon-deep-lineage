@@ -9,6 +9,7 @@ import org.mastodon.mamut.clustering.ClusterData;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
+import org.mastodon.util.ColorUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -352,6 +353,26 @@ public class ClusterUtilsTest
 		assertEquals( 0d, Math.min( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
 		assertEquals( 2d, Math.max( child10.getDistanceValue(), child11.getDistanceValue() ), 0d );
 		assertEquals( 0d, Math.min( child10.getDistanceValue(), child11.getDistanceValue() ), 0d );
+	}
+
+	@Test
+	public void testGetGlasbeyColor()
+	{
+		assertEquals( ColorUtils.GLASBEY[ 1 ].getRGB(), ClusterUtils.getGlasbeyColor( 1 ) );
+		assertEquals( ColorUtils.GLASBEY[ 0 ].getRGB(), ClusterUtils.getGlasbeyColor( ColorUtils.GLASBEY.length ) );
+		assertEquals( ColorUtils.GLASBEY[ 1 ].getRGB(), ClusterUtils.getGlasbeyColor( ColorUtils.GLASBEY.length + 1 ) );
+	}
+
+	@Test
+	public void testGetColors()
+	{
+		Map< Integer, Integer > expected = new HashMap<>();
+		expected.put( 0, ColorUtils.GLASBEY[ 1 ].getRGB() );
+		expected.put( 1, ColorUtils.GLASBEY[ 2 ].getRGB() );
+		expected.put( 2, ColorUtils.GLASBEY[ 3 ].getRGB() );
+		expected.put( 3, ColorUtils.GLASBEY[ 4 ].getRGB() );
+
+		assertEquals( expected, ClusterUtils.getGlasbeyColors( 4 ) );
 	}
 
 }

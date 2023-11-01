@@ -177,6 +177,27 @@ public class ClusterUtils
 				objects, distances, linkageStrategy, threshold, objectMapping, algorithmResult, sortedClusters );
 	}
 
+	/**
+	 * Gets a Mapping from zero-based counted ids to color values picked from {@link ColorUtils#GLASBEY}.<p>
+	 * Colors are picked in a round-robin fashion.<p>
+	 * The color black is skipped in the first round. Thus, the id zero is mapped to the second color of the {@link ColorUtils#GLASBEY} palette.
+	 * @param n the number of colors to be picked
+	 * @return a Mapping from zero-based ids to color values
+	 */
+	public static Map< Integer, Integer > getGlasbeyColors( int n )
+	{
+		Map< Integer, Integer > colors = new HashMap<>();
+		for ( int i = 0; i < n; i++ )
+			colors.put( i, getGlasbeyColor( i + 1 ) );
+		return colors;
+	}
+
+	static int getGlasbeyColor( int n )
+	{
+		int index = n % ColorUtils.GLASBEY.length;
+		return ColorUtils.GLASBEY[ index ].getRGB();
+	}
+
 	private static double getThreshold( final List< Cluster > sortedClusters, int classCount )
 	{
 		double threshold = sortedClusters.get( classCount - 2 ).getDistanceValue();
