@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -113,7 +112,7 @@ public class ClusterUtils
 		if ( sortedClusters == null )
 			sortedClusters = sortClusters( algorithmResult );
 
-		Set< Cluster > resultClusters = new HashSet<>();
+		List< Cluster > resultClusters = new ArrayList<>();
 		for ( Cluster cluster : sortedClusters )
 		{
 			if ( cluster.getDistanceValue() < threshold )
@@ -121,11 +120,9 @@ public class ClusterUtils
 			resultClusters.add( cluster );
 		}
 
-		Pair< List< Set< T > >, Map< Integer, Cluster > > clusterAndClasses = convertClustersToClasses( resultClusters, objectMapping );
-		List< Set< T > > classifiedObjects = clusterAndClasses.getLeft();
-		Map< Integer, Cluster > clusterClasses = clusterAndClasses.getRight();
-		log( classifiedObjects );
-		return new Classification<>( classifiedObjects, algorithmResult, objectMapping, threshold, clusterClasses );
+		List< Pair< Set< T >, Cluster > > classesAndClusters = convertClustersToClasses( resultClusters, objectMapping );
+		log( classesAndClusters );
+		return new Classification<>( classesAndClusters, algorithmResult, objectMapping, threshold );
 	}
 
 	/**
@@ -160,14 +157,15 @@ public class ClusterUtils
 					"number of classes (" + classCount + ") must be less than or equal to the number of objects to be classified ("
 							+ objects.length + ")." );
 		else if ( classCount == 1 )
-			return new Classification<>( Collections.singletonList( new HashSet<>( Arrays.asList( objects ) ) ), null, null, 0d, null );
+			return new Classification<>(
+					Collections.singletonList( Pair.of( new HashSet<>( Arrays.asList( objects ) ), null ) ), null, null, 0d );
 
-		List< Set< T > > classes = new ArrayList<>();
+		List< Pair< Set< T >, Cluster > > classes = new ArrayList<>();
 		if ( classCount == objects.length )
 		{
 			for ( T name : objects )
-				classes.add( Collections.singleton( name ) );
-			return new Classification<>( classes, null, null, 0d, null );
+				classes.add( Pair.of( Collections.singleton( name ), null ) );
+			return new Classification<>( classes, null, null, 0d );
 		}
 
 		// NB: the cluster algorithm needs unique names instead of objects
@@ -235,45 +233,39 @@ public class ClusterUtils
 		return objectNames;
 	}
 
-	private static < T > Pair< List< Set< T > >, Map< Integer, Cluster > > convertClustersToClasses(
-			Set< Cluster > output, Map< String, T > objectNames
+	private static < T > List< Pair< Set< T >, Cluster > > convertClustersToClasses(
+			List< Cluster > output, Map< String, T > objectNames
 	)
 	{
-		int classId = 0;
-		Map< Integer, List< String > > classes = new HashMap<>();
-		Map< Integer, Cluster > clusterClasses = new HashMap<>();
+		List< Cluster > classes = new ArrayList<>();
 		for ( Cluster cluster : output )
 		{
 			for ( Cluster child : cluster.getChildren() )
 			{
 				if ( !output.contains( child ) )
-				{
-					classes.put( classId, leaveNames( child ) );
-					clusterClasses.put( classId, child );
-					classId++;
-					logger.trace( "classId: {}, clusterName: {}", classId, child.getName() );
-				}
+					classes.add( child );
 			}
 		}
-		List< Set< T > > classifiedObjects = new ArrayList<>();
-		for ( Map.Entry< Integer, List< String > > entry : classes.entrySet() )
+		List< Pair< Set< T >, Cluster > > classifiedObjects = new ArrayList<>();
+		for ( Cluster cluster : classes )
 		{
 			Set< T > objects = new HashSet<>();
-			for ( String name : entry.getValue() )
-				objects.add( objectNames.get( name ) );
-			classifiedObjects.add( objects );
+			List< String > leaveNames = leaveNames( cluster );
+			for ( String leaveName : leaveNames )
+				objects.add( objectNames.get( leaveName ) );
+			classifiedObjects.add( Pair.of( objects, cluster ) );
 		}
-		return Pair.of( classifiedObjects, clusterClasses );
+		return classifiedObjects;
 	}
 
-	private static < T > void log( List< Set< T > > objectsToClusterIds )
+	private static < T > void log( List< Pair< Set< T >, Cluster > > objectsToClusterIds )
 	{
 		int i = 0;
-		for ( Set< T > entry : objectsToClusterIds )
+		for ( Pair< Set< T >, Cluster > entry : objectsToClusterIds )
 		{
 			if ( logger.isInfoEnabled() )
 				logger.info( "clusterId: {}, object: {}", i++,
-						entry.stream().map( Object::toString ).collect( Collectors.joining( "," ) )
+						entry.getLeft().stream().map( Object::toString ).collect( Collectors.joining( "," ) )
 				);
 		}
 	}
