@@ -86,14 +86,14 @@ public class DendrogramPanel< T > extends JPanel
 		this.leafMapping = leafMapping;
 		this.component = createComponent( cluster );
 		this.modelMetrics = createModelMetrics( this.component );
-
-		if ( cluster.getDistanceValue() <= 1d )
-			adaptScaleBar();
+		adaptScaleBar();
 	}
 
 	private void adaptScaleBar()
 	{
 		if ( cluster == null )
+			return;
+		if ( cluster.getDistanceValue() > 1d )
 			return;
 		int zeros = countZerosAfterDecimalPoint( cluster.getDistanceValue() );
 		this.scaleValueInterval = Math.pow( 10, -( zeros + 1 ) );
