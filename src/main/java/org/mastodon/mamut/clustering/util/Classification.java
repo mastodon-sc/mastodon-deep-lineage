@@ -15,7 +15,7 @@ public class Classification< T >
 	private final Cluster algorithmResult;
 
 	@Nullable
-	private final Map< String, T > objectMapping;
+	private final Map< String, T > leafMapping;
 
 	@Nullable
 	private final Map< Integer, Cluster > clusterClasses;
@@ -29,7 +29,7 @@ public class Classification< T >
 	{
 		this.classifiedObjects = classifiedObjects;
 		this.algorithmResult = algorithmResult;
-		this.objectMapping = objectMapping;
+		this.leafMapping = leafMapping;
 		this.clusterClasses = clusterClasses;
 		this.cutoff = cutoff;
 	}
@@ -46,9 +46,9 @@ public class Classification< T >
 	}
 
 	@Nullable
-	public Map< String, T > getObjectMapping()
+	public Map< String, T > getLeafMapping()
 	{
-		return objectMapping;
+		return leafMapping;
 	}
 
 	public double getCutoff()
