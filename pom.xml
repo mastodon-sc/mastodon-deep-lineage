@@ -19,7 +19,6 @@
         <license.organizationName>Mastodon authors</license.organizationName>
 
         <mastodon.version>1.0.0-beta-27-SNAPSHOT</mastodon.version>
-        <mastodon-ellipsoid-fitting.version>0.4.0-SNAPSHOT</mastodon-ellipsoid-fitting.version>
         <mastodon.group>org.mastodon</mastodon.group>
 
         <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
@@ -61,13 +60,6 @@
             <groupId>org.mastodon</groupId>
             <artifactId>mastodon</artifactId>
             <version>${mastodon.version}</version>
-        </dependency>
-
-        <!-- the ellipsoid fitting plugin, a pre-condition to compute ellipsoid features -->
-        <dependency>
-            <groupId>${mastodon.group}</groupId>
-            <artifactId>mastodon-ellipsoid-fitting</artifactId>
-            <version>${mastodon-ellipsoid-fitting.version}</version>
         </dependency>
 
         <!-- include simple logging facade for logging -->
