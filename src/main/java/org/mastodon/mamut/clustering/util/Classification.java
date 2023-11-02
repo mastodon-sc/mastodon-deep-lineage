@@ -3,6 +3,7 @@ package org.mastodon.mamut.clustering.util;
 import com.apporiented.algorithm.clustering.Cluster;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,8 +18,9 @@ public class Classification< T >
 	@Nullable
 	private final Map< String, T > leafMapping;
 
-	@Nullable
-	private final Map< Integer, Cluster > clusterClasses;
+	private final Map< Cluster, Integer > clusterColors;
+
+	private final Map< Integer, Integer > classColors;
 
 	private final double cutoff;
 
@@ -30,8 +32,20 @@ public class Classification< T >
 		this.classifiedObjects = classifiedObjects;
 		this.algorithmResult = algorithmResult;
 		this.leafMapping = leafMapping;
-		this.clusterClasses = clusterClasses;
 		this.cutoff = cutoff;
+
+		List< Integer > glasbeyColors = ClusterUtils.getGlasbeyColors( classifiedObjects.size() );
+		clusterColors = new HashMap<>();
+		classColors = new HashMap<>();
+		for ( int i = 0; i < classifiedObjects.size(); i++ )
+		{
+			Pair< Set< T >, Cluster > clusterClassPair = classifiedObjects.get( i );
+			int color = glasbeyColors.get( i );
+			classColors.put( i, color );
+			Cluster cluster = clusterClassPair.getRight();
+			if ( cluster != null )
+				clusterColors.put( cluster, color );
+		}
 	}
 
 	public List< Set< T > > getClassifiedObjects()
@@ -56,9 +70,13 @@ public class Classification< T >
 		return cutoff;
 	}
 
-	@Nullable
-	public Map< Integer, Cluster > getClusterClasses()
+	public Map< Cluster, Integer > getClusterColors()
 	{
-		return clusterClasses;
+		return clusterColors;
+	}
+
+	public Map< Integer, Integer > getClassColors()
+	{
+		return classColors;
 	}
 }
