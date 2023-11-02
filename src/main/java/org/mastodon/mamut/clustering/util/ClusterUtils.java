@@ -189,6 +189,8 @@ public class ClusterUtils
 	 */
 	public static Map< Integer, Integer > getGlasbeyColors( int n )
 	{
+		if ( n <= 0 )
+			return Collections.emptyMap();
 		Map< Integer, Integer > colors = new HashMap<>();
 		for ( int i = 0; i < n; i++ )
 			colors.put( i, getGlasbeyColor( i + 1 ) );

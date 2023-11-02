@@ -376,6 +376,7 @@ public class ClusterUtilsTest
 		expected.put( 3, ColorUtils.GLASBEY[ 4 ].getRGB() );
 
 		assertEquals( expected, ClusterUtils.getGlasbeyColors( 4 ) );
+		assertEquals( 0, ClusterUtils.getGlasbeyColors( 0 ).size() );
 	}
 
 }
