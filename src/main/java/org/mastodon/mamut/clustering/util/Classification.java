@@ -22,7 +22,7 @@ public class Classification< T >
 
 	private final Map< Cluster, Integer > clusterColors;
 
-	private final Map< Integer, Integer > classColors;
+	private final Map< Integer, Integer > classIdColors;
 
 	private final double cutoff;
 
@@ -38,12 +38,12 @@ public class Classification< T >
 
 		List< Integer > glasbeyColors = ClusterUtils.getGlasbeyColors( classifiedObjects.size() );
 		clusterColors = new HashMap<>();
-		classColors = new HashMap<>();
+		classIdColors = new HashMap<>();
 		for ( int i = 0; i < classifiedObjects.size(); i++ )
 		{
 			Pair< Set< T >, Cluster > clusterClassPair = classifiedObjects.get( i );
 			int color = glasbeyColors.get( i );
-			classColors.put( i, color );
+			classIdColors.put( i, color );
 			Cluster cluster = clusterClassPair.getRight();
 			if ( cluster != null )
 				clusterColors.put( cluster, color );
@@ -77,8 +77,8 @@ public class Classification< T >
 		return clusterColors;
 	}
 
-	public Map< Integer, Integer > getClassColors()
+	public Map< Integer, Integer > getClassIdColors()
 	{
-		return classColors;
+		return classIdColors;
 	}
 }

@@ -19,16 +19,15 @@ import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
 import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.model.tag.TagSetStructure;
-import org.mastodon.util.ColorUtils;
 import org.mastodon.util.TagSetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -93,8 +92,7 @@ public class ClusterRootNodesController
 	{
 		List< BranchSpotTree > roots = getRoots();
 		classification = classifyLineageTrees( roots );
-
-		Collection< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
+		List< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
 		applyClassification( classification, tagsAndColors );
 		if ( showDendrogram )
 			showDendrogram();
@@ -134,24 +132,25 @@ public class ClusterRootNodesController
 		);
 	}
 
-	private Collection< Pair< String, Integer > > createTagsAndColors()
+	private List< Pair< String, Integer > > createTagsAndColors()
 	{
-		Collection< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
-		for ( int i = 0; i < numberOfClasses; i++ )
-			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), ColorUtils.GLASBEY[ i + 1 ].getRGB() ) );
+
+		List< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
+		for ( Map.Entry< Integer, Integer > classAndColor : classification.getClassIdColors().entrySet() )
+			tagsAndColors.add( Pair.of( "Class " + ( classAndColor.getKey() + 1 ), classAndColor.getValue() ) );
 		return tagsAndColors;
 	}
 
-	private void applyClassification( Classification< BranchSpotTree > classification, Collection< Pair< String, Integer > > tagsAndColors )
+	private void applyClassification( Classification< BranchSpotTree > classification, List< Pair< String, Integer > > tagsAndColors )
 	{
-		Set< Set< BranchSpotTree > > classifiedObjects = classification.getClassifiedObjects();
+		List< Set< BranchSpotTree > > classifiedObjects = classification.getClassifiedObjects();
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, getTagSetName(), tagsAndColors );
 		int i = 0;
-		for ( Set< BranchSpotTree > entry : classifiedObjects )
+		for ( Set< BranchSpotTree > trees : classifiedObjects )
 		{
-			logger.info( "Class {} has {} trees", i, entry.size() );
+			logger.info( "Class {} has {} trees", i, trees.size() );
 			TagSetStructure.Tag tag = tagSet.getTags().get( i );
-			for ( BranchSpotTree tree : entry )
+			for ( BranchSpotTree tree : trees )
 			{
 				Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), model.getGraph().vertexRef() );
 				ModelGraph modelGraph = model.getGraph();
