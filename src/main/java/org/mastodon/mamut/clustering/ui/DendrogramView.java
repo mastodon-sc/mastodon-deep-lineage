@@ -1,44 +1,28 @@
 package org.mastodon.mamut.clustering.ui;
 
-import com.apporiented.algorithm.clustering.Cluster;
-import com.apporiented.algorithm.clustering.visualization.ClusterComponent;
-import com.apporiented.algorithm.clustering.visualization.DendrogramPanel;
-import com.apporiented.algorithm.clustering.visualization.VCoord;
 import net.miginfocom.swing.MigLayout;
-import org.mastodon.mamut.clustering.util.DendrogramUtils;
+import org.mastodon.mamut.clustering.util.Classification;
 
-import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Stroke;
-import java.util.Map;
 
 public class DendrogramView< T >
 {
-	@Nullable
-	private final Cluster cluster;
 
-	private final double cutoff;
+	private final Classification< T > classification;
 
 	private final String headline;
 
 	private final JFrame frame;
 
-	public DendrogramView( @Nullable final Cluster cluster, @Nullable final Map< String, T > objectMapping, final double cutoff,
-			final String headline )
+	public DendrogramView( final Classification< T > classification, final String headline )
 	{
-		this.cluster = cluster;
-		this.cutoff = cutoff;
+		this.classification = classification;
 		this.headline = headline;
-		if ( this.cluster != null && objectMapping != null )
-			DendrogramUtils.mapLeaveNames( this.cluster, objectMapping );
 
 		frame = new JFrame( "Hierarchical clustering of lineage trees" );
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
@@ -54,13 +38,14 @@ public class DendrogramView< T >
 
 	public JPanel getPanel()
 	{
-		DendrogramPanel dendrogramPanel;
-		if ( cluster == null )
-			dendrogramPanel = new DendrogramPanel(); // NB: empty dendrogram
+		DendrogramPanel< T > dendrogramPanel;
+		if ( classification == null )
+			dendrogramPanel = new DendrogramPanel<>(); // NB: empty dendrogram
 		else
 		{
-			dendrogramPanel = new DendrogramPanelWithCutoffLine( cluster.getDistanceValue(), cutoff );
-			dendrogramPanel.setModel( cluster );
+			dendrogramPanel = new DendrogramPanel<>( classification.getAlgorithmResult(), classification.getClusterColors(),
+					classification.getCutoff(), classification.getLeafMapping()
+			);
 			dendrogramPanel.setBackground( Color.WHITE );
 			dendrogramPanel.setLineColor( Color.BLACK );
 			if ( cluster.getDistanceValue() <= 1d )
