@@ -1,12 +1,14 @@
 package org.mastodon.mamut.clustering.util;
 
 import com.apporiented.algorithm.clustering.Cluster;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Classification< T >
 {
@@ -25,11 +27,11 @@ public class Classification< T >
 	private final double cutoff;
 
 	public Classification(
-			final List< Set< T > > classifiedObjects, @Nullable final Cluster algorithmResult,
-			@Nullable final Map< String, T > objectMapping, double cutoff, @Nullable final Map< Integer, Cluster > clusterClasses
+			final List< Pair< Set< T >, Cluster > > classifiedObjects, @Nullable final Cluster algorithmResult,
+			@Nullable final Map< String, T > leafMapping, double cutoff
 	)
 	{
-		this.classifiedObjects = classifiedObjects;
+		this.classifiedObjects = classifiedObjects.stream().map( Pair::getKey ).collect( Collectors.toList() );
 		this.algorithmResult = algorithmResult;
 		this.leafMapping = leafMapping;
 		this.cutoff = cutoff;
