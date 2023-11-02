@@ -43,9 +43,7 @@ public class DendrogramView< T >
 			dendrogramPanel = new DendrogramPanel<>(); // NB: empty dendrogram
 		else
 		{
-			dendrogramPanel = new DendrogramPanel<>( classification.getAlgorithmResult(), classification.getClusterColors(),
-					classification.getCutoff(), classification.getLeafMapping()
-			);
+			dendrogramPanel = new DendrogramPanel<>( classification );
 			dendrogramPanel.setBackground( Color.WHITE );
 		}
 

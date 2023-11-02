@@ -3,6 +3,7 @@ package org.mastodon.mamut.clustering.ui;
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.visualization.ClusterComponent;
 import com.apporiented.algorithm.clustering.visualization.VCoord;
+import org.mastodon.mamut.clustering.util.Classification;
 
 import javax.annotation.Nullable;
 import javax.swing.JPanel;
@@ -26,17 +27,11 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final long serialVersionUID = 1L;
 
-	private final Cluster cluster;
+	private final Classification< T > classification;
 
 	private final CustomizedClusterComponent component;
 
-	private final Map< Cluster, Integer > clusterColors;
-
-	private final Map< String, T > leafMapping;
-
 	private final ModelMetrics modelMetrics;
-
-	private final double cutoff;
 
 	private double scaleValueInterval = 0;
 
@@ -67,30 +62,25 @@ public class DendrogramPanel< T > extends JPanel
 	public DendrogramPanel()
 	{
 		super();
-		this.cluster = null;
-		this.clusterColors = null;
-		this.cutoff = 0d;
-		this.leafMapping = null;
+		this.classification = null;
 		this.component = null;
 		this.modelMetrics = null;
 	}
 
-	public DendrogramPanel(
-			final Cluster cluster, final Map< Cluster, Integer > clusterColors, final double cutoff, final Map< String, T > leafMapping
-	)
+	public DendrogramPanel( final Classification< T > classification )
 	{
 		super();
-		this.cluster = cluster;
-		this.clusterColors = clusterColors;
-		this.cutoff = cutoff;
-		this.leafMapping = leafMapping;
-		this.component = createComponent( cluster );
+		this.classification = classification;
+		this.component = createComponent( classification.getAlgorithmResult() );
 		this.modelMetrics = createModelMetrics( this.component );
 		adaptScaleBar();
 	}
 
 	private void adaptScaleBar()
 	{
+		if ( classification == null )
+			return;
+		Cluster cluster = classification.getAlgorithmResult();
 		if ( cluster == null )
 			return;
 		if ( cluster.getDistanceValue() > 1d )
@@ -152,7 +142,7 @@ public class DendrogramPanel< T > extends JPanel
 	private void paintCutoffLine( final Graphics g, final DisplayMetrics displayMetrics )
 	{
 		Stroke stroke = new BasicStroke( 1.75f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5, 5 }, 0 );
-		paintVerticalLine( g, stroke, cutoff, displayMetrics );
+		paintVerticalLine( g, stroke, classification.getCutoff(), displayMetrics );
 	}
 
 	private void paintVerticalLine( final Graphics g, final Stroke stroke, final double xValue, final DisplayMetrics displayMetrics )
@@ -234,8 +224,10 @@ public class DendrogramPanel< T > extends JPanel
 		if ( cluster == null )
 			return null;
 
+		Map< Cluster, Integer > clusterColors = classification.getClusterColors();
 		if ( clusterColors != null && ( clusterColors.containsKey( cluster ) ) )
 			color = new Color( clusterColors.get( cluster ) );
+		Map< String, T > leafMapping = classification.getLeafMapping();
 		if ( leafMapping != null && cluster.isLeaf() && leafMapping.containsKey( cluster.getName() ) )
 			cluster.setName( leafMapping.get( cluster.getName() ).toString() );
 		CustomizedClusterComponent clusterComponent = new CustomizedClusterComponent( cluster, cluster.isLeaf(), initialCoordinate, color );

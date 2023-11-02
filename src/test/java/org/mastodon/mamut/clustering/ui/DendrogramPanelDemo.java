@@ -4,13 +4,14 @@ import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
-import com.apporiented.algorithm.clustering.Distance;
+import org.mastodon.mamut.clustering.util.Classification;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.Collections;
 
 public class DendrogramPanelDemo
 {
@@ -23,7 +24,8 @@ public class DendrogramPanelDemo
 
 		JPanel content = new JPanel();
 		Cluster cluster = createSampleCluster();
-		DendrogramPanel< String > dp = new DendrogramPanel<>( cluster, null, 6d, null );
+		Classification< String > classification = new Classification<>( Collections.emptyList(), cluster, null, 6d );
+		DendrogramPanel< String > dp = new DendrogramPanel<>( classification );
 
 		frame.setContentPane( content );
 		content.setBackground( Color.red );
