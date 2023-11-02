@@ -187,13 +187,13 @@ public class ClusterUtils
 	 * @param n the number of colors to be picked
 	 * @return a Mapping from zero-based ids to color values
 	 */
-	public static Map< Integer, Integer > getGlasbeyColors( int n )
+	public static List< Integer > getGlasbeyColors( int n )
 	{
 		if ( n <= 0 )
-			return Collections.emptyMap();
-		Map< Integer, Integer > colors = new HashMap<>();
+			return Collections.emptyList();
+		List< Integer > colors = new ArrayList<>();
 		for ( int i = 0; i < n; i++ )
-			colors.put( i, getGlasbeyColor( i + 1 ) );
+			colors.add( getGlasbeyColor( i + 1 ) );
 		return colors;
 	}
 

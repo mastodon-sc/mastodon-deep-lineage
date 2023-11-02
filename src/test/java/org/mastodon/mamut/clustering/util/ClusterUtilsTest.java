@@ -369,11 +369,11 @@ public class ClusterUtilsTest
 	@Test
 	public void testGetColors()
 	{
-		Map< Integer, Integer > expected = new HashMap<>();
-		expected.put( 0, ColorUtils.GLASBEY[ 1 ].getRGB() );
-		expected.put( 1, ColorUtils.GLASBEY[ 2 ].getRGB() );
-		expected.put( 2, ColorUtils.GLASBEY[ 3 ].getRGB() );
-		expected.put( 3, ColorUtils.GLASBEY[ 4 ].getRGB() );
+		List< Integer > expected = new ArrayList<>();
+		expected.add( ColorUtils.GLASBEY[ 1 ].getRGB() );
+		expected.add( ColorUtils.GLASBEY[ 2 ].getRGB() );
+		expected.add( ColorUtils.GLASBEY[ 3 ].getRGB() );
+		expected.add( ColorUtils.GLASBEY[ 4 ].getRGB() );
 
 		assertEquals( expected, ClusterUtils.getGlasbeyColors( 4 ) );
 		assertEquals( 0, ClusterUtils.getGlasbeyColors( 0 ).size() );
