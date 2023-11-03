@@ -130,8 +130,7 @@ public class DendrogramPanel< T > extends JPanel
 
 	private void paintCutoffLine( final Graphics2D g2, final DisplayMetrics displayMetrics )
 	{
-		Stroke stroke = new BasicStroke( 1.75f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5, 5 }, 0 );
-		paintVerticalLine( g, stroke, classification.getCutoff(), displayMetrics );
+		paintVerticalLine( g2, CUT_OFF_LINE_STROKE, classification.getCutoff(), displayMetrics );
 	}
 
 	private void paintVerticalLine(
