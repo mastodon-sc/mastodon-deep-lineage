@@ -6,7 +6,6 @@ import com.apporiented.algorithm.clustering.visualization.VCoord;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.util.Classification;
 
-import javax.annotation.Nullable;
 import javax.swing.JPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -154,28 +153,23 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
-	@Nullable
-	private CustomizedClusterComponent createComponent( final Cluster model )
-	{
-
-		double virtualModelHeight = 1d;
-		VCoord initialCoordinate = new VCoord( 0, virtualModelHeight / 2d );
-
-		CustomizedClusterComponent clusterComponent = createComponent( model, initialCoordinate, virtualModelHeight, Color.BLACK );
-		if ( clusterComponent == null )
-			return null;
-		clusterComponent.setLinkPoint( initialCoordinate );
-		return clusterComponent;
-	}
-
-	@Nullable
-	private CustomizedClusterComponent createComponent(
-			final Cluster cluster, final VCoord initialCoordinate, final double clusterHeight, Color color
-	)
+	private CustomizedClusterComponent createComponent( final Cluster cluster )
 	{
 		if ( cluster == null )
 			return null;
 
+		double virtualModelHeight = 1d;
+		VCoord initialCoordinate = new VCoord( 0, virtualModelHeight / 2d );
+
+		CustomizedClusterComponent clusterComponent = createComponent( cluster, initialCoordinate, virtualModelHeight, Color.BLACK );
+		clusterComponent.setLinkPoint( initialCoordinate );
+		return clusterComponent;
+	}
+
+	private CustomizedClusterComponent createComponent(
+			final Cluster cluster, final VCoord initialCoordinate, final double clusterHeight, Color color
+	)
+	{
 		Map< Cluster, Integer > clusterColors = classification.getClusterColors();
 		if ( clusterColors != null && ( clusterColors.containsKey( cluster ) ) )
 			color = new Color( clusterColors.get( cluster ) );
@@ -197,9 +191,6 @@ public class DendrogramPanel< T > extends JPanel
 
 			/* Traverse cluster node tree */
 			CustomizedClusterComponent childComponent = createComponent( child, childInitCoord, childHeight, color );
-
-			if ( childComponent == null )
-				continue;
 			childComponent.setLinkPoint( initialCoordinate );
 			clusterComponent.getChildren().add( childComponent );
 		}
