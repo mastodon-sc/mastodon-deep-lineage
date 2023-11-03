@@ -87,7 +87,9 @@ public class DendrogramPanelTest
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
 		DendrogramPanel< String >.ScaleBar scalebar =
 				dendrogramPanel.new ScaleBar( dendrogramPanel.new DisplayMetrics( 507, 426, graphics ) );
-		Set< String > expectedTickValues = new HashSet<>( Arrays.asList( "0,0", "0,1", "0,2", "0,3", "0,4", "0,5", "0,6", "0,7" ) );
+		Set< Double > expectedTickValuesDouble = new HashSet<>( Arrays.asList( 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7 ) );
+		Set< String > expectedTickValues =
+				expectedTickValuesDouble.stream().map( d -> String.format( "%.1f", d ) ).collect( Collectors.toSet() );
 		Set< String > actualTickValues = scalebar.ticks.stream().map( Pair::getValue ).collect( Collectors.toSet() );
 		assertEquals( 8, scalebar.ticks.size() );
 		assertEquals( expectedTickValues, actualTickValues );
