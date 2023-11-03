@@ -87,43 +87,26 @@ public class DendrogramPanel< T > extends JPanel
 		g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 		g2.setColor( CLUSTER_LINE_COLOR );
 		g2.setStroke( CLUSTER_LINE_STROKE );
-
-		int widthDisplay = getWidth() - BORDER_LEFT - BORDER_RIGHT;
-		int heightDisplay = getHeight() - BORDER_TOP - BORDER_BOTTOM;
+		int componentWidth = getWidth();
+		int componentHeight = getHeight();
+		DisplayMetrics metrics = new DisplayMetrics( componentWidth, componentHeight, g2 );
 
 		if ( component != null )
 		{
-			int xDisplayOrigin = BORDER_LEFT;
-			int yDisplayOrigin = BORDER_BOTTOM;
-			int nameOffset = component.getMaxNameWidth( g2, false ) + component.getNamePadding();
-			widthDisplay -= nameOffset;
-
+			component.paint(
+					g2, metrics.xOffset, metrics.yOffset, metrics.xConversionFactor, metrics.yConversionFactor, SHOW_DISTANCE_VALUES );
 			if ( SHOW_SCALE )
 			{
-				int scaleBarHeight = getScaleBarHeight( g2 );
-				heightDisplay -= scaleBarHeight;
-				yDisplayOrigin += scaleBarHeight;
-			}
-
-			/* Calculate conversion factor and offset for display */
-			double xFactor = widthDisplay / modelMetrics.wModel;
-			double yFactor = heightDisplay / modelMetrics.hModel;
-			DisplayMetrics displayMetrics = new DisplayMetrics( xDisplayOrigin, yDisplayOrigin, widthDisplay, xFactor );
-			int xOffset = ( int ) ( xDisplayOrigin - modelMetrics.xModelOrigin * xFactor );
-			int yOffset = ( int ) ( yDisplayOrigin - modelMetrics.yModelOrigin * yFactor );
-			component.paint( g2, xOffset, yOffset, xFactor, yFactor, SHOW_DISTANCE_VALUES );
-			if ( SHOW_SCALE )
-			{
-				Scalebar scalebar = new Scalebar( displayMetrics );
+				Scalebar scalebar = new Scalebar( metrics );
 				scalebar.paint( g2 );
 			}
-			paintCutoffLine( g2, displayMetrics );
+			paintCutoffLine( g2, metrics );
 		}
 		else
 		{
 			Rectangle2D rect = g2.getFontMetrics().getStringBounds( NO_DATA_AVAILABLE, g2 );
-			int x = ( int ) ( widthDisplay / 2.0 - rect.getWidth() / 2.0 );
-			int y = ( int ) ( heightDisplay / 2.0 - rect.getHeight() / 2.0 );
+			int x = ( int ) ( metrics.widthDisplay / 2.0 - rect.getWidth() / 2.0 );
+			int y = ( int ) ( metrics.heightDisplay / 2.0 - rect.getHeight() / 2.0 );
 			g2.drawString( NO_DATA_AVAILABLE, x, y );
 		}
 	}
@@ -232,22 +215,46 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
-	static class DisplayMetrics
+	class DisplayMetrics
 	{
+		private final int widthDisplay;
+
+		private final int heightDisplay;
+
 		private final int xDisplayOrigin;
 
 		private final int yDisplayOrigin;
 
-		private final int widthDisplay;
+		private final double xConversionFactor;
 
-		private final double xFactor;
+		private final double yConversionFactor;
 
-		DisplayMetrics( int xDisplayOrigin, int yDisplayOrigin, int widthDisplay, double xFactor )
+		private final int xOffset;
+
+		private final int yOffset;
+
+		DisplayMetrics( int componentWidth, int componentHeight, Graphics2D g2 )
 		{
-			this.xDisplayOrigin = xDisplayOrigin;
-			this.yDisplayOrigin = yDisplayOrigin;
-			this.widthDisplay = widthDisplay;
-			this.xFactor = xFactor;
+			int nameOffset = 0;
+			int scaleBarHeight = 0;
+			if ( component != null )
+			{
+				nameOffset = component.getMaxNameWidth( g2, false ) + component.getNamePadding();
+				if ( SHOW_SCALE )
+					scaleBarHeight = getScaleBarHeight( g2 );
+			}
+
+			widthDisplay = componentWidth - BORDER_LEFT - BORDER_RIGHT - nameOffset;
+			heightDisplay = componentHeight - BORDER_TOP - BORDER_BOTTOM - scaleBarHeight;
+
+			xDisplayOrigin = BORDER_LEFT;
+			yDisplayOrigin = BORDER_BOTTOM + scaleBarHeight;
+
+			xConversionFactor = widthDisplay / modelMetrics.wModel;
+			yConversionFactor = heightDisplay / modelMetrics.hModel;
+
+			xOffset = ( int ) ( xDisplayOrigin - modelMetrics.xModelOrigin * xConversionFactor );
+			yOffset = ( int ) ( yDisplayOrigin - modelMetrics.yModelOrigin * yConversionFactor );
 		}
 	}
 
@@ -270,16 +277,15 @@ public class DendrogramPanel< T > extends JPanel
 		return ( int ) Math.max( 0, -Math.floor( Math.log10( Math.abs( number ) ) + 1 ) );
 	}
 
-	static int getDisplayXCoordinate( final double modelXCoordinate, final DisplayMetrics displayMetrics )
+	int getDisplayXCoordinate( final double modelXCoordinate, final DisplayMetrics displayMetrics )
 	{
-		double xDisplayCoordinate = modelXCoordinate * displayMetrics.xFactor;
+		double xDisplayCoordinate = modelXCoordinate * displayMetrics.xConversionFactor;
 		return displayMetrics.xDisplayOrigin + displayMetrics.widthDisplay - ( int ) xDisplayCoordinate;
 	}
 
 	static int getScaleBarHeight( Graphics g )
 	{
-		Rectangle2D rect = g.getFontMetrics().getStringBounds( "0", g );
-		return ( int ) rect.getHeight() + SCALE_PADDING + SCALE_PADDING + SCALE_TICK_LABEL_PADDING;
+		return g.getFontMetrics().getHeight() + 2 * SCALE_PADDING + SCALE_TICK_LABEL_PADDING;
 	}
 
 	class Scalebar

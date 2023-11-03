@@ -7,8 +7,12 @@ import org.junit.Test;
 import org.mastodon.mamut.clustering.ClusterData;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
+import org.mockito.Mockito;
 
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +25,8 @@ public class DendrogramPanelTest
 {
 	private Classification< String > classification;
 
+	private Graphics2D graphics;
+
 	@Before
 	public void setUp()
 	{
@@ -28,6 +34,13 @@ public class DendrogramPanelTest
 				ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
 						3
 				);
+
+		graphics = Mockito.mock( Graphics2D.class );
+		FontMetrics fontMetrics = Mockito.mock( FontMetrics.class );
+		Rectangle2D rectangle2D = new Rectangle2D.Double( 0, 0, 15, 10 );
+		Mockito.when( graphics.getFontMetrics() ).thenReturn( fontMetrics );
+		Mockito.when( fontMetrics.getStringBounds( Mockito.anyString(), Mockito.any() ) ).thenReturn( rectangle2D );
+		Mockito.when( fontMetrics.getHeight() ).thenReturn( 16 );
 	}
 
 
@@ -52,7 +65,7 @@ public class DendrogramPanelTest
 	{
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
 		DendrogramPanel< String >.Scalebar scalebar =
-				dendrogramPanel.new Scalebar( new DendrogramPanel.DisplayMetrics( 20, 59, 446, 6.19d ) );
+				dendrogramPanel.new Scalebar( dendrogramPanel.new DisplayMetrics( 507, 426, graphics ) );
 		Set< String > expectedTickValues = new HashSet<>( Arrays.asList( "0", "7", "14", "21", "28", "35", "42", "49", "56", "63", "70" ) );
 		Set< String > actualTickValues = scalebar.ticks.stream().map( Pair::getValue ).collect( Collectors.toSet() );
 		assertEquals( 11, scalebar.ticks.size() );
@@ -63,7 +76,7 @@ public class DendrogramPanelTest
 	public void testGetVerticalLine()
 	{
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
-		Line2D line = dendrogramPanel.getVerticalLine( 25d, new DendrogramPanel.DisplayMetrics( 20, 59, 446, 6.19d ) );
+		Line2D line = dendrogramPanel.getVerticalLine( 25d, dendrogramPanel.new DisplayMetrics( 507, 426, graphics ) );
 		assertEquals( 312d, line.getX1(), 0.01 );
 	}
 }
