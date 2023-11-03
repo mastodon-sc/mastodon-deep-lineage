@@ -3,6 +3,7 @@ package org.mastodon.mamut.clustering.ui;
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.visualization.ClusterComponent;
 import com.apporiented.algorithm.clustering.visualization.VCoord;
+import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.util.Classification;
 
 import javax.annotation.Nullable;
@@ -13,8 +14,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Class for painting dendrograms derived from a {@link Cluster} object.<p>
@@ -32,10 +36,6 @@ public class DendrogramPanel< T > extends JPanel
 	private final CustomizedClusterComponent component;
 
 	private final ModelMetrics modelMetrics;
-
-	private double scaleValueInterval = 0;
-
-	private int scaleValueDecimalDigits = 0;
 
 	private static final BasicStroke CLUSTER_LINE_STROKE = new BasicStroke( 1.25f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND );
 
@@ -73,21 +73,6 @@ public class DendrogramPanel< T > extends JPanel
 		this.classification = classification;
 		this.component = createComponent( classification.getAlgorithmResult() );
 		this.modelMetrics = createModelMetrics( this.component );
-		adaptScaleBar();
-	}
-
-	private void adaptScaleBar()
-	{
-		if ( classification == null )
-			return;
-		Cluster cluster = classification.getAlgorithmResult();
-		if ( cluster == null )
-			return;
-		if ( cluster.getDistanceValue() > 1d )
-			return;
-		int zeros = countZerosAfterDecimalPoint( cluster.getDistanceValue() );
-		this.scaleValueInterval = Math.pow( 10, -( zeros + 1 ) );
-		this.scaleValueDecimalDigits = zeros + 1;
 	}
 
 	@Override
@@ -111,10 +96,9 @@ public class DendrogramPanel< T > extends JPanel
 
 			if ( SHOW_SCALE )
 			{
-				Rectangle2D rect = g2.getFontMetrics().getStringBounds( "0", g2 );
-				int scaleHeight = ( int ) rect.getHeight() + SCALE_PADDING + SCALE_PADDING + SCALE_TICK_LABEL_PADDING;
-				heightDisplay -= scaleHeight;
-				yDisplayOrigin += scaleHeight;
+				int scaleBarHeight = getScaleBarHeight( g2 );
+				heightDisplay -= scaleBarHeight;
+				yDisplayOrigin += scaleBarHeight;
 			}
 
 			/* Calculate conversion factor and offset for display */
@@ -125,7 +109,10 @@ public class DendrogramPanel< T > extends JPanel
 			int yOffset = ( int ) ( yDisplayOrigin - modelMetrics.yModelOrigin * yFactor );
 			component.paint( g2, xOffset, yOffset, xFactor, yFactor, SHOW_DISTANCE_VALUES );
 			if ( SHOW_SCALE )
-				paintScale( g2, displayMetrics );
+			{
+				Scalebar scalebar = new Scalebar( displayMetrics );
+				scalebar.paint( g2 );
+			}
 			paintCutoffLine( g2, displayMetrics );
 		}
 		else
@@ -164,41 +151,6 @@ public class DendrogramPanel< T > extends JPanel
 		finally
 		{
 			g2.setStroke( defaultStroke );
-		}
-	}
-
-	private void paintScale( final Graphics g, final DisplayMetrics displayMetrics )
-	{
-		int yDisplayScale = displayMetrics.yDisplayOrigin - SCALE_PADDING;
-		g.drawLine(
-				displayMetrics.xDisplayOrigin, yDisplayScale, displayMetrics.xDisplayOrigin + displayMetrics.widthDisplay, yDisplayScale );
-
-		double scaleModelWidth = component.getCluster().getTotalDistance();
-		double xModelInterval;
-		if ( scaleValueInterval <= 0 )
-			xModelInterval = Math.round( scaleModelWidth / 10.0 );
-		else
-			xModelInterval = scaleValueInterval;
-
-		paintTicks( g, displayMetrics, yDisplayScale, xModelInterval );
-	}
-
-	private void paintTicks( final Graphics g, final DisplayMetrics displayMetrics, final int yDisplayScale, final double xModelInterval )
-	{
-		int xDisplayTick = displayMetrics.xDisplayOrigin + displayMetrics.widthDisplay;
-		int yDisplayTick = yDisplayScale - SCALE_TICK_LENGTH;
-		double tickValue = 0;
-		while ( xDisplayTick >= displayMetrics.xDisplayOrigin )
-		{
-			g.drawLine( xDisplayTick, yDisplayScale, xDisplayTick, yDisplayTick );
-
-			String format = "%." + scaleValueDecimalDigits + "f";
-			String tickValueString = String.format( format, tickValue );
-			Rectangle2D stringBounds = g.getFontMetrics().getStringBounds( tickValueString, g );
-			g.drawString(
-					tickValueString, ( int ) ( xDisplayTick - ( stringBounds.getWidth() / 2 ) ), yDisplayTick - SCALE_TICK_LABEL_PADDING );
-			tickValue += xModelInterval;
-			xDisplayTick = getDisplayXCoordinate( tickValue, displayMetrics );
 		}
 	}
 
@@ -285,7 +237,7 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
-	private static class DisplayMetrics
+	static class DisplayMetrics
 	{
 		private final int xDisplayOrigin;
 
@@ -295,7 +247,7 @@ public class DendrogramPanel< T > extends JPanel
 
 		private final double xFactor;
 
-		private DisplayMetrics( int xDisplayOrigin, int yDisplayOrigin, int widthDisplay, double xFactor )
+		DisplayMetrics( int xDisplayOrigin, int yDisplayOrigin, int widthDisplay, double xFactor )
 		{
 			this.xDisplayOrigin = xDisplayOrigin;
 			this.yDisplayOrigin = yDisplayOrigin;
@@ -327,5 +279,99 @@ public class DendrogramPanel< T > extends JPanel
 	{
 		double xDisplayCoordinate = modelXCoordinate * displayMetrics.xFactor;
 		return displayMetrics.xDisplayOrigin + displayMetrics.widthDisplay - ( int ) xDisplayCoordinate;
+	}
+
+	static int getScaleBarHeight( Graphics g )
+	{
+		Rectangle2D rect = g.getFontMetrics().getStringBounds( "0", g );
+		return ( int ) rect.getHeight() + SCALE_PADDING + SCALE_PADDING + SCALE_TICK_LABEL_PADDING;
+	}
+
+	class Scalebar
+	{
+		final Line2D line;
+
+		final Set< Pair< Line2D, String > > ticks;
+
+		final DisplayMetrics displayMetrics;
+
+		private double scaleValueInterval = 0;
+
+		private int scaleValueDecimalDigits = 0;
+
+		Scalebar( final DisplayMetrics displayMetrics )
+		{
+			this.displayMetrics = displayMetrics;
+			adaptScaleBar();
+			line = createLine();
+			ticks = createTicks();
+		}
+
+		private void adaptScaleBar()
+		{
+			if ( classification == null )
+				return;
+			Cluster cluster = classification.getAlgorithmResult();
+			if ( cluster == null )
+				return;
+			if ( cluster.getDistanceValue() > 1d )
+				return;
+			int zeros = countZerosAfterDecimalPoint( cluster.getDistanceValue() );
+			scaleValueInterval = Math.pow( 10, -( zeros + 1 ) );
+			scaleValueDecimalDigits = zeros + 1;
+		}
+
+		private Line2D createLine()
+		{
+			int xStart = displayMetrics.xDisplayOrigin;
+			int xEnd = displayMetrics.xDisplayOrigin + displayMetrics.widthDisplay;
+			int y = displayMetrics.yDisplayOrigin - SCALE_PADDING;
+			return new Line2D.Float( xStart, y, xEnd, y );
+		}
+
+		private Set< Pair< Line2D, String > > createTicks()
+		{
+			Set< Pair< Line2D, String > > tickSet = new HashSet<>();
+
+			double xModelInterval = getTickModelInterval();
+			int xDisplayTick = displayMetrics.xDisplayOrigin + displayMetrics.widthDisplay;
+			float yDisplayTick = ( float ) line.getY1() - SCALE_TICK_LENGTH;
+			double tickValue = 0;
+			while ( xDisplayTick >= displayMetrics.xDisplayOrigin )
+			{
+				String format = "%." + scaleValueDecimalDigits + "f";
+				String tickValueString = String.format( format, tickValue );
+				tickSet.add(
+						Pair.of( new Line2D.Float( xDisplayTick, ( float ) line.getY1(), xDisplayTick, yDisplayTick ), tickValueString ) );
+				tickValue += xModelInterval;
+				xDisplayTick = getDisplayXCoordinate( tickValue, displayMetrics );
+			}
+			return tickSet;
+		}
+
+		private double getTickModelInterval()
+		{
+			double scaleModelWidth = component.getCluster().getTotalDistance();
+			if ( scaleValueInterval <= 0 )
+				return Math.round( scaleModelWidth / 10.0 );
+			else
+				return scaleValueInterval;
+		}
+
+		void paint( Graphics2D g2 )
+		{
+			g2.draw( line );
+			for ( Pair< Line2D, String > tick : ticks )
+			{
+				Line2D tickLine = tick.getLeft();
+				g2.draw( tickLine );
+				String tickValue = tick.getRight();
+				Rectangle2D bounds = g2.getFontMetrics().getStringBounds( tickValue, g2 );
+				g2.drawString(
+						tickValue, ( int ) ( tickLine.getX1() - ( bounds.getWidth() / 2 ) ),
+						( int ) tickLine.getY2() - SCALE_TICK_LABEL_PADDING
+				);
+			}
+		}
 	}
 }
