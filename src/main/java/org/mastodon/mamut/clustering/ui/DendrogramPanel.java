@@ -141,10 +141,7 @@ public class DendrogramPanel< T > extends JPanel
 		try
 		{
 			g2.setStroke( stroke );
-			int yDendrogramOrigin = BORDER_BOTTOM + BORDER_TOP;
-			int yDendrogramEnd = getHeight() - BORDER_BOTTOM;
-			int lineX = getDisplayXCoordinate( xValue, displayMetrics );
-			g2.drawLine( lineX, yDendrogramOrigin, lineX, yDendrogramEnd );
+			g2.draw( getVerticalLine( xModelValue, displayMetrics ) );
 		}
 		finally
 		{
@@ -194,6 +191,14 @@ public class DendrogramPanel< T > extends JPanel
 			clusterComponent.getChildren().add( childComponent );
 		}
 		return clusterComponent;
+	}
+
+	Line2D getVerticalLine( final double xModelValue, final DisplayMetrics displayMetrics )
+	{
+		int yDendrogramOrigin = BORDER_BOTTOM + BORDER_TOP;
+		int yDendrogramEnd = getHeight() - BORDER_BOTTOM;
+		int lineX = getDisplayXCoordinate( xModelValue, displayMetrics );
+		return new Line2D.Float( lineX, yDendrogramOrigin, lineX, yDendrogramEnd );
 	}
 
 	private ModelMetrics createModelMetrics( final ClusterComponent component )

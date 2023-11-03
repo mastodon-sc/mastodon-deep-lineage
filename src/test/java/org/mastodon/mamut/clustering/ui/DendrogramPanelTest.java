@@ -2,11 +2,13 @@ package org.mastodon.mamut.clustering.ui;
 
 import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.mamut.clustering.ClusterData;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
 
+import java.awt.geom.Line2D;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,6 +19,18 @@ import static org.junit.Assert.assertNotNull;
 
 public class DendrogramPanelTest
 {
+	private Classification< String > classification;
+
+	@Before
+	public void setUp()
+	{
+		classification =
+				ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
+						3
+				);
+	}
+
+
 	@Test
 	public void testCountZerosAfterDecimalPoint()
 	{
@@ -29,10 +43,6 @@ public class DendrogramPanelTest
 	@Test
 	public void testDendrogramPanel()
 	{
-		Classification< String > classification =
-				ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
-						3
-				);
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
 		assertNotNull( dendrogramPanel );
 	}
@@ -40,10 +50,6 @@ public class DendrogramPanelTest
 	@Test
 	public void testDendrogramPanelScalebar()
 	{
-		Classification< String > classification =
-				ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
-						3
-				);
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
 		DendrogramPanel< String >.Scalebar scalebar =
 				dendrogramPanel.new Scalebar( new DendrogramPanel.DisplayMetrics( 20, 59, 446, 6.19d ) );
@@ -51,5 +57,13 @@ public class DendrogramPanelTest
 		Set< String > actualTickValues = scalebar.ticks.stream().map( Pair::getValue ).collect( Collectors.toSet() );
 		assertEquals( 11, scalebar.ticks.size() );
 		assertEquals( expectedTickValues, actualTickValues );
+	}
+
+	@Test
+	public void testGetVerticalLine()
+	{
+		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
+		Line2D line = dendrogramPanel.getVerticalLine( 25d, new DendrogramPanel.DisplayMetrics( 20, 59, 446, 6.19d ) );
+		assertEquals( 312d, line.getX1(), 0.01 );
 	}
 }
