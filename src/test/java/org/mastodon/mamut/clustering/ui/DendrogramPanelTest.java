@@ -1,6 +1,8 @@
 package org.mastodon.mamut.clustering.ui;
 
 import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
+import com.apporiented.algorithm.clustering.Cluster;
+import com.apporiented.algorithm.clustering.Distance;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +63,7 @@ public class DendrogramPanelTest
 	}
 
 	@Test
-	public void testDendrogramPanelScalebar()
+	public void testDendrogramPanelScaleBar()
 	{
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
 		DendrogramPanel< String >.ScaleBar scalebar =
@@ -73,10 +75,35 @@ public class DendrogramPanelTest
 	}
 
 	@Test
+	public void testDendrogramPanelScaleBarSmallerOne()
+	{
+		Classification< String > classification =
+				ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
+						3
+				);
+		Cluster cluster = classification.getAlgorithmResult();
+		assertNotNull( cluster );
+		adaptClusterValues( cluster );
+		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
+		DendrogramPanel< String >.ScaleBar scalebar =
+				dendrogramPanel.new ScaleBar( dendrogramPanel.new DisplayMetrics( 507, 426, graphics ) );
+		Set< String > expectedTickValues = new HashSet<>( Arrays.asList( "0,0", "0,1", "0,2", "0,3", "0,4", "0,5", "0,6", "0,7" ) );
+		Set< String > actualTickValues = scalebar.ticks.stream().map( Pair::getValue ).collect( Collectors.toSet() );
+		assertEquals( 8, scalebar.ticks.size() );
+		assertEquals( expectedTickValues, actualTickValues );
+	}
+
+	@Test
 	public void testGetVerticalLine()
 	{
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
 		Line2D line = dendrogramPanel.getVerticalLine( 25d, dendrogramPanel.new DisplayMetrics( 507, 426, graphics ) );
 		assertEquals( 312d, line.getX1(), 0.01 );
+	}
+
+	private void adaptClusterValues( Cluster cluster )
+	{
+		cluster.getChildren().forEach( this::adaptClusterValues );
+		cluster.setDistance( new Distance( cluster.getDistanceValue() / 100d ) );
 	}
 }
