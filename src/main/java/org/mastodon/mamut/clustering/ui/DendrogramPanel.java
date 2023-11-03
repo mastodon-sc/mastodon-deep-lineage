@@ -61,6 +61,8 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final int SCALE_TICK_LABEL_PADDING = 4;
 
+	private static final String NO_DATA_AVAILABLE = "No cluster data available.";
+
 	public DendrogramPanel()
 	{
 		super();
@@ -119,12 +121,10 @@ public class DendrogramPanel< T > extends JPanel
 		}
 		else
 		{
-			/* No data available */
-			String noData = "No data";
-			Rectangle2D rect = g2.getFontMetrics().getStringBounds( noData, g2 );
+			Rectangle2D rect = g2.getFontMetrics().getStringBounds( NO_DATA_AVAILABLE, g2 );
 			int x = ( int ) ( widthDisplay / 2.0 - rect.getWidth() / 2.0 );
 			int y = ( int ) ( heightDisplay / 2.0 - rect.getHeight() / 2.0 );
-			g2.drawString( noData, x, y );
+			g2.drawString( NO_DATA_AVAILABLE, x, y );
 		}
 	}
 
