@@ -38,6 +38,9 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final BasicStroke CLUSTER_LINE_STROKE = new BasicStroke( 1.25f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND );
 
+	private static final BasicStroke CUT_OFF_LINE_STROKE =
+			new BasicStroke( 1.75f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5, 5 }, 0 );
+
 	private static final Color CLUSTER_LINE_COLOR = Color.BLACK;
 
 	private static final boolean SHOW_DISTANCE_VALUES = false;
@@ -125,20 +128,17 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
-	private void paintCutoffLine( final Graphics g, final DisplayMetrics displayMetrics )
+	private void paintCutoffLine( final Graphics2D g2, final DisplayMetrics displayMetrics )
 	{
 		Stroke stroke = new BasicStroke( 1.75f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5, 5 }, 0 );
 		paintVerticalLine( g, stroke, classification.getCutoff(), displayMetrics );
 	}
 
-	private void paintVerticalLine( final Graphics g, final Stroke stroke, final double xValue, final DisplayMetrics displayMetrics )
+	private void paintVerticalLine(
+			final Graphics2D g2, final Stroke stroke, final double xModelValue, final DisplayMetrics displayMetrics
+	)
 	{
-		if ( !( g instanceof Graphics2D ) )
-			return;
-
-		Graphics2D g2 = ( Graphics2D ) g;
 		Stroke defaultStroke = g2.getStroke();
-
 		try
 		{
 			g2.setStroke( stroke );
