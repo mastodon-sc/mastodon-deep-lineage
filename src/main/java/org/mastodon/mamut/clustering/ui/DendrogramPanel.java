@@ -97,7 +97,7 @@ public class DendrogramPanel< T > extends JPanel
 					g2, metrics.xOffset, metrics.yOffset, metrics.xConversionFactor, metrics.yConversionFactor, SHOW_DISTANCE_VALUES );
 			if ( SHOW_SCALE )
 			{
-				Scalebar scalebar = new Scalebar( metrics );
+				ScaleBar scalebar = new ScaleBar( metrics );
 				scalebar.paint( g2 );
 			}
 			paintCutoffLine( g2, metrics );
@@ -288,7 +288,7 @@ public class DendrogramPanel< T > extends JPanel
 		return g.getFontMetrics().getHeight() + 2 * SCALE_PADDING + SCALE_TICK_LABEL_PADDING;
 	}
 
-	class Scalebar
+	class ScaleBar
 	{
 		final Line2D line;
 
@@ -300,7 +300,7 @@ public class DendrogramPanel< T > extends JPanel
 
 		private int scaleValueDecimalDigits = 0;
 
-		Scalebar( final DisplayMetrics displayMetrics )
+		ScaleBar( final DisplayMetrics displayMetrics )
 		{
 			this.displayMetrics = displayMetrics;
 			adaptScaleBar();

@@ -64,8 +64,8 @@ public class DendrogramPanelTest
 	public void testDendrogramPanelScalebar()
 	{
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
-		DendrogramPanel< String >.Scalebar scalebar =
-				dendrogramPanel.new Scalebar( dendrogramPanel.new DisplayMetrics( 507, 426, graphics ) );
+		DendrogramPanel< String >.ScaleBar scalebar =
+				dendrogramPanel.new ScaleBar( dendrogramPanel.new DisplayMetrics( 507, 426, graphics ) );
 		Set< String > expectedTickValues = new HashSet<>( Arrays.asList( "0", "7", "14", "21", "28", "35", "42", "49", "56", "63", "70" ) );
 		Set< String > actualTickValues = scalebar.ticks.stream().map( Pair::getValue ).collect( Collectors.toSet() );
 		assertEquals( 11, scalebar.ticks.size() );
