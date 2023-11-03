@@ -359,7 +359,7 @@ public class DendrogramPanel< T > extends JPanel
 				return scaleValueInterval;
 		}
 
-		void paint( Graphics2D g2 )
+		private void paint( Graphics2D g2 )
 		{
 			g2.draw( line );
 			for ( Pair< Line2D, String > tick : ticks )
