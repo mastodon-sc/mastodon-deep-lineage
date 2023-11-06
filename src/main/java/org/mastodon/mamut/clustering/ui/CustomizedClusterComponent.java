@@ -14,6 +14,7 @@ public class CustomizedClusterComponent extends ClusterComponent
 	public CustomizedClusterComponent( final Cluster cluster, final boolean printName, final VCoord initPoint, final Color color )
 	{
 		super( cluster, printName, initPoint );
+		super.getChildren();
 		this.color = color;
 	}
 
