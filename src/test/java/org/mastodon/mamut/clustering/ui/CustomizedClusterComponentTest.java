@@ -15,6 +15,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class CustomizedClusterComponentTest
 {
@@ -27,8 +28,9 @@ public class CustomizedClusterComponentTest
 						3
 				);
 		Cluster cluster = classification.getAlgorithmResult();
-		CustomizedClusterComponent customizedClusterComponent =
-				new CustomizedClusterComponent( cluster, true, new VCoord( 200, 200 ), Color.BLUE );
+		assertNotNull( cluster );
+		CustomizedClusterComponent< String > customizedClusterComponent =
+				new CustomizedClusterComponent<>( cluster, cluster.isLeaf(), new VCoord( 200, 200 ), 0.5d, Color.BLUE, classification );
 
 		int width = 400;
 		int height = 400;

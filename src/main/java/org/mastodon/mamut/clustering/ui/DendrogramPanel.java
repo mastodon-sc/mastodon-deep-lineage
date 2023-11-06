@@ -16,7 +16,6 @@ import java.awt.Stroke;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -32,7 +31,7 @@ public class DendrogramPanel< T > extends JPanel
 
 	private final Classification< T > classification;
 
-	private final CustomizedClusterComponent component;
+	private final CustomizedClusterComponent< T > component;
 
 	private final ModelMetrics modelMetrics;
 
@@ -132,7 +131,7 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
-	private CustomizedClusterComponent createComponent( final Cluster cluster )
+	private CustomizedClusterComponent< T > createComponent( final Cluster cluster )
 	{
 		if ( cluster == null )
 			return null;
@@ -140,40 +139,8 @@ public class DendrogramPanel< T > extends JPanel
 		double virtualModelHeight = 1d;
 		VCoord initialCoordinate = new VCoord( 0, virtualModelHeight / 2d );
 
-		CustomizedClusterComponent clusterComponent = createComponent( cluster, initialCoordinate, virtualModelHeight, Color.BLACK );
-		clusterComponent.setLinkPoint( initialCoordinate );
-		return clusterComponent;
-	}
-
-	private CustomizedClusterComponent createComponent(
-			final Cluster cluster, final VCoord initialCoordinate, final double clusterHeight, Color color
-	)
-	{
-		Map< Cluster, Integer > clusterColors = classification.getClusterColors();
-		if ( clusterColors != null && ( clusterColors.containsKey( cluster ) ) )
-			color = new Color( clusterColors.get( cluster ) );
-		Map< String, T > leafMapping = classification.getLeafMapping();
-		if ( leafMapping != null && cluster.isLeaf() && leafMapping.containsKey( cluster.getName() ) )
-			cluster.setName( leafMapping.get( cluster.getName() ).toString() );
-		CustomizedClusterComponent clusterComponent = new CustomizedClusterComponent( cluster, cluster.isLeaf(), initialCoordinate, color );
-		double leafHeight = clusterHeight / cluster.countLeafs();
-		double yChild = initialCoordinate.getY() - ( clusterHeight / 2 );
-		double distance = cluster.getDistanceValue() == null ? 0 : cluster.getDistanceValue();
-		for ( Cluster child : cluster.getChildren() )
-		{
-			int childLeafCount = child.countLeafs();
-			double childHeight = childLeafCount * leafHeight;
-			double childDistance = child.getDistanceValue() == null ? 0 : child.getDistanceValue();
-			VCoord childInitCoord = new VCoord( initialCoordinate.getX() + ( distance - childDistance ), yChild + childHeight
-					/ 2.0 );
-			yChild += childHeight;
-
-			/* Traverse cluster node tree */
-			CustomizedClusterComponent childComponent = createComponent( child, childInitCoord, childHeight, color );
-			childComponent.setLinkPoint( initialCoordinate );
-			clusterComponent.getChildren().add( childComponent );
-		}
-		return clusterComponent;
+		return new CustomizedClusterComponent<>(
+				cluster, cluster.isLeaf(), initialCoordinate, virtualModelHeight, Color.BLACK, classification );
 	}
 
 	Line2D getVerticalLine( final double xModelValue, final DisplayMetrics displayMetrics )
