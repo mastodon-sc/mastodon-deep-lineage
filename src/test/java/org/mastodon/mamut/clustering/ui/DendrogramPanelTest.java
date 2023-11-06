@@ -11,10 +11,14 @@ import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
 import org.mockito.Mockito;
 
+import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -89,6 +93,20 @@ public class DendrogramPanelTest
 		Set< String > actualTickValues = scalebar.ticks.stream().map( Pair::getValue ).collect( Collectors.toSet() );
 		assertEquals( 8, scalebar.ticks.size() );
 		assertEquals( expectedTickValues, actualTickValues );
+	}
+
+	@Test
+	public void testPaint()
+	{
+		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
+		int width = 600;
+		int height = 600;
+		Image image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+		Graphics graphics = image.getGraphics();
+		Color defaultColor = Color.WHITE;
+		graphics.setColor( defaultColor );
+		dendrogramPanel.paint( graphics );
+		assertEquals( DendrogramPanel.CLUSTER_LINE_COLOR, graphics.getColor() );
 	}
 
 	@Test

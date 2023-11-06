@@ -41,7 +41,7 @@ public class DendrogramPanel< T > extends JPanel
 	private static final BasicStroke CUT_OFF_LINE_STROKE =
 			new BasicStroke( 1.75f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5, 5 }, 0 );
 
-	private static final Color CLUSTER_LINE_COLOR = Color.BLACK;
+	static final Color CLUSTER_LINE_COLOR = Color.BLACK;
 
 	private static final boolean SHOW_DISTANCE_VALUES = false;
 
