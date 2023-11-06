@@ -77,10 +77,6 @@ public class DendrogramPanelTest
 	@Test
 	public void testDendrogramPanelScaleBarSmallerOne()
 	{
-		Classification< String > classification =
-				ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
-						3
-				);
 		Cluster cluster = classification.getAlgorithmResult();
 		assertNotNull( cluster );
 		adaptClusterValues( cluster );
