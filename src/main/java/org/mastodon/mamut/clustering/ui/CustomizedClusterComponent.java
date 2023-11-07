@@ -33,7 +33,7 @@ public class CustomizedClusterComponent< T > extends ClusterComponent
 		init( cluster, initPoint, clusterHeight, classification );
 	}
 
-	private void init( Cluster cluster, VCoord initPoint, double clusterHeight, Classification< T > classification )
+	private void init( final Cluster cluster, final VCoord initPoint, final double clusterHeight, final Classification< T > classification )
 	{
 		Map< String, T > leafMapping = classification.getLeafMapping();
 		if ( leafMapping != null && cluster.isLeaf() && leafMapping.containsKey( cluster.getName() ) )

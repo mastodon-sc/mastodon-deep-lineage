@@ -173,7 +173,7 @@ public class DendrogramPanel< T > extends JPanel
 
 		private final double hModel;
 
-		private ModelMetrics( double xModelOrigin, double yModelOrigin, double wModel, double hModel )
+		private ModelMetrics( final double xModelOrigin, final double yModelOrigin, final double wModel, final double hModel )
 		{
 			this.xModelOrigin = xModelOrigin;
 			this.yModelOrigin = yModelOrigin;
@@ -200,7 +200,7 @@ public class DendrogramPanel< T > extends JPanel
 
 		private final int yOffset;
 
-		DisplayMetrics( int componentWidth, int componentHeight, Graphics2D g2 )
+		DisplayMetrics( final int componentWidth, final int componentHeight, final Graphics2D g2 )
 		{
 			int nameOffset = 0;
 			int scaleBarHeight = 0;
@@ -239,7 +239,7 @@ public class DendrogramPanel< T > extends JPanel
 	 * @param number the number to count the zeros after the decimal point
 	 * @return the number of zeros after the decimal point of the given number before the first non-zero digit
 	 */
-	static int countZerosAfterDecimalPoint( double number )
+	static int countZerosAfterDecimalPoint( final double number )
 	{
 		return ( int ) Math.max( 0, -Math.floor( Math.log10( Math.abs( number ) ) + 1 ) );
 	}
@@ -250,7 +250,7 @@ public class DendrogramPanel< T > extends JPanel
 		return displayMetrics.xDisplayOrigin + displayMetrics.widthDisplay - ( int ) xDisplayCoordinate;
 	}
 
-	static int getScaleBarHeight( Graphics g )
+	static int getScaleBarHeight( final Graphics g )
 	{
 		return g.getFontMetrics().getHeight() + 2 * SCALE_PADDING + SCALE_TICK_LABEL_PADDING;
 	}
@@ -326,7 +326,7 @@ public class DendrogramPanel< T > extends JPanel
 				return scaleValueInterval;
 		}
 
-		private void paint( Graphics2D g2 )
+		private void paint( final Graphics2D g2 )
 		{
 			g2.draw( line );
 			for ( Pair< Line2D, String > tick : ticks )
