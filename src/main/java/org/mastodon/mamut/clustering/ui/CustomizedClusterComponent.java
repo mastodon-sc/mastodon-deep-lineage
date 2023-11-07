@@ -9,6 +9,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Map;
 
+/**
+ * Class that extends {@link ClusterComponent} to customize the color of the dendrogram part represented by it.
+ *
+ * @author Stefan Hahmann
+ */
 public class CustomizedClusterComponent< T > extends ClusterComponent
 {
 	private final Color color;
@@ -42,13 +47,11 @@ public class CustomizedClusterComponent< T > extends ClusterComponent
 			int childLeafCount = child.countLeafs();
 			double childHeight = childLeafCount * leafHeight;
 			double childDistance = child.getDistanceValue() == null ? 0 : child.getDistanceValue();
-			VCoord childInitCoord = new VCoord( initPoint.getX() + ( distance - childDistance ), yChild + childHeight
-					/ 2.0 );
+			VCoord childInitCoord = new VCoord( initPoint.getX() + ( distance - childDistance ), yChild + childHeight / 2.0 );
 			yChild += childHeight;
 
 			CustomizedClusterComponent< T > childComponent =
-					new CustomizedClusterComponent<>(
-							child, child.isLeaf(), childInitCoord, childHeight, this.color, classification );
+					new CustomizedClusterComponent<>( child, child.isLeaf(), childInitCoord, childHeight, this.color, classification );
 			childComponent.setLinkPoint( initPoint );
 			getChildren().add( childComponent );
 		}

@@ -10,6 +10,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * A class that encapsulates the result of a clustering algorithm.<p>
+ *     It contains:
+ *     <ul>
+ *         <li>an ordered list of classified objects</li>
+ *         <li>the result of the clustering algorithm</li>
+ *         <li>a mapping from leaf names to objects</li>
+ *         <li>the cutoff value of classification, i.e. where the dendrogram is cut</li>
+ *         <li>the colors of the clusters and the class ids</li>
+ *     </ul>
+ * @author Stefan Hahmann
+ */
 public class Classification< T >
 {
 	private final List< Set< T > > classifiedObjects;

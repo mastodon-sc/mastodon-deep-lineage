@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Class for painting dendrograms derived from a {@link Cluster} object.<p>
+ * Class for painting dendrograms derived from a {@link Classification} object.<p>
  * In addition to {@link com.apporiented.algorithm.clustering.visualization.DendrogramPanel}, this class adds the possibility to paint an extra line on top of dendrogram (e.g. the cut-off line) and colorizing the clusters below this cut-off line.
  *
  * @author Stefan Hahmann
