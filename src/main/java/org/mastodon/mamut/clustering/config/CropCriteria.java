@@ -28,8 +28,6 @@
  */
 package org.mastodon.mamut.clustering.config;
 
-import java.util.NoSuchElementException;
-
 public enum CropCriteria
 {
 	TIMEPOINT( "Timepoint", "time" ),

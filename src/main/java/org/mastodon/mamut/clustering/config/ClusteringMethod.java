@@ -33,8 +33,6 @@ import com.apporiented.algorithm.clustering.LinkageStrategy;
 import com.apporiented.algorithm.clustering.SingleLinkageStrategy;
 import org.mastodon.mamut.clustering.util.AverageLinkageUPGMAStrategy;
 
-import java.util.NoSuchElementException;
-
 public enum ClusteringMethod
 {
 	AVERAGE_LINKAGE( "Average linkage", new AverageLinkageUPGMAStrategy() ),

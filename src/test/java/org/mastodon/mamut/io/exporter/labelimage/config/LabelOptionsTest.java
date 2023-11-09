@@ -29,9 +29,6 @@
 package org.mastodon.mamut.io.exporter.labelimage.config;
 
 import org.junit.Test;
-import org.mastodon.mamut.io.exporter.labelimage.config.LabelOptions;
-
-import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
 
