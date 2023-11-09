@@ -34,9 +34,9 @@ public class ClusterRootNodesView extends InteractiveCommand
 			+ "</body>\n"
 			+ "</html>\n";
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("all")
 	@Parameter(label = "Crop criterion", choices = { "Timepoint", "Number of cells" }, callback = "update")
-	private String cropCriterion;
+	private String cropCriterion = CropCriteria.TIMEPOINT.getName();
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Crop start", min = "0", callback = "update")
@@ -54,19 +54,19 @@ public class ClusterRootNodesView extends InteractiveCommand
 	@Parameter(label = "Minimum number of cell divisions", min = "0", callback = "update")
 	private int numberOfCellDivisions;
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("all")
 	@Parameter(
 			label = "Similarity measure", choices = { "Normalized Zhang Tree Distance", "Per cell Zhang Tree Distance",
 			"Zhang Tree Distance" }, callback = "update"
 	)
-	private String similarityMeasure;
+	private String similarityMeasure = SimilarityMeasure.NORMALIZED_DIFFERENCE.getName();
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("all")
 	@Parameter(
 			label = "Linkage strategy for hierarchical clustering", choices = { "Average linkage", "Single Linkage",
 			"Complete Linkage" }, callback = "update"
 	)
-	private String clusteringMethod;
+	private String clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE.getName();
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Feature", choices = "Cell lifetime", callback = "update")
