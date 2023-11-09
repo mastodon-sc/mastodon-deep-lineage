@@ -16,6 +16,13 @@ import javax.swing.WindowConstants;
 import java.util.Collections;
 import java.util.Random;
 
+/**
+ * This class demonstrates the three different methods of linking for hierarchical clustering.<p>
+ * The first three panels demonstrate the clustering with fixed values, the last three panels with random values.
+ * The {@link org.mastodon.mamut.clustering.ui.DendrogramPanel} and the {@link DendrogramView} classes are used to visualize the dendrograms and thus also demonstrated by this class.
+ *
+ * @author Stefan Hahmann
+ */
 public class ClusterApporientedDemo
 {
 	private final static ClusteringAlgorithm algorithm = new DefaultClusteringAlgorithm();
