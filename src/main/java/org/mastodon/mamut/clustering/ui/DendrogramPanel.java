@@ -96,8 +96,8 @@ public class DendrogramPanel< T > extends JPanel
 					g2, metrics.xOffset, metrics.yOffset, metrics.xConversionFactor, metrics.yConversionFactor, SHOW_DISTANCE_VALUES );
 			if ( SHOW_SCALE )
 			{
-				ScaleBar scalebar = new ScaleBar( metrics );
-				scalebar.paint( g2 );
+				Axis axis = new Axis( metrics );
+				axis.paint( g2 );
 			}
 			paintCutoffLine( g2, metrics );
 		}
@@ -203,19 +203,19 @@ public class DendrogramPanel< T > extends JPanel
 		DisplayMetrics( final int componentWidth, final int componentHeight, final Graphics2D g2 )
 		{
 			int nameOffset = 0;
-			int scaleBarHeight = 0;
+			int axisHeight = 0;
 			if ( component != null )
 			{
 				nameOffset = component.getMaxNameWidth( g2, false ) + component.getNamePadding();
 				if ( SHOW_SCALE )
-					scaleBarHeight = getScaleBarHeight( g2 );
+					axisHeight = getAxisHeight( g2 );
 			}
 
 			widthDisplay = componentWidth - BORDER_LEFT - BORDER_RIGHT - nameOffset;
-			heightDisplay = componentHeight - BORDER_TOP - BORDER_BOTTOM - scaleBarHeight;
+			heightDisplay = componentHeight - BORDER_TOP - BORDER_BOTTOM - axisHeight;
 
 			xDisplayOrigin = BORDER_LEFT;
-			yDisplayOrigin = BORDER_BOTTOM + scaleBarHeight;
+			yDisplayOrigin = BORDER_BOTTOM + axisHeight;
 
 			xConversionFactor = widthDisplay / modelMetrics.wModel;
 			yConversionFactor = heightDisplay / modelMetrics.hModel;
@@ -250,12 +250,12 @@ public class DendrogramPanel< T > extends JPanel
 		return displayMetrics.xDisplayOrigin + displayMetrics.widthDisplay - ( int ) xDisplayCoordinate;
 	}
 
-	static int getScaleBarHeight( final Graphics g )
+	static int getAxisHeight( final Graphics g )
 	{
 		return g.getFontMetrics().getHeight() + 2 * SCALE_PADDING + SCALE_TICK_LABEL_PADDING;
 	}
 
-	class ScaleBar
+	class Axis
 	{
 		final Line2D line;
 
@@ -267,7 +267,7 @@ public class DendrogramPanel< T > extends JPanel
 
 		private int scaleValueDecimalDigits = 0;
 
-		ScaleBar( final DisplayMetrics displayMetrics )
+		Axis( final DisplayMetrics displayMetrics )
 		{
 			this.displayMetrics = displayMetrics;
 			adaptScaleBar();
