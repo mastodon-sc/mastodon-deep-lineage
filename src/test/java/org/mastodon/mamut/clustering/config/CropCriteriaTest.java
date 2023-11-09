@@ -38,7 +38,7 @@ public class CropCriteriaTest
 {
 
 	@Test
-	public void testGetName()
+	public void testToString()
 	{
 		assertEquals( "Timepoint", CropCriteria.TIMEPOINT.toString() );
 	}

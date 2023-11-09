@@ -30,15 +30,13 @@ package org.mastodon.mamut.clustering.config;
 
 import org.junit.Test;
 
-import java.util.NoSuchElementException;
-
 import static org.junit.Assert.*;
 
 public class SimilarityMeasureTest
 {
 
 	@Test
-	public void testGetName()
+	public void testToString()
 	{
 		assertEquals( "Normalized Zhang Tree Distance", SimilarityMeasure.NORMALIZED_DIFFERENCE.toString() );
 	}

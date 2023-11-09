@@ -38,7 +38,7 @@ public class ClusteringMethodTest
 {
 
 	@Test
-	public void testGetName()
+	public void testToString()
 	{
 		assertEquals( "Average linkage", ClusteringMethod.AVERAGE_LINKAGE.toString() );
 	}
