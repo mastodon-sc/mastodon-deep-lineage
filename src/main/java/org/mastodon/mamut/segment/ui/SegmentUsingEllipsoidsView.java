@@ -27,13 +27,13 @@ public class SegmentUsingEllipsoidsView implements Command
 			+ "</body>\n"
 			+ "</html>\n";
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("all")
 	@Parameter(label = "Label Id", choices = { "Track Id", "BranchSpot Id", "Spot Id" })
-	private String option;
+	private String option = LabelOptions.BRANCH_SPOT_ID.getName();
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("all")
 	@Parameter(label = "Frame rate reduction", description = "Only use every n-th frame for segmentation. 1 means no reduction. Value must be >= 1.", min = "1")
-	private int frameRateReduction;
+	private int frameRateReduction = 1;
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Save to")
