@@ -41,6 +41,7 @@ public class DendrogramPanelTest
 						3
 				);
 
+		// The graphics object is mocked to avoid side effects that would influence the test caused by different default font settings on different platforms
 		graphics = Mockito.mock( Graphics2D.class );
 		FontMetrics fontMetrics = Mockito.mock( FontMetrics.class );
 		Rectangle2D rectangle2D = new Rectangle2D.Double( 0, 0, 15, 10 );
