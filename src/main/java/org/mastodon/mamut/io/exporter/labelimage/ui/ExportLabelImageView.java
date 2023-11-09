@@ -56,8 +56,8 @@ public class ExportLabelImageView implements Command
 			+ "</html>\n";
 
 	@SuppressWarnings("all")
-	@Parameter(label = "Label Id", choices = { "Spot track Id", "Branch spot ID", "Spot ID" })
-	private String option = LabelOptions.BRANCH_SPOT_ID.getName();
+	@Parameter(label = "Label Id")
+	private LabelOptions option = LabelOptions.BRANCH_SPOT_ID;
 
 	@SuppressWarnings("all")
 	@Parameter(label = "Frame rate reduction", description = "Only export every n-th. 1 means no reduction. Value must be >= 1.", min = "1")
@@ -83,7 +83,6 @@ public class ExportLabelImageView implements Command
 	public void run()
 	{
 		ExportLabelImageController controller = new ExportLabelImageController( projectModel, context );
-		LabelOptions selectedOption = LabelOptions.getByName( option );
-		controller.saveLabelImageToFile( selectedOption, saveTo, showResult, frameRateReduction );
+		controller.saveLabelImageToFile( option, saveTo, showResult, frameRateReduction );
 	}
 }

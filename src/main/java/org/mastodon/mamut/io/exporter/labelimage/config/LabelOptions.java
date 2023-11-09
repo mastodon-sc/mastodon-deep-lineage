@@ -28,8 +28,6 @@
  */
 package org.mastodon.mamut.io.exporter.labelimage.config;
 
-import java.util.NoSuchElementException;
-
 
 public enum LabelOptions
 {
@@ -46,15 +44,8 @@ public enum LabelOptions
 		this.name = name;
 	}
 
-	public static LabelOptions getByName( final String name )
-	{
-		for ( final LabelOptions options : values() )
-			if ( options.getName().equals( name ) )
-				return options;
-		throw new NoSuchElementException();
-	}
-
-	public String getName()
+	@Override
+	public String toString()
 	{
 		return name;
 	}
