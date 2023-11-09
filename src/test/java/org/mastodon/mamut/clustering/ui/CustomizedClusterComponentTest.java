@@ -40,6 +40,7 @@ public class CustomizedClusterComponentTest
 		graphics.setColor( defaultColor );
 
 		customizedClusterComponent.paint( ( Graphics2D ) graphics, 0, 0, 1d, 1d, false );
+		// this tests only if the paint method resets the color to default and runs without exceptions, not if the dendrogram is drawn correctly
 		assertEquals( defaultColor, graphics.getColor() );
 	}
 }
