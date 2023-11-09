@@ -20,6 +20,8 @@
 
         <mastodon.version>1.0.0-beta-27-SNAPSHOT</mastodon.version>
         <mastodon.group>org.mastodon</mastodon.group>
+        <!-- with pom-scijava >= 37.1.0, this can be removed again -->
+        <scijava-common.version>2.97.1</scijava-common.version>
 
         <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
