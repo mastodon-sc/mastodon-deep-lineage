@@ -13,6 +13,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.Collections;
 
+/**
+ * A demo class for {@link DendrogramPanel}.
+ * <p>
+ * It creates a dendrogram from a sample cluster with fixed values and displays it in a frame.
+ *
+ * @author Stefan Hahmann
+ */
 public class DendrogramPanelDemo
 {
 	public static void main( String[] args )
