@@ -132,22 +132,22 @@ public class ClusterRootNodesController
 	{
 
 		List< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
-		List< Classification.ColoredCluster< BranchSpotTree > > coloredClusters = classification.getColoredClusters();
-		for ( int i = 0; i < coloredClusters.size(); i++ )
+		List< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
+		for ( int i = 0; i < objectClassifications.size(); i++ )
 		{
-			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), coloredClusters.get( i ).getColor() ) );
+			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), objectClassifications.get( i ).getColor() ) );
 		}
 		return tagsAndColors;
 	}
 
 	private void applyClassification( Classification< BranchSpotTree > classification, List< Pair< String, Integer > > tagsAndColors )
 	{
-		List< Classification.ColoredCluster< BranchSpotTree > > classifiedObjects = classification.getColoredClusters();
+		List< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, getTagSetName(), tagsAndColors );
 		int i = 0;
-		for ( Classification.ColoredCluster< BranchSpotTree > coloredCluster : classifiedObjects )
+		for ( Classification.ObjectClassification< BranchSpotTree > objectClassification : objectClassifications )
 		{
-			Set< BranchSpotTree > trees = coloredCluster.getObjects();
+			Set< BranchSpotTree > trees = objectClassification.getObjects();
 			logger.info( "Class {} has {} trees", i, trees.size() );
 			TagSetStructure.Tag tag = tagSet.getTags().get( i );
 			for ( BranchSpotTree tree : trees )

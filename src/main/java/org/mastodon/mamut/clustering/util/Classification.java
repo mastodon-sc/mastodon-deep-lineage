@@ -11,19 +11,22 @@ import java.util.stream.Collectors;
 
 /**
  * A class that encapsulates the result of a clustering algorithm.<p>
- *     It contains:
+ * It contains:
  *     <ul>
- *         <li>an ordered list of classified objects</li>
- *         <li>the result of the clustering algorithm</li>
- *         <li>a mapping from leaf names to objects</li>
+ *         <li>the root {@link Cluster} object, from which the results of the algorithm can be accessed</li>
+ *         <li>a {@link List} of {@link ObjectClassification} objects, where each objects contains:</li>
+ *         <ul>
+ *             <li>a {@link Cluster} object, which represents the classified objects in the dendrogram</li>
+ *             <li>a {@link Set} of objects, which are classified into the same class</li>
+ *             <li>a color, which is associated with that class</li>
+ *         </ul>
  *         <li>the cutoff value of classification, i.e. where the dendrogram is cut</li>
- *         <li>the colors of the clusters and the class ids</li>
  *     </ul>
  * @author Stefan Hahmann
  */
 public class Classification< T >
 {
-	private final List< ColoredCluster< T > > coloredClusters;
+	private final List< ObjectClassification< T > > objectClassifications;
 
 	@Nullable
 	private final Cluster rootCluster;
@@ -32,21 +35,21 @@ public class Classification< T >
 
 	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, @Nullable final Cluster rootCluster, double cutoff )
 	{
-		this.coloredClusters = new ArrayList<>();
+		this.objectClassifications = new ArrayList<>();
 		List< Integer > glasbeyColors = ClusterUtils.getGlasbeyColors( classifiedObjects.size() );
 		for ( int i = 0; i < classifiedObjects.size(); i++ )
 		{
 			Pair< Set< T >, Cluster > clusterClassPair = classifiedObjects.get( i );
-			this.coloredClusters.add(
-					new ColoredCluster<>( glasbeyColors.get( i ), clusterClassPair.getRight(), clusterClassPair.getLeft() ) );
+			this.objectClassifications.add(
+					new ObjectClassification<>( glasbeyColors.get( i ), clusterClassPair.getRight(), clusterClassPair.getLeft() ) );
 		}
 		this.rootCluster = rootCluster;
 		this.cutoff = cutoff;
 	}
 
-	public List< ColoredCluster< T > > getColoredClusters()
+	public List< ObjectClassification< T > > getObjectClassifications()
 	{
-		return coloredClusters;
+		return objectClassifications;
 	}
 
 	@Nullable
@@ -62,10 +65,10 @@ public class Classification< T >
 
 	List< Set< T > > getClassifiedObjects()
 	{
-		return coloredClusters.stream().map( ColoredCluster::getObjects ).collect( Collectors.toList() );
+		return objectClassifications.stream().map( ObjectClassification::getObjects ).collect( Collectors.toList() );
 	}
 
-	public static class ColoredCluster< T >
+	public static class ObjectClassification< T >
 	{
 		private final int color;
 
@@ -73,7 +76,7 @@ public class Classification< T >
 
 		private final Set< T > objects;
 
-		private ColoredCluster( final int color, final Cluster cluster, final Set< T > objects )
+		private ObjectClassification( final int color, final Cluster cluster, final Set< T > objects )
 		{
 			this.color = color;
 			this.cluster = cluster;

@@ -29,7 +29,7 @@ public class CustomizedClusterComponentTest
 		Cluster cluster = classification.getRootCluster();
 		assertNotNull( cluster );
 		CustomizedClusterComponent customizedClusterComponent =
-				new CustomizedClusterComponent( cluster, classification.getColoredClusters() );
+				new CustomizedClusterComponent( cluster, classification.getObjectClassifications() );
 
 		int width = 400;
 		int height = 400;

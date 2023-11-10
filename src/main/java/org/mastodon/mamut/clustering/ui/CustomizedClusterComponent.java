@@ -30,9 +30,11 @@ public class CustomizedClusterComponent extends ClusterComponent
 {
 	private final Color color;
 
-	public < T > CustomizedClusterComponent( final Cluster cluster, final List< Classification.ColoredCluster< T > > coloredClusters )
+	public < T > CustomizedClusterComponent(
+			final Cluster cluster, final List< Classification.ObjectClassification< T > > objectClassifications
+	)
 	{
-		this( cluster, cluster.isLeaf(), new VCoord( 0, 1d / 2d ), 1d, Color.BLACK, coloredClusters );
+		this( cluster, cluster.isLeaf(), new VCoord( 0, 1d / 2d ), 1d, Color.BLACK, objectClassifications );
 	}
 
 	/**
@@ -56,26 +58,26 @@ public class CustomizedClusterComponent extends ClusterComponent
 	 */
 	private < T > CustomizedClusterComponent(
 			final Cluster cluster, final boolean printName, final VCoord splitPoint, final double clusterHeight, final Color color,
-			final List< Classification.ColoredCluster< T > > coloredClusters
+			final List< Classification.ObjectClassification< T > > objectClassifications
 	)
 	{
 		super( cluster, printName, splitPoint );
 		getChildren();
-		this.color = getClusterColor( cluster, color, coloredClusters );
-		init( cluster, splitPoint, clusterHeight, coloredClusters );
+		this.color = getClusterColor( cluster, color, objectClassifications );
+		init( cluster, splitPoint, clusterHeight, objectClassifications );
 	}
 
 	private static < T > Color getClusterColor(
-			final Cluster cluster, final Color color, final List< Classification.ColoredCluster< T > > coloredClusters
+			final Cluster cluster, final Color color, final List< Classification.ObjectClassification< T > > objectClassifications
 	)
 	{
-		return coloredClusters.stream().filter( coloredCluster -> coloredCluster.getCluster().equals( cluster ) )
+		return objectClassifications.stream().filter( objectClassification -> objectClassification.getCluster().equals( cluster ) )
 				.findFirst().map( coloredCluster -> new Color( coloredCluster.getColor() ) ).orElse( color );
 	}
 
 	private < T > void init(
 			final Cluster cluster, final VCoord splitPoint, final double clusterHeight,
-			final List< Classification.ColoredCluster< T > > coloredClusters
+			final List< Classification.ObjectClassification< T > > objectClassifications
 	)
 	{
 		double leafHeight = clusterHeight / cluster.countLeafs();
@@ -90,7 +92,7 @@ public class CustomizedClusterComponent extends ClusterComponent
 			yChild += childHeight;
 
 			CustomizedClusterComponent childComponent =
-					new CustomizedClusterComponent( child, child.isLeaf(), childInitCoord, childHeight, this.color, coloredClusters );
+					new CustomizedClusterComponent( child, child.isLeaf(), childInitCoord, childHeight, this.color, objectClassifications );
 			childComponent.setLinkPoint( splitPoint );
 			getChildren().add( childComponent );
 		}

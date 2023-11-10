@@ -135,7 +135,7 @@ public class DendrogramPanel< T > extends JPanel
 		if ( cluster == null )
 			return null;
 
-		return new CustomizedClusterComponent( cluster, classification.getColoredClusters() );
+		return new CustomizedClusterComponent( cluster, classification.getObjectClassifications() );
 	}
 
 	Line2D getVerticalLine( final double xModelValue, final DisplayMetrics displayMetrics )
