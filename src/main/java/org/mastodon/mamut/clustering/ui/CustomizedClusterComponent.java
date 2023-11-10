@@ -14,13 +14,13 @@ import java.util.Map;
  *
  * @author Stefan Hahmann
  */
-public class CustomizedClusterComponent< T > extends ClusterComponent
+public class CustomizedClusterComponent extends ClusterComponent
 {
 	private final Color color;
 
 	public CustomizedClusterComponent(
 			final Cluster cluster, final boolean printName, final VCoord initPoint, final double clusterHeight, final Color color,
-			final Classification< T > classification
+			final Classification< ? > classification
 	)
 	{
 		super( cluster, printName, initPoint );
@@ -33,9 +33,9 @@ public class CustomizedClusterComponent< T > extends ClusterComponent
 		init( cluster, initPoint, clusterHeight, classification );
 	}
 
-	private void init( final Cluster cluster, final VCoord initPoint, final double clusterHeight, final Classification< T > classification )
+	private void init( final Cluster cluster, final VCoord initPoint, final double clusterHeight, final Classification< ? > classification )
 	{
-		Map< String, T > leafMapping = classification.getLeafMapping();
+		Map< String, ? > leafMapping = classification.getLeafMapping();
 		if ( leafMapping != null && cluster.isLeaf() && leafMapping.containsKey( cluster.getName() ) )
 			cluster.setName( leafMapping.get( cluster.getName() ).toString() );
 
@@ -50,8 +50,8 @@ public class CustomizedClusterComponent< T > extends ClusterComponent
 			VCoord childInitCoord = new VCoord( initPoint.getX() + ( distance - childDistance ), yChild + childHeight / 2.0 );
 			yChild += childHeight;
 
-			CustomizedClusterComponent< T > childComponent =
-					new CustomizedClusterComponent<>( child, child.isLeaf(), childInitCoord, childHeight, this.color, classification );
+			CustomizedClusterComponent childComponent =
+					new CustomizedClusterComponent( child, child.isLeaf(), childInitCoord, childHeight, this.color, classification );
 			childComponent.setLinkPoint( initPoint );
 			getChildren().add( childComponent );
 		}

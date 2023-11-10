@@ -31,7 +31,7 @@ public class DendrogramPanel< T > extends JPanel
 
 	private final Classification< T > classification;
 
-	private final CustomizedClusterComponent< T > component;
+	private final CustomizedClusterComponent component;
 
 	private final ModelMetrics modelMetrics;
 
@@ -131,7 +131,7 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
-	private CustomizedClusterComponent< T > createComponent( final Cluster cluster )
+	private CustomizedClusterComponent createComponent( final Cluster cluster )
 	{
 		if ( cluster == null )
 			return null;
@@ -139,7 +139,7 @@ public class DendrogramPanel< T > extends JPanel
 		double virtualModelHeight = 1d;
 		VCoord initialCoordinate = new VCoord( 0, virtualModelHeight / 2d );
 
-		return new CustomizedClusterComponent<>(
+		return new CustomizedClusterComponent(
 				cluster, cluster.isLeaf(), initialCoordinate, virtualModelHeight, Color.BLACK, classification );
 	}
 
