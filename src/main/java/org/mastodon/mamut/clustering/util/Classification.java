@@ -4,7 +4,7 @@ import com.apporiented.algorithm.clustering.Cluster;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 public class Classification< T >
 {
-	private final List< ObjectClassification< T > > objectClassifications;
+	private final Set< ObjectClassification< T > > objectClassifications;
 
 	@Nullable
 	private final Cluster rootCluster;
@@ -35,7 +35,7 @@ public class Classification< T >
 
 	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, @Nullable final Cluster rootCluster, double cutoff )
 	{
-		this.objectClassifications = new ArrayList<>();
+		this.objectClassifications = new HashSet<>();
 		List< Integer > glasbeyColors = ClusterUtils.getGlasbeyColors( classifiedObjects.size() );
 		for ( int i = 0; i < classifiedObjects.size(); i++ )
 		{
@@ -47,7 +47,7 @@ public class Classification< T >
 		this.cutoff = cutoff;
 	}
 
-	public List< ObjectClassification< T > > getObjectClassifications()
+	public Set< ObjectClassification< T > > getObjectClassifications()
 	{
 		return objectClassifications;
 	}
@@ -63,9 +63,9 @@ public class Classification< T >
 		return cutoff;
 	}
 
-	List< Set< T > > getClassifiedObjects()
+	Set< Set< T > > getClassifiedObjects()
 	{
-		return objectClassifications.stream().map( ObjectClassification::getObjects ).collect( Collectors.toList() );
+		return objectClassifications.stream().map( ObjectClassification::getObjects ).collect( Collectors.toSet() );
 	}
 
 	public static class ObjectClassification< T >

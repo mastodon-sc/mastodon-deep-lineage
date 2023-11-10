@@ -38,7 +38,7 @@ public class ClusterUtilsTest
 		Set< String > class1 = new HashSet<>( Collections.singletonList( "F" ) );
 		Set< String > class2 = new HashSet<>( Arrays.asList( "A", "B", "E", "G", "H" ) );
 		Set< String > class3 = new HashSet<>( Arrays.asList( "C", "D", "I", "J" ) );
-		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList( class1, class2, class3 ) );
+		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList( class1, class2, class3 ) );
 		assertEquals( expectedClasses, classification.getClassifiedObjects() );
 		assertEquals( threshold, classification.getCutoff(), 0d );
 		assertNotNull( classification.getRootCluster() );
@@ -54,7 +54,7 @@ public class ClusterUtilsTest
 		Set< String > class1 = new HashSet<>( Collections.singletonList( "F" ) );
 		Set< String > class2 = new HashSet<>( Arrays.asList( "A", "B", "E", "G", "H" ) );
 		Set< String > class3 = new HashSet<>( Arrays.asList( "C", "D", "I", "J" ) );
-		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList( class1, class2, class3 ) );
+		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList( class1, class2, class3 ) );
 		assertEquals( expectedClasses, classification.getClassifiedObjects() );
 		assertEquals( 55.375d, cutoff, 0.000001d );
 		assertNotNull( classification.getRootCluster() );
@@ -173,7 +173,7 @@ public class ClusterUtilsTest
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
 				new AverageLinkageUPGMAStrategy(), 1 );
 		Set< String > expected = new HashSet<>( Arrays.asList( ClusterData.names ) );
-		List< Set< String > > expectedClasses = new ArrayList<>( Collections.singletonList( expected ) );
+		Set< Set< String > > expectedClasses = new HashSet<>( Collections.singletonList( expected ) );
 		assertEquals( expectedClasses, classification.getClassifiedObjects() );
 		assertNull( classification.getRootCluster() );
 	}
@@ -185,7 +185,7 @@ public class ClusterUtilsTest
 				ClusterUtils
 						.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageUPGMAStrategy(),
 								10 );
-		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList(
+		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList(
 				new HashSet<>( Collections.singletonList( "A" ) ),
 				new HashSet<>( Collections.singletonList( "B" ) ),
 				new HashSet<>( Collections.singletonList( "C" ) ),
@@ -217,7 +217,7 @@ public class ClusterUtilsTest
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
-		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList(
+		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList(
 				new HashSet<>( Collections.singletonList( "3" ) ),
 				new HashSet<>( Arrays.asList( "1", "2" ) )
 		) );

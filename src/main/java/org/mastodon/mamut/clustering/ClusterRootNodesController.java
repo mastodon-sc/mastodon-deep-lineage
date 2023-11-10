@@ -132,17 +132,19 @@ public class ClusterRootNodesController
 	{
 
 		List< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
-		List< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
-		for ( int i = 0; i < objectClassifications.size(); i++ )
+		Set< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
+		int i = 0;
+		for ( Classification.ObjectClassification< BranchSpotTree > objectClassification : objectClassifications )
 		{
-			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), objectClassifications.get( i ).getColor() ) );
+			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), objectClassification.getColor() ) );
+			i++;
 		}
 		return tagsAndColors;
 	}
 
 	private void applyClassification( Classification< BranchSpotTree > classification, List< Pair< String, Integer > > tagsAndColors )
 	{
-		List< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
+		Set< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, getTagSetName(), tagsAndColors );
 		int i = 0;
 		for ( Classification.ObjectClassification< BranchSpotTree > objectClassification : objectClassifications )
