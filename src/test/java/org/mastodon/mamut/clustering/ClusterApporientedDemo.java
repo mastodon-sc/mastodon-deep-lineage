@@ -47,22 +47,28 @@ public class ClusterApporientedDemo
 		Cluster singleRandom = algorithm.performClustering( randomDistances, ClusterData.names, new SingleLinkageStrategy() );
 		Cluster completeRandom = algorithm.performClustering( randomDistances, ClusterData.names, new CompleteLinkageStrategy() );
 
-		JPanel averagedFixedPanel = new DendrogramView<>( new Classification<>( Collections.emptyList(), averageFixed, null, 20d ),
+		JPanel averagedFixedPanel = new DendrogramView<>(
+				new Classification<>( Collections.emptyList(), averageFixed, 20d ),
 				"Average Linkage (Fixed Values)"
 		).getPanel();
-		JPanel singleFixedPanel = new DendrogramView<>( new Classification<>( Collections.emptyList(), singleFixed, null, 20d ),
+		JPanel singleFixedPanel = new DendrogramView<>(
+				new Classification<>( Collections.emptyList(), singleFixed, 20d ),
 				"Single Linkage (Fixed Values)"
 		).getPanel();
-		JPanel completeFixedPanel = new DendrogramView<>( new Classification<>( Collections.emptyList(), completeFixed, null, 20d ),
+		JPanel completeFixedPanel = new DendrogramView<>(
+				new Classification<>( Collections.emptyList(), completeFixed, 20d ),
 				"Complete Linkage (Fixed Values)"
 		).getPanel();
-		JPanel averagedRandomPanel = new DendrogramView<>( new Classification<>( Collections.emptyList(), averageRandom, null, 5d ),
+		JPanel averagedRandomPanel = new DendrogramView<>(
+				new Classification<>( Collections.emptyList(), averageRandom, 5d ),
 				"Average Linkage (Random Values)"
 		).getPanel();
-		JPanel singleRandomPanel = new DendrogramView<>( new Classification<>( Collections.emptyList(), singleRandom, null, 5d ),
+		JPanel singleRandomPanel = new DendrogramView<>(
+				new Classification<>( Collections.emptyList(), singleRandom, 5d ),
 				"Single Linkage (Random Values)"
 		).getPanel();
-		JPanel completeRandomPanel = new DendrogramView<>( new Classification<>( Collections.emptyList(), completeRandom, null, 5d ),
+		JPanel completeRandomPanel = new DendrogramView<>(
+				new Classification<>( Collections.emptyList(), completeRandom, 5d ),
 				"Complete Linkage (Random Values)"
 		).getPanel();
 

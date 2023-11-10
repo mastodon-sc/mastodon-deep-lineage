@@ -2,7 +2,6 @@ package org.mastodon.mamut.clustering.ui;
 
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.visualization.ClusterComponent;
-import com.apporiented.algorithm.clustering.visualization.VCoord;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.util.Classification;
 
@@ -74,7 +73,7 @@ public class DendrogramPanel< T > extends JPanel
 	{
 		super();
 		this.classification = classification;
-		this.component = createComponent( classification.getAlgorithmResult() );
+		this.component = createComponent( classification.getRootCluster() );
 		this.modelMetrics = createModelMetrics( this.component );
 	}
 
@@ -136,7 +135,7 @@ public class DendrogramPanel< T > extends JPanel
 		if ( cluster == null )
 			return null;
 
-		return new CustomizedClusterComponent( cluster, classification );
+		return new CustomizedClusterComponent( cluster, classification.getColoredClusters() );
 	}
 
 	Line2D getVerticalLine( final double xModelValue, final DisplayMetrics displayMetrics )
@@ -275,7 +274,7 @@ public class DendrogramPanel< T > extends JPanel
 		{
 			if ( classification == null )
 				return;
-			Cluster cluster = classification.getAlgorithmResult();
+			Cluster cluster = classification.getRootCluster();
 			if ( cluster == null )
 				return;
 			if ( cluster.getDistanceValue() > 1d )

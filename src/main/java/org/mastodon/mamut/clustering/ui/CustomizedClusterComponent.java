@@ -7,7 +7,7 @@ import org.mastodon.mamut.clustering.util.Classification;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.Map;
+import java.util.List;
 
 /**
  * This class extends the class {@link ClusterComponent} from the hierarchical clustering library.
@@ -30,12 +30,9 @@ public class CustomizedClusterComponent extends ClusterComponent
 {
 	private final Color color;
 
-	public CustomizedClusterComponent( final Cluster cluster, final Classification< ? > classification )
+	public < T > CustomizedClusterComponent( final Cluster cluster, final List< Classification.ColoredCluster< T > > coloredClusters )
 	{
-		this(
-				cluster, cluster.isLeaf(), new VCoord( 0, 1d / 2d ), 1d, Color.BLACK, classification.getClusterColors(),
-				classification.getLeafMapping()
-		);
+		this( cluster, cluster.isLeaf(), new VCoord( 0, 1d / 2d ), 1d, Color.BLACK, coloredClusters );
 	}
 
 	/**
@@ -55,32 +52,32 @@ public class CustomizedClusterComponent extends ClusterComponent
 	 *     <li>Any value between 0 and 1 should represent the share between the number of leaves this components represents and the total number of leaves in the dendrogram</li>
 	 * </ul>
 	 *
-	 * @param color the {@link Color} used to draw this component. May be null. May be overwritten by the {@code clusterColors} parameter.
-	 * @param clusterColors a map that maps clusters to colors. If this map contains an entry for the {@code cluster} represented by this component, the color of this entry is used to draw this component.
-	 * @param leafMapping a map that maps leaf names to new names. If this map contains an entry for the {@code cluster} represented by this component, the name of this entry is used to draw this component.
+	 * @param color the {@link Color} used to draw this component. May be null. May be overwritten, if the given {@code cluster} or one of its ancestors is contained in {@code coloredClusters} parameter.
 	 */
-	private CustomizedClusterComponent(
+	private < T > CustomizedClusterComponent(
 			final Cluster cluster, final boolean printName, final VCoord splitPoint, final double clusterHeight, final Color color,
-			final Map< Cluster, Integer > clusterColors, final Map< String, ? > leafMapping
+			final List< Classification.ColoredCluster< T > > coloredClusters
 	)
 	{
 		super( cluster, printName, splitPoint );
 		getChildren();
-		if ( clusterColors != null && ( clusterColors.containsKey( cluster ) ) )
-			this.color = new Color( clusterColors.get( cluster ) );
-		else
-			this.color = color;
-		init( cluster, splitPoint, clusterHeight, clusterColors, leafMapping );
+		this.color = getClusterColor( cluster, color, coloredClusters );
+		init( cluster, splitPoint, clusterHeight, coloredClusters );
 	}
 
-	private void init(
-			final Cluster cluster, final VCoord splitPoint, final double clusterHeight, final Map< Cluster, Integer > clusterColors,
-			final Map< String, ? > leafMapping
+	private static < T > Color getClusterColor(
+			final Cluster cluster, final Color color, final List< Classification.ColoredCluster< T > > coloredClusters
 	)
 	{
-		if ( leafMapping != null && cluster.isLeaf() && leafMapping.containsKey( cluster.getName() ) )
-			cluster.setName( leafMapping.get( cluster.getName() ).toString() );
+		return coloredClusters.stream().filter( coloredCluster -> coloredCluster.getCluster().equals( cluster ) )
+				.findFirst().map( coloredCluster -> new Color( coloredCluster.getColor() ) ).orElse( color );
+	}
 
+	private < T > void init(
+			final Cluster cluster, final VCoord splitPoint, final double clusterHeight,
+			final List< Classification.ColoredCluster< T > > coloredClusters
+	)
+	{
 		double leafHeight = clusterHeight / cluster.countLeafs();
 		double yChild = splitPoint.getY() - ( clusterHeight / 2 );
 		double distance = cluster.getDistanceValue() == null ? 0 : cluster.getDistanceValue();
@@ -93,8 +90,7 @@ public class CustomizedClusterComponent extends ClusterComponent
 			yChild += childHeight;
 
 			CustomizedClusterComponent childComponent =
-					new CustomizedClusterComponent(
-							child, child.isLeaf(), childInitCoord, childHeight, this.color, clusterColors, leafMapping );
+					new CustomizedClusterComponent( child, child.isLeaf(), childInitCoord, childHeight, this.color, coloredClusters );
 			childComponent.setLinkPoint( splitPoint );
 			getChildren().add( childComponent );
 		}

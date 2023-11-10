@@ -82,7 +82,7 @@ public class DendrogramPanelTest
 	@Test
 	public void testDendrogramPanelAxisSmallerOne()
 	{
-		Cluster cluster = classification.getAlgorithmResult();
+		Cluster cluster = classification.getRootCluster();
 		assertNotNull( cluster );
 		adaptClusterValues( cluster );
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );

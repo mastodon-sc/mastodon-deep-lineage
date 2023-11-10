@@ -31,7 +31,7 @@ public class DendrogramPanelDemo
 
 		JPanel content = new JPanel();
 		Cluster cluster = createSampleCluster();
-		Classification< String > classification = new Classification<>( Collections.emptyList(), cluster, null, 6d );
+		Classification< String > classification = new Classification<>( Collections.emptyList(), cluster, 6d );
 		DendrogramPanel< String > dp = new DendrogramPanel<>( classification );
 
 		frame.setContentPane( content );

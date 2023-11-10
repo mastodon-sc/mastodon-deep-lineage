@@ -4,9 +4,8 @@ import com.apporiented.algorithm.clustering.Cluster;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,59 +23,36 @@ import java.util.stream.Collectors;
  */
 public class Classification< T >
 {
-	private final List< Set< T > > classifiedObjects;
+	private final List< ColoredCluster< T > > coloredClusters;
 
 	@Nullable
-	private final Cluster algorithmResult;
-
-	@Nullable
-	private final Map< String, T > leafMapping;
-
-	private final Map< Cluster, Integer > clusterColors;
-
-	private final Map< Integer, Integer > classIdColors;
+	private final Cluster rootCluster;
 
 	private final double cutoff;
 
-	public Classification(
-			final List< Pair< Set< T >, Cluster > > classifiedObjects, @Nullable final Cluster algorithmResult,
-			@Nullable final Map< String, T > leafMapping, double cutoff
-	)
+	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, @Nullable final Cluster rootCluster, double cutoff )
 	{
-		this.classifiedObjects = classifiedObjects.stream().map( Pair::getKey ).collect( Collectors.toList() );
-		this.algorithmResult = algorithmResult;
-		this.leafMapping = leafMapping;
-		this.cutoff = cutoff;
-
+		this.coloredClusters = new ArrayList<>();
 		List< Integer > glasbeyColors = ClusterUtils.getGlasbeyColors( classifiedObjects.size() );
-		clusterColors = new HashMap<>();
-		classIdColors = new HashMap<>();
 		for ( int i = 0; i < classifiedObjects.size(); i++ )
 		{
 			Pair< Set< T >, Cluster > clusterClassPair = classifiedObjects.get( i );
-			int color = glasbeyColors.get( i );
-			classIdColors.put( i, color );
-			Cluster cluster = clusterClassPair.getRight();
-			if ( cluster != null )
-				clusterColors.put( cluster, color );
+			this.coloredClusters.add(
+					new ColoredCluster<>( glasbeyColors.get( i ), clusterClassPair.getRight(), clusterClassPair.getLeft() ) );
 		}
+		this.rootCluster = rootCluster;
+		this.cutoff = cutoff;
 	}
 
-	public List< Set< T > > getClassifiedObjects()
+	public List< ColoredCluster< T > > getColoredClusters()
 	{
-		return classifiedObjects;
-	}
-
-	@Nullable
-	public Cluster getAlgorithmResult()
-	{
-		return algorithmResult;
+		return coloredClusters;
 	}
 
 	@Nullable
-	public Map< String, T > getLeafMapping()
+	public Cluster getRootCluster()
 	{
-		return leafMapping;
+		return rootCluster;
 	}
 
 	public double getCutoff()
@@ -84,13 +60,39 @@ public class Classification< T >
 		return cutoff;
 	}
 
-	public Map< Cluster, Integer > getClusterColors()
+	public List< Set< T > > getClassifiedObjects()
 	{
-		return clusterColors;
+		return coloredClusters.stream().map( ColoredCluster::getObjects ).collect( Collectors.toList() );
 	}
 
-	public Map< Integer, Integer > getClassIdColors()
+	public static class ColoredCluster< T >
 	{
-		return classIdColors;
+		private final int color;
+
+		private final Cluster cluster;
+
+		private final Set< T > objects;
+
+		private ColoredCluster( final int color, final Cluster cluster, final Set< T > objects )
+		{
+			this.color = color;
+			this.cluster = cluster;
+			this.objects = objects;
+		}
+
+		public int getColor()
+		{
+			return color;
+		}
+
+		public Cluster getCluster()
+		{
+			return cluster;
+		}
+
+		public Set< T > getObjects()
+		{
+			return objects;
+		}
 	}
 }

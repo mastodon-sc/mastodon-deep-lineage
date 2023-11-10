@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -35,18 +34,14 @@ public class ClusterUtilsTest
 		Classification< String > classification =
 				ClusterUtils.getClassificationByThreshold( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageUPGMAStrategy(),
 						threshold );
-		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
-		Map< String, String > objectMapping = classification.getLeafMapping();
 
 		Set< String > class1 = new HashSet<>( Collections.singletonList( "F" ) );
 		Set< String > class2 = new HashSet<>( Arrays.asList( "A", "B", "E", "G", "H" ) );
 		Set< String > class3 = new HashSet<>( Arrays.asList( "C", "D", "I", "J" ) );
 		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList( class1, class2, class3 ) );
-		assertEquals( expectedClasses, classifiedObjects );
+		assertEquals( expectedClasses, classification.getClassifiedObjects() );
 		assertEquals( threshold, classification.getCutoff(), 0d );
-		assertNotNull( objectMapping );
-		assertEquals( ClusterData.names.length, objectMapping.size() );
-		assertNotNull( classification.getAlgorithmResult() );
+		assertNotNull( classification.getRootCluster() );
 	}
 
 	@Test
@@ -54,19 +49,15 @@ public class ClusterUtilsTest
 	{
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
 				new AverageLinkageUPGMAStrategy(), 3 );
-		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
-		Map< String, String > objectMapping = classification.getLeafMapping();
 		double cutoff = classification.getCutoff();
 
 		Set< String > class1 = new HashSet<>( Collections.singletonList( "F" ) );
 		Set< String > class2 = new HashSet<>( Arrays.asList( "A", "B", "E", "G", "H" ) );
 		Set< String > class3 = new HashSet<>( Arrays.asList( "C", "D", "I", "J" ) );
 		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList( class1, class2, class3 ) );
-		assertEquals( expectedClasses, classifiedObjects );
-		assertNotNull( objectMapping );
-		assertEquals( ClusterData.names.length, objectMapping.size() );
+		assertEquals( expectedClasses, classification.getClassifiedObjects() );
 		assertEquals( 55.375d, cutoff, 0.000001d );
-		assertNotNull( classification.getAlgorithmResult() );
+		assertNotNull( classification.getRootCluster() );
 	}
 
 	@Test
@@ -76,11 +67,9 @@ public class ClusterUtilsTest
 				new CompleteLinkageStrategy(), 4
 		);
 
-		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
-		Map< String, String > objectMapping = classification.getLeafMapping();
 		double cutoff = classification.getCutoff();
 
-		Cluster cluster = classification.getAlgorithmResult();
+		Cluster cluster = classification.getRootCluster();
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
@@ -91,14 +80,12 @@ public class ClusterUtilsTest
 		Set< String > class4 = new HashSet<>( Arrays.asList( "C", "D", "J" ) );
 		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList( class1, class2, class3, class4 ) );
 
-		assertEquals( expectedClasses, new HashSet<>( classifiedObjects ) );
-		assertNotNull( objectMapping );
-		assertEquals( ClusterData.names.length, objectMapping.size() );
+		assertEquals( expectedClasses, new HashSet<>( classification.getClassifiedObjects() ) );
 		assertEquals( 75, cutoff, 0d );
 		assertEquals( 95, cluster.getDistanceValue(), 0d );
 		assertEquals( 94, Math.max( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
 		assertEquals( 68, Math.min( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
-		assertNotNull( classification.getAlgorithmResult() );
+		assertNotNull( classification.getRootCluster() );
 	}
 
 	@Test
@@ -107,11 +94,9 @@ public class ClusterUtilsTest
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
 				new SingleLinkageStrategy(), 5
 		);
-		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
-		Map< String, String > objectMapping = classification.getLeafMapping();
 		double cutoff = classification.getCutoff();
 
-		Cluster cluster = classification.getAlgorithmResult();
+		Cluster cluster = classification.getRootCluster();
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
@@ -122,14 +107,12 @@ public class ClusterUtilsTest
 		Set< String > class4 = new HashSet<>( Arrays.asList( "C", "D", "J" ) );
 		Set< String > class5 = new HashSet<>( Arrays.asList( "A", "B", "E", "H" ) );
 		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList( class1, class2, class3, class4, class5 ) );
-		assertEquals( expectedClasses, new HashSet<>( classifiedObjects ) );
-		assertNotNull( objectMapping );
-		assertEquals( ClusterData.names.length, objectMapping.size() );
+		assertEquals( expectedClasses, new HashSet<>( classification.getClassifiedObjects() ) );
 		assertEquals( 20, cutoff, 0d );
 		assertEquals( 29, cluster.getDistanceValue(), 0d );
 		assertEquals( 26, Math.max( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
 		assertEquals( 0, Math.min( child0.getDistanceValue(), child1.getDistanceValue() ), 0d );
-		assertNotNull( classification.getAlgorithmResult() );
+		assertNotNull( classification.getRootCluster() );
 	}
 
 	@Test
@@ -189,12 +172,10 @@ public class ClusterUtilsTest
 	{
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
 				new AverageLinkageUPGMAStrategy(), 1 );
-		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
 		Set< String > expected = new HashSet<>( Arrays.asList( ClusterData.names ) );
 		List< Set< String > > expectedClasses = new ArrayList<>( Collections.singletonList( expected ) );
-		assertEquals( expectedClasses, classifiedObjects );
-		assertNull( classification.getLeafMapping() );
-		assertNull( classification.getAlgorithmResult() );
+		assertEquals( expectedClasses, classification.getClassifiedObjects() );
+		assertNull( classification.getRootCluster() );
 	}
 
 	@Test
@@ -204,7 +185,6 @@ public class ClusterUtilsTest
 				ClusterUtils
 						.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageUPGMAStrategy(),
 								10 );
-		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
 		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList(
 				new HashSet<>( Collections.singletonList( "A" ) ),
 				new HashSet<>( Collections.singletonList( "B" ) ),
@@ -217,9 +197,8 @@ public class ClusterUtilsTest
 				new HashSet<>( Collections.singletonList( "I" ) ),
 				new HashSet<>( Collections.singletonList( "J" ) )
 		) );
-		assertEquals( expectedClasses, classifiedObjects );
-		assertNull( classification.getLeafMapping() );
-		assertNull( classification.getAlgorithmResult() );
+		assertEquals( expectedClasses, classification.getClassifiedObjects() );
+		assertNull( classification.getRootCluster() );
 	}
 
 	@Test
@@ -234,18 +213,16 @@ public class ClusterUtilsTest
 		Classification< String > classification =
 				ClusterUtils
 						.getClassificationByClassCount( names, distances, new AverageLinkageUPGMAStrategy(), 2 );
-		Cluster cluster = classification.getAlgorithmResult();
+		Cluster cluster = classification.getRootCluster();
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
-		List< Set< String > > classifiedObjects = classification.getClassifiedObjects();
 		List< Set< String > > expectedClasses = new ArrayList<>( Arrays.asList(
 				new HashSet<>( Collections.singletonList( "3" ) ),
 				new HashSet<>( Arrays.asList( "1", "2" ) )
 		) );
-		assertNotNull( classification.getLeafMapping() );
 		assertNotNull( cluster );
-		assertEquals( expectedClasses, classifiedObjects );
+		assertEquals( expectedClasses, classification.getClassifiedObjects() );
 		assertEquals( 6, cluster.getDistanceValue(), 0d );
 		assertEquals( 6, cluster.getDistance().getDistance(), 0d );
 		assertEquals( 6, cluster.getTotalDistance(), 0d );
@@ -253,6 +230,7 @@ public class ClusterUtilsTest
 		assertEquals( 2, child1.getDistanceValue(), 0d );
 		assertEquals( 2, child1.getChildren().size() );
 	}
+
 
 	@Test
 	public void testAverageLinkageClustering()
@@ -267,7 +245,7 @@ public class ClusterUtilsTest
 		Classification< String > classification =
 				ClusterUtils
 						.getClassificationByClassCount( names, distances, new AverageLinkageUPGMAStrategy(), 2 );
-		Cluster cluster = classification.getAlgorithmResult();
+		Cluster cluster = classification.getRootCluster();
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
@@ -318,7 +296,7 @@ public class ClusterUtilsTest
 		Classification< String > classification =
 				ClusterUtils
 						.getClassificationByClassCount( names, distances, new AverageLinkageWPGMAStrategy(), 2 );
-		Cluster cluster = classification.getAlgorithmResult();
+		Cluster cluster = classification.getRootCluster();
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
@@ -344,7 +322,7 @@ public class ClusterUtilsTest
 		Classification< String > classification =
 				ClusterUtils
 						.getClassificationByClassCount( names, distances, new AverageLinkageUPGMAStrategy(), 2 );
-		Cluster cluster = classification.getAlgorithmResult();
+		Cluster cluster = classification.getRootCluster();
 		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );

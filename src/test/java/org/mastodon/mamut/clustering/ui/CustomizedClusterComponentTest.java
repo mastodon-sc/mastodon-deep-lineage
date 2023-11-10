@@ -2,7 +2,6 @@ package org.mastodon.mamut.clustering.ui;
 
 import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.Cluster;
-import com.apporiented.algorithm.clustering.visualization.VCoord;
 import org.junit.Test;
 import org.mastodon.mamut.clustering.ClusterData;
 import org.mastodon.mamut.clustering.util.Classification;
@@ -27,9 +26,10 @@ public class CustomizedClusterComponentTest
 				ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
 						3
 				);
-		Cluster cluster = classification.getAlgorithmResult();
+		Cluster cluster = classification.getRootCluster();
 		assertNotNull( cluster );
-		CustomizedClusterComponent customizedClusterComponent = new CustomizedClusterComponent( cluster, classification );
+		CustomizedClusterComponent customizedClusterComponent =
+				new CustomizedClusterComponent( cluster, classification.getColoredClusters() );
 
 		int width = 400;
 		int height = 400;

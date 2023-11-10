@@ -27,7 +27,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -133,18 +132,22 @@ public class ClusterRootNodesController
 	{
 
 		List< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
-		for ( Map.Entry< Integer, Integer > classAndColor : classification.getClassIdColors().entrySet() )
-			tagsAndColors.add( Pair.of( "Class " + ( classAndColor.getKey() + 1 ), classAndColor.getValue() ) );
+		List< Classification.ColoredCluster< BranchSpotTree > > coloredClusters = classification.getColoredClusters();
+		for ( int i = 0; i < coloredClusters.size(); i++ )
+		{
+			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), coloredClusters.get( i ).getColor() ) );
+		}
 		return tagsAndColors;
 	}
 
 	private void applyClassification( Classification< BranchSpotTree > classification, List< Pair< String, Integer > > tagsAndColors )
 	{
-		List< Set< BranchSpotTree > > classifiedObjects = classification.getClassifiedObjects();
+		List< Classification.ColoredCluster< BranchSpotTree > > classifiedObjects = classification.getColoredClusters();
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, getTagSetName(), tagsAndColors );
 		int i = 0;
-		for ( Set< BranchSpotTree > trees : classifiedObjects )
+		for ( Classification.ColoredCluster< BranchSpotTree > coloredCluster : classifiedObjects )
 		{
+			Set< BranchSpotTree > trees = coloredCluster.getObjects();
 			logger.info( "Class {} has {} trees", i, trees.size() );
 			TagSetStructure.Tag tag = tagSet.getTags().get( i );
 			for ( BranchSpotTree tree : trees )
