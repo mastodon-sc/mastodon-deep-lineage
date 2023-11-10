@@ -29,8 +29,7 @@ public class CustomizedClusterComponentTest
 				);
 		Cluster cluster = classification.getAlgorithmResult();
 		assertNotNull( cluster );
-		CustomizedClusterComponent customizedClusterComponent =
-				new CustomizedClusterComponent( cluster, cluster.isLeaf(), new VCoord( 200, 200 ), 0.5d, Color.BLUE, classification );
+		CustomizedClusterComponent customizedClusterComponent = new CustomizedClusterComponent( cluster, classification );
 
 		int width = 400;
 		int height = 400;

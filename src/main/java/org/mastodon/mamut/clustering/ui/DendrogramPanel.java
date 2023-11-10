@@ -136,11 +136,7 @@ public class DendrogramPanel< T > extends JPanel
 		if ( cluster == null )
 			return null;
 
-		double virtualModelHeight = 1d;
-		VCoord initialCoordinate = new VCoord( 0, virtualModelHeight / 2d );
-
-		return new CustomizedClusterComponent(
-				cluster, cluster.isLeaf(), initialCoordinate, virtualModelHeight, Color.BLACK, classification );
+		return new CustomizedClusterComponent( cluster, classification );
 	}
 
 	Line2D getVerticalLine( final double xModelValue, final DisplayMetrics displayMetrics )

@@ -30,44 +30,75 @@ public class CustomizedClusterComponent extends ClusterComponent
 {
 	private final Color color;
 
-	public CustomizedClusterComponent(
-			final Cluster cluster, final boolean printName, final VCoord initPoint, final double clusterHeight, final Color color,
-			final Classification< ? > classification
+	public CustomizedClusterComponent( final Cluster cluster, final Classification< ? > classification )
+	{
+		this(
+				cluster, cluster.isLeaf(), new VCoord( 0, 1d / 2d ), 1d, Color.BLACK, classification.getClusterColors(),
+				classification.getLeafMapping()
+		);
+	}
+
+	/**
+	 * Creates a new {@link CustomizedClusterComponent} component.
+	 *
+	 * @param cluster the cluster to be represented by this component.
+	 * @param printName whether the name of the cluster should be printed.
+	 * @param splitPoint the starting point of this component.
+	 * <ul>
+	 *      <li>The x coordinate represents the distance of this split point in relation to the max distance of the dendrogram, i.e. the x-coordinate should be equivalent to <i>total distance of dendrogram - distance of the {@code cluster} represented by this component</i> </li>
+	 *      <li>The y coordinate is between 0 and 1. A value of zero means the split point is at the very top of the dendrogram, a value of 1 means the split point is at the very bottom of the dendrogram</li>
+	 * </ul>
+	 * @param clusterHeight the virtual height of the cluster component.
+	 * <ul>
+	 *     <li>This has to be a value larger than 0 and less or equal to 1.</li>
+	 *     <li>The value 1 means that the cluster component is as high as the dendrogram, which is the case for the root component.</li>
+	 *     <li>Any value between 0 and 1 should represent the share between the number of leaves this components represents and the total number of leaves in the dendrogram</li>
+	 * </ul>
+	 *
+	 * @param color the {@link Color} used to draw this component. May be null. May be overwritten by the {@code clusterColors} parameter.
+	 * @param clusterColors a map that maps clusters to colors. If this map contains an entry for the {@code cluster} represented by this component, the color of this entry is used to draw this component.
+	 * @param leafMapping a map that maps leaf names to new names. If this map contains an entry for the {@code cluster} represented by this component, the name of this entry is used to draw this component.
+	 */
+	private CustomizedClusterComponent(
+			final Cluster cluster, final boolean printName, final VCoord splitPoint, final double clusterHeight, final Color color,
+			final Map< Cluster, Integer > clusterColors, final Map< String, ? > leafMapping
 	)
 	{
-		super( cluster, printName, initPoint );
+		super( cluster, printName, splitPoint );
 		getChildren();
-		Map< Cluster, Integer > clusterColors = classification.getClusterColors();
 		if ( clusterColors != null && ( clusterColors.containsKey( cluster ) ) )
 			this.color = new Color( clusterColors.get( cluster ) );
 		else
 			this.color = color;
-		init( cluster, initPoint, clusterHeight, classification );
+		init( cluster, splitPoint, clusterHeight, clusterColors, leafMapping );
 	}
 
-	private void init( final Cluster cluster, final VCoord initPoint, final double clusterHeight, final Classification< ? > classification )
+	private void init(
+			final Cluster cluster, final VCoord splitPoint, final double clusterHeight, final Map< Cluster, Integer > clusterColors,
+			final Map< String, ? > leafMapping
+	)
 	{
-		Map< String, ? > leafMapping = classification.getLeafMapping();
 		if ( leafMapping != null && cluster.isLeaf() && leafMapping.containsKey( cluster.getName() ) )
 			cluster.setName( leafMapping.get( cluster.getName() ).toString() );
 
 		double leafHeight = clusterHeight / cluster.countLeafs();
-		double yChild = initPoint.getY() - ( clusterHeight / 2 );
+		double yChild = splitPoint.getY() - ( clusterHeight / 2 );
 		double distance = cluster.getDistanceValue() == null ? 0 : cluster.getDistanceValue();
 		for ( Cluster child : cluster.getChildren() )
 		{
 			int childLeafCount = child.countLeafs();
 			double childHeight = childLeafCount * leafHeight;
 			double childDistance = child.getDistanceValue() == null ? 0 : child.getDistanceValue();
-			VCoord childInitCoord = new VCoord( initPoint.getX() + ( distance - childDistance ), yChild + childHeight / 2.0 );
+			VCoord childInitCoord = new VCoord( splitPoint.getX() + ( distance - childDistance ), yChild + childHeight / 2.0 );
 			yChild += childHeight;
 
 			CustomizedClusterComponent childComponent =
-					new CustomizedClusterComponent( child, child.isLeaf(), childInitCoord, childHeight, this.color, classification );
-			childComponent.setLinkPoint( initPoint );
+					new CustomizedClusterComponent(
+							child, child.isLeaf(), childInitCoord, childHeight, this.color, clusterColors, leafMapping );
+			childComponent.setLinkPoint( splitPoint );
 			getChildren().add( childComponent );
 		}
-		setLinkPoint( initPoint );
+		setLinkPoint( splitPoint );
 	}
 
 	@Override
