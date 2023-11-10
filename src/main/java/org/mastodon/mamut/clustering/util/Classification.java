@@ -60,7 +60,7 @@ public class Classification< T >
 		return cutoff;
 	}
 
-	public List< Set< T > > getClassifiedObjects()
+	List< Set< T > > getClassifiedObjects()
 	{
 		return coloredClusters.stream().map( ColoredCluster::getObjects ).collect( Collectors.toList() );
 	}
