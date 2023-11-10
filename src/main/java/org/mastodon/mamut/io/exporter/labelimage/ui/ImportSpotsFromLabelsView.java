@@ -1,6 +1,6 @@
 package org.mastodon.mamut.segment.ui;
 
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.segment.ImportSpotFromLabelsController;
 import org.scijava.Context;
 import org.scijava.ItemVisibility;
@@ -24,7 +24,7 @@ public class ImportSpotsFromLabelsView implements Command
 
 	@SuppressWarnings("unused")
 	@Parameter
-	private MamutAppModel appModel;
+	private ProjectModel projectModel;
 
 	@SuppressWarnings("unused")
 	@Parameter
@@ -42,7 +42,7 @@ public class ImportSpotsFromLabelsView implements Command
 	public void run()
 	{
 		ImportSpotFromLabelsController controller =
-				new ImportSpotFromLabelsController( appModel, context, labelChannelIndex, sigma );
+				new ImportSpotFromLabelsController( projectModel, context, labelChannelIndex, sigma );
 		controller.createSpotsFromLabels();
 	}
 

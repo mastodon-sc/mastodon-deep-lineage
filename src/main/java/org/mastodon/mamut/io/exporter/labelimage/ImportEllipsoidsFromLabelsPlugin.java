@@ -1,9 +1,8 @@
 package org.mastodon.mamut.segment;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.plugin.MamutPlugin;
-import org.mastodon.mamut.plugin.MamutPluginAppModel;
 import org.mastodon.mamut.segment.ui.ImportSpotsFromLabelsView;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
@@ -28,7 +27,7 @@ public class ImportEllipsoidsFromLabelsPlugin implements MamutPlugin
 
 	private final AbstractNamedAction importSpotsFromLabels;
 
-	private MamutAppModel appModel;
+	private ProjectModel appModel;
 
 	@SuppressWarnings("unused")
 	@Parameter
@@ -41,9 +40,9 @@ public class ImportEllipsoidsFromLabelsPlugin implements MamutPlugin
 	}
 
 	@Override
-	public void setAppPluginModel( MamutPluginAppModel pluginAppModel )
+	public void setAppPluginModel( final ProjectModel appPluginModel )
 	{
-		this.appModel = pluginAppModel.getAppModel();
+		this.appModel = appPluginModel;
 	}
 
 	@Override

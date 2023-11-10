@@ -11,7 +11,7 @@ import net.imglib2.util.Cast;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
-import org.mastodon.mamut.MamutAppModel;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.scijava.Context;
@@ -42,13 +42,15 @@ public class ImportSpotFromLabelsController
 
 	private final double sigma;
 
-	public ImportSpotFromLabelsController( final MamutAppModel appModel, final Context context, int labelChannelIndex, double sigma )
+	public ImportSpotFromLabelsController(
+			final ProjectModel projectModel, final Context context, int labelChannelIndex, double sigma
+	)
 	{
 		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
-		this( appModel.getModel(),
-				appModel.getSharedBdvData().getSpimData().getSequenceDescription().getTimePoints().getTimePointsOrdered(),
-				Cast.unchecked( appModel.getSharedBdvData().getSources().get( labelChannelIndex ).getSpimSource() ), context,
-				appModel.getSharedBdvData().getSpimData().getSequenceDescription().getViewSetups().get( 0 ).getVoxelSize(), sigma
+		this( projectModel.getModel(),
+				projectModel.getSharedBdvData().getSpimData().getSequenceDescription().getTimePoints().getTimePointsOrdered(),
+				Cast.unchecked( projectModel.getSharedBdvData().getSources().get( labelChannelIndex ).getSpimSource() ), context,
+				projectModel.getSharedBdvData().getSpimData().getSequenceDescription().getViewSetups().get( 0 ).getVoxelSize(), sigma
 		);
 	}
 
