@@ -10,7 +10,19 @@ import java.awt.Graphics2D;
 import java.util.Map;
 
 /**
- * Class that extends {@link ClusterComponent} to customize the color of the dendrogram part represented by it.
+ * This class extends the class {@link ClusterComponent} from the hierarchical clustering library.
+ * @see <a href="https://github.com/lbehnke/hierarchical-clustering-java">hierarchical-clustering-java</a><p>
+ * It is overriden because the implementation of the super class {@link ClusterComponent} does not allow to change the color of cluster components.
+ * The class {@link ClusterComponent} is not designed to be extended. Therefore, this class has to duplicate some code from the super class.<p>
+ *
+ * This class can represent any subtree of a dendrogram. It is used by {@link DendrogramPanel} to draw the dendrogram.
+ * It can be drawn with a different color than the rest of the dendrogram<p>
+ *
+ * The differenes between CustomizedClusterComponent and ClusterComponent are:
+ * <ul>
+ *     <li>{@link CustomizedClusterComponent} can be drawn with a different color than the rest of the dendrogram</li>
+ *     <li>The initialization of sub components is directly part of the constructor of this class</li>
+ * </ul>
  *
  * @author Stefan Hahmann
  */
