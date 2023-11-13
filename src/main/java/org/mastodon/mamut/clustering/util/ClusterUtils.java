@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
+import org.mastodon.util.ColorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -112,7 +112,7 @@ public class ClusterUtils
 		if ( sortedClusters == null )
 			sortedClusters = sortClusters( algorithmResult );
 
-		Set< Cluster > resultClusters = new HashSet<>();
+		List< Cluster > resultClusters = new ArrayList<>();
 		for ( Cluster cluster : sortedClusters )
 		{
 			if ( cluster.getDistanceValue() < threshold )
@@ -120,9 +120,26 @@ public class ClusterUtils
 			resultClusters.add( cluster );
 		}
 
-		Set< Set< T > > classifiedObjects = convertClustersToClasses( resultClusters, objectMapping );
-		log( classifiedObjects );
-		return new Classification<>( classifiedObjects, algorithmResult, objectMapping, threshold );
+		List< Pair< Set< T >, Cluster > > classesAndClusters = convertClustersToClasses( resultClusters, objectMapping );
+		resetClusterNames( algorithmResult, objectMapping );
+		log( classesAndClusters );
+		return new Classification<>( classesAndClusters, algorithmResult, threshold );
+	}
+
+	private static void resetClusterNames( final Cluster cluster, final Map< String, ? > objectMapping )
+	{
+		if ( cluster.isLeaf() )
+		{
+			if ( objectMapping.containsKey( cluster.getName() ) )
+				cluster.setName( objectMapping.get( cluster.getName() ).toString() );
+		}
+		else
+		{
+			for ( Cluster child : cluster.getChildren() )
+			{
+				resetClusterNames( child, objectMapping );
+			}
+		}
 	}
 
 	/**
@@ -157,14 +174,15 @@ public class ClusterUtils
 					"number of classes (" + classCount + ") must be less than or equal to the number of objects to be classified ("
 							+ objects.length + ")." );
 		else if ( classCount == 1 )
-			return new Classification<>( Collections.singleton( new HashSet<>( Arrays.asList( objects ) ) ), null, null, 0d );
+			return new Classification<>(
+					Collections.singletonList( Pair.of( new HashSet<>( Arrays.asList( objects ) ), null ) ), null, 0d );
 
-		Set< Set< T > > classes = new HashSet<>();
+		List< Pair< Set< T >, Cluster > > classes = new ArrayList<>();
 		if ( classCount == objects.length )
 		{
 			for ( T name : objects )
-				classes.add( Collections.singleton( name ) );
-			return new Classification<>( classes, null, null, 0d );
+				classes.add( Pair.of( Collections.singleton( name ), null ) );
+			return new Classification<>( classes, null, 0d );
 		}
 
 		// NB: the cluster algorithm needs unique names instead of objects
@@ -175,6 +193,29 @@ public class ClusterUtils
 
 		return getClassificationByThreshold(
 				objects, distances, linkageStrategy, threshold, objectMapping, algorithmResult, sortedClusters );
+	}
+
+	/**
+	 * Gets a list of color values from the {@link ColorUtils#GLASBEY} palette.<p>
+	 * Skips the first five colors of the palette, since the 4th color is close to black and thus difficult to see.
+	 * If the given {@code n} is larger than the size of {@link ColorUtils#GLASBEY}, the colors are added and repeated in a round-robin fashion.<p>
+	 * @param n the number of colors to be picked
+	 * @return a list of color values
+	 */
+	public static List< Integer > getGlasbeyColors( int n )
+	{
+		if ( n <= 0 )
+			return Collections.emptyList();
+		List< Integer > colors = new ArrayList<>();
+		for ( int i = 0; i < n; i++ )
+			colors.add( getGlasbeyColor( i, 5 ) );
+		return colors;
+	}
+
+	static int getGlasbeyColor( int n, int skipFirstNColors )
+	{
+		int index = n % ( ColorUtils.GLASBEY.length - skipFirstNColors ) + skipFirstNColors;
+		return ColorUtils.GLASBEY[ index ].getRGB();
 	}
 
 	private static double getThreshold( final List< Cluster > sortedClusters, int classCount )
@@ -209,37 +250,39 @@ public class ClusterUtils
 		return objectNames;
 	}
 
-	private static < T > Set< Set< T > > convertClustersToClasses( Set< Cluster > output, Map< String, T > objectNames )
+	private static < T > List< Pair< Set< T >, Cluster > > convertClustersToClasses(
+			List< Cluster > output, Map< String, T > objectNames
+	)
 	{
-		int clusterId = 0;
-		Map< Integer, List< String > > classes = new HashMap<>();
+		List< Cluster > classes = new ArrayList<>();
 		for ( Cluster cluster : output )
 		{
 			for ( Cluster child : cluster.getChildren() )
 			{
 				if ( !output.contains( child ) )
-					classes.put( clusterId++, leaveNames( child ) );
+					classes.add( child );
 			}
 		}
-		Set< Set< T > > classifiedObjects = new HashSet<>();
-		for ( Map.Entry< Integer, List< String > > entry : classes.entrySet() )
+		List< Pair< Set< T >, Cluster > > classifiedObjects = new ArrayList<>();
+		for ( Cluster cluster : classes )
 		{
 			Set< T > objects = new HashSet<>();
-			for ( String name : entry.getValue() )
-				objects.add( objectNames.get( name ) );
-			classifiedObjects.add( objects );
+			List< String > leaveNames = leaveNames( cluster );
+			for ( String leaveName : leaveNames )
+				objects.add( objectNames.get( leaveName ) );
+			classifiedObjects.add( Pair.of( objects, cluster ) );
 		}
 		return classifiedObjects;
 	}
 
-	private static < T > void log( Set< Set< T > > objectsToClusterIds )
+	private static < T > void log( List< Pair< Set< T >, Cluster > > objectsToClusterIds )
 	{
 		int i = 0;
-		for ( Set< T > entry : objectsToClusterIds )
+		for ( Pair< Set< T >, Cluster > entry : objectsToClusterIds )
 		{
 			if ( logger.isInfoEnabled() )
 				logger.info( "clusterId: {}, object: {}", i++,
-						entry.stream().map( Object::toString ).collect( Collectors.joining( "," ) )
+						entry.getLeft().stream().map( Object::toString ).collect( Collectors.joining( "," ) )
 				);
 		}
 	}
