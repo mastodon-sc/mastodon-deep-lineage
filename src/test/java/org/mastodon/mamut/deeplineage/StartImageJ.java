@@ -1,8 +1,8 @@
 /*-
  * #%L
- * mastodon-tomancak
+ * mastodon-deep-lineage
  * %%
- * Copyright (C) 2018 - 2022 Tobias Pietzsch
+ * Copyright (C) 2022 - 2023 N/A
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
