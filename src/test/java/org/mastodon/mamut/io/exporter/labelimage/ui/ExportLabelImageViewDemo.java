@@ -1,10 +1,10 @@
-package org.mastodon.mamut.segment.ui;
+package org.mastodon.mamut.io.exporter.labelimage.ui;
 
 import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.ui.UIService;
 
-public class SegmentUsingEllipsoidsViewDemo
+public class ExportLabelImageViewDemo
 {
 
 	public static void main( String[] args )
@@ -15,6 +15,6 @@ public class SegmentUsingEllipsoidsViewDemo
 		CommandService cmd = context.service( CommandService.class );
 
 		ui.showUI();
-		cmd.run( SegmentUsingEllipsoidsView.class, true, "projectModel", null );
+		cmd.run( ExportLabelImageView.class, true, "projectModel", null );
 	}
 }

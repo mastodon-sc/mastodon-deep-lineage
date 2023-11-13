@@ -1,8 +1,8 @@
-package org.mastodon.mamut.segment.ui;
+package org.mastodon.mamut.io.exporter.labelimage.ui;
 
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.segment.SegmentUsingEllipsoidsController;
-import org.mastodon.mamut.segment.config.LabelOptions;
+import org.mastodon.mamut.io.exporter.labelimage.ExportLabelImageController;
+import org.mastodon.mamut.io.exporter.labelimage.config.LabelOptions;
 import org.scijava.Context;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
@@ -12,7 +12,7 @@ import org.scijava.plugin.Plugin;
 import java.io.File;
 
 @Plugin(type = Command.class, label = "Run export label image using ellipsoids")
-public class SegmentUsingEllipsoidsView implements Command
+public class ExportLabelImageView implements Command
 {
 	private static final int WIDTH = 15;
 
@@ -32,7 +32,7 @@ public class SegmentUsingEllipsoidsView implements Command
 	private String option = LabelOptions.BRANCH_SPOT_ID.getName();
 
 	@SuppressWarnings("all")
-	@Parameter(label = "Frame rate reduction", description = "Only use every n-th frame for segmentation. 1 means no reduction. Value must be >= 1.", min = "1")
+	@Parameter(label = "Frame rate reduction", description = "Only export every n-th. 1 means no reduction. Value must be >= 1.", min = "1")
 	private int frameRateReduction = 1;
 
 	@SuppressWarnings("unused")
@@ -54,8 +54,8 @@ public class SegmentUsingEllipsoidsView implements Command
 	@Override
 	public void run()
 	{
-		SegmentUsingEllipsoidsController controller = new SegmentUsingEllipsoidsController( projectModel, context );
+		ExportLabelImageController controller = new ExportLabelImageController( projectModel, context );
 		LabelOptions selectedOption = LabelOptions.getByName( option );
-		controller.saveEllipsoidSegmentationToFile( selectedOption, saveTo, showResult, frameRateReduction );
+		controller.saveLabelImageToFile( selectedOption, saveTo, showResult, frameRateReduction );
 	}
 }

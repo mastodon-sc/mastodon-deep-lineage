@@ -1,4 +1,4 @@
-package org.mastodon.mamut.segment;
+package org.mastodon.mamut.io.exporter.labelimage;
 
 import bdv.util.AbstractSource;
 import bdv.util.RandomAccessibleIntervalSource;
@@ -34,7 +34,7 @@ import org.mastodon.mamut.feature.SpotTrackIDFeature;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.mamut.segment.config.LabelOptions;
+import org.mastodon.mamut.io.exporter.labelimage.config.LabelOptions;
 import org.mastodon.spatial.SpatialIndex;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 
-public class SegmentUsingEllipsoidsController
+public class ExportLabelImageController
 {
 
 	public static final int LABEL_ID_OFFSET = 1;
@@ -69,7 +69,7 @@ public class SegmentUsingEllipsoidsController
 
 	private FeatureProjection< Spot > trackIdProjection = null;
 
-	public SegmentUsingEllipsoidsController( final ProjectModel projectModel, final Context context )
+	public ExportLabelImageController( final ProjectModel projectModel, final Context context )
 	{
 		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
 		this( projectModel.getModel(),
@@ -79,7 +79,7 @@ public class SegmentUsingEllipsoidsController
 		);
 	}
 
-	protected SegmentUsingEllipsoidsController(
+	protected ExportLabelImageController(
 			final Model model, final List< TimePoint > timePoints, final Source< RealType< ? > > source, final Context context,
 			final VoxelDimensions voxelDimensions
 	)
@@ -97,18 +97,18 @@ public class SegmentUsingEllipsoidsController
 	 * @param labelOption the {@link LabelOptions} to use
 	 * @param file the file to save the image to
 	 * @param showResult whether to show the result in ImageJ
-	 * @param frameRateReduction only use every n-th frame for segmentation. 1 means no reduction.
+	 * @param frameRateReduction only use every n-th frame for export. 1 means no reduction.
 	 */
-	public void saveEllipsoidSegmentationToFile(
+	public void saveLabelImageToFile(
 			final LabelOptions labelOption, final File file, boolean showResult, int frameRateReduction
 	)
 	{
 		if ( file == null )
-			throw new IllegalArgumentException( "Cannot write ellipsoid segmentation to file. Given file is null." );
+			throw new IllegalArgumentException( "Cannot write label image to file. Given file is null." );
 		if ( labelOption == null )
-			throw new IllegalArgumentException( "Cannot write ellipsoid segmentation to file. Given label options are null." );
+			throw new IllegalArgumentException( "Cannot write label image to file. Given label options are null." );
 
-		logger.info( "Save ellipsoid segmentation to file. Label options: {}, file: {}", labelOption, file.getAbsolutePath() );
+		logger.info( "Save label image to file. Label options: {}, file: {}", labelOption, file.getAbsolutePath() );
 		long[] spatialDimensions = getDimensionsOfSource();
 		int numTimePoints = timePoints.size();
 		int frames = numTimePoints / frameRateReduction;
@@ -130,18 +130,18 @@ public class SegmentUsingEllipsoidsController
 			int targetFrameId = sourceFrameId / frameRateReduction;
 			logger.trace( "sourceFrameId: {}, targetFrameId: {}", sourceFrameId, targetFrameId );
 			IntervalView< IntType > frame = Views.hyperSlice( img, 3, targetFrameId );
-			AbstractSource< IntType > frameSource = new RandomAccessibleIntervalSource<>( frame, new IntType(), transform, "Segmentation" );
+			AbstractSource< IntType > frameSource = new RandomAccessibleIntervalSource<>( frame, new IntType(), transform, "Ellipsoids" );
 			final EllipsoidIterable< IntType > ellipsoidIterable = new EllipsoidIterable<>( frameSource );
-			segmentAllSpotsOfFrame( ellipsoidIterable, labelOption, sourceFrameId, targetFrameId, frames );
+			processAllSpotsOfFrame( ellipsoidIterable, labelOption, sourceFrameId, targetFrameId, frames );
 		}
 		lock.unlock();
-		logger.debug( "Segmentation finished." );
+		logger.debug( "Export finished." );
 
 		ImgPlus< IntType > imgplus = createImgPlus( img );
 		if ( showResult )
 			showImgPlus( imgplus );
 		saveImgPlus( file, imgplus );
-		logger.info( "Done saving ellipsoid segmentation to file." );
+		logger.info( "Done saving label image to file." );
 	}
 
 	private ReentrantReadWriteLock.ReadLock getReadLock( LabelOptions labelOption )
@@ -158,7 +158,7 @@ public class SegmentUsingEllipsoidsController
 		}
 	}
 
-	private void segmentAllSpotsOfFrame(
+	private void processAllSpotsOfFrame(
 			final EllipsoidIterable< ? extends RealType< ? > > iterable, final LabelOptions option, final int sourceFrameId,
 			final int targetFrameId, final int frames
 	)

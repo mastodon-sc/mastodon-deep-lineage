@@ -1,4 +1,4 @@
-package org.mastodon.mamut.segment;
+package org.mastodon.mamut.io.exporter.labelimage;
 
 import bdv.util.AbstractSource;
 import bdv.util.RandomAccessibleIntervalSource;
@@ -19,7 +19,7 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.mamut.segment.config.LabelOptions;
+import org.mastodon.mamut.io.exporter.labelimage.config.LabelOptions;
 import org.scijava.Context;
 
 import java.io.File;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 
-public class SegmentUsingEllipsoidsControllerTest
+public class ExportLabelImageControllerTest
 {
 	private Model model;
 
@@ -58,7 +58,7 @@ public class SegmentUsingEllipsoidsControllerTest
 	}
 
 	@Test
-	public void testSaveEllipsoidSegmentationToFile() throws IOException
+	public void testSaveLabelImageToFile() throws IOException
 	{
 		AbstractSource< IntType > source = createRandomSource();
 		Context context = new Context();
@@ -66,14 +66,14 @@ public class SegmentUsingEllipsoidsControllerTest
 		List< TimePoint > timePoints = Collections.singletonList( timePoint );
 		VoxelDimensions voxelDimensions = new DefaultVoxelDimensions( 3 );
 		voxelDimensions.dimensions( new double[] { 1, 1, 1 } );
-		SegmentUsingEllipsoidsController segmentUsingEllipsoidsController =
-				new SegmentUsingEllipsoidsController( model, timePoints, Cast.unchecked( source ), context, voxelDimensions );
+		ExportLabelImageController exportLabelImageController =
+				new ExportLabelImageController( model, timePoints, Cast.unchecked( source ), context, voxelDimensions );
 		File outputSpot = getTempFile( "resultSpot" );
 		File outputBranchSpot = getTempFile( "resultBranchSpot" );
 		File outputTrack = getTempFile( "resultTrack" );
-		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, outputSpot, false, 1 );
-		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, false, 1 );
-		segmentUsingEllipsoidsController.saveEllipsoidSegmentationToFile( LabelOptions.TRACK_ID, outputTrack, false, 1 );
+		exportLabelImageController.saveLabelImageToFile( LabelOptions.SPOT_ID, outputSpot, false, 1 );
+		exportLabelImageController.saveLabelImageToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, false, 1 );
+		exportLabelImageController.saveLabelImageToFile( LabelOptions.TRACK_ID, outputTrack, false, 1 );
 
 		ImgOpener imgOpener = new ImgOpener( context );
 		SCIFIOImgPlus< IntType > imgSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputSpot );
@@ -86,10 +86,10 @@ public class SegmentUsingEllipsoidsControllerTest
 		assertEquals( 100, imgSpot.dimension( 0 ) );
 		assertEquals( 100, imgSpot.dimension( 1 ) );
 		assertEquals( 100, imgSpot.dimension( 2 ) );
-		assertEquals( spot.getInternalPoolIndex() + SegmentUsingEllipsoidsController.LABEL_ID_OFFSET, imgSpot.getAt( center ).get() );
+		assertEquals( spot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgSpot.getAt( center ).get() );
 		assertEquals(
-				branchSpot.getInternalPoolIndex() + SegmentUsingEllipsoidsController.LABEL_ID_OFFSET, imgBranchSpot.getAt( center ).get() );
-		assertEquals( SegmentUsingEllipsoidsController.LABEL_ID_OFFSET, imgTrack.getAt( center ).get() );
+				branchSpot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgBranchSpot.getAt( center ).get() );
+		assertEquals( ExportLabelImageController.LABEL_ID_OFFSET, imgTrack.getAt( center ).get() );
 		// check that there is no value set outside the ellipsoid of the spot
 		long[] corner = new long[] { 0, 0, 0 };
 		assertEquals( 0, imgSpot.getAt( corner ).get() );
@@ -114,20 +114,20 @@ public class SegmentUsingEllipsoidsControllerTest
 	@Test
 	public void testExceptions() throws IOException
 	{
-		SegmentUsingEllipsoidsController controller =
-				new SegmentUsingEllipsoidsController( model, Collections.emptyList(), null, new Context(), null );
+		ExportLabelImageController controller =
+				new ExportLabelImageController( model, Collections.emptyList(), null, new Context(), null );
 		File file = File.createTempFile( "foo", "foo" );
 		file.deleteOnExit();
 		assertThrows(
 				IllegalArgumentException.class,
-				() -> controller.saveEllipsoidSegmentationToFile( LabelOptions.SPOT_ID, null, false, 1 )
+				() -> controller.saveLabelImageToFile( LabelOptions.SPOT_ID, null, false, 1 )
 		);
-		assertThrows( IllegalArgumentException.class, () -> controller.saveEllipsoidSegmentationToFile( null, file, false, 1 ) );
+		assertThrows( IllegalArgumentException.class, () -> controller.saveLabelImageToFile( null, file, false, 1 ) );
 	}
 
 	private static AbstractSource< IntType > createRandomSource()
 	{
 		Img< IntType > randomImg = RandomImgs.seed( 0 ).nextImage( new IntType() {}, 100, 100, 100 );
-		return new RandomAccessibleIntervalSource<>( randomImg, new IntType(), new AffineTransform3D(), "Segmentation" );
+		return new RandomAccessibleIntervalSource<>( randomImg, new IntType(), new AffineTransform3D(), "Label Image" );
 	}
 }
