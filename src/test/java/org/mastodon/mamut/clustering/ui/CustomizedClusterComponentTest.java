@@ -19,8 +19,11 @@ import static org.junit.Assert.assertNotNull;
 public class CustomizedClusterComponentTest
 {
 
+	/**
+	 * this tests only if the paint method resets the color to default and runs without exceptions, not if the dendrogram is drawn correctly
+	 */
 	@Test
-	public void testCustomizedClusterComponent()
+	public void testPaint()
 	{
 		Classification< String > classification =
 				ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
@@ -39,7 +42,6 @@ public class CustomizedClusterComponentTest
 		graphics.setColor( defaultColor );
 
 		customizedClusterComponent.paint( ( Graphics2D ) graphics, 0, 0, 1d, 1d, false );
-		// this tests only if the paint method resets the color to default and runs without exceptions, not if the dendrogram is drawn correctly
 		assertEquals( defaultColor, graphics.getColor() );
 	}
 }
