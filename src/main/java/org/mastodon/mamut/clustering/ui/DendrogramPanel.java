@@ -19,7 +19,12 @@ import java.util.Set;
 
 /**
  * Class for painting dendrograms derived from a {@link Classification} object.<p>
- * In addition to {@link com.apporiented.algorithm.clustering.visualization.DendrogramPanel}, this class adds the possibility to paint an extra line on top of dendrogram (e.g. the cut-off line) and colorizing the clusters below this cut-off line.
+ * It is a re-implementation of the class {@link com.apporiented.algorithm.clustering.visualization.DendrogramPanel} from the hierarchical clustering library.<p>
+ * In addition to {@link com.apporiented.algorithm.clustering.visualization.DendrogramPanel}, this class adds:
+ * <ul>
+ *     <li>the possibility to paint an extra line on top of dendrogram (e.g. the cut-off line)</li>
+ *     <li>colorizing the clusters below this cut-off line</li>
+ * </ul>
  *
  * @author Stefan Hahmann
  */
@@ -61,6 +66,9 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final String NO_DATA_AVAILABLE = "No cluster data available.";
 
+	/**
+	 * Creates an empty {@link DendrogramPanel}.
+	 */
 	public DendrogramPanel()
 	{
 		super();
@@ -69,6 +77,11 @@ public class DendrogramPanel< T > extends JPanel
 		this.modelMetrics = null;
 	}
 
+	/**
+	 * Creates a {@link DendrogramPanel} for the given {@link Classification} object.
+	 *
+	 * @param classification the {@link Classification} object to be visualized by this {@link DendrogramPanel}
+	 */
 	public DendrogramPanel( final Classification< T > classification )
 	{
 		super();
