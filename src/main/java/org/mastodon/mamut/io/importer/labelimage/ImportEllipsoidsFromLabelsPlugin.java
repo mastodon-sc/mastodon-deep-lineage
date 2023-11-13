@@ -1,9 +1,9 @@
-package org.mastodon.mamut.segment;
+package org.mastodon.mamut.io.importer.labelimage;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.plugin.MamutPlugin;
-import org.mastodon.mamut.segment.ui.ImportSpotsFromLabelsView;
+import org.mastodon.mamut.io.importer.labelimage.ui.ImportSpotsFromLabelsView;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

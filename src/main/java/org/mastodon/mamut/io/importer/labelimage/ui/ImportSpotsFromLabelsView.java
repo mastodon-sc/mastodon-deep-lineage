@@ -1,7 +1,7 @@
-package org.mastodon.mamut.segment.ui;
+package org.mastodon.mamut.io.importer.labelimage.ui;
 
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.segment.ImportSpotFromLabelsController;
+import org.mastodon.mamut.io.importer.labelimage.ImportSpotFromLabelsController;
 import org.scijava.Context;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;

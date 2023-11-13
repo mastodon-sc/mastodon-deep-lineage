@@ -1,4 +1,4 @@
-package org.mastodon.mamut.segment;
+package org.mastodon.mamut.io.importer.labelimage;
 
 import bdv.util.AbstractSource;
 import bdv.util.RandomAccessibleIntervalSource;
