@@ -33,6 +33,16 @@ public class Classification< T >
 
 	private final double cutoff;
 
+	/**
+	 * Creates a new {@link Classification} object.
+	 * @param classifiedObjects a {@link List} of {@link Pair} objects, where each pair contains:
+	 * 						<ul>
+	 * 						    <li>a {@link Set} of objects, which are classified into the same class</li>
+	 * 						    <li>a {@link Cluster} object, which represents the classified objects in the dendrogram</li>
+	 * 						</ul>
+	 * @param rootCluster the root {@link Cluster} object, from which the results of the algorithm can be accessed
+	 * @param cutoff the cutoff value of classification, i.e. where the dendrogram is cut
+	 */
 	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, @Nullable final Cluster rootCluster, double cutoff )
 	{
 		this.objectClassifications = new HashSet<>();
@@ -68,6 +78,15 @@ public class Classification< T >
 		return objectClassifications.stream().map( ObjectClassification::getObjects ).collect( Collectors.toSet() );
 	}
 
+	/**
+	 * A class that encapsulates the result of a clustering algorithm for a single class.<p>
+	 * It contains:
+	 *    <ul>
+	 *        <li>a {@link Cluster} object, which represents the classified objects in the dendrogram</li>
+	 *        <li>a {@link Set} of objects, which are classified into the same class</li>
+	 *        <li>a color, which is associated with that class</li>
+	 *    </ul>
+	 */
 	public static class ObjectClassification< T >
 	{
 		private final int color;

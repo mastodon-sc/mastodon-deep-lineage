@@ -10,6 +10,11 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.awt.Color;
 
+/**
+ * A class that represents a UI view of a dendrogram.<p>
+ * It encapsulates a {@link Classification} object and a headline that can describe the classification, e.g. the parameters that were used for it.<p>
+ * @param <T>
+ */
 public class DendrogramView< T >
 {
 
@@ -31,6 +36,9 @@ public class DendrogramView< T >
 		frame.add( getPanel(), "grow" );
 	}
 
+	/**
+	 * Sets the visibility of the frame to {@code true}.
+	 */
 	public void show()
 	{
 		frame.setVisible( true );
