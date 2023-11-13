@@ -48,7 +48,7 @@ public class ImportSpotsFromLabelImagePlugin implements MamutPlugin
 	@Override
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
-		return Collections.singletonList( menu( "Plugins", item( IMPORT_SPOTS_FROM_LABEL_IMAGE ) ) );
+		return Collections.singletonList( menu( "Plugins", menu( "Imports", item( IMPORT_SPOTS_FROM_LABEL_IMAGE ) ) ) );
 	}
 
 	@Override
