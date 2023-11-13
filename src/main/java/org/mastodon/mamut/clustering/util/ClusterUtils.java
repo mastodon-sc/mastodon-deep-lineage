@@ -196,11 +196,11 @@ public class ClusterUtils
 	}
 
 	/**
-	 * Gets a Mapping from zero-based counted ids to color values picked from {@link ColorUtils#GLASBEY}.<p>
-	 * Colors are picked in a round-robin fashion.<p>
-	 * The color black is skipped in the first round. Thus, the id zero is mapped to the second color of the {@link ColorUtils#GLASBEY} palette.
+	 * Gets a list of color values from the {@link ColorUtils#GLASBEY} palette.<p>
+	 * Skips the first five colors of the palette, since the 4th color is close to black and thus difficult to see.
+	 * If the given {@code n} is larger than the size of {@link ColorUtils#GLASBEY}, the colors are added and repeated in a round-robin fashion.<p>
 	 * @param n the number of colors to be picked
-	 * @return a Mapping from zero-based ids to color values
+	 * @return a list of color values
 	 */
 	public static List< Integer > getGlasbeyColors( int n )
 	{
@@ -208,13 +208,13 @@ public class ClusterUtils
 			return Collections.emptyList();
 		List< Integer > colors = new ArrayList<>();
 		for ( int i = 0; i < n; i++ )
-			colors.add( getGlasbeyColor( i + 1 ) );
+			colors.add( getGlasbeyColor( i, 5 ) );
 		return colors;
 	}
 
-	static int getGlasbeyColor( int n )
+	static int getGlasbeyColor( int n, int skipFirstNColors )
 	{
-		int index = n % ColorUtils.GLASBEY.length;
+		int index = n % ( ColorUtils.GLASBEY.length - skipFirstNColors ) + skipFirstNColors;
 		return ColorUtils.GLASBEY[ index ].getRGB();
 	}
 

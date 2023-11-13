@@ -338,19 +338,26 @@ public class ClusterUtilsTest
 	@Test
 	public void testGetGlasbeyColor()
 	{
-		assertEquals( ColorUtils.GLASBEY[ 1 ].getRGB(), ClusterUtils.getGlasbeyColor( 1 ) );
-		assertEquals( ColorUtils.GLASBEY[ 0 ].getRGB(), ClusterUtils.getGlasbeyColor( ColorUtils.GLASBEY.length ) );
-		assertEquals( ColorUtils.GLASBEY[ 1 ].getRGB(), ClusterUtils.getGlasbeyColor( ColorUtils.GLASBEY.length + 1 ) );
+		int skipFirstNColors = 5;
+		assertEquals( ColorUtils.GLASBEY[ 5 ].getRGB(), ClusterUtils.getGlasbeyColor( 0, skipFirstNColors ) );
+		assertEquals(
+				ColorUtils.GLASBEY[ 5 ].getRGB(),
+				ClusterUtils.getGlasbeyColor( ColorUtils.GLASBEY.length - skipFirstNColors, skipFirstNColors )
+		);
+		assertEquals(
+				ColorUtils.GLASBEY[ 6 ].getRGB(),
+				ClusterUtils.getGlasbeyColor( ColorUtils.GLASBEY.length - skipFirstNColors + 1, skipFirstNColors )
+		);
 	}
 
 	@Test
 	public void testGetColors()
 	{
 		List< Integer > expected = new ArrayList<>();
-		expected.add( ColorUtils.GLASBEY[ 1 ].getRGB() );
-		expected.add( ColorUtils.GLASBEY[ 2 ].getRGB() );
-		expected.add( ColorUtils.GLASBEY[ 3 ].getRGB() );
-		expected.add( ColorUtils.GLASBEY[ 4 ].getRGB() );
+		expected.add( ColorUtils.GLASBEY[ 5 ].getRGB() );
+		expected.add( ColorUtils.GLASBEY[ 6 ].getRGB() );
+		expected.add( ColorUtils.GLASBEY[ 7 ].getRGB() );
+		expected.add( ColorUtils.GLASBEY[ 8 ].getRGB() );
 
 		assertEquals( expected, ClusterUtils.getGlasbeyColors( 4 ) );
 		assertEquals( 0, ClusterUtils.getGlasbeyColors( 0 ).size() );
