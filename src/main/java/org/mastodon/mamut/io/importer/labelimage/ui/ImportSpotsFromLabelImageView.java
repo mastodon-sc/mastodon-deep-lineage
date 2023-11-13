@@ -1,15 +1,15 @@
 package org.mastodon.mamut.io.importer.labelimage.ui;
 
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.importer.labelimage.ImportSpotFromLabelsController;
+import org.mastodon.mamut.io.importer.labelimage.ImportSpotsFromLabelImageController;
 import org.scijava.Context;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-@Plugin(type = Command.class, label = "Import spots from labels")
-public class ImportSpotsFromLabelsView implements Command
+@Plugin(type = Command.class, label = "Import spots from label image")
+public class ImportSpotsFromLabelImageView implements Command
 {
 	private static final int WIDTH = 15;
 
@@ -41,9 +41,9 @@ public class ImportSpotsFromLabelsView implements Command
 	@Override
 	public void run()
 	{
-		ImportSpotFromLabelsController controller =
-				new ImportSpotFromLabelsController( projectModel, context, labelChannelIndex, sigma );
-		controller.createSpotsFromLabels();
+		ImportSpotsFromLabelImageController controller =
+				new ImportSpotsFromLabelImageController( projectModel, context, labelChannelIndex, sigma );
+		controller.createSpotsFromLabelImage();
 	}
 
 }

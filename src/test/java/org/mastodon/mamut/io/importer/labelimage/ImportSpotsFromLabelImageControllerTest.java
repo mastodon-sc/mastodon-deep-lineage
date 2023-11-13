@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-public class ImportSpotFromLabelsControllerTest
+public class ImportSpotsFromLabelImageControllerTest
 {
 	private Model model;
 
@@ -50,10 +50,10 @@ public class ImportSpotFromLabelsControllerTest
 		TimePoint timePoint = new TimePoint( timepoint );
 		List< TimePoint > timePoints = Collections.singletonList( timePoint );
 		VoxelDimensions voxelDimensions = new FinalVoxelDimensions( "um", 1, 1, 1 );
-		ImportSpotFromLabelsController controller =
-				new ImportSpotFromLabelsController( model, timePoints, img, context, voxelDimensions, 1 );
+		ImportSpotsFromLabelImageController controller =
+				new ImportSpotsFromLabelImageController( model, timePoints, img, context, voxelDimensions, 1 );
 
-		controller.createSpotsFromLabels();
+		controller.createSpotsFromLabelImage();
 
 		Iterator< Spot > iter = model.getGraph().vertices().iterator();
 		Spot spot = iter.next();

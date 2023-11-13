@@ -3,7 +3,7 @@ package org.mastodon.mamut.io.importer.labelimage;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.plugin.MamutPlugin;
-import org.mastodon.mamut.io.importer.labelimage.ui.ImportSpotsFromLabelsView;
+import org.mastodon.mamut.io.importer.labelimage.ui.ImportSpotsFromLabelImageView;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -19,13 +19,13 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
 @SuppressWarnings("unused")
 @Plugin(type = MamutPlugin.class)
-public class ImportEllipsoidsFromLabelsPlugin implements MamutPlugin
+public class ImportSpotsFromLabelImagePlugin implements MamutPlugin
 {
-	private static final String IMPORT_SPOTS_FROM_LABELS = "Import spots from labels";
+	private static final String IMPORT_SPOTS_FROM_LABEL_IMAGE = "Import spots from label image";
 
 	private static final String[] IMPORT_SPOTS_FROM_LABELS_IMAGE_J_KEYS = { "not mapped" };
 
-	private final AbstractNamedAction importSpotsFromLabels;
+	private final AbstractNamedAction action;
 
 	private ProjectModel appModel;
 
@@ -34,9 +34,9 @@ public class ImportEllipsoidsFromLabelsPlugin implements MamutPlugin
 	private CommandService commandService;
 
 	@SuppressWarnings("unused")
-	public ImportEllipsoidsFromLabelsPlugin()
+	public ImportSpotsFromLabelImagePlugin()
 	{
-		importSpotsFromLabels = new RunnableAction( IMPORT_SPOTS_FROM_LABELS, this::importSpotsFromLabels );
+		action = new RunnableAction( IMPORT_SPOTS_FROM_LABEL_IMAGE, this::importSpotsFromLabelImage );
 	}
 
 	@Override
@@ -48,17 +48,17 @@ public class ImportEllipsoidsFromLabelsPlugin implements MamutPlugin
 	@Override
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
-		return Collections.singletonList( menu( "Plugins", item( IMPORT_SPOTS_FROM_LABELS ) ) );
+		return Collections.singletonList( menu( "Plugins", item( IMPORT_SPOTS_FROM_LABEL_IMAGE ) ) );
 	}
 
 	@Override
 	public void installGlobalActions( Actions actions )
 	{
-		actions.namedAction( importSpotsFromLabels, IMPORT_SPOTS_FROM_LABELS_IMAGE_J_KEYS );
+		actions.namedAction( action, IMPORT_SPOTS_FROM_LABELS_IMAGE_J_KEYS );
 	}
 
-	private void importSpotsFromLabels()
+	private void importSpotsFromLabelImage()
 	{
-		commandService.run( ImportSpotsFromLabelsView.class, true, "appModel", appModel );
+		commandService.run( ImportSpotsFromLabelImageView.class, true, "appModel", appModel );
 	}
 }

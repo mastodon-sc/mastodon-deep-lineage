@@ -25,7 +25,7 @@ import java.util.List;
 
 import static java.math.BigInteger.valueOf;
 
-public class ImportSpotFromLabelsController
+public class ImportSpotsFromLabelImageController
 {
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
@@ -42,7 +42,7 @@ public class ImportSpotFromLabelsController
 
 	private final double sigma;
 
-	public ImportSpotFromLabelsController(
+	public ImportSpotsFromLabelImageController(
 			final ProjectModel projectModel, final Context context, int labelChannelIndex, double sigma
 	)
 	{
@@ -54,7 +54,7 @@ public class ImportSpotFromLabelsController
 		);
 	}
 
-	protected ImportSpotFromLabelsController(
+	protected ImportSpotsFromLabelImageController(
 			final Model model, final List< TimePoint > frames, final Source< ? extends RealType< ? > > source, final Context context,
 			final VoxelDimensions voxelDimensions, double sigma
 	)
@@ -71,7 +71,7 @@ public class ImportSpotFromLabelsController
 	 * Converts label images to (spot) ellipsoids.<p>
 	 * The method runs twice through each image (i.e. each frame) read. Once to determine maximum/minimum values for array initialization, and once to do summation for covariance & mean.
 	 */
-	public void createSpotsFromLabels()
+	public void createSpotsFromLabelImage()
 	{
 		int numTimepoints = frames.size();
 
