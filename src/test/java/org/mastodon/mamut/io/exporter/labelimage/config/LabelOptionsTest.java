@@ -41,9 +41,9 @@ public class LabelOptionsTest
 	@Test
 	public void getByName()
 	{
-		assertEquals( LabelOptions.SPOT_ID, LabelOptions.getByName( "Spot Id" ) );
-		assertEquals( LabelOptions.BRANCH_SPOT_ID, LabelOptions.getByName( "BranchSpot Id" ) );
-		assertEquals( LabelOptions.TRACK_ID, LabelOptions.getByName( "Track Id" ) );
+		assertEquals( LabelOptions.SPOT_ID, LabelOptions.getByName( "Spot ID" ) );
+		assertEquals( LabelOptions.BRANCH_SPOT_ID, LabelOptions.getByName( "Branch spot ID" ) );
+		assertEquals( LabelOptions.TRACK_ID, LabelOptions.getByName( "Spot track Id" ) );
 		assertThrows( NoSuchElementException.class, () -> LabelOptions.getByName( "Foo" ) );
 	}
 
