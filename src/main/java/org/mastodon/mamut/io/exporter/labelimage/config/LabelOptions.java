@@ -33,11 +33,11 @@ import java.util.NoSuchElementException;
 
 public enum LabelOptions
 {
-	SPOT_ID( "Spot Id" ),
+	SPOT_ID( "Spot ID" ),
 
-	BRANCH_SPOT_ID( "BranchSpot Id" ),
+	BRANCH_SPOT_ID( "Branch spot ID" ),
 
-	TRACK_ID( "Track Id" );
+	TRACK_ID( "Spot track Id" );
 
 	private final String name;
 
