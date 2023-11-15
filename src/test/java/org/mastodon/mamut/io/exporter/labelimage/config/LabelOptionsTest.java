@@ -50,8 +50,8 @@ public class LabelOptionsTest
 	@Test
 	public void getName()
 	{
-		assertEquals( "Spot Id", LabelOptions.SPOT_ID.getName() );
-		assertEquals( "BranchSpot Id", LabelOptions.BRANCH_SPOT_ID.getName() );
-		assertEquals( "Track Id", LabelOptions.TRACK_ID.getName() );
+		assertEquals( "Spot ID", LabelOptions.SPOT_ID.getName() );
+		assertEquals( "Branch spot ID", LabelOptions.BRANCH_SPOT_ID.getName() );
+		assertEquals( "Spot track Id", LabelOptions.TRACK_ID.getName() );
 	}
 }
