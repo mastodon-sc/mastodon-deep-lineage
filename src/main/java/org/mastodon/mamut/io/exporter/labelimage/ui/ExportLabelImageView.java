@@ -56,7 +56,7 @@ public class ExportLabelImageView implements Command
 			+ "</html>\n";
 
 	@SuppressWarnings("all")
-	@Parameter(label = "Label Id", choices = { "Track Id", "BranchSpot Id", "Spot Id" })
+	@Parameter(label = "Label Id", choices = { "Spot track Id", "Branch spot ID", "Spot ID" })
 	private String option = LabelOptions.BRANCH_SPOT_ID.getName();
 
 	@SuppressWarnings("all")
