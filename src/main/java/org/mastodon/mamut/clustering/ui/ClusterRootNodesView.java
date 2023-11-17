@@ -79,7 +79,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 	private int numberOfClasses;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Minimum number of cell divisions", min = "0", callback = "update")
+	@Parameter(label = "Minimum number of cell divisions", min = "0", description = "Only include lineage trees with at least the number of divisions specified here.", callback = "update")
 	private int numberOfCellDivisions;
 
 	@SuppressWarnings("all")
