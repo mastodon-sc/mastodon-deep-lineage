@@ -84,7 +84,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 
 	@SuppressWarnings("all")
 	@Parameter(
-			label = "Similarity measure", choices = { "Normalized Zhang Tree Distance", "Per branch spot Zhang Tree Distance",
+			label = "Similarity measure", choices = { "Normalized Zhang Tree Distance", "Per Branch Spot Zhang Tree Distance",
 			"Zhang Tree Distance" }, callback = "update"
 	)
 	private String similarityMeasure = SimilarityMeasure.NORMALIZED_DIFFERENCE.getName();
