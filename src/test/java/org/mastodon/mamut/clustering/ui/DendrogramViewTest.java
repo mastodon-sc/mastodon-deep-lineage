@@ -34,19 +34,15 @@ import org.junit.Test;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 
-import java.awt.GraphicsEnvironment;
 import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
 
 public class DendrogramViewTest
 {
 	@Test
 	public void testGetPanel()
 	{
-		assumeFalse( "This test requires a display.", GraphicsEnvironment.isHeadless() );
 		Cluster cluster = new Cluster( "test" );
 		Classification< BranchSpotTree > classification =
 				new Classification<>( Collections.singletonList( Pair.of( null, cluster ) ), null, 0d );
