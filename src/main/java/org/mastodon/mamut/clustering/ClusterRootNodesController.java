@@ -128,13 +128,13 @@ public class ClusterRootNodesController
 	String getParameters()
 	{
 		StringJoiner joiner = new StringJoiner( ", " );
-		joiner.add( "Crop criterion: " + cropCriterion.getName() );
+		joiner.add( "Crop criterion: " + cropCriterion );
 		joiner.add( "Crop start: " + cropStart );
 		joiner.add( "Crop end: " + cropEnd );
 		joiner.add( "Number of classes: " + numberOfClasses );
 		joiner.add( "Minimum cell divisions: " + minCellDivisions );
-		joiner.add( "Similarity measure: " + similarityMeasure.getName() );
-		joiner.add( "Clustering method: " + clusteringMethod.getName() );
+		joiner.add( "Similarity measure: " + similarityMeasure );
+		joiner.add( "Clustering method: " + clusteringMethod );
 		joiner.add( "Resulting lineage trees: " + getRoots().size() );
 		return joiner.toString();
 	}
@@ -244,7 +244,7 @@ public class ClusterRootNodesController
 		this.cropStart = cropStart;
 		this.cropEnd = cropEnd;
 		this.minCellDivisions = minCellDivisions;
-		logger.debug( "Crop criterion {}, start: {}, end: {}", cropCriterion.getName(), this.cropStart, this.cropEnd );
+		logger.debug( "Crop criterion {}, start: {}, end: {}", cropCriterion, this.cropStart, this.cropEnd );
 	}
 
 	public void setComputeParams( SimilarityMeasure similarityMeasure, ClusteringMethod clusteringMethod, int numberOfClasses )
