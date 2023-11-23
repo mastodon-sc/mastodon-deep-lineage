@@ -147,6 +147,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * @param tree1 Tree object representing the first tree.
 	 * @param tree2 Tree object representing the second tree.
 	 * @param costFunction mandatory cost function.
+	 * @param <T> Attribute type of the tree nodes.
 	 *
 	 * @return The absolute Zhang edit distance between tree1 and tree2.
 	 */
@@ -176,6 +177,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * @param tree1 Tree object representing the first tree.
 	 * @param tree2 Tree object representing the second tree.
 	 * @param costFunction mandatory cost function.
+	 * @param <T> Attribute type of the tree nodes.
 	 *
 	 * @return The normalized Zhang edit distance between tree1 and tree2.
 	 */
@@ -197,6 +199,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * @param tree1 Tree object representing the first tree.
 	 * @param tree2 Tree object representing the second tree.
 	 * @param costFunction mandatory cost function.
+	 * @param <T> Attribute type of the tree nodes.
 	 *
 	 * @return The average Zhang edit distance between tree1 and tree2.
 	 */
@@ -216,6 +219,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * @param tree1 The first tree.
 	 * @param tree2 The second tree.
 	 * @param costFunction The cost function.
+	 * @param <T> Attribute type of the tree nodes.
+	 *
 	 * @return The mapping between nodes.
 	 */
 	public static < T > Map< Tree< T >, Tree< T > > nodeMapping( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
