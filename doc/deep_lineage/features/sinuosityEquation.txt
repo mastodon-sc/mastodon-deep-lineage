@@ -1,0 +1,11 @@
+https://latex.codecogs.com/eqneditor/editor.php
+
+\frac{\text{total track length}}{\text{direct distance}}
+
+\frac{\sum_{i=1}^{k} \| \mathbf{s_i} - \mathbf{s_{i+1}} \|}{\| \mathbf{s_i} - \mathbf{s_{k}} \|}
+\\
+k=\text{number of spots of branch}
+\\
+\mathbf{s_{i}} = i^{th}\text{spot vector}
+
+
