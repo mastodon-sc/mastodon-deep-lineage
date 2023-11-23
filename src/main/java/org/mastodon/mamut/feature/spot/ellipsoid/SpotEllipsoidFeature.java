@@ -49,7 +49,7 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
 
 /**
  * Feature that computes the 3 semi-axes and the volume from the covariance matrix of {@link Spot}s.
- * <p>
+ * <p/>
  * @author Stefan Hahmann
  */
 public class SpotEllipsoidFeature implements Feature< Spot >

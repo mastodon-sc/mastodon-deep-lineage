@@ -52,7 +52,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
 /**
- * Implementation of "A Constrained Edit Distance Between Unordered Labeled Trees", Kaizhong Zhang, Algorithmica (1996) 15:205-222<p>
+ * Implementation of "A Constrained Edit Distance Between Unordered Labeled Trees", Kaizhong Zhang, Algorithmica (1996) 15:205-222<p/>
  *
  * The Zhang unordered edit distance allows the following edit operations:
  *
@@ -63,34 +63,34 @@ import java.util.function.Function;
  * 1. Change label
  *
  *       A         A'
- *      / \  ->   / \
+ *      / \  -&gt;   / \
  *     TB TC     TB TC
  *
  *
  * 2a: Remove subtree (opposite of 2b)
  *
  *       A         A
- *      / \   ->   |
+ *      / \   -&gt;   |
  *     TB TC       TB
  *
  * 2b: Add new subtree (opposite of 2a)
  *
  *       A          A
- *       |    ->   / \
+ *       |    -&gt;   / \
  *       TB       TB TC
  *
  *
  * 3a: Remove subtree but keep one child (opposite of 3b)
  *
  *       A          A
- *      / \   ->   / \
+ *      / \   -&gt;   / \
  *     B  TC      TD TC
  *    / \
  *   TD TE        (remove B and TE, keep TD)
  *
  * 3b: Convert existing subtree into child of a newly inserted subtree (opposite of 3a)
  *       A             A
- *      / \    ->     / \
+ *      / \    -&gt;     / \
  *     TB TC         D  TC
  *                  / \
  *                 TB TE       (insert D and TE, keep TB)
@@ -99,7 +99,7 @@ import java.util.function.Function;
  * 4a: Remove subtree (and siblings) but keep all children (opposite of 4b)
  *       A               A
  *      / \             / \
- *     B  TC   ->      TD TE
+ *     B  TC   -&gt;      TD TE
  *    / \
  *   TD TE            (Subtree B and it's sibling TC are removed, but the children
  *                     of B namely TD and TE are kept)
@@ -107,7 +107,7 @@ import java.util.function.Function;
  * 4b: Convert existing subtrees into children of a newly inserted subtree (opposite of 4a)
  *       A               A
  *      / \             / \
- *     TB TC   ->      D  TE
+ *     TB TC   -&gt;      D  TE
  *                    / \
  *                   TB TC       (Subtree D and it's sibling TE are newly inserted,
  *                                TB and TC are kept as children of D)
@@ -170,7 +170,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	/**
 	 * Calculates the normalized Zhang edit distance between two labeled unordered trees.
-	 * <p>
+	 * <p/>
 	 * The normalized distance is defined as the absolute distance divided by the sum of the distances to empty/null trees.
 	 *
 	 * @param tree1 Tree object representing the first tree.
@@ -191,7 +191,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	/**
 	 * Calculates the normalized Zhang edit distance between two labeled unordered trees.
-	 * <p>
+	 * <p/>
 	 * The average distance is defined as the absolute distance divided by the sum of the sizes (i.e. number of nodes) of the trees.
 	 *
 	 * @param tree1 Tree object representing the first tree.
@@ -211,7 +211,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
-	 * Calculates a mapping between nodes in the given two trees ({@code tree1} and {@code tree2}) that links the nodes from the two trees, which have the minimum tree edit distance to each other.<p>
+	 * Calculates a mapping between nodes in the given two trees ({@code tree1} and {@code tree2}) that links the nodes from the two trees, which have the minimum tree edit distance to each other.<p/>
 	 * The required minimum tree edit distance is calculated using the Zhang unordered edit distance.
 	 * @param tree1 The first tree.
 	 * @param tree2 The second tree.
@@ -359,9 +359,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 	/**
 	 * Returns the optimal node mapping with respect to zhang edit distance
 	 * that maps from forest1 to forest2.
-	 * <p>
+	 * <p/>
 	 * <strong>What is a forest?</strong>
-	 * <p>
+	 * <p/>
 	 * "Suppose that we have a numbering for each tree.
 	 * <ul>
 	 * <li>Let t[i] be the i<sup>th</sup> node of tree T in the given numbering.</li>
@@ -404,7 +404,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	/**
 	 * Returns the best {@link NodeMapping} that uses edit operation (3b)
 	 * to map {@code tree1} to {@code tree2}. See {@link ZhangUnorderedTreeEditDistance}.
-	 * <p>
+	 * <p/>
 	 * Costs for deleting tree1 but keeping a child-tree of tree1, and changing that child-tree to tree2.
 	 */
 	private NodeMapping< T > insertOperationMapping( Tree< T > tree1, Tree< T > tree2 )
@@ -421,7 +421,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	/**
 	 * Returns the best {@link NodeMapping} that uses edit operation (3a)
 	 * to map {@code tree1} to {@code tree2}. See {@link ZhangUnorderedTreeEditDistance}.
-	 * <p>
+	 * <p/>
 	 * Costs for deleting tree1 but keeping a child-tree of tree1, and changing that child-tree to tree2.
 	 */
 	private NodeMapping< T > deleteOperationMapping( Tree< T > tree1, Tree< T > tree2 )
@@ -581,7 +581,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		/**
 		 * Compute the costs of deleting or inserting a tree or a forest.
-		 * <p>
+		 * <p/>
 		 * <strong>The cost of deleting or inserting a tree is:</strong>
 		 * <ul>
 		 * <li>the cost of deleting or inserting the attribute of its source</li>
@@ -592,7 +592,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		 * <li>the cost of deleting or inserting all trees belonging to it
 		 * </ul>
 		 * <strong>What is a forest?</strong>
-		 * <p>
+		 * <p/>
 		 * "Suppose that we have a numbering for each tree.
 		 * <ul>
 		 * <li>Let t[i] be the i<sup>th</sup> node of tree T in the given numbering.

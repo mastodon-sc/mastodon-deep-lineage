@@ -39,9 +39,8 @@ import javax.swing.WindowConstants;
 import java.awt.Color;
 
 /**
- * A class that represents a UI view of a dendrogram.<p>
- * It encapsulates a {@link Classification} object and a headline that can describe the classification, e.g. the parameters that were used for it.<p>
- * @param <T>
+ * A class that represents a UI view of a dendrogram.<p/>
+ * It encapsulates a {@link Classification} object and a headline that can describe the classification, e.g. the parameters that were used for it.<p/>
  */
 public class DendrogramView< T >
 {
