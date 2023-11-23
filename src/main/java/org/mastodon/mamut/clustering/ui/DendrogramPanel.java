@@ -46,8 +46,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Class for painting dendrograms derived from a {@link Classification} object.<p>
- * It is a re-implementation of the class {@link com.apporiented.algorithm.clustering.visualization.DendrogramPanel} from the hierarchical clustering library.<p>
+ * Class for painting dendrograms derived from a {@link Classification} object.</p>
+ * It is a re-implementation of the class {@link com.apporiented.algorithm.clustering.visualization.DendrogramPanel} from the hierarchical clustering library.</p>
  * In addition to {@link com.apporiented.algorithm.clustering.visualization.DendrogramPanel}, this class adds:
  * <ul>
  *     <li>the possibility to paint an extra line on top of dendrogram (e.g. the cut-off line)</li>
@@ -262,7 +262,7 @@ public class DendrogramPanel< T > extends JPanel
 	}
 
 	/**
-	 * Counts the number of zeros after the decimal point of the given number before the first non-zero digit.<p>
+	 * Counts the number of zeros after the decimal point of the given number before the first non-zero digit.</p>
 	 * For numbers greater or equal to 1, 0 is returned.
 	 * E.g.
 	 * <ul>

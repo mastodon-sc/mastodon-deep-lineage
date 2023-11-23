@@ -37,7 +37,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 /**
- * A utility class that encapsulates a graph ({@link SimpleDirectedWeightedGraph}), a corresponding map of edge capacities and a minimum cost flow solution for this graph.<p>
+ * A utility class that encapsulates a graph ({@link SimpleDirectedWeightedGraph}), a corresponding map of edge capacities and a minimum cost flow solution for this graph.</p>
  *
  * @author Matthias Arzt
  * @author Stefan Hahmann
@@ -85,7 +85,7 @@ public class FlowNetwork
 	}
 
 	/**
-	 * Returns the flow on the edge from source to target.<p>
+	 * Returns the flow on the edge from source to target.</p>
 	 * NB: The flow is only defined after {@link #solveMaxFlowMinCost(Object, Object)} has been called at least once.
 	 * @param source source vertex
 	 * @param target target vertex

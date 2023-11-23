@@ -43,7 +43,7 @@ import java.util.Collections;
 
 /**
  * A demo class for {@link DendrogramPanel}.
- * <p>
+ * </p>
  * It creates a dendrogram from a sample cluster with fixed values and displays it in a frame.
  *
  * @author Stefan Hahmann

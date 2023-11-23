@@ -38,7 +38,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  * Computes the sinuosity (cf. <a href="https://en.wikipedia.org/wiki/Sinuosity">Sinuosity</a>) of a Spot during an individual cell life cycle.
- * <p/>
+ * </p>
  *     <ul>
  *          <li>A sinuosity of 1 means that the cell moved in a straight line</li>
  *          <li>A sinuosity of {@link Double#NaN} means that the cell did not move at all.</li>

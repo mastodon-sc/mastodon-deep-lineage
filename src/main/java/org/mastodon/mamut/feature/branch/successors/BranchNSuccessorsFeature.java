@@ -38,7 +38,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  * Represents the total number of successors of a branch spot in the whole track subtree of this branch spot.
- * <p/>
+ * </p>
  * In the following example this number would equal to following branchSpots as
  * follows:
  *

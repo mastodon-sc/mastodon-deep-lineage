@@ -38,7 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * A class that encapsulates the result of a clustering algorithm.<p>
+ * A class that encapsulates the result of a clustering algorithm.</p>
  * It contains:
  *     <ul>
  *         <li>the root {@link Cluster} object, from which the results of the algorithm can be accessed</li>
@@ -107,7 +107,7 @@ public class Classification< T >
 	}
 
 	/**
-	 * A class that encapsulates the result of a clustering algorithm for a single class.<p>
+	 * A class that encapsulates the result of a clustering algorithm for a single class.</p>
 	 * It contains:
 	 *    <ul>
 	 *        <li>a {@link Cluster} object, which represents the classified objects in the dendrogram</li>
