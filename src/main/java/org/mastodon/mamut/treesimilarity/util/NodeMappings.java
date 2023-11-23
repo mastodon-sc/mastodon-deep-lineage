@@ -47,6 +47,8 @@ public class NodeMappings
 	}
 
 	/**
+	 * @param cost the cost of the empty mapping.
+	 * @param <T> The type of the tree nodes.
 	 * @return An empty {@link NodeMapping} with the specified cost.
 	 * (Please note that the costs for an empty mapping are almost never
 	 * zero!)
@@ -57,6 +59,10 @@ public class NodeMappings
 	}
 
 	/**
+	 * @param cost the cost of the singleton mapping.
+	 * @param tree1 the first tree.
+	 * @param tree2 the second tree.
+	 * @param <T> The type of the tree nodes.
 	 * @return A {@link NodeMapping} that represents a singleton Map from
 	 * tree1 to tree2 with the specified cost.
 	 */

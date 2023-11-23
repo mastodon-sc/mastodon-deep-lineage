@@ -56,6 +56,7 @@ public class JGraphtTools
 	 * @param capacities a map from edges to their capacities
 	 * @param source     the source node
 	 * @param sink       the sink node
+	 * @param <V>        the vertex type
 	 * @return the maximum flow of minimum cost
 	 */
 	public static < V > MinimumCostFlowAlgorithm.MinimumCostFlow< DefaultWeightedEdge > maxFlowMinCost( final SimpleDirectedWeightedGraph< V, DefaultWeightedEdge > graph,
