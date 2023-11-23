@@ -42,12 +42,13 @@ import java.util.stream.Collectors;
  * It contains:
  *     <ul>
  *         <li>the root {@link Cluster} object, from which the results of the algorithm can be accessed</li>
- *         <li>a {@link List} of {@link ObjectClassification} objects, where each objects contains:</li>
- *         <ul>
- *             <li>a {@link Cluster} object, which represents the classified objects in the dendrogram</li>
- *             <li>a {@link Set} of objects, which are classified into the same class</li>
- *             <li>a color, which is associated with that class</li>
- *         </ul>
+ *         <li>a {@link List} of {@link ObjectClassification} objects, where each objects contains:
+ *         	  <ul>
+ *               <li>a {@link Cluster} object, which represents the classified objects in the dendrogram</li>
+ *               <li>a {@link Set} of objects, which are classified into the same class</li>
+ *               <li>a color, which is associated with that class</li>
+ *           </ul>
+ *         </li>
  *         <li>the cutoff value of classification, i.e. where the dendrogram is cut</li>
  *     </ul>
  * @author Stefan Hahmann
