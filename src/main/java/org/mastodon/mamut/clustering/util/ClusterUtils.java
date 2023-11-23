@@ -101,10 +101,10 @@ public class ClusterUtils
 	}
 
 	/**
-	 * Gets a {@link Classification} that contains a mapping from cluster ids to objects.</p>
+	 * Gets a {@link Classification} that contains a mapping from cluster ids to objects.<br>
 	 * The cluster ids are incremented by 1 starting from 0.
 	 * The amount of clusters depends on the given threshold.
-	 * </p>
+	 * <br>
 	 * Constraints:
 	 * <ul>
 	 *     <li>The distance matrix needs to be quadratic</li>
@@ -171,10 +171,10 @@ public class ClusterUtils
 	}
 
 	/**
-	 * Gets a {@link Classification} that contains a mapping from cluster ids to objects.</p>
+	 * Gets a {@link Classification} that contains a mapping from cluster ids to objects.<br>
 	 * The cluster ids are incremented by 1 starting from 0.
 	 * The amount of clusters depends on the given class count.
-	 * </p>
+	 * <br>
 	 * Constraints:
 	 * <ul>
 	 *     <li>The distance matrix needs to be quadratic</li>
@@ -224,9 +224,9 @@ public class ClusterUtils
 	}
 
 	/**
-	 * Gets a list of color values from the {@link ColorUtils#GLASBEY} palette.</p>
+	 * Gets a list of color values from the {@link ColorUtils#GLASBEY} palette.<br>
 	 * Skips the first five colors of the palette, since the 4th color is close to black and thus difficult to see.
-	 * If the given {@code n} is larger than the size of {@link ColorUtils#GLASBEY}, the colors are added and repeated in a round-robin fashion.</p>
+	 * If the given {@code n} is larger than the size of {@link ColorUtils#GLASBEY}, the colors are added and repeated in a round-robin fashion.<br>
 	 * @param n the number of colors to be picked
 	 * @return a list of color values
 	 */

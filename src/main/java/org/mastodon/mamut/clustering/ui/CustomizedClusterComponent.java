@@ -41,10 +41,10 @@ import java.util.Set;
  * This class extends the class {@link ClusterComponent} from the hierarchical clustering library.
  * @see <a href="https://github.com/lbehnke/hierarchical-clustering-java">hierarchical-clustering-java</a>
  * It is overriden because the implementation of the super class {@link ClusterComponent} does not allow to change the color of cluster components.
- * The class {@link ClusterComponent} is not designed to be extended. Therefore, this class has to duplicate some code from the super class.</p>
+ * The class {@link ClusterComponent} is not designed to be extended. Therefore, this class has to duplicate some code from the super class.<br>
  *
  * This class can represent any subtree of a dendrogram. It is used by {@link DendrogramPanel} to draw the dendrogram.
- * It can be drawn with a different color than the rest of the dendrogram</p>
+ * It can be drawn with a different color than the rest of the dendrogram<br>
  *
  * The differenes between CustomizedClusterComponent and ClusterComponent are:
  * <ul>
