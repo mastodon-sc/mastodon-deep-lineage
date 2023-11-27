@@ -297,6 +297,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private void log()
 	{
+		if ( !logger.isTraceEnabled() )
+			return;
 		logDistances( "tree", treeDistances );
 		logDistances( "forest", forestDistances );
 
@@ -319,6 +321,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private void logDistances( String prefix, Map< Pair< Tree< T >, Tree< T > >, NodeMapping< T > > distances )
 	{
+		if ( !logger.isTraceEnabled() )
+			return;
 		logger.trace( "matrix of {} distances:", prefix );
 		for ( Tree< T > t1 : subtrees1 )
 		{
