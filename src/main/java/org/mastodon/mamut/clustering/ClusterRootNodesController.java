@@ -149,7 +149,7 @@ public class ClusterRootNodesController
 
 	private Classification< BranchSpotTree > classifyLineageTrees( List< BranchSpotTree > roots )
 	{
-		logger.debug( "Start computing similarity matrix" );
+		logger.debug( "Start computing similarity matrix for {} lineage trees.", roots.size() );
 		double[][] distances = ClusterUtils.getDistanceMatrix( new ArrayList<>( roots ), similarityMeasure );
 		logger.debug(
 				"Finished computing similarity matrix. Shape: {}x{}={} entries.", distances.length, distances[ 0 ].length,
