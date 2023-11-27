@@ -58,11 +58,13 @@ public class CustomizedClusterComponent extends ClusterComponent
 {
 	private final Color color;
 
+	private static final Color DEFAULT_COLOR = Color.BLACK;
+
 	public < T > CustomizedClusterComponent(
 			final Cluster cluster, final Set< Classification.ObjectClassification< T > > objectClassifications
 	)
 	{
-		this( cluster, cluster.isLeaf(), new VCoord( 0, 1d / 2d ), 1d, Color.BLACK, objectClassifications );
+		this( cluster, cluster.isLeaf(), new VCoord( 0, 1d / 2d ), 1d, DEFAULT_COLOR, objectClassifications );
 	}
 
 	/**
@@ -91,16 +93,19 @@ public class CustomizedClusterComponent extends ClusterComponent
 	{
 		super( cluster, printName, splitPoint );
 		getChildren();
-		this.color = getClusterColor( cluster, color, objectClassifications );
+		if ( color == DEFAULT_COLOR )
+			this.color = getClusterColor( cluster, objectClassifications );
+		else
+			this.color = color;
 		init( cluster, splitPoint, clusterHeight, objectClassifications );
 	}
 
 	private static < T > Color getClusterColor(
-			final Cluster cluster, final Color color, final Set< Classification.ObjectClassification< T > > objectClassifications
+			final Cluster cluster, final Set< Classification.ObjectClassification< T > > objectClassifications
 	)
 	{
 		return objectClassifications.stream().filter( objectClassification -> objectClassification.getCluster().equals( cluster ) )
-				.findFirst().map( coloredCluster -> new Color( coloredCluster.getColor() ) ).orElse( color );
+				.findFirst().map( coloredCluster -> new Color( coloredCluster.getColor() ) ).orElse( DEFAULT_COLOR );
 	}
 
 	private < T > void init(
