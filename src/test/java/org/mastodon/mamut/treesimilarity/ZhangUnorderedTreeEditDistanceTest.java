@@ -28,8 +28,10 @@
  */
 package org.mastodon.mamut.treesimilarity;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTreeExamples;
+import org.mastodon.mamut.treesimilarity.tree.DenseSimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
@@ -317,5 +319,14 @@ public class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > tree1a111 = SimpleTreeExamples.tree1a111();
 		Tree< Double > tree2c2 = SimpleTreeExamples.tree2c2();
 		assertEquals( 1_654d, ZhangUnorderedTreeEditDistance.distance( tree1a111, tree2c2, defaultCosts ), 0d );
+	}
+
+	@Test
+	@Ignore("This test is ignored because it takes too long to run.")
+	public void testDenseTreeExample()
+	{
+		Tree< Double > tree2aba = DenseSimpleTreeExamples.tree2aba();
+		Tree< Double > tree1bab = DenseSimpleTreeExamples.tree1bab();
+		assertEquals( 39_214d, ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, defaultCosts ), 0d );
 	}
 }
