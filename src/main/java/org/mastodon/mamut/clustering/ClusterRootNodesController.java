@@ -149,11 +149,19 @@ public class ClusterRootNodesController
 
 	private Classification< BranchSpotTree > classifyLineageTrees( List< BranchSpotTree > roots )
 	{
+		logger.debug( "Start computing similarity matrix" );
 		double[][] distances = ClusterUtils.getDistanceMatrix( new ArrayList<>( roots ), similarityMeasure );
+		logger.debug(
+				"Finished computing similarity matrix. Shape: {}x{}={} entries.", distances.length, distances[ 0 ].length,
+				distances.length * distances[ 0 ].length
+		);
 		BranchSpotTree[] rootBranchSpots = roots.toArray( new BranchSpotTree[ 0 ] );
-		return ClusterUtils.getClassificationByClassCount( rootBranchSpots, distances,
+		Classification< BranchSpotTree > result = ClusterUtils.getClassificationByClassCount( rootBranchSpots, distances,
 				clusteringMethod.getLinkageStrategy(), numberOfClasses
 		);
+		logger.debug(
+				"Finished hierarchical clustering. Created {} object classifications.", result.getObjectClassifications().size() );
+		return result;
 	}
 
 	private List< Pair< String, Integer > > createTagsAndColors()

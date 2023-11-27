@@ -52,6 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class ClusterUtils
@@ -88,6 +89,9 @@ public class ClusterUtils
 					pairs.add( Pair.of( i, j ) );
 			}
 
+		int numTasks = pairs.size();
+		int outputRate = ( int ) Math.pow( 10, Math.floor( Math.log10( numTasks ) ) );
+		AtomicInteger counter = new AtomicInteger( 0 );
 		Parallelization.getTaskExecutor().forEach( pairs, pair -> {
 			int i = pair.getLeft();
 			int j = pair.getRight();
@@ -95,6 +99,9 @@ public class ClusterUtils
 					ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION );
 			distances[ i ][ j ] = distance;
 			distances[ j ][ i ] = distance; // symmetric
+			int finishedTasks = counter.incrementAndGet();
+			if ( finishedTasks % outputRate == 0 )
+				logger.debug( "Computed {} of {} distances ({}%).", finishedTasks, numTasks, ( finishedTasks * 100 ) / numTasks );
 		} );
 
 		return distances;
