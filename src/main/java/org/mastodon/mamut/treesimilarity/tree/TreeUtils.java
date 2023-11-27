@@ -31,6 +31,7 @@ package org.mastodon.mamut.treesimilarity.tree;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TreeUtils
 {
@@ -65,4 +66,40 @@ public class TreeUtils
 			return 0;
 		return listOfSubtrees( tree ).size();
 	}
+
+	/**
+	 * Creates a String of the given tree as a Java code snippet that can be used to create the tree.
+	 * @param tree The tree to print.
+	 * @return the code snippet
+	 * @param <T> the type of the tree
+	 */
+	public static < T > String printTree( final Tree< T > tree )
+	{
+		return printTree( tree, true, String.valueOf( 0 ), new StringBuilder() );
+	}
+
+	private static < T > String printTree( final Tree< T > tree, boolean isRoot, final String suffix, final StringBuilder output )
+	{
+		String treeName = "node" + suffix;
+		String className = SimpleTree.class.getSimpleName();
+		if ( isRoot )
+			output.append( className ).append( "< Double > " ).append( treeName ).append( " = new " ).append( className ).append( "<>( " )
+					.append( tree.getAttribute() )
+					.append( " );" ).append( System.lineSeparator() );
+		AtomicInteger childIndex = new AtomicInteger( 0 );
+		tree.getChildren().forEach( child -> {
+			String childSuffix = suffix + childIndex.getAndIncrement();
+			String childName = "node" + childSuffix;
+			String print = "addNode( " + child.getAttribute() + ", " + treeName + " );";
+			if ( !child.isLeaf() )
+				print = className + "< Double > " + childName + " = " + print;
+			output.append( print ).append( System.lineSeparator() );
+			printTree( child, false, childSuffix, output );
+		} );
+		if ( isRoot )
+			output.append( "return " ).append( treeName ).append( ";" );
+
+		return output.toString();
+	}
+
 }

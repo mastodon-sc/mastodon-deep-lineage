@@ -66,4 +66,19 @@ public class TreeUtilsTest
 		assertEquals( 3, TreeUtils.size( SimpleTreeExamples.tree6() ) );
 		assertEquals( 5, TreeUtils.size( SimpleTreeExamples.tree7() ) );
 	}
+
+	@Test
+	public void testPrintTree()
+	{
+		String className = SimpleTree.class.getSimpleName();
+		String expected = className + "< Double > node0 = new " + className + "<>( 3.0 );" + System.lineSeparator()
+				+ className + "< Double > node00 = addNode( 8.0, node0 );" + System.lineSeparator()
+				+ "addNode( 4.0, node00 );" + System.lineSeparator()
+				+ "addNode( 4.0, node00 );" + System.lineSeparator()
+				+ className + "< Double > node01 = addNode( 8.0, node0 );" + System.lineSeparator()
+				+ "addNode( 1.0, node01 );" + System.lineSeparator()
+				+ "addNode( 2.0, node01 );" + System.lineSeparator()
+				+ "return node0;";
+		assertEquals( expected, TreeUtils.printTree( SimpleTreeExamples.tree9() ) );
+	}
 }
