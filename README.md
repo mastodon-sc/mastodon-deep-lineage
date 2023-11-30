@@ -12,6 +12,14 @@ Mastodon Deep Lineage - a collection of plugins to analyse lineages of tracked o
 
 ## Installation instructions
 
+* Activate the Mastodon update site in Fiji: ![Mastodon update site](doc/deep_lineage/installation/Mastodon.png)
+  * Help > Update > Manage update sites > Scroll down and activate "Mastodon"
+* Add the Mastodon Deep Lineage update site in
+  Fiji:
+  * Help > Update > Manage update sites > Add Unlisted Site
+    * Name: Mastodon-DeepLineage
+    * URL: https://sites.imagej.net/Mastodon-DeepLineage/
+
 ## Numerical Features added to Mastodon
 
 ### Spot Features
