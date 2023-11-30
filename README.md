@@ -19,6 +19,7 @@ Mastodon Deep Lineage - a collection of plugins to analyse lineages of tracked o
   * Help > Update > Manage update sites > Add Unlisted Site
     * Name: Mastodon-DeepLineage
     * URL: https://sites.imagej.net/Mastodon-DeepLineage/
+    * ![Mastodon Deep Lineage update site](doc/deep_lineage/installation/Mastodon-DeepLineage.png)
 
 ## Numerical Features added to Mastodon
 
