@@ -1,11 +1,11 @@
-# Mastodon Deep Lineage - a collection of plugins to analyse lineages of tracked objects in Mastodon
-
 [![Build Status](https://github.com/mastodon-sc/mastodon-deep-lineage/actions/workflows/build.yml/badge.svg)](https://github.com/mastodon-sc/mastodon-deep-lineage/actions/workflows/build.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mastodon-sc_mastodon-deep-lineage&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=mastodon-sc_mastodon-deep-lineage)
 [![License](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](https://opensource.org/licenses/BSD-2-Clause)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=mastodon-sc_mastodon-deep-lineage&metric=coverage)](https://sonarcloud.io/summary/new_code?id=mastodon-sc_mastodon-deep-lineage)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=mastodon-sc_mastodon-deep-lineage&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=mastodon-sc_mastodon-deep-lineage)
 [![DOI](https://sandbox.zenodo.org/badge/574570443.svg)](https://sandbox.zenodo.org/doi/10.5072/zenodo.5948)
+
+# Mastodon Deep Lineage - a collection of plugins to analyse lineages of tracked objects in Mastodon
 
 ## Documentation of Mastodon
 
