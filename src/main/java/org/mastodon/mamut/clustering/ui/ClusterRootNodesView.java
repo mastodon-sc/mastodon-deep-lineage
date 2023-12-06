@@ -63,7 +63,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 			+ "</html>\n";
 
 	@SuppressWarnings("all")
-	@Parameter(label = "Crop criterion", choices = { "Timepoint", "Number of cells" }, callback = "update")
+	@Parameter(label = "Crop criterion", choices = { "Timepoint", "Number of spots" }, callback = "update")
 	private String cropCriterion = CropCriteria.TIMEPOINT.getName();
 
 	@SuppressWarnings("unused")

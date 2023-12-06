@@ -33,7 +33,7 @@ import java.util.NoSuchElementException;
 public enum CropCriteria
 {
 	TIMEPOINT( "Timepoint", "time" ),
-	NUMBER_OF_CELLS( "Number of cells", "cells" );
+	NUMBER_OF_SPOTS( "Number of spots", "spots" );
 
 	private final String name;
 

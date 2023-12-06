@@ -212,7 +212,7 @@ public class ClusterRootNodesController
 
 		int cropStartTime = cropStart;
 		int cropEndTime = cropEnd;
-		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_CELLS ) )
+		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_SPOTS ) )
 		{
 			try
 			{
@@ -284,7 +284,7 @@ public class ClusterRootNodesController
 			feedback.add( message );
 			logger.debug( message );
 		}
-		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_CELLS ) )
+		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_SPOTS ) )
 		{
 			try
 			{
