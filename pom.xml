@@ -37,7 +37,8 @@
     </properties>
 
     <name>Deep Lineage Project Mastodon Plugins</name>
-    <description>Extensions for Mastodon, e.g. Lineage Tree Classification, Export ellipsoids as image, some more
+    <description>A collection of plugins to analyse lineages of tracked objects in Mastodon,
+        e.g. Lineage Tree Classification, Export of ellipsoids as image, some more
         numerical features for Spots and BranchSpots
     </description>
     <url>https://github.com/mastodon-sc/mastodon-deep-lineage</url>
