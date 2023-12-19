@@ -37,7 +37,9 @@
     </properties>
 
     <name>Deep Lineage Project Mastodon Plugins</name>
-    <description>Mastodon plugins resulting from the Deep Lineage project</description>
+    <description>Extensions for Mastodon, e.g. Lineage Tree Classification, Export ellipsoids as image, some more
+        numerical features for Spots and BranchSpots
+    </description>
     <url>https://github.com/mastodon-sc/mastodon-deep-lineage</url>
     <inceptionYear>2022</inceptionYear>
     <organization>
