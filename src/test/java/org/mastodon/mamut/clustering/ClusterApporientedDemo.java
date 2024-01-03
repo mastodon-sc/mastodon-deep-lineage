@@ -76,27 +76,27 @@ public class ClusterApporientedDemo
 		Cluster completeRandom = algorithm.performClustering( randomDistances, ClusterData.names, new CompleteLinkageStrategy() );
 
 		JPanel averagedFixedPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), averageFixed, 20d ),
+				new Classification<>( Collections.emptyList(), averageFixed, 20d, randomDistances ),
 				"Average Linkage (Fixed Values)"
 		).getPanel();
 		JPanel singleFixedPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), singleFixed, 20d ),
+				new Classification<>( Collections.emptyList(), singleFixed, 20d, randomDistances ),
 				"Single Linkage (Fixed Values)"
 		).getPanel();
 		JPanel completeFixedPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), completeFixed, 20d ),
+				new Classification<>( Collections.emptyList(), completeFixed, 20d, randomDistances ),
 				"Complete Linkage (Fixed Values)"
 		).getPanel();
 		JPanel averagedRandomPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), averageRandom, 5d ),
+				new Classification<>( Collections.emptyList(), averageRandom, 5d, randomDistances ),
 				"Average Linkage (Random Values)"
 		).getPanel();
 		JPanel singleRandomPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), singleRandom, 5d ),
+				new Classification<>( Collections.emptyList(), singleRandom, 5d, randomDistances ),
 				"Single Linkage (Random Values)"
 		).getPanel();
 		JPanel completeRandomPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), completeRandom, 5d ),
+				new Classification<>( Collections.emptyList(), completeRandom, 5d, randomDistances ),
 				"Complete Linkage (Random Values)"
 		).getPanel();
 

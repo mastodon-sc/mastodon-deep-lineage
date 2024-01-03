@@ -158,7 +158,7 @@ public class ClusterUtils
 		List< Pair< Set< T >, Cluster > > classesAndClusters = convertClustersToClasses( resultClusters, objectMapping );
 		resetClusterNames( algorithmResult, objectMapping );
 		log( classesAndClusters );
-		return new Classification<>( classesAndClusters, algorithmResult, threshold );
+		return new Classification<>( classesAndClusters, algorithmResult, threshold, distances );
 	}
 
 	private static void resetClusterNames( final Cluster cluster, final Map< String, ? > objectMapping )
@@ -210,14 +210,14 @@ public class ClusterUtils
 							+ objects.length + ")." );
 		else if ( classCount == 1 )
 			return new Classification<>(
-					Collections.singletonList( Pair.of( new HashSet<>( Arrays.asList( objects ) ), null ) ), null, 0d );
+					Collections.singletonList( Pair.of( new HashSet<>( Arrays.asList( objects ) ), null ) ), null, 0d, distances );
 
 		List< Pair< Set< T >, Cluster > > classes = new ArrayList<>();
 		if ( classCount == objects.length )
 		{
 			for ( T name : objects )
 				classes.add( Pair.of( Collections.singleton( name ), null ) );
-			return new Classification<>( classes, null, 0d );
+			return new Classification<>( classes, null, 0d, distances );
 		}
 
 		// NB: the cluster algorithm needs unique names instead of objects

@@ -29,6 +29,7 @@
 package org.mastodon.mamut.clustering.util;
 
 import com.apporiented.algorithm.clustering.Cluster;
+import net.imglib2.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -36,6 +37,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 /**
  * A class that encapsulates the result of a clustering algorithm.<br>
@@ -62,6 +65,8 @@ public class Classification< T >
 
 	private final double cutoff;
 
+	private final double median;
+
 	/**
 	 * Creates a new {@link Classification} object.
 	 * @param classifiedObjects a {@link List} of {@link Pair} objects, where each pair contains:
@@ -71,8 +76,11 @@ public class Classification< T >
 	 * 						</ul>
 	 * @param rootCluster the root {@link Cluster} object, from which the results of the algorithm can be accessed
 	 * @param cutoff the cutoff value of classification, i.e. where the dendrogram is cut
+	 * @param distances the distance matrix of the objects that were clustered
 	 */
-	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, @Nullable final Cluster rootCluster, double cutoff )
+	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, @Nullable final Cluster rootCluster, double cutoff,
+			double[][] distances )
+
 	{
 		this.objectClassifications = new HashSet<>();
 		List< Integer > glasbeyColors = ClusterUtils.getGlasbeyColors( classifiedObjects.size() );
@@ -84,6 +92,9 @@ public class Classification< T >
 		}
 		this.rootCluster = rootCluster;
 		this.cutoff = cutoff;
+
+		double[] allDistances = Stream.of( distances ).flatMapToDouble( DoubleStream::of ).toArray();
+		this.median = Util.median( allDistances );
 	}
 
 	public Set< ObjectClassification< T > > getObjectClassifications()
@@ -100,6 +111,11 @@ public class Classification< T >
 	public double getCutoff()
 	{
 		return cutoff;
+	}
+
+	public double getMedian()
+	{
+		return median;
 	}
 
 	Set< Set< T > > getClassifiedObjects()
