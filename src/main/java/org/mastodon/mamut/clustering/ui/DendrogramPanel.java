@@ -73,6 +73,9 @@ public class DendrogramPanel< T > extends JPanel
 	private static final BasicStroke CUT_OFF_LINE_STROKE =
 			new BasicStroke( 1.75f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5, 5 }, 0 );
 
+	private static final BasicStroke MEDIAN_LINE_STROKE =
+			new BasicStroke( 1.75f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 10, 10 }, 0 );
+
 	static final Color CLUSTER_LINE_COLOR = Color.BLACK;
 
 	private static final boolean SHOW_DISTANCE_VALUES = false;
@@ -141,6 +144,7 @@ public class DendrogramPanel< T > extends JPanel
 				axis.paint( g2 );
 			}
 			paintCutoffLine( g2, metrics );
+			paintMedianLine( g2, metrics );
 		}
 		else
 		{
@@ -155,6 +159,12 @@ public class DendrogramPanel< T > extends JPanel
 	{
 		paintVerticalLine( g2, CUT_OFF_LINE_STROKE, classification.getCutoff(), displayMetrics );
 		paintLineLegend( g2, "Classification threshold", 1, CUT_OFF_LINE_STROKE );
+	}
+
+	private void paintMedianLine( final Graphics2D g2, final DisplayMetrics displayMetrics )
+	{
+		paintVerticalLine( g2, MEDIAN_LINE_STROKE, classification.getMedian(), displayMetrics );
+		paintLineLegend( g2, "Median of tree similarities", 2, MEDIAN_LINE_STROKE );
 	}
 
 	private void paintVerticalLine(
