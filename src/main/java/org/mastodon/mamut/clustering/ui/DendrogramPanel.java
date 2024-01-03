@@ -78,7 +78,7 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final boolean SHOW_SCALE = true;
 
-	private static final int BORDER_TOP = 20;
+	private static final int BORDER_TOP = 50;
 
 	private static final int BORDER_LEFT = 20;
 
@@ -181,8 +181,8 @@ public class DendrogramPanel< T > extends JPanel
 
 	Line2D getVerticalLine( final double xModelValue, final DisplayMetrics displayMetrics )
 	{
-		int yDendrogramOrigin = BORDER_BOTTOM + BORDER_TOP;
-		int yDendrogramEnd = getHeight() - BORDER_BOTTOM;
+		int yDendrogramOrigin = BORDER_TOP + BORDER_BOTTOM;
+		int yDendrogramEnd = getHeight() - BORDER_TOP;
 		int lineX = getDisplayXCoordinate( xModelValue, displayMetrics );
 		return new Line2D.Float( lineX, yDendrogramOrigin, lineX, yDendrogramEnd );
 	}
@@ -248,10 +248,10 @@ public class DendrogramPanel< T > extends JPanel
 			}
 
 			widthDisplay = componentWidth - BORDER_LEFT - BORDER_RIGHT - nameOffset;
-			heightDisplay = componentHeight - BORDER_TOP - BORDER_BOTTOM - axisHeight;
+			heightDisplay = componentHeight - BORDER_BOTTOM - BORDER_TOP - axisHeight;
 
 			xDisplayOrigin = BORDER_LEFT;
-			yDisplayOrigin = BORDER_BOTTOM + axisHeight;
+			yDisplayOrigin = BORDER_TOP + axisHeight;
 
 			xConversionFactor = widthDisplay / modelMetrics.wModel;
 			yConversionFactor = heightDisplay / modelMetrics.hModel;
