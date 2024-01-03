@@ -36,6 +36,7 @@ import org.mastodon.mamut.clustering.util.Classification;
 import javax.swing.JPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -365,6 +366,7 @@ public class DendrogramPanel< T > extends JPanel
 		private void paint( final Graphics2D g2 )
 		{
 			g2.draw( line );
+			drawLegend( g2 );
 			for ( Pair< Line2D, String > tick : ticks )
 			{
 				Line2D tickLine = tick.getLeft();
@@ -376,6 +378,17 @@ public class DendrogramPanel< T > extends JPanel
 						( int ) tickLine.getY2() - SCALE_TICK_LABEL_PADDING
 				);
 			}
+		}
+
+		private void drawLegend( final Graphics2D g2 )
+		{
+			FontMetrics fontMetrics = g2.getFontMetrics();
+			int y = displayMetrics.yDisplayOrigin - SCALE_PADDING - SCALE_TICK_LABEL_PADDING - SCALE_TICK_LENGTH
+					- fontMetrics.getHeight();
+			g2.drawString( "dissimilar lineages", ( int ) line.getX1(), y );
+			String similarText = "similar lineages";
+			fontMetrics.getStringBounds( similarText, g2 );
+			g2.drawString( similarText, ( int ) line.getX2() - ( int ) fontMetrics.getStringBounds( similarText, g2 ).getWidth(), y );
 		}
 	}
 }
