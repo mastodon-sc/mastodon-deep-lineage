@@ -154,6 +154,7 @@ public class DendrogramPanel< T > extends JPanel
 	private void paintCutoffLine( final Graphics2D g2, final DisplayMetrics displayMetrics )
 	{
 		paintVerticalLine( g2, CUT_OFF_LINE_STROKE, classification.getCutoff(), displayMetrics );
+		paintLineLegend( g2, "Classification threshold", 1, CUT_OFF_LINE_STROKE );
 	}
 
 	private void paintVerticalLine(
@@ -165,6 +166,27 @@ public class DendrogramPanel< T > extends JPanel
 		{
 			g2.setStroke( stroke );
 			g2.draw( getVerticalLine( xModelValue, displayMetrics ) );
+		}
+		finally
+		{
+			g2.setStroke( defaultStroke );
+		}
+	}
+
+	private void paintLineLegend( final Graphics2D g2, final String text, final int position, final Stroke stroke )
+	{
+		Stroke defaultStroke = g2.getStroke();
+		try
+		{
+			g2.setStroke( stroke );
+			int fontHeight = g2.getFontMetrics().getHeight();
+			int fontSpacing = g2.getFontMetrics().getHeight() - g2.getFontMetrics().getAscent();
+			int yText = fontHeight * position;
+			float yLine = yText - fontHeight / 2f + fontSpacing;
+			int width = 50;
+			int offset = 5;
+			g2.draw( new Line2D.Float( BORDER_LEFT, yLine, BORDER_LEFT + ( float ) width, yLine ) );
+			g2.drawString( text, BORDER_LEFT + width + offset, yText );
 		}
 		finally
 		{
