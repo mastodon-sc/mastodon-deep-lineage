@@ -108,11 +108,22 @@ public class Classification< T >
 		return rootCluster;
 	}
 
+	/**
+	 * Returns the cutoff value of classification, i.e. where the value, where the dendrogram is cut.
+	 *
+	 * @return the cutoff value of classification
+	 */
 	public double getCutoff()
 	{
 		return cutoff;
 	}
 
+	/**
+	 * Returns the median of the non-zero values of the distance matrix that this classification represents.<p>
+	 * Since, the distance matrix is assumed to be symmetric and the diagonal values are assumed to be 0, the median value is equivalent to the median value of the upper triangle values of the distance matrix.
+	 *
+	 * @return the median of the non-zero values of the distance matrix
+	 */
 	public double getMedian()
 	{
 		return median;
