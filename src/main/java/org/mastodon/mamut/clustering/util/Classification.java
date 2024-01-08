@@ -94,7 +94,7 @@ public class Classification< T >
 		this.cutoff = cutoff;
 
 		double[] nonZeroValues = Stream.of( distances ).flatMapToDouble( DoubleStream::of ).filter( value -> value != 0 ).toArray();
-		this.median = Util.median( nonZeroValues );
+		this.median = nonZeroValues.length == 0 ? 0 : Util.median( nonZeroValues );
 	}
 
 	public Set< ObjectClassification< T > > getObjectClassifications()
