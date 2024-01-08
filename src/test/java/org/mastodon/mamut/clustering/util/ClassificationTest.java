@@ -12,6 +12,6 @@ public class ClassificationTest
 	{
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
 				new AverageLinkageUPGMAStrategy(), 3 );
-		assertEquals( 47, classification.getMedian(), 0d );
+		assertEquals( 51, classification.getMedian(), 0d );
 	}
 }

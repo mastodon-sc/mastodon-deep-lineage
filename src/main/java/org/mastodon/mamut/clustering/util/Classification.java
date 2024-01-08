@@ -76,7 +76,7 @@ public class Classification< T >
 	 * 						</ul>
 	 * @param rootCluster the root {@link Cluster} object, from which the results of the algorithm can be accessed
 	 * @param cutoff the cutoff value of classification, i.e. where the dendrogram is cut
-	 * @param distances the distance matrix of the objects that were clustered
+	 * @param distances the distance matrix of the objects that were clustered. It is assumed to be symmetric and the diagonal values are assumed to be 0.
 	 */
 	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, @Nullable final Cluster rootCluster, double cutoff,
 			double[][] distances )
@@ -93,8 +93,8 @@ public class Classification< T >
 		this.rootCluster = rootCluster;
 		this.cutoff = cutoff;
 
-		double[] allDistances = Stream.of( distances ).flatMapToDouble( DoubleStream::of ).toArray();
-		this.median = Util.median( allDistances );
+		double[] nonZeroValues = Stream.of( distances ).flatMapToDouble( DoubleStream::of ).filter( value -> value != 0 ).toArray();
+		this.median = Util.median( nonZeroValues );
 	}
 
 	public Set< ObjectClassification< T > > getObjectClassifications()
