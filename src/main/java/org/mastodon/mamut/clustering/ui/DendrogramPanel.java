@@ -171,6 +171,8 @@ public class DendrogramPanel< T > extends JPanel
 			final Graphics2D g2, final Stroke stroke, final double xModelValue, final DisplayMetrics displayMetrics
 	)
 	{
+		if ( Double.isNaN( xModelValue ) )
+			return;
 		Stroke defaultStroke = g2.getStroke();
 		try
 		{

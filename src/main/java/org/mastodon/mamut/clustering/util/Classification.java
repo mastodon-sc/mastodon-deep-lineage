@@ -92,7 +92,7 @@ public class Classification< T >
 		this.cutoff = cutoff;
 
 		double[] upperTriangle = ClusterUtils.getUpperTriangle( distances );
-		this.median = upperTriangle.length == 0 ? 0 : Util.median( upperTriangle );
+		this.median = upperTriangle.length == 0 ? Double.NaN : Util.median( upperTriangle );
 	}
 
 	public Set< ObjectClassification< T > > getObjectClassifications()
