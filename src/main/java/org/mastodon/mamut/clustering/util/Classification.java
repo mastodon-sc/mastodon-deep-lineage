@@ -117,10 +117,9 @@ public class Classification< T >
 	}
 
 	/**
-	 * Returns the median of the non-zero values of the distance matrix that this classification represents.<p>
-	 * Since, the distance matrix is assumed to be symmetric and the diagonal values are assumed to be 0, the median value is equivalent to the median value of the upper triangle values of the distance matrix.
+	 * Returns the median of the upper triangle values of the distance matrix that this classification represents.<p>
 	 *
-	 * @return the median of the non-zero values of the distance matrix
+	 * @return the median of the upper triangle values of the distance matrix
 	 */
 	public double getMedian()
 	{
