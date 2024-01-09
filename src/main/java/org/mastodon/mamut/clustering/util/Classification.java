@@ -37,8 +37,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
 
 /**
  * A class that encapsulates the result of a clustering algorithm.<br>
@@ -93,8 +91,8 @@ public class Classification< T >
 		this.rootCluster = rootCluster;
 		this.cutoff = cutoff;
 
-		double[] nonZeroValues = Stream.of( distances ).flatMapToDouble( DoubleStream::of ).filter( value -> value != 0 ).toArray();
-		this.median = nonZeroValues.length == 0 ? 0 : Util.median( nonZeroValues );
+		double[] upperTriangle = ClusterUtils.getUpperTriangle( distances );
+		this.median = upperTriangle.length == 0 ? 0 : Util.median( upperTriangle );
 	}
 
 	public Set< ObjectClassification< T > > getObjectClassifications()
