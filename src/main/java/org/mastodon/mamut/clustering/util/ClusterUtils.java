@@ -341,4 +341,44 @@ public class ClusterUtils
 		Collections.sort( list );
 		return list;
 	}
+
+	/**
+	 * Gets the upper triangle of a two-dimensional quadratic array and outputs it as a one-dimensional array.
+	 * E.g. for the following matrix:
+	 * <pre>
+	 *     0 1 2 3
+	 *     1 0 4 5
+	 *     2 4 0 6
+	 *     3 5 6 0
+	 * </pre>
+	 * the upper triangle is:
+	 * <pre>
+	 *     [1 2 3 4 5 6]
+	 * </pre>
+	 *
+	 * @param twoDimensionalArray a two-dimensional quadratic array
+	 * @return the upper triangle of the given two-dimensional array as a one-dimensional array. If the given array is {@code null}, empty or has length 1, an empty array is returned.
+	 * @throws IllegalArgumentException if the given array is not quadratic
+	 */
+	public static double[] getUpperTriangle( final double[][] twoDimensionalArray )
+	{
+		if ( twoDimensionalArray == null )
+			return new double[ 0 ];
+		int inputLength = twoDimensionalArray.length;
+		if ( inputLength <= 1 )
+			return new double[ 0 ];
+		if ( twoDimensionalArray.length != twoDimensionalArray[ 0 ].length )
+			throw new IllegalArgumentException( "The given array is not quadratic." );
+		int outputLength = ( inputLength * inputLength - inputLength ) / 2;
+		double[] array = new double[ outputLength ];
+		int index = 0;
+		for ( int i = 0; i < inputLength; i++ )
+			for ( int j = i; j < inputLength; j++ )
+			{
+				if ( i == j )
+					continue;
+				array[ index++ ] = twoDimensionalArray[ i ][ j ];
+			}
+		return array;
+	}
 }

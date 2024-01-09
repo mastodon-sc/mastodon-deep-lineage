@@ -391,4 +391,43 @@ public class ClusterUtilsTest
 		assertEquals( 0, ClusterUtils.getGlasbeyColors( 0 ).size() );
 	}
 
+	@Test
+	public void testGetUpperTriangle()
+	{
+		double[][] inputMatrix0x0 = new double[ 0 ][ 0 ];
+		double[][] inputMatrix1x1 = new double[][] {
+				{ 0 }
+		};
+		double[][] inputMatrix4x3 = new double[][] {
+				{ 0, 1, 2, 6 },
+				{ 1, 0, 3, 8 },
+				{ 6, 8, 9, 0 }
+		};
+		double[][] inputMatrix2x2 = new double[][] {
+				{ 0, 1 },
+				{ 1, 0 }
+		};
+		double[] expectedResult2x2 = new double[] { 1 };
+		double[][] inputMatrix3x3 = new double[][] {
+				{ 0, 1, 2 },
+				{ 1, 0, 3 },
+				{ 2, 3, 0 }
+		};
+		double[] expectedResult3x3 = new double[] { 1, 2, 3 };
+		double[][] inputMatrix4x4 = new double[][] {
+				{ 0, 1, 2, 6 },
+				{ 1, 0, 3, 8 },
+				{ 2, 3, 0, 9 },
+				{ 6, 8, 9, 0 }
+		};
+		double[] expectedResult4x4 = new double[] { 1, 2, 6, 3, 8, 9 };
+
+		assertEquals( 0, ClusterUtils.getUpperTriangle( null ).length );
+		assertEquals( 0, ClusterUtils.getUpperTriangle( inputMatrix0x0 ).length );
+		assertEquals( 0, ClusterUtils.getUpperTriangle( inputMatrix1x1 ).length );
+		assertThrows( IllegalArgumentException.class, () -> ClusterUtils.getUpperTriangle( inputMatrix4x3 ) );
+		assertArrayEquals( expectedResult2x2, ClusterUtils.getUpperTriangle( inputMatrix2x2 ), 0d );
+		assertArrayEquals( expectedResult3x3, ClusterUtils.getUpperTriangle( inputMatrix3x3 ), 0d );
+		assertArrayEquals( expectedResult4x4, ClusterUtils.getUpperTriangle( inputMatrix4x4 ), 0d );
+	}
 }
