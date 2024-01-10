@@ -49,7 +49,6 @@ import java.util.Set;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
 public class ClusterUtilsTest
@@ -203,7 +202,7 @@ public class ClusterUtilsTest
 		Set< String > expected = new HashSet<>( Arrays.asList( ClusterData.names ) );
 		Set< Set< String > > expectedClasses = new HashSet<>( Collections.singletonList( expected ) );
 		assertEquals( expectedClasses, classification.getClassifiedObjects() );
-		assertNull( classification.getRootCluster() );
+		assertNotNull( classification.getRootCluster() );
 	}
 
 	@Test
@@ -226,7 +225,7 @@ public class ClusterUtilsTest
 				new HashSet<>( Collections.singletonList( "J" ) )
 		) );
 		assertEquals( expectedClasses, classification.getClassifiedObjects() );
-		assertNull( classification.getRootCluster() );
+		assertNotNull( classification.getRootCluster() );
 	}
 
 	@Test
@@ -242,7 +241,6 @@ public class ClusterUtilsTest
 				ClusterUtils
 						.getClassificationByClassCount( names, distances, new AverageLinkageUPGMAStrategy(), 2 );
 		Cluster cluster = classification.getRootCluster();
-		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
 		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList(
@@ -274,7 +272,6 @@ public class ClusterUtilsTest
 				ClusterUtils
 						.getClassificationByClassCount( names, distances, new AverageLinkageUPGMAStrategy(), 2 );
 		Cluster cluster = classification.getRootCluster();
-		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
 		assertEquals( 17.5, cluster.getDistanceValue(), 0d );
@@ -325,7 +322,6 @@ public class ClusterUtilsTest
 				ClusterUtils
 						.getClassificationByClassCount( names, distances, new AverageLinkageWPGMAStrategy(), 2 );
 		Cluster cluster = classification.getRootCluster();
-		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
 		Cluster child10 = child1.getChildren().get( 0 );
@@ -351,7 +347,6 @@ public class ClusterUtilsTest
 				ClusterUtils
 						.getClassificationByClassCount( names, distances, new AverageLinkageUPGMAStrategy(), 2 );
 		Cluster cluster = classification.getRootCluster();
-		assertNotNull( cluster );
 		Cluster child0 = cluster.getChildren().get( 0 );
 		Cluster child1 = cluster.getChildren().get( 1 );
 		Cluster child10 = child1.getChildren().get( 0 );

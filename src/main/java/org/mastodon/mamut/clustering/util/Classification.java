@@ -32,7 +32,6 @@ import com.apporiented.algorithm.clustering.Cluster;
 import net.imglib2.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,7 +57,6 @@ public class Classification< T >
 {
 	private final Set< ObjectClassification< T > > objectClassifications;
 
-	@Nullable
 	private final Cluster rootCluster;
 
 	private final double cutoff;
@@ -76,8 +74,7 @@ public class Classification< T >
 	 * @param cutoff the cutoff value of classification, i.e. where the dendrogram is cut
 	 * @param distances the distance matrix of the objects that were clustered. It is assumed to be symmetric and the diagonal values are assumed to be 0.
 	 */
-	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, @Nullable final Cluster rootCluster, double cutoff,
-			double[][] distances )
+	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, final Cluster rootCluster, double cutoff )
 
 	{
 		this.objectClassifications = new HashSet<>();
@@ -100,7 +97,6 @@ public class Classification< T >
 		return objectClassifications;
 	}
 
-	@Nullable
 	public Cluster getRootCluster()
 	{
 		return rootCluster;

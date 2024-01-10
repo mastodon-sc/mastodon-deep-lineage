@@ -154,6 +154,12 @@ public class ClusterUtils
 				break;
 			resultClusters.add( cluster );
 		}
+		if ( resultClusters.isEmpty() )
+		{
+			Cluster pseudoRoot = new Cluster( null );
+			pseudoRoot.addChild( algorithmResult );
+			resultClusters.add( pseudoRoot );
+		}
 
 		List< Pair< Set< T >, Cluster > > classesAndClusters = convertClustersToClasses( resultClusters, objectMapping );
 		resetClusterNames( algorithmResult, objectMapping );
@@ -208,17 +214,6 @@ public class ClusterUtils
 			throw new IllegalArgumentException(
 					"number of classes (" + classCount + ") must be less than or equal to the number of objects to be classified ("
 							+ objects.length + ")." );
-		else if ( classCount == 1 )
-			return new Classification<>(
-					Collections.singletonList( Pair.of( new HashSet<>( Arrays.asList( objects ) ), null ) ), null, 0d, distances );
-
-		List< Pair< Set< T >, Cluster > > classes = new ArrayList<>();
-		if ( classCount == objects.length )
-		{
-			for ( T name : objects )
-				classes.add( Pair.of( Collections.singleton( name ), null ) );
-			return new Classification<>( classes, null, 0d, distances );
-		}
 
 		// NB: the cluster algorithm needs unique names instead of objects
 		Map< String, T > objectMapping = objectMapping( objects );
@@ -255,6 +250,8 @@ public class ClusterUtils
 
 	private static double getThreshold( final List< Cluster > sortedClusters, int classCount )
 	{
+		if ( classCount == 1 )
+			return Double.MAX_VALUE;
 		double threshold = sortedClusters.get( classCount - 2 ).getDistanceValue();
 		if ( sortedClusters.size() < classCount )
 			return threshold;

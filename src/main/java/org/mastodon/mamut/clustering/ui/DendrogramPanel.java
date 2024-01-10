@@ -208,9 +208,6 @@ public class DendrogramPanel< T > extends JPanel
 
 	private CustomizedClusterComponent createComponent( final Cluster cluster )
 	{
-		if ( cluster == null )
-			return null;
-
 		return new CustomizedClusterComponent( cluster, classification.getObjectClassifications() );
 	}
 
@@ -351,8 +348,6 @@ public class DendrogramPanel< T > extends JPanel
 			if ( classification == null )
 				return;
 			Cluster cluster = classification.getRootCluster();
-			if ( cluster == null )
-				return;
 			if ( cluster.getDistanceValue() > 1d )
 				return;
 			int zeros = countZerosAfterDecimalPoint( cluster.getDistanceValue() );

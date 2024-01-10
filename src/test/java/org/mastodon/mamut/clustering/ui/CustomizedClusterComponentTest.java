@@ -42,7 +42,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class CustomizedClusterComponentTest
 {
@@ -58,7 +57,6 @@ public class CustomizedClusterComponentTest
 						3
 				);
 		Cluster cluster = classification.getRootCluster();
-		assertNotNull( cluster );
 		CustomizedClusterComponent customizedClusterComponent =
 				new CustomizedClusterComponent( cluster, classification.getObjectClassifications() );
 

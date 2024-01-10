@@ -45,7 +45,7 @@ public class DendrogramViewTest
 	{
 		Cluster cluster = new Cluster( "test" );
 		Classification< BranchSpotTree > classification =
-				new Classification<>( Collections.singletonList( Pair.of( null, cluster ) ), null, 0d, new double[][] { { 0 } } );
+				new Classification<>( Collections.singletonList( Pair.of( null, cluster ) ), new Cluster( null ), 0d, 0d );
 		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, "test" );
 		DendrogramView< BranchSpotTree > dendrogramViewNull = new DendrogramView<>( null, "test" );
 		assertNotNull( dendrogramView );
