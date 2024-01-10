@@ -33,6 +33,7 @@ import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
 import net.imglib2.parallel.Parallelization;
+import net.imglib2.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
@@ -44,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -164,7 +164,9 @@ public class ClusterUtils
 		List< Pair< Set< T >, Cluster > > classesAndClusters = convertClustersToClasses( resultClusters, objectMapping );
 		resetClusterNames( algorithmResult, objectMapping );
 		log( classesAndClusters );
-		return new Classification<>( classesAndClusters, algorithmResult, threshold, distances );
+		double[] upperTriangle = ClusterUtils.getUpperTriangle( distances );
+		double median = upperTriangle.length == 0 ? Double.NaN : Util.median( upperTriangle );
+		return new Classification<>( classesAndClusters, algorithmResult, threshold, median );
 	}
 
 	private static void resetClusterNames( final Cluster cluster, final Map< String, ? > objectMapping )

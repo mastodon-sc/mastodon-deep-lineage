@@ -29,7 +29,6 @@
 package org.mastodon.mamut.clustering.util;
 
 import com.apporiented.algorithm.clustering.Cluster;
-import net.imglib2.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashSet;
@@ -50,6 +49,7 @@ import java.util.stream.Collectors;
  *           </ul>
  *         </li>
  *         <li>the cutoff value of classification, i.e. where the dendrogram is cut</li>
+ *         <li>the median of the upper triangle values of the distance matrix that this classification represents</li>
  *     </ul>
  * @author Stefan Hahmann
  */
@@ -72,9 +72,10 @@ public class Classification< T >
 	 * 						</ul>
 	 * @param rootCluster the root {@link Cluster} object, from which the results of the algorithm can be accessed
 	 * @param cutoff the cutoff value of classification, i.e. where the dendrogram is cut
-	 * @param distances the distance matrix of the objects that were clustered. It is assumed to be symmetric and the diagonal values are assumed to be 0.
+	 * @param median the median of the upper triangle values of the distance matrix that this classification represents
 	 */
-	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, final Cluster rootCluster, double cutoff )
+	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, final Cluster rootCluster, final double cutoff,
+			final double median )
 
 	{
 		this.objectClassifications = new HashSet<>();
@@ -87,9 +88,7 @@ public class Classification< T >
 		}
 		this.rootCluster = rootCluster;
 		this.cutoff = cutoff;
-
-		double[] upperTriangle = ClusterUtils.getUpperTriangle( distances );
-		this.median = upperTriangle.length == 0 ? Double.NaN : Util.median( upperTriangle );
+		this.median = median;
 	}
 
 	public Set< ObjectClassification< T > > getObjectClassifications()
