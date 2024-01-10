@@ -40,6 +40,7 @@ import static org.junit.Assert.assertThrows;
 
 public class LineageTreeUtilsTest
 {
+	// TODO: remove after https://github.com/mastodon-sc/mastodon/pull/274 is merged
 	@Test
 	public void testGetMinTimepoint()
 	{
@@ -48,6 +49,7 @@ public class LineageTreeUtilsTest
 
 	}
 
+	// TODO: remove after https://github.com/mastodon-sc/mastodon/pull/274 is merged
 	@Test
 	public void testGetMaxTimepoint()
 	{

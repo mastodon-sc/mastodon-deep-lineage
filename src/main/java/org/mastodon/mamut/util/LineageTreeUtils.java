@@ -106,6 +106,7 @@ public class LineageTreeUtils {
 		}
 	}
 
+	// TODO: remove after https://github.com/mastodon-sc/mastodon/pull/274 is merged
 	/**
 	 * Gets the minimum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
 	 * @param model the {@link Model}
@@ -122,6 +123,7 @@ public class LineageTreeUtils {
 		return minTimepoint;
 	}
 
+	// TODO: remove after https://github.com/mastodon-sc/mastodon/pull/274 is merged
 	/**
 	 * Gets the maximum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
 	 * @param model the {@link Model}
