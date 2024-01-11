@@ -1,0 +1,9 @@
+\frac{\text{cumulated track length}}{\text{track duration}}
+\\
+\frac{\sum_{i=1}^{k} \| \mathbf{s_i} - \mathbf{s_{i+1}} \|} {\left | tp_{s_k} - tp_{s_1} \right |}
+\\
+k=\text{number of spots of branch}
+\\
+\mathbf{s_{i}} = i^{th}\text{spot vector}
+\\
+tp_{s_i} = \text{time point of } i^{th}\text{spot}\text{ of branch}

@@ -37,27 +37,39 @@ import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
 
 /**
- * Represents the mean (i.e. average) displacement and thereby the average movement speed for a BranchSpot, e.g. if a BranchSpot has 10 Spots, all 10 displacements are computed, summed and divided by 10..
- * <br>
- * In the following example this number would equal to following branchSpots as
- * follows:
- *
+ * Represents the mean (i.e. average) displacement of BranchSpot.
+ * Assumed that the time between time points (tp) of the spots that are represented by the branch spot is constant,
+ * this also represents the average movement speed of a BranchSpot.
+ * <p>
+ * <h1>Example</h1>
+ * <h2>Model-Graph (i.e. Graph of Spots)</h2>
  * <pre>
- *                         branchSpot0
- *  	       ┌──────────────┴─────────────────┐
- *  	       │                                │
- *  	   branchspot1                      branchSpot2
- *  	┌──────┴───────┐
- *  	│              │
- *  branchspot3 branchSpot4
+ *    Spot( 0, X=0.0, Y=0.0, Z=0.0, tp=0 )
+ *                      │
+ *                      │
+ *    Spot( 1, X=3.0, Y=4.0, Z=0.0, tp=1 )
+ *                      │
+ *                      │
+ *    Spot( 2, X=8.0, Y=4.0, Z=12.0, tp=2 )
+ *                      │
+ *                      │
+ *                      │
+ *                      │
+ *    Spot( 3, X=8.0, Y=12.0, Z=27.0, tp=*4* )
  * </pre>
- *
+ * <h2>Branch-Graph (i.e. Graph of BranchSpots)</h2>
+ * <pre>
+ *     branchSpotA
+ * </pre>
+ * <h2>Spot Movements</h2>
  * <ul>
- * <li>{@code branchSpot0 = 4}</li>
- * <li>{@code branchSpot1 = 2}</li>
- * <li>{@code branchSpot2 = 0}</li>
- * <li>{@code branchSpot3 = 0}</li>
- * <li>{@code branchSpot4 = 0}</li>
+ * <li>{@code spot 0 -> spot 1 = 5}</li>
+ * <li>{@code spot 1 -> spot 2 = 13}</li>
+ * <li>{@code spot 2 -> spot 3 = 17}</li>
+ * </ul>
+ * <h2>BranchSpot Average Movement</h2>
+ * <ul>
+ *     <li>{@code branchSpotA = (5 + 13 + 17) / *4* = 8.75}</li>
  * </ul>
  */
 public class BranchAverageMovementFeature extends DoublePropertyFeature< BranchSpot >
