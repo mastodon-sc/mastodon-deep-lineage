@@ -372,12 +372,8 @@ public class ClusterUtils
 		double[] array = new double[ outputLength ];
 		int index = 0;
 		for ( int i = 0; i < inputLength; i++ )
-			for ( int j = i; j < inputLength; j++ )
-			{
-				if ( i == j )
-					continue;
+			for ( int j = i + 1; j < inputLength; j++ )
 				array[ index++ ] = twoDimensionalArray[ i ][ j ];
-			}
 		return array;
 	}
 }
