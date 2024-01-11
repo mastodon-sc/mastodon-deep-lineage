@@ -229,7 +229,7 @@ Tree2
 
 ## License
 
-* [BSD 2-Clause License](LICENSE)
+* [BSD 2-Clause License](https://opensource.org/license/bsd-2-clause/)
 
 ## Contribute Code or Provide Feedback
 
