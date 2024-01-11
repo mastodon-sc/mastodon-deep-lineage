@@ -42,7 +42,7 @@ public class BranchSinuosityFeatureComputerTest
 {
 
 	@Test
-	public void testComputeNumberOfSubtreeNodes1()
+	public void testCompute1()
 	{
 		try (Context context = new Context())
 		{
@@ -56,7 +56,7 @@ public class BranchSinuosityFeatureComputerTest
 	}
 
 	@Test
-	public void testComputeNumberOfSubtreeNodes2()
+	public void testCompute2()
 	{
 		try (Context context = new Context())
 		{
