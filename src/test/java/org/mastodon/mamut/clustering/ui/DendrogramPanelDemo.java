@@ -32,7 +32,9 @@ import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
+import net.imglib2.util.Util;
 import org.mastodon.mamut.clustering.util.Classification;
+import org.mastodon.mamut.clustering.util.ClusterUtils;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -50,6 +52,9 @@ import java.util.Collections;
  */
 public class DendrogramPanelDemo
 {
+	private static final double[][] distances = new double[][] { { 0, 1, 9, 7, 11, 14 }, { 1, 0, 4, 3, 8, 10 }, { 9, 4, 0, 9, 2, 8 },
+			{ 7, 3, 9, 0, 6, 13 }, { 11, 8, 2, 6, 0, 10 }, { 14, 10, 8, 13, 10, 0 } };
+
 	public static void main( String[] args )
 	{
 		JFrame frame = new JFrame();
@@ -59,7 +64,8 @@ public class DendrogramPanelDemo
 
 		JPanel content = new JPanel();
 		Cluster cluster = createSampleCluster();
-		Classification< String > classification = new Classification<>( Collections.emptyList(), cluster, 6d );
+		double median = Util.median( ClusterUtils.getUpperTriangle( distances ) );
+		Classification< String > classification = new Classification<>( Collections.emptyList(), cluster, 6d, median );
 		DendrogramPanel< String > dp = new DendrogramPanel<>( classification );
 
 		frame.setContentPane( content );
@@ -73,8 +79,6 @@ public class DendrogramPanelDemo
 
 	private static Cluster createSampleCluster()
 	{
-		double[][] distances = new double[][] { { 0, 1, 9, 7, 11, 14 }, { 1, 0, 4, 3, 8, 10 }, { 9, 4, 0, 9, 2, 8 },
-				{ 7, 3, 9, 0, 6, 13 }, { 11, 8, 2, 6, 0, 10 }, { 14, 10, 8, 13, 10, 0 } };
 		String[] names = new String[] { "O1", "O2", "O3", "O4", "O5", "O6" };
 		ClusteringAlgorithm alg = new DefaultClusteringAlgorithm();
 		Cluster cluster = alg.performClustering( distances, names, new AverageLinkageStrategy() );

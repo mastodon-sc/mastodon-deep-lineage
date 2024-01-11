@@ -33,6 +33,7 @@ import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
 import net.imglib2.parallel.Parallelization;
+import net.imglib2.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
@@ -44,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -154,11 +154,19 @@ public class ClusterUtils
 				break;
 			resultClusters.add( cluster );
 		}
+		if ( resultClusters.isEmpty() )
+		{
+			Cluster pseudoRoot = new Cluster( null );
+			pseudoRoot.addChild( algorithmResult );
+			resultClusters.add( pseudoRoot );
+		}
 
 		List< Pair< Set< T >, Cluster > > classesAndClusters = convertClustersToClasses( resultClusters, objectMapping );
 		resetClusterNames( algorithmResult, objectMapping );
 		log( classesAndClusters );
-		return new Classification<>( classesAndClusters, algorithmResult, threshold );
+		double[] upperTriangle = ClusterUtils.getUpperTriangle( distances );
+		double median = upperTriangle.length == 0 ? Double.NaN : Util.median( upperTriangle );
+		return new Classification<>( classesAndClusters, algorithmResult, threshold, median );
 	}
 
 	private static void resetClusterNames( final Cluster cluster, final Map< String, ? > objectMapping )
@@ -208,17 +216,6 @@ public class ClusterUtils
 			throw new IllegalArgumentException(
 					"number of classes (" + classCount + ") must be less than or equal to the number of objects to be classified ("
 							+ objects.length + ")." );
-		else if ( classCount == 1 )
-			return new Classification<>(
-					Collections.singletonList( Pair.of( new HashSet<>( Arrays.asList( objects ) ), null ) ), null, 0d );
-
-		List< Pair< Set< T >, Cluster > > classes = new ArrayList<>();
-		if ( classCount == objects.length )
-		{
-			for ( T name : objects )
-				classes.add( Pair.of( Collections.singleton( name ), null ) );
-			return new Classification<>( classes, null, 0d );
-		}
 
 		// NB: the cluster algorithm needs unique names instead of objects
 		Map< String, T > objectMapping = objectMapping( objects );
@@ -255,6 +252,8 @@ public class ClusterUtils
 
 	private static double getThreshold( final List< Cluster > sortedClusters, int classCount )
 	{
+		if ( classCount == 1 )
+			return Double.MAX_VALUE;
 		double threshold = sortedClusters.get( classCount - 2 ).getDistanceValue();
 		if ( sortedClusters.size() < classCount )
 			return threshold;
@@ -340,5 +339,41 @@ public class ClusterUtils
 			list.addAll( leaveNames( child ) );
 		Collections.sort( list );
 		return list;
+	}
+
+	/**
+	 * Gets the upper triangle of a two-dimensional quadratic array and outputs it as a one-dimensional array.
+	 * E.g. for the following matrix:
+	 * <pre>
+	 *     0 1 2 3
+	 *     1 0 4 5
+	 *     2 4 0 6
+	 *     3 5 6 0
+	 * </pre>
+	 * the upper triangle is:
+	 * <pre>
+	 *     [1 2 3 4 5 6]
+	 * </pre>
+	 *
+	 * @param twoDimensionalArray a two-dimensional quadratic array
+	 * @return the upper triangle of the given two-dimensional array as a one-dimensional array. If the given array is {@code null}, empty or has length 1, an empty array is returned.
+	 * @throws IllegalArgumentException if the given array is not quadratic
+	 */
+	public static double[] getUpperTriangle( final double[][] twoDimensionalArray )
+	{
+		if ( twoDimensionalArray == null )
+			return new double[ 0 ];
+		int inputLength = twoDimensionalArray.length;
+		if ( inputLength <= 1 )
+			return new double[ 0 ];
+		if ( twoDimensionalArray.length != twoDimensionalArray[ 0 ].length )
+			throw new IllegalArgumentException( "The given array is not quadratic." );
+		int outputLength = ( inputLength * inputLength - inputLength ) / 2;
+		double[] array = new double[ outputLength ];
+		int index = 0;
+		for ( int i = 0; i < inputLength; i++ )
+			for ( int j = i + 1; j < inputLength; j++ )
+				array[ index++ ] = twoDimensionalArray[ i ][ j ];
+		return array;
 	}
 }

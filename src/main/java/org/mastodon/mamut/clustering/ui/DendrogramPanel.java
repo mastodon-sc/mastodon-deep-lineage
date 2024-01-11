@@ -36,6 +36,7 @@ import org.mastodon.mamut.clustering.util.Classification;
 import javax.swing.JPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -72,13 +73,16 @@ public class DendrogramPanel< T > extends JPanel
 	private static final BasicStroke CUT_OFF_LINE_STROKE =
 			new BasicStroke( 1.75f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5, 5 }, 0 );
 
+	private static final BasicStroke MEDIAN_LINE_STROKE =
+			new BasicStroke( 1.75f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 10, 10 }, 0 );
+
 	static final Color CLUSTER_LINE_COLOR = Color.BLACK;
 
 	private static final boolean SHOW_DISTANCE_VALUES = false;
 
 	private static final boolean SHOW_SCALE = true;
 
-	private static final int BORDER_TOP = 20;
+	private static final int BORDER_TOP = 50;
 
 	private static final int BORDER_LEFT = 20;
 
@@ -140,6 +144,7 @@ public class DendrogramPanel< T > extends JPanel
 				axis.paint( g2 );
 			}
 			paintCutoffLine( g2, metrics );
+			paintMedianLine( g2, metrics );
 		}
 		else
 		{
@@ -153,12 +158,21 @@ public class DendrogramPanel< T > extends JPanel
 	private void paintCutoffLine( final Graphics2D g2, final DisplayMetrics displayMetrics )
 	{
 		paintVerticalLine( g2, CUT_OFF_LINE_STROKE, classification.getCutoff(), displayMetrics );
+		paintLineLegend( g2, "Classification threshold", 1, CUT_OFF_LINE_STROKE );
+	}
+
+	private void paintMedianLine( final Graphics2D g2, final DisplayMetrics displayMetrics )
+	{
+		paintVerticalLine( g2, MEDIAN_LINE_STROKE, classification.getMedian(), displayMetrics );
+		paintLineLegend( g2, "Median of tree similarities", 2, MEDIAN_LINE_STROKE );
 	}
 
 	private void paintVerticalLine(
 			final Graphics2D g2, final Stroke stroke, final double xModelValue, final DisplayMetrics displayMetrics
 	)
 	{
+		if ( Double.isNaN( xModelValue ) )
+			return;
 		Stroke defaultStroke = g2.getStroke();
 		try
 		{
@@ -171,18 +185,36 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
+	private void paintLineLegend( final Graphics2D g2, final String text, final int position, final Stroke stroke )
+	{
+		Stroke defaultStroke = g2.getStroke();
+		try
+		{
+			g2.setStroke( stroke );
+			int fontHeight = g2.getFontMetrics().getHeight();
+			int fontSpacing = g2.getFontMetrics().getHeight() - g2.getFontMetrics().getAscent();
+			int yText = fontHeight * position;
+			float yLine = yText - fontHeight / 2f + fontSpacing;
+			int width = 50;
+			int offset = 5;
+			g2.draw( new Line2D.Float( BORDER_LEFT, yLine, BORDER_LEFT + ( float ) width, yLine ) );
+			g2.drawString( text, BORDER_LEFT + width + offset, yText );
+		}
+		finally
+		{
+			g2.setStroke( defaultStroke );
+		}
+	}
+
 	private CustomizedClusterComponent createComponent( final Cluster cluster )
 	{
-		if ( cluster == null )
-			return null;
-
 		return new CustomizedClusterComponent( cluster, classification.getObjectClassifications() );
 	}
 
 	Line2D getVerticalLine( final double xModelValue, final DisplayMetrics displayMetrics )
 	{
-		int yDendrogramOrigin = BORDER_BOTTOM + BORDER_TOP;
-		int yDendrogramEnd = getHeight() - BORDER_BOTTOM;
+		int yDendrogramOrigin = BORDER_TOP + BORDER_BOTTOM;
+		int yDendrogramEnd = getHeight() - BORDER_TOP;
 		int lineX = getDisplayXCoordinate( xModelValue, displayMetrics );
 		return new Line2D.Float( lineX, yDendrogramOrigin, lineX, yDendrogramEnd );
 	}
@@ -248,10 +280,10 @@ public class DendrogramPanel< T > extends JPanel
 			}
 
 			widthDisplay = componentWidth - BORDER_LEFT - BORDER_RIGHT - nameOffset;
-			heightDisplay = componentHeight - BORDER_TOP - BORDER_BOTTOM - axisHeight;
+			heightDisplay = componentHeight - BORDER_BOTTOM - BORDER_TOP - axisHeight;
 
 			xDisplayOrigin = BORDER_LEFT;
-			yDisplayOrigin = BORDER_BOTTOM + axisHeight;
+			yDisplayOrigin = BORDER_TOP + axisHeight;
 
 			xConversionFactor = widthDisplay / modelMetrics.wModel;
 			yConversionFactor = heightDisplay / modelMetrics.hModel;
@@ -316,8 +348,6 @@ public class DendrogramPanel< T > extends JPanel
 			if ( classification == null )
 				return;
 			Cluster cluster = classification.getRootCluster();
-			if ( cluster == null )
-				return;
 			if ( cluster.getDistanceValue() > 1d )
 				return;
 			int zeros = countZerosAfterDecimalPoint( cluster.getDistanceValue() );
@@ -365,6 +395,7 @@ public class DendrogramPanel< T > extends JPanel
 		private void paint( final Graphics2D g2 )
 		{
 			g2.draw( line );
+			drawLegend( g2 );
 			for ( Pair< Line2D, String > tick : ticks )
 			{
 				Line2D tickLine = tick.getLeft();
@@ -376,6 +407,17 @@ public class DendrogramPanel< T > extends JPanel
 						( int ) tickLine.getY2() - SCALE_TICK_LABEL_PADDING
 				);
 			}
+		}
+
+		private void drawLegend( final Graphics2D g2 )
+		{
+			FontMetrics fontMetrics = g2.getFontMetrics();
+			int y = displayMetrics.yDisplayOrigin - SCALE_PADDING - SCALE_TICK_LABEL_PADDING - SCALE_TICK_LENGTH
+					- fontMetrics.getHeight();
+			g2.drawString( "dissimilar lineages", ( int ) line.getX1(), y );
+			String similarText = "similar lineages";
+			fontMetrics.getStringBounds( similarText, g2 );
+			g2.drawString( similarText, ( int ) line.getX2() - ( int ) fontMetrics.getStringBounds( similarText, g2 ).getWidth(), y );
 		}
 	}
 }

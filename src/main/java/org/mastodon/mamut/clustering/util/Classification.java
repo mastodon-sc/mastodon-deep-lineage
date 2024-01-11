@@ -31,7 +31,6 @@ package org.mastodon.mamut.clustering.util;
 import com.apporiented.algorithm.clustering.Cluster;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,6 +49,7 @@ import java.util.stream.Collectors;
  *           </ul>
  *         </li>
  *         <li>the cutoff value of classification, i.e. where the dendrogram is cut</li>
+ *         <li>the median of the upper triangle values of the distance matrix that this classification represents</li>
  *     </ul>
  * @author Stefan Hahmann
  */
@@ -57,10 +57,11 @@ public class Classification< T >
 {
 	private final Set< ObjectClassification< T > > objectClassifications;
 
-	@Nullable
 	private final Cluster rootCluster;
 
 	private final double cutoff;
+
+	private final double median;
 
 	/**
 	 * Creates a new {@link Classification} object.
@@ -71,8 +72,11 @@ public class Classification< T >
 	 * 						</ul>
 	 * @param rootCluster the root {@link Cluster} object, from which the results of the algorithm can be accessed
 	 * @param cutoff the cutoff value of classification, i.e. where the dendrogram is cut
+	 * @param median the median of the upper triangle values of the distance matrix that this classification represents
 	 */
-	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, @Nullable final Cluster rootCluster, double cutoff )
+	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, final Cluster rootCluster, final double cutoff,
+			final double median )
+
 	{
 		this.objectClassifications = new HashSet<>();
 		List< Integer > glasbeyColors = ClusterUtils.getGlasbeyColors( classifiedObjects.size() );
@@ -84,6 +88,7 @@ public class Classification< T >
 		}
 		this.rootCluster = rootCluster;
 		this.cutoff = cutoff;
+		this.median = median;
 	}
 
 	public Set< ObjectClassification< T > > getObjectClassifications()
@@ -91,15 +96,29 @@ public class Classification< T >
 		return objectClassifications;
 	}
 
-	@Nullable
 	public Cluster getRootCluster()
 	{
 		return rootCluster;
 	}
 
+	/**
+	 * Returns the cutoff value of classification, i.e. where the value, where the dendrogram is cut.
+	 *
+	 * @return the cutoff value of classification
+	 */
 	public double getCutoff()
 	{
 		return cutoff;
+	}
+
+	/**
+	 * Returns the median of the upper triangle values of the distance matrix that this classification represents.<p>
+	 *
+	 * @return the median of the upper triangle values of the distance matrix
+	 */
+	public double getMedian()
+	{
+		return median;
 	}
 
 	Set< Set< T > > getClassifiedObjects()

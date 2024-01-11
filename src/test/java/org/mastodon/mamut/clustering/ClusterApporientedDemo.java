@@ -34,9 +34,11 @@ import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.CompleteLinkageStrategy;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.SingleLinkageStrategy;
+import net.imglib2.util.Util;
 import net.miginfocom.swing.MigLayout;
 import org.mastodon.mamut.clustering.ui.DendrogramView;
 import org.mastodon.mamut.clustering.util.Classification;
+import org.mastodon.mamut.clustering.util.ClusterUtils;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -74,29 +76,30 @@ public class ClusterApporientedDemo
 		Cluster averageRandom = algorithm.performClustering( randomDistances, ClusterData.names, new AverageLinkageStrategy() );
 		Cluster singleRandom = algorithm.performClustering( randomDistances, ClusterData.names, new SingleLinkageStrategy() );
 		Cluster completeRandom = algorithm.performClustering( randomDistances, ClusterData.names, new CompleteLinkageStrategy() );
+		double median = Util.median( ClusterUtils.getUpperTriangle( randomDistances ) );
 
 		JPanel averagedFixedPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), averageFixed, 20d ),
+				new Classification<>( Collections.emptyList(), averageFixed, 20d, median ),
 				"Average Linkage (Fixed Values)"
 		).getPanel();
 		JPanel singleFixedPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), singleFixed, 20d ),
+				new Classification<>( Collections.emptyList(), singleFixed, 20d, median ),
 				"Single Linkage (Fixed Values)"
 		).getPanel();
 		JPanel completeFixedPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), completeFixed, 20d ),
+				new Classification<>( Collections.emptyList(), completeFixed, 20d, median ),
 				"Complete Linkage (Fixed Values)"
 		).getPanel();
 		JPanel averagedRandomPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), averageRandom, 5d ),
+				new Classification<>( Collections.emptyList(), averageRandom, 5d, median ),
 				"Average Linkage (Random Values)"
 		).getPanel();
 		JPanel singleRandomPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), singleRandom, 5d ),
+				new Classification<>( Collections.emptyList(), singleRandom, 5d, median ),
 				"Single Linkage (Random Values)"
 		).getPanel();
 		JPanel completeRandomPanel = new DendrogramView<>(
-				new Classification<>( Collections.emptyList(), completeRandom, 5d ),
+				new Classification<>( Collections.emptyList(), completeRandom, 5d, median ),
 				"Complete Linkage (Random Values)"
 		).getPanel();
 
