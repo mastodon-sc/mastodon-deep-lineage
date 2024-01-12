@@ -33,6 +33,21 @@ public class BranchSpotFeatureUtils
 	}
 
 	/**
+	 * Returns a Spot object that can be used as a pointer in the SpotGraph.
+	 * <p>
+	 * <strong>Remember to call model.getGraph().releaseRef(...) after you are done using this object.</strong>
+	 * </p>
+	 * @param model the model, which contains the spot graph
+	 * @return the reference object pointer
+	 * @see Model#getGraph() ()
+	 * @see Graph#releaseRef(Vertex)
+	 */
+	static Spot getSpotRef( final Model model )
+	{
+		return model.getGraph().vertexRef();
+	}
+
+	/**
 	 * Computes the cumulated distance of a branch spot, i.e. the sum of the distances between all spots of the branch.
 	 * @param model the model, which contains the branch spot
 	 * @param branchSpot the branch spot
