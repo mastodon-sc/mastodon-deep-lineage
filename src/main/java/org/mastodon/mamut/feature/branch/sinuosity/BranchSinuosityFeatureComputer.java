@@ -54,7 +54,7 @@ public class BranchSinuosityFeatureComputer extends AbstractBranchSpotDoubleFeat
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new BranchSinuosityFeature( new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), 0 ) );
+			output = new BranchSinuosityFeature( new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ) );
 	}
 
 	@Override

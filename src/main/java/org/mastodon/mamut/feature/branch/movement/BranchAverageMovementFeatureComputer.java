@@ -51,7 +51,8 @@ public class BranchAverageMovementFeatureComputer extends AbstractBranchSpotDoub
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new BranchAverageMovementFeature( new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), -1 ) );
+			output = new BranchAverageMovementFeature(
+					new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ) );
 	}
 
 	@Override
