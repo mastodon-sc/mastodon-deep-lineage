@@ -11,6 +11,9 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import java.util.Arrays;
 import java.util.Iterator;
 
+/**
+ * Utility class with methods for branch spot features.
+ */
 public class BranchSpotFeatureUtils
 {
 	private BranchSpotFeatureUtils()
