@@ -26,36 +26,57 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.leaves;
+package org.mastodon.mamut.feature.branch;
 
-import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.mamut.feature.branch.AbstractBranchSpotIntPropertyFeatureSerializer;
-import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.feature.Dimension;
+import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
+import org.mastodon.feature.FeatureProjectionSpec;
+import org.mastodon.feature.FeatureProjections;
+import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.properties.IntPropertyMap;
-import org.scijava.plugin.Plugin;
 
-/**
- * De-/serializes the {@link BranchNLeavesFeature}.
- */
-@Plugin( type = FeatureSerializer.class )
-public class BranchNLeavesFeatureSerializer extends AbstractBranchSpotIntPropertyFeatureSerializer< BranchNLeavesFeature >
+import java.util.Collections;
+import java.util.Set;
+
+import static org.mastodon.feature.FeatureProjectionKey.key;
+
+public abstract class AbstractIntPropertyFeature< T > implements Feature< T >
 {
-	@Override
-	public FeatureSpec< BranchNLeavesFeature, BranchSpot > getFeatureSpec()
+
+	public final IntPropertyMap< T > map;
+
+	protected final IntFeatureProjection< T > projection;
+
+	protected AbstractIntPropertyFeature( IntPropertyMap< T > map )
 	{
-		return BranchNLeavesFeature.BRANCH_N_LEAVES_FEATURE_SPEC;
+		this.map = map;
+		this.projection = FeatureProjections.project( key( getFeatureProjectionSpec() ), map, Dimension.NONE_UNITS );
+	}
+
+	protected abstract FeatureProjectionSpec getFeatureProjectionSpec();
+
+	public int get( final T branchSpot )
+	{
+		return map.getInt( branchSpot );
 	}
 
 	@Override
-	protected BranchNLeavesFeature createFeature( IntPropertyMap< BranchSpot > map )
+	public FeatureProjection< T > project( final FeatureProjectionKey key )
 	{
-		return new BranchNLeavesFeature( map );
+		return projection.getKey().equals( key ) ? projection : null;
 	}
 
 	@Override
-	protected IntPropertyMap< BranchSpot > extractPropertyMap( BranchNLeavesFeature feature )
+	public Set< FeatureProjection< T > > projections()
 	{
-		return feature.map;
+		return Collections.singleton( projection );
+	}
+
+	@Override
+	public void invalidate( final T branchSpot )
+	{
+		map.remove( branchSpot );
 	}
 }

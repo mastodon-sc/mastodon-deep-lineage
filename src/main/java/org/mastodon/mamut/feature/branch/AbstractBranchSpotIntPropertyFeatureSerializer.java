@@ -41,7 +41,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.IntPropertyMap;
 
-public abstract class BranchSpotIntPropertyFeatureSerializer< T extends IntPropertyFeature< BranchSpot > >
+public abstract class AbstractBranchSpotIntPropertyFeatureSerializer< T extends AbstractIntPropertyFeature< BranchSpot > >
 		implements BranchFeatureSerializer< T, BranchSpot, Spot >
 {
 

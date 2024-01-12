@@ -26,36 +26,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.leaves;
+package org.mastodon.mamut.feature.branch.movement;
 
-import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.mamut.feature.branch.AbstractBranchSpotIntPropertyFeatureSerializer;
+import org.mastodon.mamut.feature.MamutFeatureComputer;
+import org.mastodon.mamut.feature.branch.AbstractBranchSpotDoubleFeatureComputer;
+import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
+import org.mastodon.mamut.feature.branch.AbstractDoublePropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.properties.IntPropertyMap;
+import org.mastodon.properties.DoublePropertyMap;
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * De-/serializes the {@link BranchNLeavesFeature}.
+ * Computes {@link BranchAverageMovementFeature}
  */
-@Plugin( type = FeatureSerializer.class )
-public class BranchNLeavesFeatureSerializer extends AbstractBranchSpotIntPropertyFeatureSerializer< BranchNLeavesFeature >
+@Plugin( type = MamutFeatureComputer.class )
+public class BranchAverageMovementFeatureComputer extends AbstractBranchSpotDoubleFeatureComputer
 {
+	@Parameter( type = ItemIO.OUTPUT )
+	protected BranchAverageMovementFeature output;
+
 	@Override
-	public FeatureSpec< BranchNLeavesFeature, BranchSpot > getFeatureSpec()
+	public void createOutput()
 	{
-		return BranchNLeavesFeature.BRANCH_N_LEAVES_FEATURE_SPEC;
+		if ( null == output )
+			output = new BranchAverageMovementFeature( new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), -1 ) );
 	}
 
 	@Override
-	protected BranchNLeavesFeature createFeature( IntPropertyMap< BranchSpot > map )
+	protected AbstractDoublePropertyFeature< BranchSpot > getOutput()
 	{
-		return new BranchNLeavesFeature( map );
+		return output;
 	}
 
 	@Override
-	protected IntPropertyMap< BranchSpot > extractPropertyMap( BranchNLeavesFeature feature )
+	protected double computeValue( BranchSpot branchSpot )
 	{
-		return feature.map;
+		int duration = branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
+		return BranchSpotFeatureUtils.cumulatedDistance( model, branchSpot ) / duration;
 	}
 }

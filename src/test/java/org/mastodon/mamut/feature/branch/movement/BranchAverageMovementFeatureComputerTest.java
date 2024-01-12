@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.sinuosity;
+package org.mastodon.mamut.feature.branch.movement;
 
 import org.junit.Test;
 import org.mastodon.feature.FeatureProjection;
@@ -38,9 +38,8 @@ import org.scijava.Context;
 
 import static org.junit.Assert.assertEquals;
 
-public class BranchSinuosityFeatureComputerTest
+public class BranchAverageMovementFeatureComputerTest
 {
-
 	@Test
 	public void testCompute1()
 	{
@@ -49,9 +48,10 @@ public class BranchSinuosityFeatureComputerTest
 			ExampleGraph1 exampleGraph1 = new ExampleGraph1();
 			FeatureProjection< BranchSpot > featureProjection =
 					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph1.getModel(),
-							BranchSinuosityFeature.BRANCH_SINUOSITY_FEATURE_SPEC,
-							BranchSinuosityFeature.PROJECTION_SPEC );
-			assertEquals( 1d, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
+							BranchAverageMovementFeature.BRANCH_AVERAGE_MOVEMENT_FEATURE_SPEC,
+							BranchAverageMovementFeature.PROJECTION_SPEC );
+			double expected = 4 * Math.sqrt( 1 + 4 + 9 ) / 3;
+			assertEquals( expected, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
 		}
 	}
 
@@ -63,16 +63,16 @@ public class BranchSinuosityFeatureComputerTest
 			ExampleGraph2 exampleGraph2 = new ExampleGraph2();
 			FeatureProjection< BranchSpot > featureProjection =
 					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph2.getModel(),
-							BranchSinuosityFeature.BRANCH_SINUOSITY_FEATURE_SPEC,
-							BranchSinuosityFeature.PROJECTION_SPEC );
+							BranchAverageMovementFeature.BRANCH_AVERAGE_MOVEMENT_FEATURE_SPEC,
+							BranchAverageMovementFeature.PROJECTION_SPEC );
 
-			assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 9 + 36 + 81 ) ) / Math.sqrt( 4 + 16 + 36 ),
+			assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 9 + 36 + 81 ) ) / 2d,
 					featureProjection.value( exampleGraph2.branchSpotA ), 0 );
-			assertEquals( 1d, featureProjection.value( exampleGraph2.branchSpotC ), 0 );
-			assertEquals( 1d, featureProjection.value( exampleGraph2.branchSpotB ), 0 );
-			assertEquals( ( Math.sqrt( 36 + 144 + 324 ) + Math.sqrt( 64 + 256 + 576 ) ) / Math.sqrt( 4 + 16 + 36 ),
+			assertEquals( Math.sqrt( 4 + 16 + 36 ) / 2d, featureProjection.value( exampleGraph2.branchSpotC ), 0 );
+			assertEquals( Math.sqrt( 1 + 4 + 9 ), featureProjection.value( exampleGraph2.branchSpotB ), 0 );
+			assertEquals( ( Math.sqrt( 36 + 144 + 324 ) + Math.sqrt( 64 + 256 + 576 ) ) / 2d,
 					featureProjection.value( exampleGraph2.branchSpotD ), 0 );
-			assertEquals( 1d, featureProjection.value( exampleGraph2.branchSpotE ), 0 );
+			assertEquals( Math.sqrt( 4 + 16 + 36 ) / 2d, featureProjection.value( exampleGraph2.branchSpotE ), 0 );
 		}
 	}
 }

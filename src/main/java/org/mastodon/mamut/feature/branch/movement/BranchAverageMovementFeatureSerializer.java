@@ -26,57 +26,39 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch;
+package org.mastodon.mamut.feature.branch.movement;
 
-import org.mastodon.feature.Dimension;
-import org.mastodon.feature.Feature;
-import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureProjectionKey;
-import org.mastodon.feature.FeatureProjectionSpec;
-import org.mastodon.feature.FeatureProjections;
-import org.mastodon.feature.IntFeatureProjection;
-import org.mastodon.properties.IntPropertyMap;
+import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.io.FeatureSerializer;
+import org.mastodon.mamut.feature.branch.AbstractBranchSpotDoublePropertyFeatureSerializer;
+import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.properties.DoublePropertyMap;
+import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-import java.util.Set;
-
-import static org.mastodon.feature.FeatureProjectionKey.key;
-
-public abstract class IntPropertyFeature< T > implements Feature< T >
+/**
+ * De-/serializes the {@link BranchAverageMovementFeature}.
+ */
+@Plugin( type = FeatureSerializer.class )
+public class BranchAverageMovementFeatureSerializer
+		extends AbstractBranchSpotDoublePropertyFeatureSerializer< BranchAverageMovementFeature >
 {
 
-	public final IntPropertyMap< T > map;
-
-	protected final IntFeatureProjection< T > projection;
-
-	protected IntPropertyFeature( IntPropertyMap< T > map )
+	@Override
+	public FeatureSpec< BranchAverageMovementFeature, BranchSpot > getFeatureSpec()
 	{
-		this.map = map;
-		this.projection = FeatureProjections.project( key( getFeatureProjectionSpec() ), map, Dimension.NONE_UNITS );
-	}
-
-	protected abstract FeatureProjectionSpec getFeatureProjectionSpec();
-
-	public int get( final T branchSpot )
-	{
-		return map.getInt( branchSpot );
+		return BranchAverageMovementFeature.BRANCH_AVERAGE_MOVEMENT_FEATURE_SPEC;
 	}
 
 	@Override
-	public FeatureProjection< T > project( final FeatureProjectionKey key )
+	protected BranchAverageMovementFeature createFeature( DoublePropertyMap< BranchSpot > map )
 	{
-		return projection.getKey().equals( key ) ? projection : null;
+		return new BranchAverageMovementFeature( map );
 	}
 
 	@Override
-	public Set< FeatureProjection< T > > projections()
+	protected DoublePropertyMap< BranchSpot > extractPropertyMap( BranchAverageMovementFeature feature )
 	{
-		return Collections.singleton( projection );
+		return feature.map;
 	}
 
-	@Override
-	public void invalidate( final T branchSpot )
-	{
-		map.remove( branchSpot );
-	}
 }

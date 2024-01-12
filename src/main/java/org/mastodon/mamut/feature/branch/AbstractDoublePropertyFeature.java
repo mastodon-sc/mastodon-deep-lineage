@@ -41,14 +41,14 @@ import java.util.Set;
 
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
-public abstract class DoublePropertyFeature< T > implements Feature< T >
+public abstract class AbstractDoublePropertyFeature< T > implements Feature< T >
 {
 
 	public final DoublePropertyMap< T > map;
 
 	protected final FeatureProjection< T > projection;
 
-	protected DoublePropertyFeature( DoublePropertyMap< T > map )
+	protected AbstractDoublePropertyFeature( DoublePropertyMap< T > map )
 	{
 		this.map = map;
 		this.projection = FeatureProjections.project( key( getFeatureProjectionSpec() ), map, Dimension.NONE_UNITS );

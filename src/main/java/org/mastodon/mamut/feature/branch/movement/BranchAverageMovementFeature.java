@@ -26,66 +26,78 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.successors;
+package org.mastodon.mamut.feature.branch.movement;
 
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.feature.branch.AbstractIntPropertyFeature;
+import org.mastodon.mamut.feature.branch.AbstractDoublePropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.properties.IntPropertyMap;
+import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
 
 /**
- * Represents the total number of successors of a branch spot in the whole track subtree of this branch spot.
- * <br>
- * In the following example this number would equal to following branchSpots as
- * follows:
- *
+ * Represents the mean (i.e. average) displacement of BranchSpot.
+ * Assumed that the time between time points (tp) of the spots that are represented by the branch spot is constant,
+ * this also represents the average movement speed of a BranchSpot.
+ * <p>
+ * <h1>Example</h1>
+ * <h2>Model-Graph (i.e. Graph of Spots)</h2>
  * <pre>
- *                         branchSpot0
- *  	       ┌──────────────┴─────────────────┐
- *  	       │                                │
- *  	   branchspot1                      branchSpot2
- *  	┌──────┴───────┐
- *  	│              │
- *  branchspot3 branchSpot4
+ *    Spot( 0, X=0.0, Y=0.0, Z=0.0, tp=0 )
+ *                      │
+ *                      │
+ *    Spot( 1, X=3.0, Y=4.0, Z=0.0, tp=1 )
+ *                      │
+ *                      │
+ *    Spot( 2, X=8.0, Y=4.0, Z=12.0, tp=2 )
+ *                      │
+ *                      │
+ *                      │
+ *                      │
+ *    Spot( 3, X=8.0, Y=12.0, Z=27.0, tp=*4* )
  * </pre>
- *
+ * <h2>Branch-Graph (i.e. Graph of BranchSpots)</h2>
+ * <pre>
+ *     branchSpotA
+ * </pre>
+ * <h2>Spot Movements</h2>
  * <ul>
- * <li>{@code branchSpot0 = 4}</li>
- * <li>{@code branchSpot1 = 2}</li>
- * <li>{@code branchSpot2 = 0}</li>
- * <li>{@code branchSpot3 = 0}</li>
- * <li>{@code branchSpot4 = 0}</li>
+ * <li>{@code spot 0 -> spot 1 = 5}</li>
+ * <li>{@code spot 1 -> spot 2 = 13}</li>
+ * <li>{@code spot 2 -> spot 3 = 17}</li>
+ * </ul>
+ * <h2>BranchSpot Average Movement</h2>
+ * <ul>
+ *     <li>{@code branchSpotA = (5 + 13 + 17) / *4* = 8.75}</li>
  * </ul>
  */
-public class BranchNSuccessorsFeature extends AbstractIntPropertyFeature< BranchSpot >
+public class BranchAverageMovementFeature extends AbstractDoublePropertyFeature< BranchSpot >
 {
-	public static final String KEY = "Branch N sub branch spots";
+	public static final String KEY = "Branch Average Movement";
 
-	private static final String HELP_STRING = "Counts the successors in the sub-tree of this branch spot.";
+	private static final String HELP_STRING = "The average movement per frame of a spot during its life cycle.";
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
 
-	public static final Spec BRANCH_N_SUCCESSORS_FEATURE = new Spec();
+	public static final Spec BRANCH_AVERAGE_MOVEMENT_FEATURE_SPEC = new Spec();
 
 	@Plugin( type = FeatureSpec.class )
-	public static class Spec extends FeatureSpec< BranchNSuccessorsFeature, BranchSpot >
+	public static class Spec extends FeatureSpec< BranchAverageMovementFeature, BranchSpot >
 	{
 		public Spec()
 		{
 			super(
 					KEY,
 					HELP_STRING,
-					BranchNSuccessorsFeature.class,
+					BranchAverageMovementFeature.class,
 					BranchSpot.class,
 					Multiplicity.SINGLE,
 					PROJECTION_SPEC );
 		}
 	}
 
-	public BranchNSuccessorsFeature( final IntPropertyMap< BranchSpot > map )
+	public BranchAverageMovementFeature( final DoublePropertyMap< BranchSpot > map )
 	{
 		super( map );
 	}
@@ -99,6 +111,6 @@ public class BranchNSuccessorsFeature extends AbstractIntPropertyFeature< Branch
 	@Override
 	public Spec getSpec()
 	{
-		return BRANCH_N_SUCCESSORS_FEATURE;
+		return BRANCH_AVERAGE_MOVEMENT_FEATURE_SPEC;
 	}
 }

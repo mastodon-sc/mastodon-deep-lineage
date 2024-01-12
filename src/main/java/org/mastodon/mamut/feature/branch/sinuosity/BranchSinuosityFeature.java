@@ -31,7 +31,7 @@ package org.mastodon.mamut.feature.branch.sinuosity;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.feature.branch.DoublePropertyFeature;
+import org.mastodon.mamut.feature.branch.AbstractDoublePropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
@@ -45,7 +45,7 @@ import org.scijava.plugin.Plugin;
  *          <li>A sinuosity &gt; 1 means that the cell moved in a curved line. The higher, this value is, the "curvier" the cell has moved</li>
  *     </ul>
  */
-public class BranchSinuosityFeature extends DoublePropertyFeature< BranchSpot >
+public class BranchSinuosityFeature extends AbstractDoublePropertyFeature< BranchSpot >
 {
 	public static final String KEY = "Branch Sinuosity";
 
