@@ -1,6 +1,8 @@
 package org.mastodon.mamut.feature.branch;
 
 import net.imglib2.util.LinAlgHelpers;
+import org.mastodon.graph.Graph;
+import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
@@ -81,5 +83,48 @@ public class BranchSpotFeatureUtils
 		model.getBranchGraph().releaseIterator( spotIterator );
 
 		return cumulatedDistance;
+	}
+
+	/**
+	 * Computes the direct distance of a branch spot, i.e. the distance between the first and the last spot of the branch.
+	 * @param model the model, which contains the branch spot
+	 * @param branchSpot the branch spot
+	 * @return the direct distance of the branch spot
+	 */
+	public static double directDistance( final Model model, final BranchSpot branchSpot )
+	{
+		return LinAlgHelpers.distance( getFirstSpotCoordinates( model, branchSpot ), getLastSpotCoordinates( model, branchSpot ) );
+	}
+
+	/**
+	 * Returns the coordinates of the first spot of a branch spot.
+	 * @param model the model, which contains the branch spot
+	 * @param branchSpot the branch spot
+	 * @return the coordinates of the first spot of the branch spot
+	 */
+	public static double[] getFirstSpotCoordinates( final Model model, final BranchSpot branchSpot )
+	{
+		Spot ref = getSpotRef( model );
+		Spot first = model.getBranchGraph().getFirstLinkedVertex( branchSpot, ref );
+		final double[] firstCoordinates = new double[ branchSpot.numDimensions() ];
+		first.localize( firstCoordinates );
+		model.getGraph().releaseRef( ref );
+		return firstCoordinates;
+	}
+
+	/**
+	 * Returns the coordinates of the last spot of a branch spot.
+	 * @param model the model, which contains the branch spot
+	 * @param branchSpot the branch spot
+	 * @return the coordinates of the last spot of the branch spot
+	 */
+	public static double[] getLastSpotCoordinates( final Model model, final BranchSpot branchSpot )
+	{
+		Spot ref = getSpotRef( model );
+		Spot last = model.getBranchGraph().getLastLinkedVertex( branchSpot, ref );
+		final double[] lastCoordinates = new double[ branchSpot.numDimensions() ];
+		last.localize( lastCoordinates );
+		model.getGraph().releaseRef( ref );
+		return lastCoordinates;
 	}
 }

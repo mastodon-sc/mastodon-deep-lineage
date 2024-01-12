@@ -28,12 +28,10 @@
  */
 package org.mastodon.mamut.feature.branch.sinuosity;
 
-import net.imglib2.util.LinAlgHelpers;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.feature.branch.AbstractBranchSpotDoubleFeatureComputer;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
 import org.mastodon.mamut.feature.branch.AbstractDoublePropertyFeature;
-import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.ItemIO;
@@ -67,19 +65,7 @@ public class BranchSinuosityFeatureComputer extends AbstractBranchSpotDoubleFeat
 	protected double computeValue( final BranchSpot branchSpot )
 	{
 		double cumulatedDistance = BranchSpotFeatureUtils.cumulatedDistance( model, branchSpot );
-		double directDistance = directDistance( branchSpot );
+		double directDistance = BranchSpotFeatureUtils.directDistance( model, branchSpot );
 		return cumulatedDistance / directDistance;
-	}
-
-	private double directDistance( final BranchSpot branchSpot )
-	{
-		Spot ref = model.getGraph().vertexRef();
-		Spot first = model.getBranchGraph().getFirstLinkedVertex( branchSpot, ref );
-		final double[] firstCoordinates = new double[ branchSpot.numDimensions() ];
-		first.localize( firstCoordinates );
-		Spot last = model.getBranchGraph().getLastLinkedVertex( branchSpot, ref );
-		final double[] lastCoordinates = new double[ branchSpot.numDimensions() ];
-		last.localize( lastCoordinates );
-		return LinAlgHelpers.distance( firstCoordinates, lastCoordinates );
 	}
 }
