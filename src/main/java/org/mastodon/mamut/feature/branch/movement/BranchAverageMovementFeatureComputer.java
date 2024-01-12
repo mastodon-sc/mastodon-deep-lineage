@@ -30,6 +30,7 @@ package org.mastodon.mamut.feature.branch.movement;
 
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.feature.branch.BranchSpotDoubleFeatureComputer;
+import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
 import org.mastodon.mamut.feature.branch.DoublePropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
@@ -63,6 +64,6 @@ public class BranchAverageMovementFeatureComputer extends BranchSpotDoubleFeatur
 	protected double computeValue( BranchSpot branchSpot )
 	{
 		int duration = branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
-		return accumulatedDistance( branchSpot ) / duration;
+		return BranchSpotFeatureUtils.cumulatedDistance( model, branchSpot ) / duration;
 	}
 }

@@ -31,6 +31,7 @@ package org.mastodon.mamut.feature.branch.sinuosity;
 import net.imglib2.util.LinAlgHelpers;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.feature.branch.BranchSpotDoubleFeatureComputer;
+import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
 import org.mastodon.mamut.feature.branch.DoublePropertyFeature;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
@@ -65,9 +66,9 @@ public class BranchSinuosityFeatureComputer extends BranchSpotDoubleFeatureCompu
 	@Override
 	protected double computeValue( final BranchSpot branchSpot )
 	{
-		double accumulatedDistance = accumulatedDistance( branchSpot );
+		double cumulatedDistance = BranchSpotFeatureUtils.cumulatedDistance( model, branchSpot );
 		double directDistance = directDistance( branchSpot );
-		return accumulatedDistance / directDistance;
+		return cumulatedDistance / directDistance;
 	}
 
 	private double directDistance( final BranchSpot branchSpot )
