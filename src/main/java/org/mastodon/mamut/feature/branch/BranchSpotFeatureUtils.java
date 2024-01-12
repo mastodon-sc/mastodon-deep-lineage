@@ -100,6 +100,22 @@ public class BranchSpotFeatureUtils
 	}
 
 	/**
+	 * Computes the normalized direction of a branch spot, i.e. the direction from the first to the last spot of the branch, normalized to length 1.
+	 * @param model the model, which contains the branch spot
+	 * @param branchSpot the branch spot
+	 * @return the normalized direction of the branch spot
+	 */
+	public static double[] normalizedDirection( final Model model, final BranchSpot branchSpot )
+	{
+		final double[] first = getFirstSpotCoordinates( model, branchSpot );
+		final double[] last = getLastSpotCoordinates( model, branchSpot );
+		final double[] direction = new double[ first.length ];
+		LinAlgHelpers.subtract( last, first, direction );
+		LinAlgHelpers.normalize( direction );
+		return direction;
+	}
+
+	/**
 	 * Returns the coordinates of the first spot of a branch spot.
 	 * @param model the model, which contains the branch spot
 	 * @param branchSpot the branch spot
