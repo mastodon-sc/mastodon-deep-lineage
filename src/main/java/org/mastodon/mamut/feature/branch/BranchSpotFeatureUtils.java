@@ -27,7 +27,7 @@ public class BranchSpotFeatureUtils
 	 * @see Model#getBranchGraph()
 	 * @see BranchGraph#releaseIterator(Iterator)
 	 */
-	public static Iterator< Spot > getSpotIterator( final Model model, final BranchSpot branchSpot )
+	static Iterator< Spot > getSpotIterator( final Model model, final BranchSpot branchSpot )
 	{
 		return model.getBranchGraph().vertexBranchIterator( branchSpot );
 	}
