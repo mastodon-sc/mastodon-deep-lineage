@@ -1,6 +1,7 @@
 package org.mastodon.mamut.feature.branch;
 
 import net.imglib2.util.LinAlgHelpers;
+import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
@@ -17,9 +18,14 @@ public class BranchSpotFeatureUtils
 
 	/**
 	 * Returns an iterator over the spots of a branch spot.
+	 * <p>
+	 * <strong>Remember to call model.getBranchGraph().releaseIterator(...) after you are done using the iterator.</strong>
+	 * </p>
 	 * @param model the model, which contains the branch spot
 	 * @param branchSpot the branch spot
 	 * @return an iterator over the spots of the branch spot
+	 * @see Model#getBranchGraph()
+	 * @see BranchGraph#releaseIterator(Iterator)
 	 */
 	public static Iterator< Spot > getSpotIterator( final Model model, final BranchSpot branchSpot )
 	{
@@ -57,6 +63,7 @@ public class BranchSpotFeatureUtils
 			cumulatedDistance += LinAlgHelpers.distance( currentCoordinates, previousCoordinates );
 			System.arraycopy( currentCoordinates, 0, previousCoordinates, 0, currentCoordinates.length );
 		}
+		model.getBranchGraph().releaseIterator( spotIterator );
 
 		return cumulatedDistance;
 	}
