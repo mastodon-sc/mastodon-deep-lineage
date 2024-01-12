@@ -44,4 +44,34 @@ public class BranchSpotFeatureUtilsTest
 		double expected = 4 * Math.sqrt( 1 + 4 + 9 );
 		assertEquals( expected, BranchSpotFeatureUtils.cumulatedDistance( graph.getModel(), graph.branchSpotA ), 0d );
 	}
+
+	@Test
+	public void testGetSpotRef()
+	{
+		Spot spotRef = BranchSpotFeatureUtils.getSpotRef( graph.getModel() );
+		graph.getModel().getBranchGraph().getLastLinkedVertex( graph.branchSpotA, spotRef );
+		assertEquals( graph.spot4, spotRef );
+		graph.getModel().getGraph().releaseRef( spotRef );
+	}
+
+	@Test
+	public void testDirectDistance()
+	{
+		double expected = Math.sqrt( 16 + 64 + 144 );
+		assertEquals( expected, BranchSpotFeatureUtils.directDistance( graph.getModel(), graph.branchSpotA ), 0d );
+	}
+
+	@Test
+	public void testGetFirstSpotCoordinates()
+	{
+		double[] expected = new double[] { 1, 2, 3 };
+		assertArrayEquals( expected, BranchSpotFeatureUtils.getFirstSpotCoordinates( graph.getModel(), graph.branchSpotA ), 0d );
+	}
+
+	@Test
+	public void testGetLastSpotCoordinates()
+	{
+		double[] expected = new double[] { 5, 10, 15 };
+		assertArrayEquals( expected, BranchSpotFeatureUtils.getLastSpotCoordinates( graph.getModel(), graph.branchSpotA ), 0d );
+	}
 }
