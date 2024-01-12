@@ -30,9 +30,9 @@ package org.mastodon.mamut.feature.branch.sinuosity;
 
 import net.imglib2.util.LinAlgHelpers;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
-import org.mastodon.mamut.feature.branch.BranchSpotDoubleFeatureComputer;
+import org.mastodon.mamut.feature.branch.AbstractBranchSpotDoubleFeatureComputer;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
-import org.mastodon.mamut.feature.branch.DoublePropertyFeature;
+import org.mastodon.mamut.feature.branch.AbstractDoublePropertyFeature;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
@@ -44,7 +44,7 @@ import org.scijava.plugin.Plugin;
  * Computes {@link BranchSinuosityFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchSinuosityFeatureComputer extends BranchSpotDoubleFeatureComputer
+public class BranchSinuosityFeatureComputer extends AbstractBranchSpotDoubleFeatureComputer
 {
 
 	@Parameter( type = ItemIO.OUTPUT )
@@ -58,7 +58,7 @@ public class BranchSinuosityFeatureComputer extends BranchSpotDoubleFeatureCompu
 	}
 
 	@Override
-	protected DoublePropertyFeature< BranchSpot > getOutput()
+	protected AbstractDoublePropertyFeature< BranchSpot > getOutput()
 	{
 		return output;
 	}

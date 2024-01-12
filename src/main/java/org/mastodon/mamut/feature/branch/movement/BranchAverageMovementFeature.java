@@ -31,7 +31,7 @@ package org.mastodon.mamut.feature.branch.movement;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.feature.branch.DoublePropertyFeature;
+import org.mastodon.mamut.feature.branch.AbstractDoublePropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
@@ -72,7 +72,7 @@ import org.scijava.plugin.Plugin;
  *     <li>{@code branchSpotA = (5 + 13 + 17) / *4* = 8.75}</li>
  * </ul>
  */
-public class BranchAverageMovementFeature extends DoublePropertyFeature< BranchSpot >
+public class BranchAverageMovementFeature extends AbstractDoublePropertyFeature< BranchSpot >
 {
 	public static final String KEY = "Branch Average Movement";
 

@@ -30,7 +30,7 @@ package org.mastodon.mamut.feature.branch.sinuosity;
 
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.mamut.feature.branch.BranchSpotDoublePropertyFeatureSerializer;
+import org.mastodon.mamut.feature.branch.AbstractBranchSpotDoublePropertyFeatureSerializer;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
@@ -39,7 +39,7 @@ import org.scijava.plugin.Plugin;
  * De-/serializes the {@link BranchSinuosityFeature}.
  */
 @Plugin( type = FeatureSerializer.class )
-public class BranchSinuosityFeatureSerializer extends BranchSpotDoublePropertyFeatureSerializer< BranchSinuosityFeature >
+public class BranchSinuosityFeatureSerializer extends AbstractBranchSpotDoublePropertyFeatureSerializer< BranchSinuosityFeature >
 {
 	@Override
 	public FeatureSpec< BranchSinuosityFeature, BranchSpot > getFeatureSpec()

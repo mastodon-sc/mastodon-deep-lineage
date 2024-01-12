@@ -30,7 +30,7 @@ package org.mastodon.mamut.feature.branch.successors;
 
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.mamut.feature.branch.BranchSpotIntPropertyFeatureSerializer;
+import org.mastodon.mamut.feature.branch.AbstractBranchSpotIntPropertyFeatureSerializer;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
@@ -40,7 +40,7 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin( type = FeatureSerializer.class )
 public class BranchNSuccessorsFeatureSerializer
-		extends BranchSpotIntPropertyFeatureSerializer< BranchNSuccessorsFeature >
+		extends AbstractBranchSpotIntPropertyFeatureSerializer< BranchNSuccessorsFeature >
 {
 
 	@Override

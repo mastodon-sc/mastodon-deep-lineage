@@ -34,22 +34,21 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
-import org.mastodon.feature.IntFeatureProjection;
-import org.mastodon.properties.IntPropertyMap;
+import org.mastodon.properties.DoublePropertyMap;
 
 import java.util.Collections;
 import java.util.Set;
 
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
-public abstract class IntPropertyFeature< T > implements Feature< T >
+public abstract class AbstractDoublePropertyFeature< T > implements Feature< T >
 {
 
-	public final IntPropertyMap< T > map;
+	public final DoublePropertyMap< T > map;
 
-	protected final IntFeatureProjection< T > projection;
+	protected final FeatureProjection< T > projection;
 
-	protected IntPropertyFeature( IntPropertyMap< T > map )
+	protected AbstractDoublePropertyFeature( DoublePropertyMap< T > map )
 	{
 		this.map = map;
 		this.projection = FeatureProjections.project( key( getFeatureProjectionSpec() ), map, Dimension.NONE_UNITS );
@@ -57,9 +56,9 @@ public abstract class IntPropertyFeature< T > implements Feature< T >
 
 	protected abstract FeatureProjectionSpec getFeatureProjectionSpec();
 
-	public int get( final T branchSpot )
+	public double get( final T branchSpot )
 	{
-		return map.getInt( branchSpot );
+		return map.getDouble( branchSpot );
 	}
 
 	@Override

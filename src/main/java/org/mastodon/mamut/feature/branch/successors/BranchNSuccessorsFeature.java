@@ -31,7 +31,7 @@ package org.mastodon.mamut.feature.branch.successors;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.feature.branch.IntPropertyFeature;
+import org.mastodon.mamut.feature.branch.AbstractIntPropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
@@ -60,7 +60,7 @@ import org.scijava.plugin.Plugin;
  * <li>{@code branchSpot4 = 0}</li>
  * </ul>
  */
-public class BranchNSuccessorsFeature extends IntPropertyFeature< BranchSpot >
+public class BranchNSuccessorsFeature extends AbstractIntPropertyFeature< BranchSpot >
 {
 	public static final String KEY = "Branch N sub branch spots";
 

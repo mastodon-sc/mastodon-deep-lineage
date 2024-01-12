@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public abstract class BranchSpotDoublePropertyFeatureSerializer< T extends DoublePropertyFeature< BranchSpot > >
+public abstract class AbstractBranchSpotDoublePropertyFeatureSerializer< T extends AbstractDoublePropertyFeature< BranchSpot > >
 		implements BranchFeatureSerializer< T, BranchSpot, Spot >
 {
 

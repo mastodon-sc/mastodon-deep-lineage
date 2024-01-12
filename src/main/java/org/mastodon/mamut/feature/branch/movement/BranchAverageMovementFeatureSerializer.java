@@ -30,7 +30,7 @@ package org.mastodon.mamut.feature.branch.movement;
 
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.mamut.feature.branch.BranchSpotDoublePropertyFeatureSerializer;
+import org.mastodon.mamut.feature.branch.AbstractBranchSpotDoublePropertyFeatureSerializer;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
@@ -39,7 +39,8 @@ import org.scijava.plugin.Plugin;
  * De-/serializes the {@link BranchAverageMovementFeature}.
  */
 @Plugin( type = FeatureSerializer.class )
-public class BranchAverageMovementFeatureSerializer extends BranchSpotDoublePropertyFeatureSerializer< BranchAverageMovementFeature >
+public class BranchAverageMovementFeatureSerializer
+		extends AbstractBranchSpotDoublePropertyFeatureSerializer< BranchAverageMovementFeature >
 {
 
 	@Override

@@ -31,7 +31,7 @@ package org.mastodon.mamut.feature.branch.leaves;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.feature.branch.IntPropertyFeature;
+import org.mastodon.mamut.feature.branch.AbstractIntPropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
@@ -60,7 +60,7 @@ import org.scijava.plugin.Plugin;
  * <li>{@code branchSpot4 = 1}</li>
  * </ul>
  */
-public class BranchNLeavesFeature extends IntPropertyFeature< BranchSpot >
+public class BranchNLeavesFeature extends AbstractIntPropertyFeature< BranchSpot >
 {
 	public static final String KEY = "Branch N leaves";
 
