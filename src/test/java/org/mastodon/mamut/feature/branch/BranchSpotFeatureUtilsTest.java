@@ -1,5 +1,6 @@
 package org.mastodon.mamut.feature.branch;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.model.Spot;
@@ -10,11 +11,17 @@ import static org.junit.Assert.*;
 
 public class BranchSpotFeatureUtilsTest
 {
+	private ExampleGraph1 graph;
+
+	@Before
+	public void setUp()
+	{
+		graph = new ExampleGraph1();
+	}
 
 	@Test
 	public void testGetSpotIterator()
 	{
-		ExampleGraph1 graph = new ExampleGraph1();
 		Iterator< Spot > spotIterator = BranchSpotFeatureUtils.getSpotIterator( graph.getModel(), graph.branchSpotA );
 		assertNotNull( spotIterator );
 		assertTrue( spotIterator.hasNext() );
@@ -28,12 +35,12 @@ public class BranchSpotFeatureUtilsTest
 		assertTrue( spotIterator.hasNext() );
 		assertEquals( graph.spot4, spotIterator.next() );
 		assertFalse( spotIterator.hasNext() );
+		graph.getModel().getBranchGraph().releaseIterator( spotIterator );
 	}
 
 	@Test
 	public void testCumulatedDistance()
 	{
-		ExampleGraph1 graph = new ExampleGraph1();
 		double expected = 4 * Math.sqrt( 1 + 4 + 9 );
 		assertEquals( expected, BranchSpotFeatureUtils.cumulatedDistance( graph.getModel(), graph.branchSpotA ), 0d );
 	}
