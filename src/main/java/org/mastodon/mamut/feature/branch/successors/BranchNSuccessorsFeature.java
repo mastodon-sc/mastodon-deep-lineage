@@ -37,6 +37,7 @@ import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
@@ -70,7 +71,7 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  * <li>{@code branchSpot4 = 0}</li>
  * </ul>
  */
-public class BranchNSuccessorsFeature implements Feature< BranchSpot >
+public class BranchNSuccessorsFeature implements Feature< BranchSpot >, ValueIsSetEvaluator< BranchSpot >
 {
 	public static final String KEY = "Branch N sub branch spots";
 
@@ -127,5 +128,11 @@ public class BranchNSuccessorsFeature implements Feature< BranchSpot >
 	public void invalidate( final BranchSpot branchSpot )
 	{
 		nSuccessors.remove( branchSpot );
+	}
+
+	@Override
+	public boolean valueIsSet( final BranchSpot vertex )
+	{
+		return nSuccessors.isSet( vertex );
 	}
 }
