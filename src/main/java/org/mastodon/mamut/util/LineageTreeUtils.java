@@ -69,7 +69,7 @@ public class LineageTreeUtils {
 	 */
 	public static < V extends Vertex< E >, E extends Edge< V > > void callDepthFirst(
 			@Nonnull Graph< V, E > graph, @Nonnull Consumer< V > action,
-			@Nullable BooleanSupplier stopCondition, @Nullable ValueIsSetEvaluator< V > evaluator )
+			@Nullable BooleanSupplier stopCondition, @Nullable ValueIsSetEvaluator< V > evaluator, boolean forceComputeAll )
 	{
 		DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, GraphSearch.SearchDirection.DIRECTED );
 		search.setTraversalListener( new SearchListener< V, E, DepthFirstSearch< V, E > >()
@@ -77,7 +77,7 @@ public class LineageTreeUtils {
 			@Override
 			public void processVertexLate( V vertex, DepthFirstSearch< V, E > search )
 			{
-				if ( evaluator == null || !evaluator.valueIsSet( vertex ) )
+				if ( forceComputeAll || evaluator == null || !evaluator.valueIsSet( vertex ) )
 					action.accept( vertex );
 			}
 
