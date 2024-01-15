@@ -28,13 +28,22 @@
  */
 package org.mastodon.mamut.feature.branch.movement;
 
+import org.mastodon.feature.Dimension;
+import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
+import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.feature.branch.AbstractDoublePropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
+
+import java.util.Collections;
+import java.util.Set;
+
+import static org.mastodon.feature.FeatureProjectionKey.key;
 
 /**
  * Represents the mean (i.e. average) displacement of BranchSpot.
@@ -72,13 +81,17 @@ import org.scijava.plugin.Plugin;
  *     <li>{@code branchSpotA = (5 + 13 + 17) / *4* = 8.75}</li>
  * </ul>
  */
-public class BranchAverageMovementFeature extends AbstractDoublePropertyFeature< BranchSpot >
+public class BranchAverageMovementFeature implements Feature< BranchSpot >
 {
 	public static final String KEY = "Branch Average Movement";
 
 	private static final String HELP_STRING = "The average movement per frame of a spot during its life cycle.";
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
+
+	public final DoublePropertyMap< BranchSpot > averageMovement;
+
+	protected final FeatureProjection< BranchSpot > projection;
 
 	public static final Spec BRANCH_AVERAGE_MOVEMENT_FEATURE_SPEC = new Spec();
 
@@ -99,18 +112,31 @@ public class BranchAverageMovementFeature extends AbstractDoublePropertyFeature<
 
 	public BranchAverageMovementFeature( final DoublePropertyMap< BranchSpot > map )
 	{
-		super( map );
+		this.averageMovement = map;
+		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );
 	}
 
 	@Override
-	public FeatureProjectionSpec getFeatureProjectionSpec()
+	public FeatureProjection< BranchSpot > project( final FeatureProjectionKey key )
 	{
-		return PROJECTION_SPEC;
+		return projection.getKey().equals( key ) ? projection : null;
 	}
 
 	@Override
-	public Spec getSpec()
+	public Set< FeatureProjection< BranchSpot > > projections()
+	{
+		return Collections.singleton( projection );
+	}
+
+	@Override
+	public FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > getSpec()
 	{
 		return BRANCH_AVERAGE_MOVEMENT_FEATURE_SPEC;
+	}
+
+	@Override
+	public void invalidate( final BranchSpot branchSpot )
+	{
+		averageMovement.remove( branchSpot );
 	}
 }

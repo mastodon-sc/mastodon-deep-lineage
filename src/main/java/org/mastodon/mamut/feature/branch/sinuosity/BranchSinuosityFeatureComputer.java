@@ -29,9 +29,8 @@
 package org.mastodon.mamut.feature.branch.sinuosity;
 
 import org.mastodon.mamut.feature.MamutFeatureComputer;
-import org.mastodon.mamut.feature.branch.AbstractBranchSpotDoubleFeatureComputer;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
-import org.mastodon.mamut.feature.branch.AbstractDoublePropertyFeature;
+import org.mastodon.mamut.feature.branch.AbstractBranchSpotSerialFeatureComputer;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.ItemIO;
@@ -42,27 +41,26 @@ import org.scijava.plugin.Plugin;
  * Computes {@link BranchSinuosityFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchSinuosityFeatureComputer extends AbstractBranchSpotDoubleFeatureComputer
+public class BranchSinuosityFeatureComputer extends AbstractBranchSpotSerialFeatureComputer
 {
-
 	@Parameter( type = ItemIO.OUTPUT )
 	private BranchSinuosityFeature output;
+
+	@Override
+	protected void compute( final BranchSpot branchSpot )
+	{
+		output.sinuosity.set( branchSpot, sinuosity( branchSpot ) );
+	}
 
 	@Override
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new BranchSinuosityFeature( new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ) );
+			output = new BranchSinuosityFeature(
+					new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ) );
 	}
 
-	@Override
-	protected AbstractDoublePropertyFeature< BranchSpot > getOutput()
-	{
-		return output;
-	}
-
-	@Override
-	protected double computeValue( final BranchSpot branchSpot )
+	private double sinuosity( final BranchSpot branchSpot )
 	{
 		double cumulatedDistance = BranchSpotFeatureUtils.cumulatedDistance( model, branchSpot );
 		double directDistance = BranchSpotFeatureUtils.directDistance( model, branchSpot );

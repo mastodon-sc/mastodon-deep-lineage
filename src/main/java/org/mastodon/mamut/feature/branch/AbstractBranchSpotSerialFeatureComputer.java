@@ -6,7 +6,7 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.plugin.Parameter;
 
-public abstract class AbstractBranchSpotDoubleFeatureComputer extends CancelableImpl implements MamutFeatureComputer
+public abstract class AbstractBranchSpotSerialFeatureComputer extends CancelableImpl implements MamutFeatureComputer
 {
 	@Parameter
 	protected Model model;
@@ -14,21 +14,20 @@ public abstract class AbstractBranchSpotDoubleFeatureComputer extends Cancelable
 	@Override
 	public void run()
 	{
-		super.deleteCancelReason();
-		computeAll( getOutput() );
+		computeSerial();
 	}
 
-	protected abstract AbstractDoublePropertyFeature< BranchSpot > getOutput();
-
-	private void computeAll( final AbstractDoublePropertyFeature< BranchSpot > output )
+	private void computeSerial()
 	{
+		super.deleteCancelReason();
+		createOutput();
 		for ( BranchSpot branchSpot : model.getBranchGraph().vertices() )
 		{
 			if ( isCanceled() )
 				break;
-			output.map.set( branchSpot, computeValue( branchSpot ) );
+			compute( branchSpot );
 		}
 	}
 
-	protected abstract double computeValue( final BranchSpot branchSpot );
+	protected abstract void compute( final BranchSpot branchSpot );
 }

@@ -28,13 +28,22 @@
  */
 package org.mastodon.mamut.feature.branch.sinuosity;
 
+import org.mastodon.feature.Dimension;
+import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
+import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.feature.branch.AbstractDoublePropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
+
+import java.util.Collections;
+import java.util.Set;
+
+import static org.mastodon.feature.FeatureProjectionKey.key;
 
 /**
  * Computes the sinuosity (cf. <a href="https://en.wikipedia.org/wiki/Sinuosity">Sinuosity</a>) of a Spot during an individual cell life cycle.
@@ -45,7 +54,7 @@ import org.scijava.plugin.Plugin;
  *          <li>A sinuosity &gt; 1 means that the cell moved in a curved line. The higher, this value is, the "curvier" the cell has moved</li>
  *     </ul>
  */
-public class BranchSinuosityFeature extends AbstractDoublePropertyFeature< BranchSpot >
+public class BranchSinuosityFeature implements Feature< BranchSpot >
 {
 	public static final String KEY = "Branch Sinuosity";
 
@@ -54,7 +63,11 @@ public class BranchSinuosityFeature extends AbstractDoublePropertyFeature< Branc
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
 
-	public static final BranchSinuosityFeature.Spec BRANCH_SINUOSITY_FEATURE_SPEC = new BranchSinuosityFeature.Spec();
+	public final DoublePropertyMap< BranchSpot > sinuosity;
+
+	protected final FeatureProjection< BranchSpot > projection;
+
+	public static final Spec BRANCH_SINUOSITY_FEATURE_SPEC = new BranchSinuosityFeature.Spec();
 
 	@Plugin( type = FeatureSpec.class )
 	public static class Spec extends FeatureSpec< BranchSinuosityFeature, BranchSpot >
@@ -73,18 +86,32 @@ public class BranchSinuosityFeature extends AbstractDoublePropertyFeature< Branc
 
 	public BranchSinuosityFeature( final DoublePropertyMap< BranchSpot > map )
 	{
-		super( map );
+		this.sinuosity = map;
+		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );
 	}
 
+
 	@Override
-	public FeatureProjectionSpec getFeatureProjectionSpec()
+	public FeatureProjection< BranchSpot > project( final FeatureProjectionKey key )
 	{
-		return PROJECTION_SPEC;
+		return projection.getKey().equals( key ) ? projection : null;
 	}
 
 	@Override
-	public BranchSinuosityFeature.Spec getSpec()
+	public Set< FeatureProjection< BranchSpot > > projections()
+	{
+		return Collections.singleton( projection );
+	}
+
+	@Override
+	public FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > getSpec()
 	{
 		return BRANCH_SINUOSITY_FEATURE_SPEC;
+	}
+
+	@Override
+	public void invalidate( final BranchSpot branchSpot )
+	{
+		sinuosity.remove( branchSpot );
 	}
 }

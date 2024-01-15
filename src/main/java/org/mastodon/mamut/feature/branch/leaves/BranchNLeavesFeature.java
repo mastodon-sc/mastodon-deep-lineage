@@ -28,13 +28,23 @@
  */
 package org.mastodon.mamut.feature.branch.leaves;
 
+import org.mastodon.feature.Dimension;
+import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
+import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.feature.branch.AbstractIntPropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
+
+import java.util.Collections;
+import java.util.Set;
+
+import static org.mastodon.feature.FeatureProjectionKey.key;
 
 /**
  * Represents the total number of leaves of a branch spot in the whole track subtree of this branch spot.
@@ -60,13 +70,17 @@ import org.scijava.plugin.Plugin;
  * <li>{@code branchSpot4 = 1}</li>
  * </ul>
  */
-public class BranchNLeavesFeature extends AbstractIntPropertyFeature< BranchSpot >
+public class BranchNLeavesFeature implements Feature< BranchSpot >
 {
 	public static final String KEY = "Branch N leaves";
 
 	private static final String HELP_STRING = "Counts the leaves in the sub-tree of this branch spot.";
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
+
+	public final IntPropertyMap< BranchSpot > nLeaves;
+
+	protected final IntFeatureProjection< BranchSpot > projection;
 
 	public static final BranchNLeavesFeature.Spec BRANCH_N_LEAVES_FEATURE_SPEC = new BranchNLeavesFeature.Spec();
 
@@ -87,18 +101,31 @@ public class BranchNLeavesFeature extends AbstractIntPropertyFeature< BranchSpot
 
 	public BranchNLeavesFeature( final IntPropertyMap< BranchSpot > map )
 	{
-		super( map );
+		this.nLeaves = map;
+		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );
 	}
 
 	@Override
-	public FeatureProjectionSpec getFeatureProjectionSpec()
+	public FeatureProjection< BranchSpot > project( final FeatureProjectionKey key )
 	{
-		return PROJECTION_SPEC;
+		return projection.getKey().equals( key ) ? projection : null;
 	}
 
 	@Override
-	public BranchNLeavesFeature.Spec getSpec()
+	public Set< FeatureProjection< BranchSpot > > projections()
+	{
+		return Collections.singleton( projection );
+	}
+
+	@Override
+	public FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > getSpec()
 	{
 		return BRANCH_N_LEAVES_FEATURE_SPEC;
+	}
+
+	@Override
+	public void invalidate( final BranchSpot branchSpot )
+	{
+		nLeaves.remove( branchSpot );
 	}
 }

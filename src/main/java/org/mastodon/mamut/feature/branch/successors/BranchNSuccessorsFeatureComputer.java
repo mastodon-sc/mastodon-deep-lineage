@@ -70,7 +70,7 @@ public class BranchNSuccessorsFeatureComputer extends CancelableImpl implements 
 	{
 		boolean isLeaf = vertex.outgoingEdges().isEmpty();
 		if ( isLeaf )
-			output.map.set( vertex, 0 );
+			output.nSuccessors.set( vertex, 0 );
 		else
 		{
 			BranchSpot ref = branchGraph.vertexRef();
@@ -78,9 +78,9 @@ public class BranchNSuccessorsFeatureComputer extends CancelableImpl implements 
 			for ( BranchLink link : vertex.outgoingEdges() )
 			{
 				BranchSpot child = link.getTarget( ref );
-				n += 1 + output.map.get( child );
+				n += 1 + output.nSuccessors.get( child );
 			}
-			output.map.set( vertex, n );
+			output.nSuccessors.set( vertex, n );
 			branchGraph.releaseRef( ref );
 		}
 	}

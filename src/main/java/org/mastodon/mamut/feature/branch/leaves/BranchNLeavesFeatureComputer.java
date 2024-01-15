@@ -30,10 +30,10 @@ package org.mastodon.mamut.feature.branch.leaves;
 
 import org.mastodon.mamut.feature.CancelableImpl;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
-import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
@@ -70,7 +70,7 @@ public class BranchNLeavesFeatureComputer extends CancelableImpl implements Mamu
 	{
 		boolean isLeaf = vertex.outgoingEdges().isEmpty();
 		if ( isLeaf )
-			output.map.set( vertex, 1 );
+			output.nLeaves.set( vertex, 1 );
 		else
 		{
 			BranchSpot ref = branchGraph.vertexRef();
@@ -78,9 +78,9 @@ public class BranchNLeavesFeatureComputer extends CancelableImpl implements Mamu
 			for ( BranchLink link : vertex.outgoingEdges() )
 			{
 				BranchSpot child = link.getTarget( ref );
-				n += output.map.get( child );
+				n += output.nLeaves.get( child );
 			}
-			output.map.set( vertex, n );
+			output.nLeaves.set( vertex, n );
 			branchGraph.releaseRef( ref );
 		}
 	}

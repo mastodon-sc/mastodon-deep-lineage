@@ -29,9 +29,8 @@
 package org.mastodon.mamut.feature.branch.movement;
 
 import org.mastodon.mamut.feature.MamutFeatureComputer;
-import org.mastodon.mamut.feature.branch.AbstractBranchSpotDoubleFeatureComputer;
+import org.mastodon.mamut.feature.branch.AbstractBranchSpotSerialFeatureComputer;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
-import org.mastodon.mamut.feature.branch.AbstractDoublePropertyFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.ItemIO;
@@ -42,10 +41,17 @@ import org.scijava.plugin.Plugin;
  * Computes {@link BranchAverageMovementFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchAverageMovementFeatureComputer extends AbstractBranchSpotDoubleFeatureComputer
+public class BranchAverageMovementFeatureComputer extends AbstractBranchSpotSerialFeatureComputer
 {
+
 	@Parameter( type = ItemIO.OUTPUT )
 	protected BranchAverageMovementFeature output;
+
+	@Override
+	protected void compute( final BranchSpot branchSpot )
+	{
+		output.averageMovement.set( branchSpot, averageMovement( branchSpot ) );
+	}
 
 	@Override
 	public void createOutput()
@@ -55,14 +61,7 @@ public class BranchAverageMovementFeatureComputer extends AbstractBranchSpotDoub
 					new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ) );
 	}
 
-	@Override
-	protected AbstractDoublePropertyFeature< BranchSpot > getOutput()
-	{
-		return output;
-	}
-
-	@Override
-	protected double computeValue( BranchSpot branchSpot )
+	private double averageMovement( final BranchSpot branchSpot )
 	{
 		int duration = branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
 		return BranchSpotFeatureUtils.cumulatedDistance( model, branchSpot ) / duration;
