@@ -30,8 +30,10 @@ package org.mastodon.mamut.feature.spot.ellipsoid;
 
 import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatus;
 import org.mastodon.feature.Feature;
+import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
 import org.mastodon.mamut.feature.CancelableImpl;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
+import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
@@ -48,19 +50,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *  Computes {@link SpotEllipsoidFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class SpotEllipsoidAspectRatiosFeatureComputer extends CancelableImpl implements MamutFeatureComputer
+public class SpotEllipsoidAspectRatiosFeatureComputer extends AbstractSerialFeatureComputer< Spot >
 {
-	@Parameter
-	private SharedBigDataViewerData bdvData;
-
-	@Parameter
-	private Model model;
-
-	@Parameter
-	private AtomicBoolean forceComputeAll;
-
-	@Parameter
-	private FeatureComputationStatus status;
 
 	@Parameter( type = ItemIO.OUTPUT )
 	private SpotEllipsoidAspectRatiosFeature output;
@@ -99,38 +90,30 @@ public class SpotEllipsoidAspectRatiosFeatureComputer extends CancelableImpl imp
 	}
 
 	@Override
-	public void run()
+	protected void compute( final Spot spot )
 	{
-		super.deleteCancelReason();
-		final boolean recomputeAll = forceComputeAll.get();
+		output.aspectRatioShortToMiddle.set( spot, input.shortSemiAxis.get( spot ) / input.middleSemiAxis.get( spot ) );
+		output.aspectRatioShortToLong.set( spot, input.shortSemiAxis.get( spot ) / input.longSemiAxis.get( spot ) );
+		output.aspectRatioMiddleToLong.set( spot, input.middleSemiAxis.get( spot ) / input.longSemiAxis.get( spot ) );
+	}
 
-		if ( recomputeAll )
-		{
-			// Clear all
-			output.aspectRatioShortToMiddle.beforeClearPool();
-			output.aspectRatioShortToLong.beforeClearPool();
-			output.aspectRatioMiddleToLong.beforeClearPool();
-		}
+	@Override
+	protected ValueIsSetEvaluator< Spot > getEvaluator()
+	{
+		return output;
+	}
 
-		int done = 0;
+	@Override
+	protected Collection< Spot > getVertices()
+	{
+		return model.getGraph().vertices();
+	}
 
-		Collection< Spot > spots = model.getGraph().vertices();
-		final int numSpots = spots.size();
-		Iterator< Spot > spotIterator = spots.iterator();
-		while ( spotIterator.hasNext() && !isCanceled() )
-		{
-			Spot spot = spotIterator.next();
-			// Limit overhead by only update progress every 1000th spot.
-			if ( done++ % 1000 == 0 )
-				status.notifyProgress( ( double ) done / numSpots );
-			// Skip if we are not forced to recompute all and if a value is already computed.
-			if ( !recomputeAll && output.aspectRatioShortToMiddle.isSet( spot ) )
-				continue;
-
-			output.aspectRatioShortToMiddle.set( spot, input.shortSemiAxis.get( spot ) / input.middleSemiAxis.get( spot ) );
-			output.aspectRatioShortToLong.set( spot, input.shortSemiAxis.get( spot ) / input.longSemiAxis.get( spot ) );
-			output.aspectRatioMiddleToLong.set( spot, input.middleSemiAxis.get( spot ) / input.longSemiAxis.get( spot ) );
-		}
-		status.notifyProgress( 1.0 );
+	@Override
+	protected void reset()
+	{
+		output.aspectRatioShortToMiddle.beforeClearPool();
+		output.aspectRatioShortToLong.beforeClearPool();
+		output.aspectRatioMiddleToLong.beforeClearPool();
 	}
 }

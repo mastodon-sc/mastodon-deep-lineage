@@ -36,6 +36,9 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
@@ -52,7 +55,7 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  * <br>
  * @author Stefan Hahmann
  */
-public class SpotEllipsoidFeature implements Feature< Spot >
+public class SpotEllipsoidFeature implements Feature< Spot >, ValueIsSetEvaluator< Spot >
 {
 	public static final String KEY = "Spot ellipsoid properties";
 
@@ -138,5 +141,11 @@ public class SpotEllipsoidFeature implements Feature< Spot >
 		middleSemiAxis.remove( spot );
 		longSemiAxis.remove( spot );
 		volume.remove( spot );
+	}
+
+	@Override
+	public boolean valueIsSet( final Spot spot )
+	{
+		return shortSemiAxis.isSet( spot ) && middleSemiAxis.isSet( spot ) && longSemiAxis.isSet( spot ) && volume.isSet( spot );
 	}
 }

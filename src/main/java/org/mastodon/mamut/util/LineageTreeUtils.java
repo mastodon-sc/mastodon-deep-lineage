@@ -38,6 +38,7 @@ import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
+import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
@@ -68,7 +69,7 @@ public class LineageTreeUtils {
 	 */
 	public static < V extends Vertex< E >, E extends Edge< V > > void callDepthFirst(
 			@Nonnull Graph< V, E > graph, @Nonnull Consumer< V > action,
-			@Nullable BooleanSupplier stopCondition )
+			@Nullable BooleanSupplier stopCondition, @Nullable ValueIsSetEvaluator< V > evaluator )
 	{
 		DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, GraphSearch.SearchDirection.DIRECTED );
 		search.setTraversalListener( new SearchListener< V, E, DepthFirstSearch< V, E > >()
@@ -76,7 +77,8 @@ public class LineageTreeUtils {
 			@Override
 			public void processVertexLate( V vertex, DepthFirstSearch< V, E > search )
 			{
-				action.accept(vertex);
+				if ( evaluator == null || !evaluator.valueIsSet( vertex ) )
+					action.accept( vertex );
 			}
 
 			@Override

@@ -36,6 +36,7 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
@@ -81,7 +82,7 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  *     <li>{@code branchSpotA = (5 + 13 + 17) / *4* = 8.75}</li>
  * </ul>
  */
-public class BranchAverageMovementFeature implements Feature< BranchSpot >
+public class BranchAverageMovementFeature implements Feature< BranchSpot >, ValueIsSetEvaluator< BranchSpot >
 {
 	public static final String KEY = "Branch Average Movement";
 
@@ -138,5 +139,11 @@ public class BranchAverageMovementFeature implements Feature< BranchSpot >
 	public void invalidate( final BranchSpot branchSpot )
 	{
 		averageMovement.remove( branchSpot );
+	}
+
+	@Override
+	public boolean valueIsSet( final BranchSpot vertex )
+	{
+		return averageMovement.isSet( vertex );
 	}
 }

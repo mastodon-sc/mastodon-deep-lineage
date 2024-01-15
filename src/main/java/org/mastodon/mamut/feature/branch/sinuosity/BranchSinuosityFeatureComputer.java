@@ -29,19 +29,22 @@
 package org.mastodon.mamut.feature.branch.sinuosity;
 
 import org.mastodon.mamut.feature.MamutFeatureComputer;
+import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
-import org.mastodon.mamut.feature.branch.AbstractBranchSpotSerialFeatureComputer;
+import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+import java.util.Collection;
+
 /**
  * Computes {@link BranchSinuosityFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchSinuosityFeatureComputer extends AbstractBranchSpotSerialFeatureComputer
+public class BranchSinuosityFeatureComputer extends AbstractSerialFeatureComputer< BranchSpot >
 {
 	@Parameter( type = ItemIO.OUTPUT )
 	private BranchSinuosityFeature output;
@@ -65,5 +68,23 @@ public class BranchSinuosityFeatureComputer extends AbstractBranchSpotSerialFeat
 		double cumulatedDistance = BranchSpotFeatureUtils.cumulatedDistance( model, branchSpot );
 		double directDistance = BranchSpotFeatureUtils.directDistance( model, branchSpot );
 		return cumulatedDistance / directDistance;
+	}
+
+	@Override
+	protected void reset()
+	{
+		output.sinuosity.beforeClearPool();
+	}
+
+	@Override
+	protected ValueIsSetEvaluator< BranchSpot > getEvaluator()
+	{
+		return output;
+	}
+
+	@Override
+	protected Collection< BranchSpot > getVertices()
+	{
+		return model.getBranchGraph().vertices();
 	}
 }

@@ -28,14 +28,12 @@
  */
 package org.mastodon.mamut.feature.spot.ellipsoid;
 
-import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatus;
 import org.mastodon.feature.Feature;
-import org.mastodon.mamut.feature.CancelableImpl;
+import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
-import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
@@ -43,30 +41,20 @@ import org.scijava.plugin.Plugin;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Computes {@link SpotEllipsoidFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class SpotEllipsoidFeatureComputer extends CancelableImpl implements MamutFeatureComputer
+public class SpotEllipsoidFeatureComputer extends AbstractSerialFeatureComputer< Spot >
 {
-
-	@Parameter
-	private SharedBigDataViewerData bdvData;
-
-	@Parameter
-	private Model model;
-
-	@Parameter
-	private AtomicBoolean forceComputeAll;
-
-	@Parameter
-	private FeatureComputationStatus status;
 
 	@Parameter( type = ItemIO.OUTPUT )
 	private SpotEllipsoidFeature output;
+
+	private final double[][] covarianceMatrix = new double[ 3 ][ 3 ];
+
+	private final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
 
 	@Override
 	public void createOutput()
@@ -92,53 +80,41 @@ public class SpotEllipsoidFeatureComputer extends CancelableImpl implements Mamu
 	}
 
 	@Override
-	public void run()
+	protected void compute( final Spot spot )
 	{
-		super.deleteCancelReason();
-		final boolean recomputeAll = forceComputeAll.get();
+		spot.getCovariance( covarianceMatrix );
+		eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
+		final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
+		// sort axes lengths in ascending order
+		Arrays.sort( eigenValues );
+		double a = Math.sqrt( eigenValues[ 0 ] );
+		double b = Math.sqrt( eigenValues[ 1 ] );
+		double c = Math.sqrt( eigenValues[ 2 ] );
+		double volume = 4d / 3d * Math.PI * a * b * c;
+		output.shortSemiAxis.set( spot, a );
+		output.middleSemiAxis.set( spot, b );
+		output.longSemiAxis.set( spot, c );
+		output.volume.set( spot, volume );
+	}
 
-		if ( recomputeAll )
-		{
-			// Clear all.
-			output.shortSemiAxis.beforeClearPool();
-			output.middleSemiAxis.beforeClearPool();
-			output.longSemiAxis.beforeClearPool();
-			output.volume.beforeClearPool();
-		}
+	@Override
+	protected ValueIsSetEvaluator< Spot > getEvaluator()
+	{
+		return output;
+	}
 
-		int done = 0;
+	@Override
+	protected Collection< Spot > getVertices()
+	{
+		return model.getGraph().vertices();
+	}
 
-		final double[][] covarianceMatrix = new double[ 3 ][ 3 ];
-
-		final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
-
-		Collection< Spot > spots = model.getGraph().vertices();
-		final int numSpots = spots.size();
-		Iterator< Spot > spotIterator = spots.iterator();
-		while ( spotIterator.hasNext() && !isCanceled() )
-		{
-			Spot spot = spotIterator.next();
-			// Limit overhead by only update progress every 1000th spot.
-			if ( done++ % 1000 == 0 )
-				status.notifyProgress( ( double ) done / numSpots );
-			// Skip if we are not forced to recompute all and if a value is already computed.
-			if ( !recomputeAll && output.shortSemiAxis.isSet( spot ) )
-				continue;
-
-			spot.getCovariance( covarianceMatrix );
-			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
-			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
-			// sort axes lengths in ascending order
-			Arrays.sort( eigenValues );
-			double a = Math.sqrt( eigenValues[ 0 ] );
-			double b = Math.sqrt( eigenValues[ 1 ] );
-			double c = Math.sqrt( eigenValues[ 2 ] );
-			double volume = 4d / 3d * Math.PI * a * b * c;
-			output.shortSemiAxis.set( spot, a );
-			output.middleSemiAxis.set( spot, b );
-			output.longSemiAxis.set( spot, c );
-			output.volume.set( spot, volume );
-		}
-		status.notifyProgress( 1.0 );
+	@Override
+	protected void reset()
+	{
+		output.shortSemiAxis.beforeClearPool();
+		output.middleSemiAxis.beforeClearPool();
+		output.longSemiAxis.beforeClearPool();
+		output.volume.beforeClearPool();
 	}
 }

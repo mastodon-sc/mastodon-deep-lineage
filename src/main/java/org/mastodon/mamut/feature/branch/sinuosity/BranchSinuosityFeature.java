@@ -36,6 +36,7 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
@@ -54,7 +55,7 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  *          <li>A sinuosity &gt; 1 means that the cell moved in a curved line. The higher, this value is, the "curvier" the cell has moved</li>
  *     </ul>
  */
-public class BranchSinuosityFeature implements Feature< BranchSpot >
+public class BranchSinuosityFeature implements Feature< BranchSpot >, ValueIsSetEvaluator< BranchSpot >
 {
 	public static final String KEY = "Branch Sinuosity";
 
@@ -113,5 +114,11 @@ public class BranchSinuosityFeature implements Feature< BranchSpot >
 	public void invalidate( final BranchSpot branchSpot )
 	{
 		sinuosity.remove( branchSpot );
+	}
+
+	@Override
+	public boolean valueIsSet( final BranchSpot vertex )
+	{
+		return sinuosity.isSet( vertex );
 	}
 }

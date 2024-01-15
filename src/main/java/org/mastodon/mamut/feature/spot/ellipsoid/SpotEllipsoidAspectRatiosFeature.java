@@ -36,6 +36,7 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
@@ -51,7 +52,7 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  * Feature that computes the aspect ratios between the three semi-axes of the ellipsoid that best fits the spot.
  * @author Stefan Hahmann
  */
-public class SpotEllipsoidAspectRatiosFeature implements Feature< Spot >
+public class SpotEllipsoidAspectRatiosFeature implements Feature< Spot >, ValueIsSetEvaluator< Spot >
 {
 
 	public static final String KEY = "Spot ellipsoid aspect ratios";
@@ -74,6 +75,12 @@ public class SpotEllipsoidAspectRatiosFeature implements Feature< Spot >
 	final DoublePropertyMap< Spot > aspectRatioShortToLong;
 
 	final DoublePropertyMap< Spot > aspectRatioMiddleToLong;
+
+	@Override
+	public boolean valueIsSet( final Spot spot )
+	{
+		return aspectRatioShortToMiddle.isSet( spot ) && aspectRatioShortToLong.isSet( spot ) && aspectRatioMiddleToLong.isSet( spot );
+	}
 
 	@Plugin( type = FeatureSpec.class )
 	public static class SpotEllipsoidAspectRatiosFeatureSpec extends FeatureSpec< SpotEllipsoidAspectRatiosFeature, Spot >

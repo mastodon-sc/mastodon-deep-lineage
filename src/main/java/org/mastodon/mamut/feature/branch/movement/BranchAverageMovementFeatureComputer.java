@@ -29,7 +29,8 @@
 package org.mastodon.mamut.feature.branch.movement;
 
 import org.mastodon.mamut.feature.MamutFeatureComputer;
-import org.mastodon.mamut.feature.branch.AbstractBranchSpotSerialFeatureComputer;
+import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
+import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
@@ -37,11 +38,13 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+import java.util.Collection;
+
 /**
  * Computes {@link BranchAverageMovementFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchAverageMovementFeatureComputer extends AbstractBranchSpotSerialFeatureComputer
+public class BranchAverageMovementFeatureComputer extends AbstractSerialFeatureComputer< BranchSpot >
 {
 
 	@Parameter( type = ItemIO.OUTPUT )
@@ -65,5 +68,23 @@ public class BranchAverageMovementFeatureComputer extends AbstractBranchSpotSeri
 	{
 		int duration = branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
 		return BranchSpotFeatureUtils.cumulatedDistance( model, branchSpot ) / duration;
+	}
+
+	@Override
+	protected void reset()
+	{
+		output.averageMovement.beforeClearPool();
+	}
+
+	@Override
+	protected ValueIsSetEvaluator< BranchSpot > getEvaluator()
+	{
+		return output;
+	}
+
+	@Override
+	protected Collection< BranchSpot > getVertices()
+	{
+		return model.getBranchGraph().vertices();
 	}
 }
