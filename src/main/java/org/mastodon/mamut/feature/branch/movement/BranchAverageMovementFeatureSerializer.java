@@ -65,11 +65,12 @@ public class BranchAverageMovementFeatureSerializer implements BranchFeatureSeri
 		// Read the map link -> value
 		final DoublePropertyMap< Spot > spotPropertyMap = new DoublePropertyMap<>( graph.vertices(), Double.NaN );
 		final DoublePropertyMapSerializer< Spot > propertyMapSerializer = new DoublePropertyMapSerializer<>( spotPropertyMap );
+		final String lengthUnits = ois.readUTF();
 		propertyMapSerializer.readPropertyMap( idmap, ois );
 
 		// Map to branch-link -> value
 		DoublePropertyMap< BranchSpot > branchPropertyMap = BranchFeatureSerializer.mapToBranchSpotMap( spotPropertyMap, branchGraph );
-		return new BranchAverageMovementFeature( branchPropertyMap );
+		return new BranchAverageMovementFeature( branchPropertyMap, lengthUnits );
 	}
 
 	@Override
@@ -80,6 +81,7 @@ public class BranchAverageMovementFeatureSerializer implements BranchFeatureSeri
 		final DoublePropertyMap< Spot > spotMap =
 				BranchFeatureSerializer.branchSpotMapToMap( branchSpotMap, branchGraph, graph );
 		final DoublePropertyMapSerializer< Spot > propertyMapSerializer = new DoublePropertyMapSerializer<>( spotMap );
+		oos.writeUTF( feature.lengthUnits );
 		propertyMapSerializer.writePropertyMap( idmap, oos );
 	}
 }

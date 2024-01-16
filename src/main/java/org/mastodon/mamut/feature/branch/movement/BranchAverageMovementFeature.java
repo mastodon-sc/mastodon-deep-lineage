@@ -88,13 +88,15 @@ public class BranchAverageMovementFeature implements Feature< BranchSpot >, Valu
 
 	private static final String HELP_STRING = "The average movement per frame of a spot during its life cycle.";
 
-	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
+	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY, Dimension.LENGTH );
 
 	public final DoublePropertyMap< BranchSpot > averageMovement;
 
 	protected final FeatureProjection< BranchSpot > projection;
 
 	public static final Spec BRANCH_AVERAGE_MOVEMENT_FEATURE_SPEC = new Spec();
+
+	final String lengthUnits;
 
 	@Plugin( type = FeatureSpec.class )
 	public static class Spec extends FeatureSpec< BranchAverageMovementFeature, BranchSpot >
@@ -111,10 +113,11 @@ public class BranchAverageMovementFeature implements Feature< BranchSpot >, Valu
 		}
 	}
 
-	public BranchAverageMovementFeature( final DoublePropertyMap< BranchSpot > map )
+	public BranchAverageMovementFeature( final DoublePropertyMap< BranchSpot > map, final String lengthUnits )
 	{
 		this.averageMovement = map;
-		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );
+		this.lengthUnits = lengthUnits;
+		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, lengthUnits );
 	}
 
 	@Override

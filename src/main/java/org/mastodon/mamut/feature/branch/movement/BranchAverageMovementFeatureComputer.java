@@ -61,7 +61,7 @@ public class BranchAverageMovementFeatureComputer extends AbstractSerialFeatureC
 	{
 		if ( null == output )
 			output = new BranchAverageMovementFeature(
-					new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ) );
+					new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ), model.getSpaceUnits() );
 	}
 
 	private double averageMovement( final BranchSpot branchSpot )
