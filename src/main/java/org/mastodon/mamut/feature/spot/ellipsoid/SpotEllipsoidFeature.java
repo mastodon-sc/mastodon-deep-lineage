@@ -36,8 +36,6 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.graph.Edge;
-import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
@@ -83,6 +81,8 @@ public class SpotEllipsoidFeature implements Feature< Spot >, ValueIsSetEvaluato
 
 	final DoublePropertyMap< Spot > volume;
 
+	final String lengthUnits;
+
 	@Plugin( type = FeatureSpec.class )
 	public static class SpotEllipsoidFeatureSpec extends FeatureSpec< SpotEllipsoidFeature, Spot >
 	{
@@ -97,12 +97,13 @@ public class SpotEllipsoidFeature implements Feature< Spot >, ValueIsSetEvaluato
 	public static final SpotEllipsoidFeatureSpec SPOT_ELLIPSOID_FEATURE_SPEC = new SpotEllipsoidFeatureSpec();
 
 	SpotEllipsoidFeature( final DoublePropertyMap< Spot > shortSemiAxis, final DoublePropertyMap< Spot > middleSemiAxis,
-			final DoublePropertyMap< Spot > longSemiAxis, final DoublePropertyMap< Spot > volume )
+			final DoublePropertyMap< Spot > longSemiAxis, final DoublePropertyMap< Spot > volume, final String lengthUnits )
 	{
 		this.shortSemiAxis = shortSemiAxis;
 		this.middleSemiAxis = middleSemiAxis;
 		this.longSemiAxis = longSemiAxis;
 		this.volume = volume;
+		this.lengthUnits = lengthUnits;
 		this.projectionMap = new LinkedHashMap<>( 4 );
 
 		final FeatureProjectionKey keyShortSemiAxis = key( SHORT_SEMI_AXIS_PROJECTION_SPEC );
@@ -110,9 +111,9 @@ public class SpotEllipsoidFeature implements Feature< Spot >, ValueIsSetEvaluato
 		final FeatureProjectionKey keyLongSemiAxis = key( LONG_SEMI_AXIS_PROJECTION_SPEC );
 		final FeatureProjectionKey keyVolume = key( VOLUME_PROJECTION_SPEC );
 
-		projectionMap.put( keyShortSemiAxis, FeatureProjections.project( keyShortSemiAxis, shortSemiAxis, Dimension.NONE_UNITS ) );
-		projectionMap.put( keyMiddleSemiAxis, FeatureProjections.project( keyMiddleSemiAxis, middleSemiAxis, Dimension.NONE_UNITS ) );
-		projectionMap.put( keyLongSemiAxis, FeatureProjections.project( keyLongSemiAxis, longSemiAxis, Dimension.NONE_UNITS ) );
+		projectionMap.put( keyShortSemiAxis, FeatureProjections.project( keyShortSemiAxis, shortSemiAxis, lengthUnits ) );
+		projectionMap.put( keyMiddleSemiAxis, FeatureProjections.project( keyMiddleSemiAxis, middleSemiAxis, lengthUnits ) );
+		projectionMap.put( keyLongSemiAxis, FeatureProjections.project( keyLongSemiAxis, longSemiAxis, lengthUnits ) );
 		projectionMap.put( keyVolume, FeatureProjections.project( keyVolume, volume, Dimension.NONE_UNITS ) );
 	}
 

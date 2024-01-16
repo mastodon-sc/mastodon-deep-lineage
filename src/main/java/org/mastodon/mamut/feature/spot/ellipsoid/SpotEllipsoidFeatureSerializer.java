@@ -30,6 +30,7 @@ package org.mastodon.mamut.feature.spot.ellipsoid;
 
 import static org.mastodon.mamut.feature.spot.ellipsoid.SpotEllipsoidFeature.SPOT_ELLIPSOID_FEATURE_SPEC;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -70,6 +71,8 @@ public class SpotEllipsoidFeatureSerializer implements FeatureSerializer< SpotEl
 		middleAxisSerializer.writePropertyMap( idMap, objectOutputStream );
 		longAxisSerializer.writePropertyMap( idMap, objectOutputStream );
 		volumeSerializer.writePropertyMap( idMap, objectOutputStream );
+
+		objectOutputStream.writeUTF( feature.lengthUnits );
 	}
 
 	@Override
@@ -86,6 +89,16 @@ public class SpotEllipsoidFeatureSerializer implements FeatureSerializer< SpotEl
 		new DoublePropertyMapSerializer<>( longAxisMap ).readPropertyMap( idMap, objectInputStream );
 		new DoublePropertyMapSerializer<>( volumeMap ).readPropertyMap( idMap, objectInputStream );
 
-		return new SpotEllipsoidFeature( shortAxisMap, middleAxisMap, longAxisMap, volumeMap );
+		String lengthUnits = "";
+		try
+		{
+			lengthUnits = objectInputStream.readUTF();
+		}
+		catch ( EOFException e )
+		{
+			// ignore if no length units were stored. the length units were added later.
+		}
+		return new SpotEllipsoidFeature( shortAxisMap, middleAxisMap, longAxisMap, volumeMap, lengthUnits );
+
 	}
 }

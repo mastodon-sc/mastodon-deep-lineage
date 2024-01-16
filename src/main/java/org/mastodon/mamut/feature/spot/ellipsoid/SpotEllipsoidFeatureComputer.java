@@ -75,7 +75,7 @@ public class SpotEllipsoidFeatureComputer extends AbstractSerialFeatureComputer<
 			final DoublePropertyMap< Spot > longSemiAxis = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 			final DoublePropertyMap< Spot > volume = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 			// Create a new output.
-			output = new SpotEllipsoidFeature( shortSemiAxis, middleSemiAxis, longSemiAxis, volume );
+			output = new SpotEllipsoidFeature( shortSemiAxis, middleSemiAxis, longSemiAxis, volume, model.getSpaceUnits() );
 		}
 	}
 
