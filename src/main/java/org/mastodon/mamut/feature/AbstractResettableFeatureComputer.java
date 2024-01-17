@@ -1,9 +1,7 @@
 package org.mastodon.mamut.feature;
 
-import org.mastodon.graph.Vertex;
 import org.scijava.plugin.Parameter;
 
-import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractResettableFeatureComputer extends CancelableImpl implements MamutFeatureComputer

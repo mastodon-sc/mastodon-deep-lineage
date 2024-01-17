@@ -28,23 +28,17 @@
  */
 package org.mastodon.mamut.feature.spot.ellipsoid;
 
-import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatus;
 import org.mastodon.feature.Feature;
 import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
-import org.mastodon.mamut.feature.CancelableImpl;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.feature.ValueIsSetEvaluator;
-import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *  Computes {@link SpotEllipsoidFeature}
