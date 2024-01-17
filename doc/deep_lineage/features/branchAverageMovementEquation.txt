@@ -1,3 +1,5 @@
+https://latex.codecogs.com/eqneditor/editor.php
+
 \frac{\text{cumulated track length}}{\text{track duration}}
 \\
 \frac{\sum_{i=1}^{k} \| \mathbf{s_i} - \mathbf{s_{i+1}} \|} {\left | tp_{s_k} - tp_{s_1} \right |}
