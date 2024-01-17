@@ -29,7 +29,6 @@
 package org.mastodon.mamut.util;
 
 import org.junit.Test;
-import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.model.Model;
 
