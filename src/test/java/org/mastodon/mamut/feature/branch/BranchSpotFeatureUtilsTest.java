@@ -74,4 +74,17 @@ public class BranchSpotFeatureUtilsTest
 		double[] expected = new double[] { 5, 10, 15 };
 		assertArrayEquals( expected, BranchSpotFeatureUtils.getLastSpotCoordinates( graph.getModel(), graph.branchSpotA ), 0d );
 	}
+
+	@Test
+	public void normalizedDirection()
+	{
+		double[] normalizedDirection = BranchSpotFeatureUtils.normalizedDirection( graph.getModel(), graph.branchSpotA );
+		double distance = Math.sqrt( 16 + 64 + 144 );
+		double expectedX = 4 / distance;
+		double expectedY = 8 / distance;
+		double expectedZ = 12 / distance;
+		assertEquals( expectedX, normalizedDirection[ 0 ], 0d );
+		assertEquals( expectedY, normalizedDirection[ 1 ], 0d );
+		assertEquals( expectedZ, normalizedDirection[ 2 ], 0d );
+	}
 }
