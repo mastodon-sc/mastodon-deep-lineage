@@ -41,7 +41,7 @@ import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.pool.PoolCollectionWrapper;
+import org.mastodon.util.TreeUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -106,40 +106,6 @@ public class LineageTreeUtils {
 		}
 	}
 
-	// TODO: remove after https://github.com/mastodon-sc/mastodon/pull/274 is merged
-	/**
-	 * Gets the minimum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
-	 * @param model the {@link Model}
-	 * @return the timepoint
-	 */
-	public static int getMinTimepoint( final Model model )
-	{
-		PoolCollectionWrapper< Spot > spots = model.getGraph().vertices();
-		int minTimepoint = Integer.MAX_VALUE;
-		for ( Spot spot : spots )
-			if ( spot.getTimepoint() < minTimepoint )
-				minTimepoint = spot.getTimepoint();
-
-		return minTimepoint;
-	}
-
-	// TODO: remove after https://github.com/mastodon-sc/mastodon/pull/274 is merged
-	/**
-	 * Gets the maximum timepoint in the given {@link Model} at which at least one {@link Spot} exists in the Model.
-	 * @param model the {@link Model}
-	 * @return the timepoint
-	 */
-	public static int getMaxTimepoint( final Model model )
-	{
-		PoolCollectionWrapper< Spot > spots = model.getGraph().vertices();
-		int maxTimepoint = Integer.MIN_VALUE;
-		for ( Spot spot : spots )
-			if ( spot.getTimepoint() > maxTimepoint )
-				maxTimepoint = spot.getTimepoint();
-
-		return maxTimepoint;
-	}
-
 	/**
 	 * Gets the first time point that has at least the given number of spots ({@code numberOfSpots})
 	 * by iterating through the {@link org.mastodon.spatial.SpatioTemporalIndex} of the given {@link Model}.
@@ -151,8 +117,8 @@ public class LineageTreeUtils {
 	 */
 	public static int getFirstTimepointWithNSpots( final Model model, final int numberOfSpots )
 	{
-		int minTimepoint = getMinTimepoint( model );
-		int maxTimepoint = getMaxTimepoint( model );
+		int minTimepoint = TreeUtils.getMinTimepoint( model );
+		int maxTimepoint = TreeUtils.getMaxTimepoint( model );
 		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
 			if ( model.getSpatioTemporalIndex().getSpatialIndex( timepoint ).size() >= numberOfSpots )
 				return timepoint;

@@ -40,23 +40,6 @@ import static org.junit.Assert.assertThrows;
 
 public class LineageTreeUtilsTest
 {
-	// TODO: remove after https://github.com/mastodon-sc/mastodon/pull/274 is merged
-	@Test
-	public void testGetMinTimepoint()
-	{
-		assertEquals( 0, LineageTreeUtils.getMinTimepoint( new ExampleGraph1().getModel() ) );
-		assertEquals( 0, LineageTreeUtils.getMinTimepoint( new ExampleGraph2().getModel() ) );
-
-	}
-
-	// TODO: remove after https://github.com/mastodon-sc/mastodon/pull/274 is merged
-	@Test
-	public void testGetMaxTimepoint()
-	{
-		assertEquals( 3, LineageTreeUtils.getMaxTimepoint( new ExampleGraph1().getModel() ) );
-		assertEquals( 7, LineageTreeUtils.getMaxTimepoint( new ExampleGraph2().getModel() ) );
-	}
-
 	@Test
 	public void testGetFirstTimepointWithNSpots()
 	{
