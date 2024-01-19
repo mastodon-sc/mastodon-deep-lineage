@@ -46,38 +46,51 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 /**
- * De-/serializes the {@link BranchNSuccessorsFeature}.
+ * De-/serializes the {@link BranchNSuccessorsPredecessorsFeature}.
  */
 @Plugin( type = FeatureSerializer.class )
-public class BranchNSuccessorsFeatureSerializer implements BranchFeatureSerializer< BranchNSuccessorsFeature, BranchSpot, Spot >
+public class BranchNSuccessorsPredecessorsFeatureSerializer
+		implements BranchFeatureSerializer< BranchNSuccessorsPredecessorsFeature, BranchSpot, Spot >
 {
 	@Override
-	public FeatureSpec< BranchNSuccessorsFeature, BranchSpot > getFeatureSpec()
+	public FeatureSpec< BranchNSuccessorsPredecessorsFeature, BranchSpot > getFeatureSpec()
 	{
-		return BranchNSuccessorsFeature.BRANCH_N_SUCCESSORS_FEATURE;
+		return BranchNSuccessorsPredecessorsFeature.BRANCH_N_SUCCESSORS_PREDECESSORS_FEATURE;
 	}
 
 	@Override
-	public BranchNSuccessorsFeature deserialize( FileIdToObjectMap< Spot > idmap, ObjectInputStream ois, ModelBranchGraph branchGraph,
+	public BranchNSuccessorsPredecessorsFeature deserialize( FileIdToObjectMap< Spot > idmap, ObjectInputStream ois,
+			ModelBranchGraph branchGraph,
 			ModelGraph graph ) throws ClassNotFoundException, IOException
 	{
 		// Read the map link -> value
-		final IntPropertyMap< Spot > spotPropertyMap = new IntPropertyMap<>( graph.vertices(), -1 );
-		final IntPropertyMapSerializer< Spot > propertyMapSerializer = new IntPropertyMapSerializer<>( spotPropertyMap );
-		propertyMapSerializer.readPropertyMap( idmap, ois );
+		final IntPropertyMap< Spot > mapSuccessors = new IntPropertyMap<>( graph.vertices(), -1 );
+		final IntPropertyMap< Spot > mapPredecessors = new IntPropertyMap<>( graph.vertices(), -1 );
+		final IntPropertyMapSerializer< Spot > serializerSuccessors = new IntPropertyMapSerializer<>( mapSuccessors );
+		final IntPropertyMapSerializer< Spot > serializerPredecessors = new IntPropertyMapSerializer<>( mapPredecessors );
+		serializerSuccessors.readPropertyMap( idmap, ois );
+		serializerPredecessors.readPropertyMap( idmap, ois );
 
 		// Map to branch-link -> value
-		IntPropertyMap< BranchSpot > branchPropertyMap = BranchFeatureSerializer.mapToBranchSpotMap( spotPropertyMap, branchGraph );
-		return new BranchNSuccessorsFeature( branchPropertyMap );
+		IntPropertyMap< BranchSpot > successors = BranchFeatureSerializer.mapToBranchSpotMap( mapSuccessors, branchGraph );
+		IntPropertyMap< BranchSpot > predcessors = BranchFeatureSerializer.mapToBranchSpotMap( mapSuccessors, branchGraph );
+
+		return new BranchNSuccessorsPredecessorsFeature( successors, predcessors );
 	}
 
 	@Override
-	public void serialize( BranchNSuccessorsFeature feature, ObjectToFileIdMap< Spot > idmap, ObjectOutputStream oos,
+	public void serialize( BranchNSuccessorsPredecessorsFeature feature, ObjectToFileIdMap< Spot > idmap, ObjectOutputStream oos,
 			ModelBranchGraph branchGraph, ModelGraph graph ) throws IOException
 	{
-		IntPropertyMap< BranchSpot > branchSpotMap = feature.nSuccessors;
-		final IntPropertyMap< Spot > spotMap = BranchFeatureSerializer.branchSpotMapToMap( branchSpotMap, branchGraph, graph );
-		final IntPropertyMapSerializer< Spot > propertyMapSerializer = new IntPropertyMapSerializer<>( spotMap );
-		propertyMapSerializer.writePropertyMap( idmap, oos );
+		IntPropertyMap< BranchSpot > branchSpotMapSuccessors = feature.nSuccessors;
+		IntPropertyMap< BranchSpot > branchSpotMapPredecessors = feature.nPredecessors;
+		final IntPropertyMap< Spot > spotMapSuccessors =
+				BranchFeatureSerializer.branchSpotMapToMap( branchSpotMapSuccessors, branchGraph, graph );
+		final IntPropertyMap< Spot > spotMapPredecessors =
+				BranchFeatureSerializer.branchSpotMapToMap( branchSpotMapPredecessors, branchGraph, graph );
+		final IntPropertyMapSerializer< Spot > serializerSuccessors = new IntPropertyMapSerializer<>( spotMapSuccessors );
+		final IntPropertyMapSerializer< Spot > serializerPredecessors = new IntPropertyMapSerializer<>( spotMapPredecessors );
+		serializerSuccessors.writePropertyMap( idmap, oos );
+		serializerPredecessors.writePropertyMap( idmap, oos );
 	}
 }
