@@ -44,7 +44,6 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.util.TreeUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 import java.util.function.BooleanSupplier;
@@ -61,14 +60,42 @@ public class LineageTreeUtils {
 	/**
 	 * Performs a depth-first iteration through the specified {@link Graph} starting from each root.
 	 * <p>
-	 * The iteration is performed in a single thread. The given {@code action} is called for each vertex in the graph, when all its descendants in the search tree have been iterated through or when it is a leaf in the tree.
+	 * The iteration is performed in a single thread.
+	 * <p>
+	 * The given {@code reverseProcessor} is called for each vertex in the graph, when all its descendants in the search tree have been iterated through or when it is a leaf in the tree.
 	 *
 	 * @param graph the graph to iterate through.
-	 * @param action      the action to perform on each vertex.
+	 * @param reverseProcessor optional action to performed on each vertex. Vertices are effectively processed in the reverse order that of their discovery.
 	 * @param stopCondition optional condition that, when supplies true, stops the iteration before the next root is processed.
+	 * @param evaluator optional evaluator that determines whether a vertex has a value already been set.
+	 * @param forceComputeAll if true, all vertices are processed, even if the evaluator states that their value is set.
 	 */
 	public static < V extends Vertex< E >, E extends Edge< V > > void callDepthFirst(
-			@Nonnull Graph< V, E > graph, @Nonnull Consumer< V > action,
+			Graph< V, E > graph, @Nullable Consumer< V > reverseProcessor, @Nullable BooleanSupplier stopCondition,
+			@Nullable ValueIsSetEvaluator< V > evaluator, boolean forceComputeAll )
+	{
+		callDepthFirst( graph, reverseProcessor, null, stopCondition, evaluator, forceComputeAll );
+	}
+
+	/**
+	 * Performs a depth-first iteration through the specified {@link Graph} starting from each root.
+	 * <p>
+	 * The iteration is performed in a single thread.
+	 * Performs a depth-first iteration through the specified {@link Graph} starting from each root.
+	 * <p>
+	 * The iteration is performed in a single thread.
+	 * The given {@code reverseProcessor} is called for each vertex in the graph, when all its descendants in the search tree have been iterated through or when it is a leaf in the tree.
+	 * The given {@code forwardProcessor} is called for each vertex in the graph, when it is discovered.
+	 *
+	 * @param graph the graph to iterate through.
+	 * @param reverseProcessor optional action to performed on each vertex. Vertices are effectively processed in the reverse order that of their discovery.
+	 * @param forwardProcessor optional action performed on each vertex. Called when a vertex is discovered during the depth-first search.
+	 * @param stopCondition optional condition that, when supplies true, stops the iteration before the next root is processed.
+	 * @param evaluator optional evaluator that determines whether a vertex has a value already been set.
+	 * @param forceComputeAll if true, all vertices are processed, even if the evaluator states that their value is set.
+	 */
+	public static < V extends Vertex< E >, E extends Edge< V > > void callDepthFirst(
+			Graph< V, E > graph, @Nullable Consumer< V > reverseProcessor, @Nullable Consumer< V > forwardProcessor,
 			@Nullable BooleanSupplier stopCondition, @Nullable ValueIsSetEvaluator< V > evaluator, boolean forceComputeAll )
 	{
 		DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, GraphSearch.SearchDirection.DIRECTED );
@@ -77,14 +104,19 @@ public class LineageTreeUtils {
 			@Override
 			public void processVertexLate( V vertex, DepthFirstSearch< V, E > search )
 			{
+				if ( reverseProcessor == null )
+					return;
 				if ( forceComputeAll || evaluator == null || !evaluator.valueIsSet( vertex ) )
-					action.accept( vertex );
+					reverseProcessor.accept( vertex );
 			}
 
 			@Override
 			public void processVertexEarly( V vertex, DepthFirstSearch< V, E > search )
 			{
-				// Do nothing here. We only care about the vertices after all their descendants have been processed (see processVertexLate).
+				if ( forwardProcessor == null )
+					return;
+				if ( forceComputeAll || evaluator == null || !evaluator.valueIsSet( vertex ) )
+					forwardProcessor.accept( vertex );
 			}
 
 			@Override
