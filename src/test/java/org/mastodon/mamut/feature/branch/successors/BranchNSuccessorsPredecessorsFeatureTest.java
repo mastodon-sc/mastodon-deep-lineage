@@ -81,10 +81,12 @@ public class BranchNSuccessorsPredecessorsFeatureTest extends AbstractFeatureTes
 		// test, if features are not -1 (i.e. default value) before invalidation
 		assertNotEquals( -1, getProjection( branchSuccessorsPredecessorsFeature,
 				BranchNSuccessorsPredecessorsFeature.SUCCESSORS_PROJECTION_SPEC )
-						.value( graph.branchSpotA ) );
+						.value( graph.branchSpotA ),
+				0d );
 		assertNotEquals( -1, getProjection( branchSuccessorsPredecessorsFeature,
 				BranchNSuccessorsPredecessorsFeature.PREDECESSORS_PROJECTION_SPEC )
-						.value( graph.branchSpotA ) );
+						.value( graph.branchSpotA ),
+				0d );
 
 		// invalidate feature
 		branchSuccessorsPredecessorsFeature.invalidate( graph.branchSpotA );
