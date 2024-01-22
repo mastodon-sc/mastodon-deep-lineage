@@ -76,7 +76,7 @@ public class BranchSpotFeatureUtilsTest
 	}
 
 	@Test
-	public void normalizedDirection()
+	public void testNormalizedDirection()
 	{
 		double[] normalizedDirection = BranchSpotFeatureUtils.normalizedDirection( graph.getModel(), graph.branchSpotA );
 		double distance = Math.sqrt( 16 + 64 + 144 );
