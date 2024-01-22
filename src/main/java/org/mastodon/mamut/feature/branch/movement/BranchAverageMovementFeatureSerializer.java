@@ -30,17 +30,26 @@ package org.mastodon.mamut.feature.branch.movement;
 
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.mamut.feature.branch.AbstractBranchSpotDoublePropertyFeatureSerializer;
+import org.mastodon.io.FileIdToObjectMap;
+import org.mastodon.io.ObjectToFileIdMap;
+import org.mastodon.io.properties.DoublePropertyMapSerializer;
+import org.mastodon.mamut.feature.branch.BranchFeatureSerializer;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * De-/serializes the {@link BranchAverageMovementFeature}.
  */
 @Plugin( type = FeatureSerializer.class )
-public class BranchAverageMovementFeatureSerializer
-		extends AbstractBranchSpotDoublePropertyFeatureSerializer< BranchAverageMovementFeature >
+public class BranchAverageMovementFeatureSerializer implements BranchFeatureSerializer< BranchAverageMovementFeature, BranchSpot, Spot >
 {
 
 	@Override
@@ -50,15 +59,29 @@ public class BranchAverageMovementFeatureSerializer
 	}
 
 	@Override
-	protected BranchAverageMovementFeature createFeature( DoublePropertyMap< BranchSpot > map )
+	public BranchAverageMovementFeature deserialize( FileIdToObjectMap< Spot > idmap, ObjectInputStream ois, ModelBranchGraph branchGraph,
+			ModelGraph graph ) throws ClassNotFoundException, IOException
 	{
-		return new BranchAverageMovementFeature( map );
+		// Read the map link -> value
+		final DoublePropertyMap< Spot > spotPropertyMap = new DoublePropertyMap<>( graph.vertices(), Double.NaN );
+		final DoublePropertyMapSerializer< Spot > propertyMapSerializer = new DoublePropertyMapSerializer<>( spotPropertyMap );
+		final String lengthUnits = ois.readUTF();
+		propertyMapSerializer.readPropertyMap( idmap, ois );
+
+		// Map to branch-link -> value
+		DoublePropertyMap< BranchSpot > branchPropertyMap = BranchFeatureSerializer.mapToBranchSpotMap( spotPropertyMap, branchGraph );
+		return new BranchAverageMovementFeature( branchPropertyMap, lengthUnits );
 	}
 
 	@Override
-	protected DoublePropertyMap< BranchSpot > extractPropertyMap( BranchAverageMovementFeature feature )
+	public void serialize( BranchAverageMovementFeature feature, ObjectToFileIdMap< Spot > idmap, ObjectOutputStream oos,
+			ModelBranchGraph branchGraph, ModelGraph graph ) throws IOException
 	{
-		return feature.map;
+		DoublePropertyMap< BranchSpot > branchSpotMap = feature.averageMovement;
+		final DoublePropertyMap< Spot > spotMap =
+				BranchFeatureSerializer.branchSpotMapToMap( branchSpotMap, branchGraph, graph );
+		final DoublePropertyMapSerializer< Spot > propertyMapSerializer = new DoublePropertyMapSerializer<>( spotMap );
+		oos.writeUTF( feature.lengthUnits );
+		propertyMapSerializer.writePropertyMap( idmap, oos );
 	}
-
 }

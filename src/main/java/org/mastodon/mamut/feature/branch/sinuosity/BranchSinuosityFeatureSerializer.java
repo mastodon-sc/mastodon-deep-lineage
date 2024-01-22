@@ -30,16 +30,26 @@ package org.mastodon.mamut.feature.branch.sinuosity;
 
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.mamut.feature.branch.AbstractBranchSpotDoublePropertyFeatureSerializer;
+import org.mastodon.io.FileIdToObjectMap;
+import org.mastodon.io.ObjectToFileIdMap;
+import org.mastodon.io.properties.DoublePropertyMapSerializer;
+import org.mastodon.mamut.feature.branch.BranchFeatureSerializer;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * De-/serializes the {@link BranchSinuosityFeature}.
  */
 @Plugin( type = FeatureSerializer.class )
-public class BranchSinuosityFeatureSerializer extends AbstractBranchSpotDoublePropertyFeatureSerializer< BranchSinuosityFeature >
+public class BranchSinuosityFeatureSerializer implements BranchFeatureSerializer< BranchSinuosityFeature, BranchSpot, Spot >
 {
 	@Override
 	public FeatureSpec< BranchSinuosityFeature, BranchSpot > getFeatureSpec()
@@ -47,15 +57,29 @@ public class BranchSinuosityFeatureSerializer extends AbstractBranchSpotDoublePr
 		return BranchSinuosityFeature.BRANCH_SINUOSITY_FEATURE_SPEC;
 	}
 
+
 	@Override
-	protected BranchSinuosityFeature createFeature( DoublePropertyMap< BranchSpot > map )
+	public BranchSinuosityFeature deserialize( FileIdToObjectMap< Spot > idmap, ObjectInputStream ois, ModelBranchGraph branchGraph,
+			ModelGraph graph ) throws ClassNotFoundException, IOException
 	{
-		return new BranchSinuosityFeature( map );
+		// Read the map link -> value
+		final DoublePropertyMap< Spot > spotPropertyMap = new DoublePropertyMap<>( graph.vertices(), Double.NaN );
+		final DoublePropertyMapSerializer< Spot > propertyMapSerializer = new DoublePropertyMapSerializer<>( spotPropertyMap );
+		propertyMapSerializer.readPropertyMap( idmap, ois );
+
+		// Map to branch-link -> value
+		DoublePropertyMap< BranchSpot > branchPropertyMap = BranchFeatureSerializer.mapToBranchSpotMap( spotPropertyMap, branchGraph );
+		return new BranchSinuosityFeature( branchPropertyMap );
 	}
 
 	@Override
-	protected DoublePropertyMap< BranchSpot > extractPropertyMap( BranchSinuosityFeature feature )
+	public void serialize( BranchSinuosityFeature feature, ObjectToFileIdMap< Spot > idmap, ObjectOutputStream oos,
+			ModelBranchGraph branchGraph, ModelGraph graph ) throws IOException
 	{
-		return feature.map;
+		DoublePropertyMap< BranchSpot > branchSpotMap = feature.sinuosity;
+		final DoublePropertyMap< Spot > spotMap =
+				BranchFeatureSerializer.branchSpotMapToMap( branchSpotMap, branchGraph, graph );
+		final DoublePropertyMapSerializer< Spot > propertyMapSerializer = new DoublePropertyMapSerializer<>( spotMap );
+		propertyMapSerializer.writePropertyMap( idmap, oos );
 	}
 }

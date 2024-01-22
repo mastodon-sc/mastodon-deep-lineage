@@ -28,7 +28,7 @@
  */
 package org.mastodon.mamut.feature.branch.successors;
 
-import org.mastodon.mamut.feature.CancelableImpl;
+import org.mastodon.mamut.feature.AbstractResettableFeatureComputer;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.mamut.model.branch.BranchLink;
@@ -45,7 +45,7 @@ import javax.annotation.Nonnull;
  * Computes {@link BranchNSuccessorsFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchNSuccessorsFeatureComputer extends CancelableImpl implements MamutFeatureComputer
+public class BranchNSuccessorsFeatureComputer extends AbstractResettableFeatureComputer
 {
 	@Parameter
 	protected ModelBranchGraph branchGraph;
@@ -63,14 +63,21 @@ public class BranchNSuccessorsFeatureComputer extends CancelableImpl implements 
 	@Override
 	public void run()
 	{
-		LineageTreeUtils.callDepthFirst( branchGraph, this::computeSuccessors, this::isCanceled );
+		super.run();
+		LineageTreeUtils.callDepthFirst( branchGraph, this::computeSuccessors, this::isCanceled, output, forceComputeAll.get() );
+	}
+
+	@Override
+	protected void reset()
+	{
+		output.nSuccessors.beforeClearPool();
 	}
 
 	private void computeSuccessors( @Nonnull BranchSpot vertex )
 	{
 		boolean isLeaf = vertex.outgoingEdges().isEmpty();
 		if ( isLeaf )
-			output.map.set( vertex, 0 );
+			output.nSuccessors.set( vertex, 0 );
 		else
 		{
 			BranchSpot ref = branchGraph.vertexRef();
@@ -78,9 +85,9 @@ public class BranchNSuccessorsFeatureComputer extends CancelableImpl implements 
 			for ( BranchLink link : vertex.outgoingEdges() )
 			{
 				BranchSpot child = link.getTarget( ref );
-				n += 1 + output.map.get( child );
+				n += 1 + output.nSuccessors.get( child );
 			}
-			output.map.set( vertex, n );
+			output.nSuccessors.set( vertex, n );
 			branchGraph.releaseRef( ref );
 		}
 	}

@@ -30,19 +30,27 @@ package org.mastodon.mamut.feature.branch.successors;
 
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.mamut.feature.branch.AbstractBranchSpotIntPropertyFeatureSerializer;
+import org.mastodon.io.FileIdToObjectMap;
+import org.mastodon.io.ObjectToFileIdMap;
+import org.mastodon.io.properties.IntPropertyMapSerializer;
+import org.mastodon.mamut.feature.branch.BranchFeatureSerializer;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * De-/serializes the {@link BranchNSuccessorsFeature}.
  */
 @Plugin( type = FeatureSerializer.class )
-public class BranchNSuccessorsFeatureSerializer
-		extends AbstractBranchSpotIntPropertyFeatureSerializer< BranchNSuccessorsFeature >
+public class BranchNSuccessorsFeatureSerializer implements BranchFeatureSerializer< BranchNSuccessorsFeature, BranchSpot, Spot >
 {
-
 	@Override
 	public FeatureSpec< BranchNSuccessorsFeature, BranchSpot > getFeatureSpec()
 	{
@@ -50,14 +58,26 @@ public class BranchNSuccessorsFeatureSerializer
 	}
 
 	@Override
-	protected BranchNSuccessorsFeature createFeature( IntPropertyMap< BranchSpot > map )
+	public BranchNSuccessorsFeature deserialize( FileIdToObjectMap< Spot > idmap, ObjectInputStream ois, ModelBranchGraph branchGraph,
+			ModelGraph graph ) throws ClassNotFoundException, IOException
 	{
-		return new BranchNSuccessorsFeature( map );
+		// Read the map link -> value
+		final IntPropertyMap< Spot > spotPropertyMap = new IntPropertyMap<>( graph.vertices(), -1 );
+		final IntPropertyMapSerializer< Spot > propertyMapSerializer = new IntPropertyMapSerializer<>( spotPropertyMap );
+		propertyMapSerializer.readPropertyMap( idmap, ois );
+
+		// Map to branch-link -> value
+		IntPropertyMap< BranchSpot > branchPropertyMap = BranchFeatureSerializer.mapToBranchSpotMap( spotPropertyMap, branchGraph );
+		return new BranchNSuccessorsFeature( branchPropertyMap );
 	}
 
 	@Override
-	protected IntPropertyMap< BranchSpot > extractPropertyMap( BranchNSuccessorsFeature feature )
+	public void serialize( BranchNSuccessorsFeature feature, ObjectToFileIdMap< Spot > idmap, ObjectOutputStream oos,
+			ModelBranchGraph branchGraph, ModelGraph graph ) throws IOException
 	{
-		return feature.map;
+		IntPropertyMap< BranchSpot > branchSpotMap = feature.nSuccessors;
+		final IntPropertyMap< Spot > spotMap = BranchFeatureSerializer.branchSpotMapToMap( branchSpotMap, branchGraph, graph );
+		final IntPropertyMapSerializer< Spot > propertyMapSerializer = new IntPropertyMapSerializer<>( spotMap );
+		propertyMapSerializer.writePropertyMap( idmap, oos );
 	}
 }

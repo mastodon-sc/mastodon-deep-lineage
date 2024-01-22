@@ -28,13 +28,24 @@
  */
 package org.mastodon.mamut.feature.branch.successors;
 
+import org.mastodon.feature.Dimension;
+import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
+import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.feature.branch.AbstractIntPropertyFeature;
+import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
+
+import java.util.Collections;
+import java.util.Set;
+
+import static org.mastodon.feature.FeatureProjectionKey.key;
 
 /**
  * Represents the total number of successors of a branch spot in the whole track subtree of this branch spot.
@@ -60,13 +71,17 @@ import org.scijava.plugin.Plugin;
  * <li>{@code branchSpot4 = 0}</li>
  * </ul>
  */
-public class BranchNSuccessorsFeature extends AbstractIntPropertyFeature< BranchSpot >
+public class BranchNSuccessorsFeature implements Feature< BranchSpot >, ValueIsSetEvaluator< BranchSpot >
 {
 	public static final String KEY = "Branch N sub branch spots";
 
 	private static final String HELP_STRING = "Counts the successors in the sub-tree of this branch spot.";
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
+
+	public final IntPropertyMap< BranchSpot > nSuccessors;
+
+	protected final IntFeatureProjection< BranchSpot > projection;
 
 	public static final Spec BRANCH_N_SUCCESSORS_FEATURE = new Spec();
 
@@ -87,18 +102,37 @@ public class BranchNSuccessorsFeature extends AbstractIntPropertyFeature< Branch
 
 	public BranchNSuccessorsFeature( final IntPropertyMap< BranchSpot > map )
 	{
-		super( map );
+		this.nSuccessors = map;
+		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );
 	}
 
 	@Override
-	public FeatureProjectionSpec getFeatureProjectionSpec()
+	public FeatureProjection< BranchSpot > project( final FeatureProjectionKey key )
 	{
-		return PROJECTION_SPEC;
+		return projection.getKey().equals( key ) ? projection : null;
 	}
 
 	@Override
-	public Spec getSpec()
+	public Set< FeatureProjection< BranchSpot > > projections()
+	{
+		return Collections.singleton( projection );
+	}
+
+	@Override
+	public FeatureSpec< ? extends Feature< BranchSpot >, BranchSpot > getSpec()
 	{
 		return BRANCH_N_SUCCESSORS_FEATURE;
+	}
+
+	@Override
+	public void invalidate( final BranchSpot branchSpot )
+	{
+		nSuccessors.remove( branchSpot );
+	}
+
+	@Override
+	public boolean valueIsSet( final BranchSpot vertex )
+	{
+		return nSuccessors.isSet( vertex );
 	}
 }

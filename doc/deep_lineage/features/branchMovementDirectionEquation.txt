@@ -1,0 +1,15 @@
+https://latex.codecogs.com/eqneditor/editor.php
+
+\begin{pmatrix}s_{x_{k}} - s_{x_{0}}
+\\ s_{y_{k}} - s_{y_{0}}
+\\ s_{z_{k}} - s_{z_{0}}
+\end{pmatrix}
+
+\cdot
+\frac{1}{\| \mathbf{s_k} - \mathbf{s_{0}} \|}
+
+\\
+\\
+s_k = \text{coordinate vector of last spot}
+\\
+s_0 = \text{coordinate vector of first spot}
