@@ -3,10 +3,14 @@ package org.mastodon.mamut.feature.branch;
 import net.imglib2.util.LinAlgHelpers;
 import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.graph.algorithm.traversal.DepthFirstIterator;
 import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.util.DepthFirstIteration;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -145,5 +149,84 @@ public class BranchSpotFeatureUtils
 		last.localize( lastCoordinates );
 		model.getGraph().releaseRef( ref );
 		return lastCoordinates;
+	}
+
+	/**
+	 * Returns the number of leaves of a branch spot.
+	 * <p>
+	 * A leaf is a branch spot that has no children.
+	 * </p>
+	 * Example:
+	 * <pre>
+	 *                      branchSpotA
+	 * 	       ┌──────────────┴─────────────────┐
+	 * 	       │                                │
+	 * 	   branchSpotB                      branchSpotC
+	 * 	                                 ┌──────┴───────┐
+	 * 	                                 │              │
+	 * 	                             branchSpotD branchSpotE
+	 * </pre>
+	 * In this example,
+	 * <ul>
+	 *     <li>branchSpotA has 3 leaves (branchSpotC, branchSpotD, branchSpotE)</li>
+	 *     <li>branchSpotB has 1 leaf (branchSpotB)</li>
+	 *     <li>branchSpotC has 2 leaves (branchSpotD, branchSpotE)</li>
+	 *     <li>branchSpotD has 1 leaf (branchSpotD)</li>
+	 *     <li>branchSpotE has 1 leaf (branchSpotE)</li>
+	 * <ul>
+	 *
+	 * @param branchGraph the model branch graph, which contains the branch spot
+	 * @param branchSpot the branch spot
+	 * @return the number of leaves of the branch spot
+	 */
+	public static int countLeaves( final ModelBranchGraph branchGraph, final BranchSpot branchSpot )
+	{
+		int n = 0;
+		for ( DepthFirstIteration.Step< BranchSpot > step : DepthFirstIteration.forRoot( branchGraph, branchSpot ) )
+		{
+			if ( step.isLeaf() )
+				n++;
+		}
+		return n;
+	}
+
+	/**
+	 * Returns the total duration of the given branch spot and all its successors.
+	 A leaf is a branch spot that has no children.
+	 * </p>
+	 * Example:
+	 * <pre>
+	 *                  branchSpotA (duration=3)
+	 * 	       ┌──────────────┴─────────────┐
+	 * 	       │                            │
+	 * 	 branchSpotB (duration=2)     branchSpotC (duration=1)
+	 * 	                             ┌──────┴───────────────────┐
+	 * 	                             │                          │
+	 * 	                       branchSpotD (duration=2)   branchSpotE (duration=3)
+	 * </pre>
+	 * In this example,
+	 * <ul>
+	 *     <li>branchSpotA = 11 (3+2+1+2+3)</li>
+	 *     <li>branchSpotB = 2 (2)</li>
+	 *     <li>branchSpotC = 6 (1+2+3)</li>
+	 *     <li>branchSpotD = 2 (2)</li>
+	 *     <li>branchSpotE = 3 (3)</li>
+	 * <ul>
+	 * @param branchGraph the model branch graph, which contains the branch spot
+	 * @param branchSpot the branch spot
+	 * @return the total duration of the branch spot and all its successors
+	 */
+	public static int totalBranchDurations( final ModelBranchGraph branchGraph, final BranchSpot branchSpot )
+	{
+		int totalDuration = 0;
+		DepthFirstIterator< BranchSpot, BranchLink > it = new DepthFirstIterator<>( branchGraph );
+		it.reset( branchSpot );
+		while ( it.hasNext() )
+		{
+			BranchSpot node = it.next();
+			int branchDuration = node.getTimepoint() - node.getFirstTimePoint();
+			totalDuration += branchDuration;
+		}
+		return totalDuration;
 	}
 }
