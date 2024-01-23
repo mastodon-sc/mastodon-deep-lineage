@@ -173,7 +173,7 @@ public class BranchSpotFeatureUtils
 	 *     <li>branchSpotC has 2 leaves (branchSpotD, branchSpotE)</li>
 	 *     <li>branchSpotD has 1 leaf (branchSpotD)</li>
 	 *     <li>branchSpotE has 1 leaf (branchSpotE)</li>
-	 * <ul>
+	 * </ul>
 	 *
 	 * @param branchGraph the model branch graph, which contains the branch spot
 	 * @param branchSpot the branch spot
@@ -192,7 +192,8 @@ public class BranchSpotFeatureUtils
 
 	/**
 	 * Returns the total duration of the given branch spot and all its successors.
-	 A leaf is a branch spot that has no children.
+	 * <p>
+	 * A leaf is a branch spot that has no children.
 	 * </p>
 	 * Example:
 	 * <pre>
@@ -211,7 +212,7 @@ public class BranchSpotFeatureUtils
 	 *     <li>branchSpotC = 6 (1+2+3)</li>
 	 *     <li>branchSpotD = 2 (2)</li>
 	 *     <li>branchSpotE = 3 (3)</li>
-	 * <ul>
+	 * </ul>
 	 * @param branchGraph the model branch graph, which contains the branch spot
 	 * @param branchSpot the branch spot
 	 * @return the total duration of the branch spot and all its successors
