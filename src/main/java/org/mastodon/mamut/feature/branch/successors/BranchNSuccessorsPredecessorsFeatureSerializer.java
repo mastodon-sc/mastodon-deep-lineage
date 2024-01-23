@@ -73,9 +73,9 @@ public class BranchNSuccessorsPredecessorsFeatureSerializer
 
 		// Map to branch-link -> value
 		IntPropertyMap< BranchSpot > successors = BranchFeatureSerializer.mapToBranchSpotMap( mapSuccessors, branchGraph );
-		IntPropertyMap< BranchSpot > predcessors = BranchFeatureSerializer.mapToBranchSpotMap( mapSuccessors, branchGraph );
+		IntPropertyMap< BranchSpot > predecessors = BranchFeatureSerializer.mapToBranchSpotMap( mapSuccessors, branchGraph );
 
-		return new BranchNSuccessorsPredecessorsFeature( successors, predcessors );
+		return new BranchNSuccessorsPredecessorsFeature( successors, predecessors );
 	}
 
 	@Override
