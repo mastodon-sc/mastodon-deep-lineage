@@ -65,8 +65,7 @@ public class BranchNSuccessorsPredecessorsFeatureComputer extends AbstractResett
 	public void run()
 	{
 		super.run();
-		LineageTreeUtils.callDepthFirst( branchGraph, this::computeSuccessors, this::computePredecessors, this::isCanceled, output,
-				forceComputeAll.get() );
+		LineageTreeUtils.callDepthFirst( branchGraph, this::computeSuccessors, this::computePredecessors, this::isCanceled );
 	}
 
 	@Override
@@ -77,6 +76,8 @@ public class BranchNSuccessorsPredecessorsFeatureComputer extends AbstractResett
 
 	private void computeSuccessors( @Nonnull BranchSpot vertex )
 	{
+		if ( output.valueIsSet( vertex ) && !forceComputeAll.get() )
+			return;
 		boolean isLeaf = vertex.outgoingEdges().isEmpty();
 		if ( isLeaf )
 			output.nSuccessors.set( vertex, 0 );
@@ -96,6 +97,8 @@ public class BranchNSuccessorsPredecessorsFeatureComputer extends AbstractResett
 
 	private void computePredecessors( @Nonnull BranchSpot vertex )
 	{
+		if ( output.valueIsSet( vertex ) && !forceComputeAll.get() )
+			return;
 		boolean isRoot = vertex.incomingEdges().isEmpty();
 		if ( isRoot )
 			output.nPredecessors.set( vertex, 0 );

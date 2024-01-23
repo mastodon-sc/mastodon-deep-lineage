@@ -64,7 +64,7 @@ public class BranchNLeavesFeatureComputer extends AbstractResettableFeatureCompu
 	public void run()
 	{
 		super.run();
-		LineageTreeUtils.callDepthFirst( branchGraph, this::computeLeaves, this::isCanceled, output, forceComputeAll.get() );
+		LineageTreeUtils.callDepthFirst( branchGraph, this::computeLeaves, this::isCanceled );
 	}
 
 	@Override
@@ -75,6 +75,8 @@ public class BranchNLeavesFeatureComputer extends AbstractResettableFeatureCompu
 
 	private void computeLeaves( @Nonnull BranchSpot vertex )
 	{
+		if ( output.valueIsSet( vertex ) && !forceComputeAll.get() )
+			return;
 		boolean isLeaf = vertex.outgoingEdges().isEmpty();
 		if ( isLeaf )
 			output.nLeaves.set( vertex, 1 );

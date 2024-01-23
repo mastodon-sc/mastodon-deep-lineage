@@ -38,7 +38,6 @@ import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
-import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
@@ -67,14 +66,11 @@ public class LineageTreeUtils {
 	 * @param graph the graph to iterate through.
 	 * @param reverseProcessor optional action to performed on each vertex. Vertices are effectively processed in the reverse order that of their discovery.
 	 * @param stopCondition optional condition that, when supplies true, stops the iteration before the next root is processed.
-	 * @param evaluator optional evaluator that determines whether a vertex has a value already been set.
-	 * @param forceComputeAll if true, all vertices are processed, even if the evaluator states that their value is set.
 	 */
 	public static < V extends Vertex< E >, E extends Edge< V > > void callDepthFirst(
-			Graph< V, E > graph, @Nullable Consumer< V > reverseProcessor, @Nullable BooleanSupplier stopCondition,
-			@Nullable ValueIsSetEvaluator< V > evaluator, boolean forceComputeAll )
+			Graph< V, E > graph, @Nullable Consumer< V > reverseProcessor, @Nullable BooleanSupplier stopCondition )
 	{
-		callDepthFirst( graph, reverseProcessor, null, stopCondition, evaluator, forceComputeAll );
+		callDepthFirst( graph, reverseProcessor, null, stopCondition );
 	}
 
 	/**
@@ -91,12 +87,10 @@ public class LineageTreeUtils {
 	 * @param reverseProcessor optional action to performed on each vertex. Vertices are effectively processed in the reverse order that of their discovery.
 	 * @param forwardProcessor optional action performed on each vertex. Called when a vertex is discovered during the depth-first search.
 	 * @param stopCondition optional condition that, when supplies true, stops the iteration before the next root is processed.
-	 * @param evaluator optional evaluator that determines whether a vertex has a value already been set.
-	 * @param forceComputeAll if true, all vertices are processed, even if the evaluator states that their value is set.
 	 */
 	public static < V extends Vertex< E >, E extends Edge< V > > void callDepthFirst(
 			Graph< V, E > graph, @Nullable Consumer< V > reverseProcessor, @Nullable Consumer< V > forwardProcessor,
-			@Nullable BooleanSupplier stopCondition, @Nullable ValueIsSetEvaluator< V > evaluator, boolean forceComputeAll )
+			@Nullable BooleanSupplier stopCondition )
 	{
 		DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, GraphSearch.SearchDirection.DIRECTED );
 		search.setTraversalListener( new SearchListener< V, E, DepthFirstSearch< V, E > >()
@@ -106,8 +100,7 @@ public class LineageTreeUtils {
 			{
 				if ( reverseProcessor == null )
 					return;
-				if ( forceComputeAll || evaluator == null || !evaluator.valueIsSet( vertex ) )
-					reverseProcessor.accept( vertex );
+				reverseProcessor.accept( vertex );
 			}
 
 			@Override
@@ -115,8 +108,7 @@ public class LineageTreeUtils {
 			{
 				if ( forwardProcessor == null )
 					return;
-				if ( forceComputeAll || evaluator == null || !evaluator.valueIsSet( vertex ) )
-					forwardProcessor.accept( vertex );
+				forwardProcessor.accept( vertex );
 			}
 
 			@Override
