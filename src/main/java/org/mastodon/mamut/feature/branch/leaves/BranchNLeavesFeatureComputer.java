@@ -57,7 +57,7 @@ public class BranchNLeavesFeatureComputer extends AbstractResettableFeatureCompu
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new BranchNLeavesFeature( new IntPropertyMap<>( branchGraph.vertices().getRefPool(), 0 ) );
+			output = new BranchNLeavesFeature( new IntPropertyMap<>( branchGraph.vertices().getRefPool(), -1 ) );
 	}
 
 	@Override
