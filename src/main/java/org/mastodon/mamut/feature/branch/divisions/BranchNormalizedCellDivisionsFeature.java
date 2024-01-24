@@ -47,14 +47,35 @@ import java.util.Set;
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
 /**
- *
+ * Computes the normalized number of cell divisions of the subtree rooted at this branch spot, i.e. the number of subsequent cell divisions divided by the total duration of the branches in the subtree.
+ * NB: This feature assumes a binary tree. Thus, the number of cell divisions is the number of leaves in the subtree minus one.
+ * <br>
+ * <br>
+ * Example:
+ * <pre>
+ *                  branchSpotA (duration=3)
+ * 	       ┌──────────────┴─────────────┐
+ * 	       │                            │
+ * 	 branchSpotB (duration=2)     branchSpotC (duration=1)
+ * 	                             ┌──────┴───────────────────┐
+ * 	                             │                          │
+ * 	                       branchSpotD (duration=2)   branchSpotE (duration=3)
+ * </pre>
+ * In this example, the normalized number of cell divisions for each branch spot is:
+ * <ul>
+ *     <li>branchSpotA = 0.18 (2/11)</li>
+ *     <li>branchSpotB = 0</li>
+ *     <li>branchSpotC = 0.17 (1/6)</li>
+ *     <li>branchSpotD = 0</li>
+ *     <li>branchSpotE = 0</li>
+ * </ul>
  */
 public class BranchNormalizedCellDivisionsFeature implements Feature< BranchSpot >, ValueIsSetEvaluator< BranchSpot >
 {
 	public static final String KEY = "Normalized number of cell divisions";
 
 	private static final String HELP_STRING =
-			"Number of cell divisions in subsequent track divided by total duration of branches in subsequent track.";
+			"Number of cell divisions in subsequent tree divided by total duration of branches in subsequent tree.";
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY, Dimension.NONE );
 
