@@ -205,7 +205,7 @@ public class BranchSpotFeatureUtils
 	 * 	                             │                          │
 	 * 	                       branchSpotD (duration=2)   branchSpotE (duration=3)
 	 * </pre>
-	 * In this example,
+	 * In this example, the total duration of the branch spot and all its successors is:
 	 * <ul>
 	 *     <li>branchSpotA = 11 (3+2+1+2+3)</li>
 	 *     <li>branchSpotB = 2 (2)</li>
