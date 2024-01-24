@@ -41,6 +41,7 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -63,17 +64,24 @@ public class BranchNSuccessorsPredecessorsFeatureSerializer
 			ModelBranchGraph branchGraph,
 			ModelGraph graph ) throws ClassNotFoundException, IOException
 	{
-		// Read the map link -> value
 		final IntPropertyMap< Spot > mapSuccessors = new IntPropertyMap<>( graph.vertices(), -1 );
-		final IntPropertyMap< Spot > mapPredecessors = new IntPropertyMap<>( graph.vertices(), -1 );
 		final IntPropertyMapSerializer< Spot > serializerSuccessors = new IntPropertyMapSerializer<>( mapSuccessors );
-		final IntPropertyMapSerializer< Spot > serializerPredecessors = new IntPropertyMapSerializer<>( mapPredecessors );
 		serializerSuccessors.readPropertyMap( idmap, ois );
-		serializerPredecessors.readPropertyMap( idmap, ois );
-
-		// Map to branch-link -> value
 		IntPropertyMap< BranchSpot > successors = BranchFeatureSerializer.mapToBranchSpotMap( mapSuccessors, branchGraph );
-		IntPropertyMap< BranchSpot > predecessors = BranchFeatureSerializer.mapToBranchSpotMap( mapSuccessors, branchGraph );
+
+		// Initialize predecessors with -1.
+		IntPropertyMap< BranchSpot > predecessors = new IntPropertyMap<>( branchGraph.vertices().getRefPool(), -1 );
+		try
+		{
+			final IntPropertyMap< Spot > mapPredecessors = new IntPropertyMap<>( graph.vertices(), -1 );
+			final IntPropertyMapSerializer< Spot > serializerPredecessors = new IntPropertyMapSerializer<>( mapPredecessors );
+			serializerPredecessors.readPropertyMap( idmap, ois );
+			predecessors = BranchFeatureSerializer.mapToBranchSpotMap( mapSuccessors, branchGraph );
+		}
+		catch ( EOFException e )
+		{
+			// ignore if no predecessors were stored. the predecessors were added later.
+		}
 
 		return new BranchNSuccessorsPredecessorsFeature( successors, predecessors );
 	}
