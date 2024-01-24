@@ -103,7 +103,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Show dendrogram of clustering", callback = "update")
-	private boolean showDendrogram;
+	private boolean showDendrogram = true;
 
 	@SuppressWarnings("unused")
 	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false, label = " ")
