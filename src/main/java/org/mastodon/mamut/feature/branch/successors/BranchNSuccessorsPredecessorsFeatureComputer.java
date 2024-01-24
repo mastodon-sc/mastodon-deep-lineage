@@ -42,29 +42,30 @@ import org.scijava.plugin.Plugin;
 import javax.annotation.Nonnull;
 
 /**
- * Computes {@link BranchNSuccessorsFeature}
+ * Computes {@link BranchNSuccessorsPredecessorsFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchNSuccessorsFeatureComputer extends AbstractResettableFeatureComputer
+public class BranchNSuccessorsPredecessorsFeatureComputer extends AbstractResettableFeatureComputer
 {
 	@Parameter
 	protected ModelBranchGraph branchGraph;
 
 	@Parameter( type = ItemIO.OUTPUT )
-	private BranchNSuccessorsFeature output;
+	private BranchNSuccessorsPredecessorsFeature output;
 
 	@Override
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new BranchNSuccessorsFeature( new IntPropertyMap<>( branchGraph.vertices().getRefPool(), -1 ) );
+			output = new BranchNSuccessorsPredecessorsFeature( new IntPropertyMap<>( branchGraph.vertices().getRefPool(), -1 ),
+					new IntPropertyMap<>( branchGraph.vertices().getRefPool(), -1 ) );
 	}
 
 	@Override
 	public void run()
 	{
 		super.run();
-		LineageTreeUtils.callDepthFirst( branchGraph, this::computeSuccessors, this::isCanceled, output, forceComputeAll.get() );
+		LineageTreeUtils.callDepthFirst( branchGraph, this::computeSuccessors, this::computePredecessors, this::isCanceled );
 	}
 
 	@Override
@@ -75,6 +76,8 @@ public class BranchNSuccessorsFeatureComputer extends AbstractResettableFeatureC
 
 	private void computeSuccessors( @Nonnull BranchSpot vertex )
 	{
+		if ( output.valueIsSet( vertex ) && !forceComputeAll.get() )
+			return;
 		boolean isLeaf = vertex.outgoingEdges().isEmpty();
 		if ( isLeaf )
 			output.nSuccessors.set( vertex, 0 );
@@ -88,6 +91,27 @@ public class BranchNSuccessorsFeatureComputer extends AbstractResettableFeatureC
 				n += 1 + output.nSuccessors.get( child );
 			}
 			output.nSuccessors.set( vertex, n );
+			branchGraph.releaseRef( ref );
+		}
+	}
+
+	private void computePredecessors( @Nonnull BranchSpot vertex )
+	{
+		if ( output.valueIsSet( vertex ) && !forceComputeAll.get() )
+			return;
+		boolean isRoot = vertex.incomingEdges().isEmpty();
+		if ( isRoot )
+			output.nPredecessors.set( vertex, 0 );
+		else
+		{
+			BranchSpot ref = branchGraph.vertexRef();
+			int n = 0;
+			for ( BranchLink link : vertex.incomingEdges() )
+			{
+				BranchSpot parent = link.getSource( ref );
+				n += 1 + output.nPredecessors.get( parent );
+			}
+			output.nPredecessors.set( vertex, n );
 			branchGraph.releaseRef( ref );
 		}
 	}
