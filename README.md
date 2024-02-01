@@ -13,17 +13,11 @@
 
 ## Installation instructions
 
-* Add the Mastodon-Dev update site in Fiji:
-  * Help > Update > Manage update sites > Add Unlisted Site
-    * Name: Mastodon-Dev
-    * URL: https://sites.imagej.net/Mastodon-Dev/
-    * ![Mastodon Dev update site](doc/deep_lineage/installation/Mastodon-Dev.png)
-* Add the Humble-Video update site in Fiji:
-  * Help > Update > Manage update sites > Add Unlisted Site
-    * Name: Humble-Video
-    * URL: https://sites.imagej.net/Humble-Video/
-    * ![Mastodon Dev update site](doc/deep_lineage/installation/Mastodon-HumbleVideo.png)
-* Add the Mastodon Deep Lineage update site in Fiji:
+* Add the listed Mastodon update site in Fiji:
+  * Help > Update > Manage update sites
+    * Name: Mastodon
+    * ![Mastodon Update site](doc/deep_lineage/installation/Mastodon.png)
+* Add the unlisted Mastodon Deep Lineage update site in Fiji:
   * Help > Update > Manage update sites > Add Unlisted Site
     * Name: Mastodon-DeepLineage
     * URL: https://sites.imagej.net/Mastodon-DeepLineage/
