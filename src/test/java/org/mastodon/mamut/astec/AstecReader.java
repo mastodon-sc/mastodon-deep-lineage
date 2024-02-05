@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -73,13 +74,10 @@ public class AstecReader
 	{
 		AstecReader reader = new AstecReader();
 		reader.readSpots();
-		reader.readEdges();
-		TagSetStructure.TagSet tagSet1 = reader.readTagSet( "fates1.csv", "fates1" );
-		reader.addTags( tagSet1, "fate_values1.csv" );
-		TagSetStructure.TagSet tagSet2 = reader.readTagSet( "fates2.csv", "fates2" );
-		reader.addTags( tagSet2, "fate_values2.csv" );
-		TagSetStructure.TagSet tagSet3 = reader.readTagSet( "fates3.csv", "fates3" );
-		reader.addTags( tagSet3, "fate_values3.csv" );
+		reader.readLinks();
+		reader.readTags( "fates1", "fates1.csv", "fate_values1.csv" );
+		reader.readTags( "fates2", "fates2.csv", "fate_values2.csv" );
+		reader.readTags( "fates3", "fates3.csv", "fate_values3.csv" );
 		reader.saveProject();
 	}
 
@@ -105,6 +103,7 @@ public class AstecReader
 	private void readSpots() throws IOException, CsvValidationException
 	{
 		File file = new File( "spots.csv" );
+		logger.info( "Reading spots from {}", file.getAbsolutePath() );
 		FileReader fileReader = new FileReader( file );
 		try (CSVReader reader = new CSVReader( fileReader ))
 		{
@@ -126,9 +125,11 @@ public class AstecReader
 	/**
 	 * sourceId; targetId
 	 */
-	private void readEdges() throws IOException, CsvValidationException
+	private void readLinks() throws IOException, CsvValidationException
 	{
-		FileReader fileReader = new FileReader( "links.csv" );
+		File file = new File( "links.csv" );
+		logger.info( "Reading links from {}", file.getAbsolutePath() );
+		FileReader fileReader = new FileReader( file );
 		try (CSVReader reader = new CSVReader( fileReader ))
 		{
 			reader.skip( 1 );
@@ -142,12 +143,32 @@ public class AstecReader
 		}
 	}
 
+	private void readTags( final String tagSetName, final String tagSetFileName, final String tagValuesFileName )
+	{
+		try
+		{
+			TagSetStructure.TagSet tagSet = readTagSet( tagSetFileName, tagSetName );
+			readTagValues( tagSet, tagValuesFileName );
+		}
+		catch ( FileNotFoundException e )
+		{
+			logger.info( "No complete tag set files found for tag set name: {}. This tag set will be ignored. ", tagSetName );
+		}
+		catch ( IOException | CsvValidationException e )
+		{
+			logger.info( "CSV files corrupt for tag set name: {}. This tag set will be ignored. ", tagSetName );
+		}
+
+	}
+
 	/**
 	 * tagValue
 	 */
 	private TagSetStructure.TagSet readTagSet( final String filename, final String tagSetName ) throws IOException, CsvValidationException
 	{
-		FileReader fileReader = new FileReader( filename );
+		File file = new File( filename );
+		logger.info( "Reading tag set from {}", file.getAbsolutePath() );
+		FileReader fileReader = new FileReader( file );
 		try (CSVReader reader = new CSVReader( fileReader ))
 		{
 			reader.skip( 1 );
@@ -165,9 +186,11 @@ public class AstecReader
 	/**
 	 * spotId; tagValue
 	 */
-	private void addTags( final TagSetStructure.TagSet tagSet, final String filename ) throws IOException, CsvValidationException
+	private void readTagValues( final TagSetStructure.TagSet tagSet, final String filename ) throws IOException, CsvValidationException
 	{
-		FileReader fileReader = new FileReader( filename );
+		File file = new File( filename );
+		logger.info( "Reading tag set values from {}", file.getAbsolutePath() );
+		FileReader fileReader = new FileReader( file );
 		try (CSVReader reader = new CSVReader( fileReader ))
 		{
 			reader.skip( 1 );
