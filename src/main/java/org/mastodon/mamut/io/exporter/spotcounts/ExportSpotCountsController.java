@@ -52,7 +52,6 @@ public class ExportSpotCountsController
 
 	public ExportSpotCountsController( final ProjectModel projectModel, final Context context )
 	{
-		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
 		this( projectModel.getModel(), context );
 	}
 
@@ -78,7 +77,7 @@ public class ExportSpotCountsController
 		if ( file == null )
 			throw new IllegalArgumentException( "Cannot write spot counts to file. Given file is null." );
 
-		try (FileWriter fileWriter = new FileWriter( file ); CSVWriter csvWriter = new CSVWriter( fileWriter );)
+		try (FileWriter fileWriter = new FileWriter( file ); CSVWriter csvWriter = new CSVWriter( fileWriter ))
 		{
 			csvWriter.writeNext( new String[] { "timepoint", "spots" } );
 			int maxTimepoint = TreeUtils.getMaxTimepoint( model );
