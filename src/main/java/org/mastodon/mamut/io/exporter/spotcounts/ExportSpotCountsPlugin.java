@@ -30,7 +30,6 @@ package org.mastodon.mamut.io.exporter.spotcounts;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.exporter.labelimage.ui.ExportLabelImageView;
 import org.mastodon.mamut.io.exporter.spotcounts.ui.ExportSpotCountsView;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.scijava.command.CommandService;
@@ -50,7 +49,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 @Plugin( type = MamutPlugin.class )
 public class ExportSpotCountsPlugin implements MamutPlugin
 {
-	private static final String EXPORT_SPOT_COUNTS = "Export total spot counts to CSV";
+	private static final String EXPORT_SPOT_COUNTS = "Export spot counts per timepoint";
 
 	private static final String[] IMAGE_J_KEYS = { "not mapped" };
 

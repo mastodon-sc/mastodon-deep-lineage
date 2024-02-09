@@ -237,7 +237,7 @@ Tree2
 
 ## Export Spot Count
 
-* Writes all timepoints and the number of spots of each timepoint to comma separated file.
+* Writes all timepoints and the number of spots of each timepoint to a comma separated file.
   * The file will be overwritten if it already exists.
   * The file will be created if it does not exist.
   * The format is: "timepoint", "number of spots".
@@ -274,7 +274,7 @@ tp .. timepoint
                                  Spot( tp=7 )                    Spot( tp=7 )
 ```
 
-* Output CSV values:
+* Output comma separated values:
 
 ```
 	"timepoint", "spots"

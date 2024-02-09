@@ -38,7 +38,7 @@ import org.scijava.plugin.Plugin;
 
 import java.io.File;
 
-@Plugin( type = Command.class, label = "Run export total spot counts" )
+@Plugin( type = Command.class, label = "Export spot counts per timepoint" )
 public class ExportSpotCountsView implements Command
 {
 	private static final int WIDTH = 15;
@@ -47,8 +47,8 @@ public class ExportSpotCountsView implements Command
 	@Parameter( visibility = ItemVisibility.MESSAGE, required = false, persist = false )
 	private String documentation = "<html>\n"
 			+ "<body width=" + WIDTH + "cm align=left>\n"
-			+ "<h1>Export total spot counts</h1>\n"
-			+ "<p>This plugin writes the timepoint and the total number of spots at each timepoint to a CSV file.</p>\n"
+			+ "<h1>Export spot counts per timepoint</h1>\n"
+			+ "<p>This plugin writes the timepoint and the number of spots at each timepoint to a CSV file.</p>\n"
 			+ "<p>The format is: \"timepoint\", \"number of spots\".</p>\n"
 			+ "</body>\n"
 			+ "</html>\n";
