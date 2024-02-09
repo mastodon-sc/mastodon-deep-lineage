@@ -7,6 +7,26 @@
 
 # Mastodon Deep Lineage - a collection of plugins to analyse lineages of tracked objects in Mastodon
 
+## Table of Contents
+
+- [Documentation of Mastodon](#Documentation-of-Mastodon)
+- [Installation instructions](#Installation-instructions)
+- [Numerical Features added to Mastodon](#Numerical-Features-added-to-Mastodon)
+  - [Spot Features](#Spot-Features)
+  - [Branch-spot features](#Branch-spot-features)
+- [Lineage Tree Classification](#Lineage-Tree-Classification)
+  - [Parameters](#Parameters)
+  - [Example](#Example)
+- [Label image exporter](#Label-image-exporter)
+  - [Example](#Example-1)
+- [Export Spot Count](#Export-Spot-Count)
+- [Maintainer](#Maintainer)
+- [Contributors](#Contributors)
+- [License](#License)
+- [Contribute Code or Provide Feedback](#Contribute-Code-or-Provide-Feedback)
+- [Contribute Documentation](#Contribute-Documentation)
+- [Acknowledgements](#Acknowledgements)
+
 ## Documentation of Mastodon
 
 [mastodon.readthedocs.io](https://mastodon.readthedocs.io/en/latest/index.html)
