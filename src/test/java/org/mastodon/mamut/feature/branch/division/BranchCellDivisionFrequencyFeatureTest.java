@@ -7,7 +7,7 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.mamut.feature.AbstractFeatureTest;
 import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.feature.FeatureSerializerTestUtils;
-import org.mastodon.mamut.feature.branch.divisions.BranchNormalizedCellDivisionsFeature;
+import org.mastodon.mamut.feature.branch.divisions.BranchCellDivisionFrequencyFeature;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class BranchNormalizedCellDivisionsFeatureTest extends AbstractFeatureTest< BranchSpot >
+public class BranchCellDivisionFrequencyFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
 	private Feature< BranchSpot > branchNormalizedCellDivisionsFeature;
 
@@ -31,7 +31,7 @@ public class BranchNormalizedCellDivisionsFeatureTest extends AbstractFeatureTes
 		try (Context context = new Context())
 		{
 			branchNormalizedCellDivisionsFeature = FeatureComputerTestUtils.getFeature( context, graph.getModel(),
-					BranchNormalizedCellDivisionsFeature.FEATURE_SPEC );
+					BranchCellDivisionFrequencyFeature.FEATURE_SPEC );
 		}
 	}
 
@@ -40,7 +40,7 @@ public class BranchNormalizedCellDivisionsFeatureTest extends AbstractFeatureTes
 	public void testFeatureComputation()
 	{
 		FeatureProjection< BranchSpot > projection =
-				getProjection( branchNormalizedCellDivisionsFeature, BranchNormalizedCellDivisionsFeature.PROJECTION_SPEC );
+				getProjection( branchNormalizedCellDivisionsFeature, BranchCellDivisionFrequencyFeature.PROJECTION_SPEC );
 
 		assertEquals( 2 / 9d, projection.value( graph.branchSpotA ), 0d );
 		assertEquals( 1d / 5d, projection.value( graph.branchSpotB ), 0d );
@@ -53,16 +53,16 @@ public class BranchNormalizedCellDivisionsFeatureTest extends AbstractFeatureTes
 	@Override
 	public void testFeatureSerialization() throws IOException
 	{
-		BranchNormalizedCellDivisionsFeature branchNormalizedCellDivisionsFeatureReloaded;
+		BranchCellDivisionFrequencyFeature branchCellDivisionFrequencyFeatureReloaded;
 		try (Context context = new Context())
 		{
-			branchNormalizedCellDivisionsFeatureReloaded =
-					( BranchNormalizedCellDivisionsFeature ) FeatureSerializerTestUtils.saveAndReload( context, graph.getModel(),
+			branchCellDivisionFrequencyFeatureReloaded =
+					( BranchCellDivisionFrequencyFeature ) FeatureSerializerTestUtils.saveAndReload( context, graph.getModel(),
 							branchNormalizedCellDivisionsFeature );
 		}
 		// check that the feature has correct values after saving and reloading
 		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchNormalizedCellDivisionsFeature,
-				branchNormalizedCellDivisionsFeatureReloaded,
+				branchCellDivisionFrequencyFeatureReloaded,
 				Collections.singleton( graph.branchSpotA ) ) );
 	}
 
@@ -72,7 +72,7 @@ public class BranchNormalizedCellDivisionsFeatureTest extends AbstractFeatureTes
 	{
 		// test, if features are not NaN before invalidation
 		assertFalse( Double.isNaN(
-				getProjection( branchNormalizedCellDivisionsFeature, BranchNormalizedCellDivisionsFeature.PROJECTION_SPEC )
+				getProjection( branchNormalizedCellDivisionsFeature, BranchCellDivisionFrequencyFeature.PROJECTION_SPEC )
 						.value( graph.branchSpotA ) ) );
 
 		// invalidate feature
@@ -80,7 +80,7 @@ public class BranchNormalizedCellDivisionsFeatureTest extends AbstractFeatureTes
 
 		// test, if features are NaN after invalidation
 		assertTrue( Double.isNaN(
-				getProjection( branchNormalizedCellDivisionsFeature, BranchNormalizedCellDivisionsFeature.PROJECTION_SPEC )
+				getProjection( branchNormalizedCellDivisionsFeature, BranchCellDivisionFrequencyFeature.PROJECTION_SPEC )
 						.value( graph.branchSpotA ) ) );
 	}
 }

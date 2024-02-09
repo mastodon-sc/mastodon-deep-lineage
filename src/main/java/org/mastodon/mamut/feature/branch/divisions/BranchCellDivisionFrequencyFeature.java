@@ -47,7 +47,7 @@ import java.util.Set;
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
 /**
- * Computes the normalized number of cell divisions of the subtree rooted at this branch spot, i.e. the number of subsequent cell divisions divided by the total duration of the branches in the subtree.
+ * Computes the cell division frequency, i.e. the number of subsequent cell divisions divided by the total duration of the branches in the subtree.
  * NB: This feature assumes a binary tree. Thus, the number of cell divisions is the number of leaves in the subtree minus one.
  * <br>
  * <br>
@@ -61,7 +61,7 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  * 	                             │                          │
  * 	                       branchSpotD (duration=2)   branchSpotE (duration=3)
  * </pre>
- * In this example, the normalized number of cell divisions for each branch spot is:
+ * In this example, the cell division frequency for each branch spot is:
  * <ul>
  *     <li>branchSpotA = 0.18 (2/11)</li>
  *     <li>branchSpotB = 0</li>
@@ -70,9 +70,9 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  *     <li>branchSpotE = 0</li>
  * </ul>
  */
-public class BranchNormalizedCellDivisionsFeature implements Feature< BranchSpot >, ValueIsSetEvaluator< BranchSpot >
+public class BranchCellDivisionFrequencyFeature implements Feature< BranchSpot >, ValueIsSetEvaluator< BranchSpot >
 {
-	public static final String KEY = "Normalized number of cell divisions";
+	public static final String KEY = "Cell division frequency";
 
 	private static final String HELP_STRING =
 			"Number of cell divisions in subsequent tree divided by total duration of branches in subsequent tree.";
@@ -86,21 +86,21 @@ public class BranchNormalizedCellDivisionsFeature implements Feature< BranchSpot
 	public static final Spec FEATURE_SPEC = new Spec();
 
 	@Plugin( type = FeatureSpec.class )
-	public static class Spec extends FeatureSpec< BranchNormalizedCellDivisionsFeature, BranchSpot >
+	public static class Spec extends FeatureSpec< BranchCellDivisionFrequencyFeature, BranchSpot >
 	{
 		public Spec()
 		{
 			super(
 					KEY,
 					HELP_STRING,
-					BranchNormalizedCellDivisionsFeature.class,
+					BranchCellDivisionFrequencyFeature.class,
 					BranchSpot.class,
 					Multiplicity.SINGLE,
 					PROJECTION_SPEC );
 		}
 	}
 
-	public BranchNormalizedCellDivisionsFeature( final DoublePropertyMap< BranchSpot > map )
+	public BranchCellDivisionFrequencyFeature( final DoublePropertyMap< BranchSpot > map )
 	{
 		this.nCellDivisions = map;
 		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );

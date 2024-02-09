@@ -41,30 +41,30 @@ import org.scijava.plugin.Plugin;
 import java.util.Collection;
 
 /**
- * Computes {@link BranchNormalizedCellDivisionsFeature}
+ * Computes {@link BranchCellDivisionFrequencyFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchNormalizedCellDivisionsFeatureComputer extends AbstractSerialFeatureComputer< BranchSpot >
+public class BranchCellDivisionFrequencyFeatureComputer extends AbstractSerialFeatureComputer< BranchSpot >
 {
 
 	@Parameter( type = ItemIO.OUTPUT )
-	protected BranchNormalizedCellDivisionsFeature output;
+	protected BranchCellDivisionFrequencyFeature output;
 
 	@Override
 	protected void compute( final BranchSpot branchSpot )
 	{
-		output.nCellDivisions.set( branchSpot, normalizedCellDivisions( branchSpot ) );
+		output.nCellDivisions.set( branchSpot, cellDivisionFrequency( branchSpot ) );
 	}
 
 	@Override
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new BranchNormalizedCellDivisionsFeature(
+			output = new BranchCellDivisionFrequencyFeature(
 					new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ) );
 	}
 
-	private double normalizedCellDivisions( final BranchSpot branchSpot )
+	private double cellDivisionFrequency( final BranchSpot branchSpot )
 	{
 		int leaves = BranchSpotFeatureUtils.countLeaves( model.getBranchGraph(), branchSpot );
 		int divisions = leaves - 1; // NB: we are assuming a binary tree

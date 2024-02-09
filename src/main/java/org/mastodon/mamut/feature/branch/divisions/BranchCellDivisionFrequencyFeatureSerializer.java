@@ -46,21 +46,21 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 /**
- * De-/serializes the {@link BranchNormalizedCellDivisionsFeature}.
+ * De-/serializes the {@link BranchCellDivisionFrequencyFeature}.
  */
 @Plugin( type = FeatureSerializer.class )
-public class BranchNormalizedCellDivisionsFeatureSerializer
-		implements BranchFeatureSerializer< BranchNormalizedCellDivisionsFeature, BranchSpot, Spot >
+public class BranchCellDivisionFrequencyFeatureSerializer
+		implements BranchFeatureSerializer< BranchCellDivisionFrequencyFeature, BranchSpot, Spot >
 {
 
 	@Override
-	public FeatureSpec< BranchNormalizedCellDivisionsFeature, BranchSpot > getFeatureSpec()
+	public FeatureSpec< BranchCellDivisionFrequencyFeature, BranchSpot > getFeatureSpec()
 	{
-		return BranchNormalizedCellDivisionsFeature.FEATURE_SPEC;
+		return BranchCellDivisionFrequencyFeature.FEATURE_SPEC;
 	}
 
 	@Override
-	public BranchNormalizedCellDivisionsFeature deserialize( FileIdToObjectMap< Spot > idmap, ObjectInputStream ois,
+	public BranchCellDivisionFrequencyFeature deserialize( FileIdToObjectMap< Spot > idmap, ObjectInputStream ois,
 			ModelBranchGraph branchGraph,
 			ModelGraph graph ) throws ClassNotFoundException, IOException
 	{
@@ -71,11 +71,11 @@ public class BranchNormalizedCellDivisionsFeatureSerializer
 
 		// Map to branch-link -> value
 		DoublePropertyMap< BranchSpot > branchPropertyMap = BranchFeatureSerializer.mapToBranchSpotMap( spotPropertyMap, branchGraph );
-		return new BranchNormalizedCellDivisionsFeature( branchPropertyMap );
+		return new BranchCellDivisionFrequencyFeature( branchPropertyMap );
 	}
 
 	@Override
-	public void serialize( BranchNormalizedCellDivisionsFeature feature, ObjectToFileIdMap< Spot > idmap, ObjectOutputStream oos,
+	public void serialize( BranchCellDivisionFrequencyFeature feature, ObjectToFileIdMap< Spot > idmap, ObjectOutputStream oos,
 			ModelBranchGraph branchGraph, ModelGraph graph ) throws IOException
 	{
 		DoublePropertyMap< BranchSpot > branchSpotMap = feature.nCellDivisions;
