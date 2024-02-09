@@ -233,6 +233,59 @@ Tree2
 * The exported tif imported into [Napari](https://napari.org/stable/) 3D
   view: ![Napari](doc/deep_lineage/export_label_image/napari_timelapse.gif)
 
+## Export Spot Count
+
+* Writes all timepoints and the number of spots of each timepoint to comma separated file.
+  * The file will be overwritten if it already exists.
+  * The file will be created if it does not exist.
+  * The format is: "timepoint", "number of spots".
+  * The first line is the header.
+
+### Parameters:
+
+* Save to: Path to the file to save the label image to. Should end with '.csv'.
+
+### Example:
+
+* Demo data: [Example data set](https://github.com/mastodon-sc/mastodon-example-data/tree/master/tgmm-mini)
+* The resulting csv file: [spotcounts.csv](doc/deep_lineage/export_spot_counts/spotcounts.csv)
+* Input tree:
+
+```
+tp .. timepoint
+                         Spot( tp=0 )
+                            │
+                         Spot( tp=1 )
+                            │
+                         Spot( tp=2 )
+            ┌───────────────┴────────────────────┐
+            │                                    │
+         Spot( tp=3 )                         Spot( tp=3 )
+            │                                    │
+            │                                 Spot( tp=4 )
+            │                       ┌────────────┴──────────────────┐
+            │                       │                               │
+         Spot( tp=5 )            Spot( tp=5 )                    Spot( tp=5 )
+                                    │                               │
+                                    │                            Spot( tp=6 )
+                                    │                               │
+                                 Spot( tp=7 )                    Spot( tp=7 )
+```
+
+* Output CSV values:
+
+```
+	"timepoint", "spots"
+	"0", "1"
+	"1", "1"
+	"2", "1"
+	"3", "2"
+	"4", "1"
+	"5", "3"
+	"6", "1"
+	"7", "2"
+```
+
 ## Maintainer
 
 * [Stefan Hahmann](https://github.com/stefanhahmann/)
