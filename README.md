@@ -20,6 +20,8 @@
 - [Label image exporter](#Label-image-exporter)
   - [Example](#Example-1)
 - [Export Spot Count](#Export-Spot-Count)
+  - [Parameters](#Parameters-1)
+  - [Example](#Example-2)
 - [Maintainer](#Maintainer)
 - [Contributors](#Contributors)
 - [License](#License)
