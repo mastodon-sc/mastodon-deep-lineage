@@ -218,12 +218,14 @@ Tree2
 * The export uses an image with signed integer value space, thus the maximum allowed id is 2.147.483.646.
 * Exporter can be found here:  ![Plugin Export Menu](doc/deep_lineage/export_label_image/plugin_export_menu.png)
 * The dialog:  ![Plugin Export Dialog](doc/deep_lineage/export_label_image/plugin_export_dialog.png)
+
+### Parameters:
   * Label Id: The id that is used for the labels. The default is the Spot track Id.
     * The ids correspond to the highlighted columns in the feature
       table: ![Feature Table](doc/deep_lineage/export_label_image/plugin_export_table.png)
   * Frame rate reduction: Only export every n-th frame. 1 means no reduction. Value must be >= 1.
     * The frame number corresponds to the _Spot frame_ column in the feature table.
-  * Save to: Path to the file to save the label image to.
+* Save to: Path to the file to save the label image to. Should end with '.tif'.
 
 ### Example:
 
