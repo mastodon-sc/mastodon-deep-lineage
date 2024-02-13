@@ -5,6 +5,7 @@ import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.algorithm.traversal.DepthFirstIterator;
 import org.mastodon.graph.branch.BranchGraph;
+import org.mastodon.mamut.feature.spot.SpotFeatureUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
@@ -247,5 +248,71 @@ public class BranchSpotFeatureUtils
 	public static int branchDuration( final BranchSpot branchSpot )
 	{
 		return branchSpot.getTimepoint() - branchSpot.getFirstTimePoint() + 1;
+	}
+
+
+	/**
+	 * Computes the normalized relative movement direction of a branch spot relative to its nearest neighbours during its life cycle.
+	 * <p>
+	 * The normalized relative movement of a branch spot is equivalent to the normalized sum of relative movement vectors of the branch spot's spots.
+	 * <p>
+	 * A single relative movement vector results from difference of the movement of the spot (considering its predecessor) and the average movement of its neighbors.
+	 *
+	 * @param branchSpot the branch spot
+	 * @param numberOfNeighbors the number of nearest neighbors to consider
+	 * @param model the model, which contains the branch spot
+	 * @return the relative movement of the branch spot
+	 */
+	public static double[] normalizedRelativeMovementDirection( final BranchSpot branchSpot, final int numberOfNeighbors,
+			final Model model )
+	{
+		final Iterator< Spot > spotIterator = getSpotIterator( model, branchSpot );
+		if ( !spotIterator.hasNext() )
+			return new double[ 0 ];
+		double[] cumulatedRelativeMovement = new double[ branchSpot.numDimensions() ];
+		Spot spot;
+		while ( spotIterator.hasNext() )
+		{
+			spot = spotIterator.next();
+			if ( spot.incomingEdges().isEmpty() )
+				continue;
+			double[] relativeMovement = SpotFeatureUtils.relativeMovement( spot, numberOfNeighbors, model );
+			LinAlgHelpers.add( cumulatedRelativeMovement, relativeMovement, cumulatedRelativeMovement );
+		}
+		model.getBranchGraph().releaseIterator( spotIterator );
+		LinAlgHelpers.normalize( cumulatedRelativeMovement );
+		return cumulatedRelativeMovement;
+	}
+
+	/**
+	 * Computes the amount of movement of a branch spot relative to its nearest neighbours during its life cycle.
+	 * <p>
+	 * The relative movement of a branch spot is equivalent to the average of the relative movements of the branch spot's spots.
+	 *
+	 * @param branchSpot the branch spot
+	 * @param numberOfNeighbors the number of nearest neighbors to consider
+	 * @param model the model, which contains the branch spot
+	 * @return the relative movement of the branch spot
+	 */
+	public static double relativeMovement( final BranchSpot branchSpot, final int numberOfNeighbors, final Model model )
+	{
+		final Iterator< Spot > spotIterator = getSpotIterator( model, branchSpot );
+		if ( !spotIterator.hasNext() )
+			return Double.NaN;
+		double cumulatedRelativeMovement = 0d;
+		int numSpots = 0;
+		Spot spot;
+		while ( spotIterator.hasNext() )
+		{
+			spot = spotIterator.next();
+			if ( spot.incomingEdges().isEmpty() )
+				continue;
+			double[] relativeMovement = SpotFeatureUtils.relativeMovement( spot, numberOfNeighbors, model );
+			cumulatedRelativeMovement += LinAlgHelpers.length( relativeMovement );
+			numSpots++;
+		}
+		if ( numSpots > 0 )
+			return cumulatedRelativeMovement / numSpots;
+		return Double.NaN;
 	}
 }
