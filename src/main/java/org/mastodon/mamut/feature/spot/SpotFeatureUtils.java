@@ -46,6 +46,14 @@ public class SpotFeatureUtils
 
 	/**
 	 * Returns the relative movement vector of a spot with respect to its n nearest neighbors at the same timepoint.
+	 * <p>
+	 * Some edge cases:
+	 * <ul>
+	 *     <li>If the spot is null, an IllegalArgumentException is thrown.</li>
+	 *     <li>If the number of neighbors is less than 1, an IllegalArgumentException is thrown.</li>
+	 *     <li>If the spot has no (moving) neighbors, an empty array is returned.</li>
+	 *     <li>If the spot has no predecessor, an empty array is returned.</li>
+	 * </ul>
 	 * @param spot the spot. If null, an IllegalArgumentException is thrown.
 	 * @param n the number of neighbors to consider. Must be at least 1. If less than 1, an IllegalArgumentException is thrown.
 	 * @param model the model
