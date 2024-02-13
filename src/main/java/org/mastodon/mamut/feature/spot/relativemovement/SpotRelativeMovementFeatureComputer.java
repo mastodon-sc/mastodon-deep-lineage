@@ -86,8 +86,17 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 			feature.y.set( spot, Double.NaN );
 			feature.z.set( spot, Double.NaN );
 			feature.norm.set( spot, Double.NaN );
+			return;
 		}
 		double[] relativeMovement = SpotFeatureUtils.relativeMovement( spot, settings.numberOfNeighbors, model );
+		if ( relativeMovement.length == 0 )
+		{
+			feature.x.set( spot, Double.NaN );
+			feature.y.set( spot, Double.NaN );
+			feature.z.set( spot, Double.NaN );
+			feature.norm.set( spot, Double.NaN );
+			return;
+		}
 		feature.x.set( spot, relativeMovement[ 0 ] );
 		feature.y.set( spot, relativeMovement[ 1 ] );
 		feature.z.set( spot, relativeMovement[ 2 ] );
@@ -119,7 +128,7 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 	{
 		this.forceComputeAll = new AtomicBoolean( forceComputeAll );
 		this.settings = settings;
-		initFeature();
+		createOutput();
 		run();
 		model.getFeatureModel().declareFeature( feature );
 	}
