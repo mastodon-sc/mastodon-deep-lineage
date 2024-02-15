@@ -1,7 +1,6 @@
 package org.mastodon.mamut.feature.relativemovement;
 
 import org.mastodon.mamut.feature.spot.relativemovement.SpotRelativeMovementFeatureComputer;
-import org.mastodon.mamut.feature.spot.relativemovement.SpotRelativeMovementFeatureSettings;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
 import org.slf4j.Logger;
@@ -20,7 +19,7 @@ public class RelativeMovementController
 		this.model = model;
 	}
 
-	public void computeRelativeMovement( final boolean forceComputeAll, final SpotRelativeMovementFeatureSettings settings,
+	public void computeRelativeMovement( final boolean forceComputeAll, final RelativeMovementFeatureSettings settings,
 			final Context context )
 	{
 		logger.debug( "Computing relative movement." );

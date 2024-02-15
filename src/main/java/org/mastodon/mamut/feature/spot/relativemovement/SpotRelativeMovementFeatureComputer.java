@@ -32,6 +32,7 @@ import net.imglib2.util.LinAlgHelpers;
 import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
 import org.mastodon.mamut.feature.FeatureUtils;
 import org.mastodon.mamut.feature.ValueIsSetEvaluator;
+import org.mastodon.mamut.feature.relativemovement.RelativeMovementFeatureSettings;
 import org.mastodon.mamut.feature.spot.SpotFeatureUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
@@ -51,7 +52,7 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 
 	private SpotRelativeMovementFeature feature;
 
-	private SpotRelativeMovementFeatureSettings settings;
+	private RelativeMovementFeatureSettings settings;
 
 	private final StatusService statusService;
 
@@ -143,7 +144,7 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 		statusService.showStatus( finished, total, "Computing SpotRelativeMovementFeature" );
 	}
 
-	public void computeFeature( final boolean forceComputeAll, final SpotRelativeMovementFeatureSettings settings )
+	public void computeFeature( final boolean forceComputeAll, final RelativeMovementFeatureSettings settings )
 	{
 		this.forceComputeAll = new AtomicBoolean( forceComputeAll );
 		this.settings = settings;

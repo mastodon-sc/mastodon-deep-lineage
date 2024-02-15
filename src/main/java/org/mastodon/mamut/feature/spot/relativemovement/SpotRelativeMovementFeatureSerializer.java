@@ -34,6 +34,7 @@ import org.mastodon.feature.io.FeatureSerializer;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.DoublePropertyMapSerializer;
+import org.mastodon.mamut.feature.relativemovement.RelativeMovementFeatureSettings;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
@@ -90,6 +91,6 @@ public class SpotRelativeMovementFeatureSerializer implements FeatureSerializer<
 		String lengthUnits = objectInputStream.readUTF();
 		int numberOfNeighbours = objectInputStream.readInt();
 		return new SpotRelativeMovementFeature( xMap, yMap, zMap, normMap, lengthUnits,
-				new SpotRelativeMovementFeatureSettings( numberOfNeighbours ) );
+				new RelativeMovementFeatureSettings( numberOfNeighbours ) );
 	}
 }

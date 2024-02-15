@@ -37,6 +37,7 @@ import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
 import org.mastodon.mamut.feature.ValueIsSetEvaluator;
+import org.mastodon.mamut.feature.relativemovement.RelativeMovementFeatureSettings;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
@@ -74,7 +75,7 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 
 	final String lengthUnits;
 
-	public final SpotRelativeMovementFeatureSettings settings;
+	public final RelativeMovementFeatureSettings settings;
 
 	public static final SpotRelativeMovementFeatureSpec GENERIC_SPEC = new SpotRelativeMovementFeatureSpec();
 
@@ -96,7 +97,7 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 
 	public SpotRelativeMovementFeature( final DoublePropertyMap< Spot > x, final DoublePropertyMap< Spot > y,
 			final DoublePropertyMap< Spot > z,
-			final DoublePropertyMap< Spot > norm, final String lengthUnits, final SpotRelativeMovementFeatureSettings settings )
+			final DoublePropertyMap< Spot > norm, final String lengthUnits, final RelativeMovementFeatureSettings settings )
 	{
 		this.x = x;
 		this.y = y;
