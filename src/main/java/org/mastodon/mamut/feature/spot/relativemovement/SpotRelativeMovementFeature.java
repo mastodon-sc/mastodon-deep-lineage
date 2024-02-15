@@ -56,7 +56,7 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  */
 public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetEvaluator< Spot >
 {
-	public static final String KEY = "Spot relative movement feature";
+	public static final String KEY = "Spot relative movement";
 
 	private static final String HELP_STRING =
 			"Computes the movement of a spot relative to its n nearest neighbours in the x, y, and z direction, as well as the norm of the movement.";
