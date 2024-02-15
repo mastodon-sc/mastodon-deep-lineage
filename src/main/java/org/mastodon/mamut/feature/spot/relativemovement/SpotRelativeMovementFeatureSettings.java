@@ -4,7 +4,7 @@ public class SpotRelativeMovementFeatureSettings
 {
 	private static final int DEFAULT_NUMBER_OF_NEIGHBOURS = 5;
 
-	final int numberOfNeighbors;
+	public final int numberOfNeighbors;
 
 	public SpotRelativeMovementFeatureSettings()
 	{
