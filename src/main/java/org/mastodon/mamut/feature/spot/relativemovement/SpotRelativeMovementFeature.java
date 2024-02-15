@@ -94,7 +94,8 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 		}
 	}
 
-	SpotRelativeMovementFeature( final DoublePropertyMap< Spot > x, final DoublePropertyMap< Spot > y, final DoublePropertyMap< Spot > z,
+	public SpotRelativeMovementFeature( final DoublePropertyMap< Spot > x, final DoublePropertyMap< Spot > y,
+			final DoublePropertyMap< Spot > z,
 			final DoublePropertyMap< Spot > norm, final String lengthUnits, final SpotRelativeMovementFeatureSettings settings )
 	{
 		this.x = x;
