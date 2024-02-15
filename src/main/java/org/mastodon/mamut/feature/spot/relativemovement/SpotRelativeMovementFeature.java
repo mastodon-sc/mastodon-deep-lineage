@@ -74,7 +74,7 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 
 	final String lengthUnits;
 
-	final SpotRelativeMovementFeatureSettings settings;
+	public final SpotRelativeMovementFeatureSettings settings;
 
 	public static final SpotRelativeMovementFeatureSpec GENERIC_SPEC = new SpotRelativeMovementFeatureSpec();
 
