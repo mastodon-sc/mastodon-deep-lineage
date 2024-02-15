@@ -5,12 +5,14 @@ import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.mamut.feature.spot.SpotFeatureUtils;
+import org.mastodon.mamut.feature.spot.relativemovement.SpotRelativeMovementFeature;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.function.Function;
 
 /**
  * Utility class with methods for branch spot features.
@@ -163,6 +165,47 @@ public class BranchSpotFeatureUtils
 	public static double[] normalizedRelativeMovementDirection( final BranchSpot branchSpot, final int numberOfNeighbors,
 			final Model model )
 	{
+		Function< Spot, double[] > spotRelativeMovementProvider =
+				spot -> SpotFeatureUtils.relativeMovement( spot, numberOfNeighbors, model );
+		return normalizedRelativeMovementDirection( branchSpot, spotRelativeMovementProvider, model );
+	}
+
+	/**
+	 * Computes the normalized relative movement direction of a branch spot relative to its nearest neighbours during its life cycle.
+	 * <p>
+	 * The normalized relative movement of a branch spot is equivalent to the normalized sum of relative movement vectors of the branch spot's spots.
+	 * <p>
+	 * A single relative movement vector results from difference of the movement of the spot (considering its predecessor) and the average movement of its neighbors.
+	 *
+	 * @param branchSpot the branch spot
+	 * @param feature the relative movement feature
+	 * @param model the model, which contains the branch spot
+	 * @return the relative movement of the branch spot
+	 */
+	public static double[] normalizedRelativeMovementDirection( final BranchSpot branchSpot, final SpotRelativeMovementFeature feature,
+			final Model model )
+	{
+		Function< Spot, double[] > spotRelativeMovementProvider =
+				spot -> new double[] { feature.x.get( spot ), feature.y.get( spot ), feature.z.get( spot ) };
+		return normalizedRelativeMovementDirection( branchSpot, spotRelativeMovementProvider, model );
+	}
+
+	/**
+	 * Computes the normalized relative movement direction of a branch spot relative to its nearest neighbours during its life cycle.
+	 * <p>
+	 * The normalized relative movement of a branch spot is equivalent to the normalized sum of relative movement vectors of the branch spot's spots.
+	 * <p>
+	 * A single relative movement vector results from difference of the movement of the spot (considering its predecessor) and the average movement of its neighbors.
+	 *
+	 * @param branchSpot the branch spot
+	 * @param spotRelativeMovementProvider the function that provides the relative movement for a specific spot
+	 * @param model the model, which contains the branch spot
+	 * @return the relative movement of the branch spot
+	 */
+	private static double[] normalizedRelativeMovementDirection( final BranchSpot branchSpot,
+			final Function< Spot, double[] > spotRelativeMovementProvider,
+			final Model model )
+	{
 		final Iterator< Spot > spotIterator = getSpotIterator( model, branchSpot );
 		if ( !spotIterator.hasNext() )
 			return new double[ 0 ];
@@ -173,7 +216,7 @@ public class BranchSpotFeatureUtils
 			spot = spotIterator.next();
 			if ( spot.incomingEdges().isEmpty() )
 				continue;
-			double[] relativeMovement = SpotFeatureUtils.relativeMovement( spot, numberOfNeighbors, model );
+			double[] relativeMovement = spotRelativeMovementProvider.apply( spot );
 			LinAlgHelpers.add( cumulatedRelativeMovement, relativeMovement, cumulatedRelativeMovement );
 		}
 		model.getBranchGraph().releaseIterator( spotIterator );
@@ -193,6 +236,41 @@ public class BranchSpotFeatureUtils
 	 */
 	public static double relativeMovement( final BranchSpot branchSpot, final int numberOfNeighbors, final Model model )
 	{
+		Function< Spot, double[] > spotRelativeMovementProvider =
+				spot -> SpotFeatureUtils.relativeMovement( spot, numberOfNeighbors, model );
+		return relativeMovement( branchSpot, spotRelativeMovementProvider, model );
+	}
+
+	/**
+	 * Computes the amount of movement of a branch spot relative to its nearest neighbours during its life cycle.
+	 * <p>
+	 * The relative movement of a branch spot is equivalent to the average of the relative movements of the branch spot's spots.
+	 *
+	 * @param branchSpot the branch spot
+	 * @param feature the relative movement feature
+	 * @param model the model, which contains the branch spot
+	 * @return the relative movement of the branch spot
+	 */
+	public static double relativeMovement( final BranchSpot branchSpot, final SpotRelativeMovementFeature feature, final Model model )
+	{
+		Function< Spot, double[] > spotRelativeMovementProvider =
+				spot -> new double[] { feature.x.get( spot ), feature.y.get( spot ), feature.z.get( spot ) };
+		return relativeMovement( branchSpot, spotRelativeMovementProvider, model );
+	}
+
+	/**
+	 * Computes the amount of movement of a branch spot relative to its nearest neighbours during its life cycle.
+	 * <p>
+	 * The relative movement of a branch spot is equivalent to the average of the relative movements of the branch spot's spots.
+	 *
+	 * @param branchSpot the branch spot
+	 * @param spotRelativeMovementProvider the function that provides the relative movement for a specific spot
+	 * @param model the model, which contains the branch spot
+	 * @return the relative movement of the branch spot
+	 */
+	static double relativeMovement( final BranchSpot branchSpot, final Function< Spot, double[] > spotRelativeMovementProvider,
+			final Model model )
+	{
 		final Iterator< Spot > spotIterator = getSpotIterator( model, branchSpot );
 		if ( !spotIterator.hasNext() )
 			return Double.NaN;
@@ -204,7 +282,7 @@ public class BranchSpotFeatureUtils
 			spot = spotIterator.next();
 			if ( spot.incomingEdges().isEmpty() )
 				continue;
-			double[] relativeMovement = SpotFeatureUtils.relativeMovement( spot, numberOfNeighbors, model );
+			double[] relativeMovement = spotRelativeMovementProvider.apply( spot );
 			cumulatedRelativeMovement += LinAlgHelpers.length( relativeMovement );
 			numSpots++;
 		}
