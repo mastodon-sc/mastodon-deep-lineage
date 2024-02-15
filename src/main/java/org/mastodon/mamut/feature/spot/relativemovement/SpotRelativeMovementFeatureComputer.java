@@ -72,10 +72,10 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 	private SpotRelativeMovementFeature initFeature()
 	{
 
-		Predicate< SpotRelativeMovementFeature > predicate = spotRelativeMovementFeature -> {
+		Predicate< SpotRelativeMovementFeature > predicate = relativeMovementFeature -> {
 			if ( settings == null )
-				return spotRelativeMovementFeature != null;
-			return spotRelativeMovementFeature != null && spotRelativeMovementFeature.settings.equals( settings );
+				return relativeMovementFeature != null;
+			return relativeMovementFeature != null && relativeMovementFeature.settings.equals( settings );
 		};
 		// Try to find an existing feature with the given settings.
 		SpotRelativeMovementFeature movementFeature =
