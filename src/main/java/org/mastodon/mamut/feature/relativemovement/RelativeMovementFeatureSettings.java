@@ -35,4 +35,10 @@ public class RelativeMovementFeatureSettings
 		// We only have one parameter, so we can use it directly.
 		return numberOfNeighbors;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "RelativeMovementFeatureSettings{" + "numberOfNeighbors=" + numberOfNeighbors + "}";
+	}
 }
