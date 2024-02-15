@@ -15,4 +15,24 @@ public class SpotRelativeMovementFeatureSettings
 	{
 		this.numberOfNeighbors = numberOfNeighbors;
 	}
+
+	@Override
+	public boolean equals( final Object o )
+	{
+		if ( this == o )
+			return true;
+		if ( o == null || getClass() != o.getClass() )
+			return false;
+
+		final SpotRelativeMovementFeatureSettings that = ( SpotRelativeMovementFeatureSettings ) o;
+
+		return numberOfNeighbors == that.numberOfNeighbors;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		// We only have one parameter, so we can use it directly.
+		return numberOfNeighbors;
+	}
 }
