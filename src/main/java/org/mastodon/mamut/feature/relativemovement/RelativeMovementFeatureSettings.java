@@ -1,17 +1,17 @@
-package org.mastodon.mamut.feature.spot.relativemovement;
+package org.mastodon.mamut.feature.relativemovement;
 
-public class SpotRelativeMovementFeatureSettings
+public class RelativeMovementFeatureSettings
 {
 	private static final int DEFAULT_NUMBER_OF_NEIGHBOURS = 5;
 
 	public final int numberOfNeighbors;
 
-	public SpotRelativeMovementFeatureSettings()
+	public RelativeMovementFeatureSettings()
 	{
 		this( DEFAULT_NUMBER_OF_NEIGHBOURS );
 	}
 
-	public SpotRelativeMovementFeatureSettings( final int numberOfNeighbors )
+	public RelativeMovementFeatureSettings( final int numberOfNeighbors )
 	{
 		this.numberOfNeighbors = numberOfNeighbors;
 	}
@@ -24,7 +24,7 @@ public class SpotRelativeMovementFeatureSettings
 		if ( o == null || getClass() != o.getClass() )
 			return false;
 
-		final SpotRelativeMovementFeatureSettings that = ( SpotRelativeMovementFeatureSettings ) o;
+		final RelativeMovementFeatureSettings that = ( RelativeMovementFeatureSettings ) o;
 
 		return numberOfNeighbors == that.numberOfNeighbors;
 	}

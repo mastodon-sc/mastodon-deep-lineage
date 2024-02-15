@@ -30,7 +30,6 @@ package org.mastodon.mamut.feature.relativemovement;
 
 import org.mastodon.mamut.feature.FeatureUtils;
 import org.mastodon.mamut.feature.spot.relativemovement.SpotRelativeMovementFeature;
-import org.mastodon.mamut.feature.spot.relativemovement.SpotRelativeMovementFeatureSettings;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
 import org.scijava.ItemVisibility;
@@ -74,7 +73,7 @@ public class RelativeMovementView implements Command
 	public void run()
 	{
 		RelativeMovementController controller = new RelativeMovementController( model );
-		SpotRelativeMovementFeatureSettings settings = new SpotRelativeMovementFeatureSettings( nNearestNeighbors );
+		RelativeMovementFeatureSettings settings = new RelativeMovementFeatureSettings( nNearestNeighbors );
 		controller.computeRelativeMovement( forceComputeAll, settings, context );
 	}
 
@@ -84,8 +83,8 @@ public class RelativeMovementView implements Command
 		logger.debug( "init parameters from feature model, if a feature exists already" );
 		SpotRelativeMovementFeature spotRelativeMovementFeature =
 				FeatureUtils.getFeatureGeneric( model, SpotRelativeMovementFeature.SpotRelativeMovementFeatureSpec.class );
-		SpotRelativeMovementFeatureSettings settings =
-				spotRelativeMovementFeature == null ? new SpotRelativeMovementFeatureSettings() : spotRelativeMovementFeature.settings;
+		RelativeMovementFeatureSettings settings =
+				spotRelativeMovementFeature == null ? new RelativeMovementFeatureSettings() : spotRelativeMovementFeature.settings;
 		nNearestNeighbors = settings.numberOfNeighbors;
 	}
 }
