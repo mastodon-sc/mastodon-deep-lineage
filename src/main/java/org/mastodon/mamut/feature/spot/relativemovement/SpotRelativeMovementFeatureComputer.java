@@ -36,6 +36,8 @@ import org.mastodon.mamut.feature.spot.SpotFeatureUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
+import org.scijava.Context;
+import org.scijava.app.StatusService;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,9 +52,12 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 
 	private SpotRelativeMovementFeatureSettings settings;
 
-	public SpotRelativeMovementFeatureComputer( final Model model )
+	private final StatusService statusService;
+
+	public SpotRelativeMovementFeatureComputer( final Model model, final Context context )
 	{
 		this.model = model;
+		this.statusService = context.getService( StatusService.class );
 	}
 
 	@Override
@@ -122,6 +127,12 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 		feature.y.beforeClearPool();
 		feature.z.beforeClearPool();
 		feature.norm.beforeClearPool();
+	}
+
+	@Override
+	protected void notifyProgress( final int finished, final int total )
+	{
+		statusService.showStatus( finished, total, "Computing SpotRelativeMovementFeature" );
 	}
 
 	public void computeFeature( final boolean forceComputeAll, final SpotRelativeMovementFeatureSettings settings )
