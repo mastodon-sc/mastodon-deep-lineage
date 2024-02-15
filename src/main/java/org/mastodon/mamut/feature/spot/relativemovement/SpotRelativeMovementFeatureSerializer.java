@@ -51,7 +51,7 @@ public class SpotRelativeMovementFeatureSerializer implements FeatureSerializer<
 	@Override
 	public FeatureSpec< SpotRelativeMovementFeature, Spot > getFeatureSpec()
 	{
-		return SpotRelativeMovementFeature.SPEC;
+		return SpotRelativeMovementFeature.GENERIC_SPEC;
 	}
 
 	@Override
