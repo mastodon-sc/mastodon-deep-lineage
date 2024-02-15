@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,8 +29,8 @@
 package org.mastodon.mamut.feature.spot.relativemovement;
 
 import net.imglib2.util.LinAlgHelpers;
-import org.mastodon.feature.Feature;
 import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
+import org.mastodon.mamut.feature.FeatureUtils;
 import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.feature.spot.SpotFeatureUtils;
 import org.mastodon.mamut.model.Model;
@@ -41,6 +41,7 @@ import org.scijava.app.StatusService;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
 
 /**
  * Computes {@link SpotRelativeMovementFeature}
@@ -69,17 +70,24 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 
 	private SpotRelativeMovementFeature initFeature()
 	{
-		// Try to get output from the FeatureModel, if we deserialized a model.
-		final Feature< ? > existingFeature = model.getFeatureModel().getFeature( SpotRelativeMovementFeature.SPEC );
-		if ( existingFeature != null )
-			return ( SpotRelativeMovementFeature ) existingFeature;
+
+		Predicate< SpotRelativeMovementFeature > predicate = spotRelativeMovementFeature -> {
+			if ( settings == null )
+				return spotRelativeMovementFeature != null;
+			return spotRelativeMovementFeature != null && spotRelativeMovementFeature.settings.equals( settings );
+		};
+		// Try to find an existing feature with the given settings.
+		SpotRelativeMovementFeature movementFeature =
+				FeatureUtils.getFeatureGeneric( model, predicate, SpotRelativeMovementFeature.SpotRelativeMovementFeatureSpec.class );
+		if ( movementFeature != null )
+			return movementFeature;
 
 		final DoublePropertyMap< Spot > x = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 		final DoublePropertyMap< Spot > y = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 		final DoublePropertyMap< Spot > z = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 		final DoublePropertyMap< Spot > norm = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 
-		return new SpotRelativeMovementFeature( x, y, z, norm, model.getSpaceUnits(), new SpotRelativeMovementFeatureSettings() );
+		return new SpotRelativeMovementFeature( x, y, z, norm, model.getSpaceUnits(), this.settings );
 	}
 
 	@Override
