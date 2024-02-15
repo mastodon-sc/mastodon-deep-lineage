@@ -60,15 +60,11 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 	private static final String HELP_STRING =
 			"Computes the movement of a spot relative to its n nearest neighbours in the x, y, and z direction, as well as the norm of the movement.";
 
+	private static final String PROJECTION_NAME = "Relative movement %s to %d nearest neighbors";
+
 	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
 
-	public static final FeatureProjectionSpec X_PROJECTION_SPEC = new FeatureProjectionSpec( "Relative movement x", Dimension.LENGTH );
-
-	public static final FeatureProjectionSpec Y_PROJECTION_SPEC = new FeatureProjectionSpec( "Relative movement y", Dimension.LENGTH );
-
-	public static final FeatureProjectionSpec Z_PROJECTION_SPEC = new FeatureProjectionSpec( "Relative movement z", Dimension.LENGTH );
-
-	public static final FeatureProjectionSpec NORM_PROJECTION_SPEC = new FeatureProjectionSpec( "Relative movement norm", Dimension.NONE );
+	public final DoublePropertyMap< Spot > x;
 
 	final DoublePropertyMap< Spot > x;
 
@@ -80,20 +76,25 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 
 	final String lengthUnits;
 
-	SpotRelativeMovementFeatureSettings settings = new SpotRelativeMovementFeatureSettings();
+	final SpotRelativeMovementFeatureSettings settings;
+
+	public static final SpotRelativeMovementFeatureSpec GENERIC_SPEC = new SpotRelativeMovementFeatureSpec();
+
+	private final SpotRelativeMovementFeatureSpec adaptedSpec;
 
 	@Plugin( type = FeatureSpec.class )
-	public static class SpotRelativeMovementFeatureSpec
-			extends FeatureSpec< SpotRelativeMovementFeature, Spot >
+	public static class SpotRelativeMovementFeatureSpec extends FeatureSpec< SpotRelativeMovementFeature, Spot >
 	{
 		public SpotRelativeMovementFeatureSpec()
 		{
-			super( KEY, HELP_STRING, SpotRelativeMovementFeature.class, Spot.class, Multiplicity.SINGLE, X_PROJECTION_SPEC,
-					Y_PROJECTION_SPEC, Z_PROJECTION_SPEC, NORM_PROJECTION_SPEC );
+			super( KEY, HELP_STRING, SpotRelativeMovementFeature.class, Spot.class, Multiplicity.SINGLE );
+		}
+
+		public SpotRelativeMovementFeatureSpec( final FeatureProjectionSpec... projectionSpecs )
+		{
+			super( KEY, HELP_STRING, SpotRelativeMovementFeature.class, Spot.class, Multiplicity.SINGLE, projectionSpecs );
 		}
 	}
-
-	public static final SpotRelativeMovementFeatureSpec SPEC = new SpotRelativeMovementFeatureSpec();
 
 	SpotRelativeMovementFeature( final DoublePropertyMap< Spot > x, final DoublePropertyMap< Spot > y, final DoublePropertyMap< Spot > z,
 			final DoublePropertyMap< Spot > norm, final String lengthUnits, final SpotRelativeMovementFeatureSettings settings )
@@ -104,17 +105,26 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 		this.norm = norm;
 		this.lengthUnits = lengthUnits;
 		this.settings = settings;
+		FeatureProjectionSpec projectionSpecX =
+				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "x", settings.numberOfNeighbors ), Dimension.LENGTH );
+		FeatureProjectionSpec projectionSpecY =
+				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "y", settings.numberOfNeighbors ), Dimension.LENGTH );
+		FeatureProjectionSpec projectionSpecZ =
+				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "z", settings.numberOfNeighbors ), Dimension.LENGTH );
+		FeatureProjectionSpec projectionSpecNorm =
+				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "norm", settings.numberOfNeighbors ), Dimension.LENGTH );
+		this.adaptedSpec = new SpotRelativeMovementFeatureSpec( projectionSpecX, projectionSpecY, projectionSpecZ, projectionSpecNorm );
 		this.projectionMap = new LinkedHashMap<>( 4 );
 
-		final FeatureProjectionKey keyShortSemiAxis = key( X_PROJECTION_SPEC );
-		final FeatureProjectionKey keyMiddleSemiAxis = key( Y_PROJECTION_SPEC );
-		final FeatureProjectionKey keyLongSemiAxis = key( Z_PROJECTION_SPEC );
-		final FeatureProjectionKey keyVolume = key( NORM_PROJECTION_SPEC );
+		final FeatureProjectionKey keyX = key( projectionSpecX );
+		final FeatureProjectionKey keyY = key( projectionSpecY );
+		final FeatureProjectionKey keyZ = key( projectionSpecZ );
+		final FeatureProjectionKey keyNorm = key( projectionSpecNorm );
 
-		projectionMap.put( keyShortSemiAxis, FeatureProjections.project( keyShortSemiAxis, norm, lengthUnits ) );
-		projectionMap.put( keyMiddleSemiAxis, FeatureProjections.project( keyMiddleSemiAxis, x, lengthUnits ) );
-		projectionMap.put( keyLongSemiAxis, FeatureProjections.project( keyLongSemiAxis, y, lengthUnits ) );
-		projectionMap.put( keyVolume, FeatureProjections.project( keyVolume, z, Dimension.NONE_UNITS ) );
+		projectionMap.put( keyX, FeatureProjections.project( keyX, x, lengthUnits ) );
+		projectionMap.put( keyY, FeatureProjections.project( keyY, y, lengthUnits ) );
+		projectionMap.put( keyZ, FeatureProjections.project( keyZ, z, lengthUnits ) );
+		projectionMap.put( keyNorm, FeatureProjections.project( keyNorm, norm, lengthUnits ) );
 	}
 
 	@Override
@@ -132,7 +142,7 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 	@Override
 	public SpotRelativeMovementFeatureSpec getSpec()
 	{
-		return SPEC;
+		return adaptedSpec;
 	}
 
 	@Override
