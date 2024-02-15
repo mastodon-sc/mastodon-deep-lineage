@@ -20,11 +20,14 @@ public class BranchSpotFeatureUtilsTest
 
 	private ExampleGraph2 graph2;
 
+	private ExampleGraph3 graph3;
+
 	@Before
 	public void setUp()
 	{
 		graph1 = new ExampleGraph1();
 		graph2 = new ExampleGraph2();
+		graph3 = new ExampleGraph3();
 	}
 
 	@Test
@@ -133,7 +136,6 @@ public class BranchSpotFeatureUtilsTest
 	@Test
 	public void testRelativeMovement()
 	{
-		ExampleGraph3 graph3 = new ExampleGraph3();
 		double actual = BranchSpotFeatureUtils.relativeMovement( graph3.branchSpotA, 2, graph3.getModel() );
 		assertEquals( 2d, actual, 0d );
 	}
@@ -141,7 +143,6 @@ public class BranchSpotFeatureUtilsTest
 	@Test
 	public void testNormalizedRelativeMovementDirection()
 	{
-		ExampleGraph3 graph3 = new ExampleGraph3();
 		double[] actual = BranchSpotFeatureUtils.normalizedRelativeMovementDirection( graph3.branchSpotA, 2, graph3.getModel() );
 		assertArrayEquals( new double[] { 0, 1, 0 }, actual, 0d );
 	}
