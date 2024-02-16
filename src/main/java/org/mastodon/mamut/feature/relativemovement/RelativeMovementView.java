@@ -90,7 +90,7 @@ public class RelativeMovementView implements Command
 	{
 		logger.debug( "init parameters from feature model, if a feature exists already" );
 		SpotRelativeMovementFeature spotRelativeMovementFeature =
-				FeatureUtils.getFeatureGeneric( model, SpotRelativeMovementFeature.SpotRelativeMovementFeatureSpec.class );
+				FeatureUtils.getFeature( model, SpotRelativeMovementFeature.SpotRelativeMovementFeatureSpec.class );
 		RelativeMovementFeatureSettings settings =
 				spotRelativeMovementFeature == null ? new RelativeMovementFeatureSettings() : spotRelativeMovementFeature.settings;
 		nNearestNeighbors = settings.numberOfNeighbors;

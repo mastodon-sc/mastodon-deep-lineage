@@ -29,7 +29,23 @@ public class FeatureUtils
 		} ).findFirst().orElse( null ) );
 	}
 
-	public static < V extends Vertex< ? >, F extends Feature< V >, S extends FeatureSpec< F, V > > F getFeatureGeneric( final Model model,
+	/**
+	 * Get a feature from the model that matches the given predicate and feature spec class.
+	 * <p>
+	 * If no feature matches the predicate, returns null.
+	 * <p>
+	 * If multiple features match the predicate, returns the first one.
+	 *
+	 * @param model the model to get the feature from.
+	 * @param predicate the predicate to match the feature.
+	 * @param featureSpecClass the feature spec class.
+	 * @return the feature that matches the predicate and feature spec class, or null if none matches.
+	 *
+	 * @param <V> the vertex type.
+	 * @param <F> the feature type.
+	 * @param <S> the feature spec type.
+	 */
+	public static < V extends Vertex< ? >, F extends Feature< V >, S extends FeatureSpec< F, V > > F getFeature( final Model model,
 			final Predicate< F > predicate, final Class< S > featureSpecClass )
 	{
 
@@ -39,7 +55,22 @@ public class FeatureUtils
 		return null;
 	}
 
-	public static < V extends Vertex< ? >, F extends Feature< V >, S extends FeatureSpec< F, V > > F getFeatureGeneric( final Model model,
+	/**
+	 * Gets a feature from the model that matches the given feature spec class.
+	 * <p>
+	 * If no feature matches, returns null.
+	 * <p>
+	 * If multiple features match the predicate, returns the first one.
+	 *
+	 * @param model the model to get the feature from.
+	 * @param featureSpecClass the feature spec class.
+	 * @return the feature that matches the predicate and feature spec class, or null if none matches.
+	 *
+	 * @param <V> the vertex type.
+	 * @param <F> the feature type.
+	 * @param <S> the feature spec type.
+	 */
+	public static < V extends Vertex< ? >, F extends Feature< V >, S extends FeatureSpec< F, V > > F getFeature( final Model model,
 			final Class< S > featureSpecClass )
 	{
 		Predicate< F > predicate = Objects::nonNull;
