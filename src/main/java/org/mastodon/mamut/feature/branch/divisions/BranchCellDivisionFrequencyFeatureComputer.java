@@ -28,65 +28,88 @@
  */
 package org.mastodon.mamut.feature.branch.divisions;
 
-import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
+import net.imglib2.util.Pair;
+import net.imglib2.util.ValuePair;
+import org.mastodon.mamut.feature.AbstractResettableFeatureComputer;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
-import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
+import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.properties.DoublePropertyMap;
+import org.mastodon.properties.ObjPropertyMap;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collection;
+import javax.annotation.Nonnull;
 
 /**
  * Computes {@link BranchCellDivisionFrequencyFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchCellDivisionFrequencyFeatureComputer extends AbstractSerialFeatureComputer< BranchSpot >
+public class BranchCellDivisionFrequencyFeatureComputer extends AbstractResettableFeatureComputer
 {
+
+	@Parameter
+	protected ModelBranchGraph branchGraph;
 
 	@Parameter( type = ItemIO.OUTPUT )
 	protected BranchCellDivisionFrequencyFeature output;
 
-	@Override
-	protected void compute( final BranchSpot branchSpot )
-	{
-		output.nCellDivisions.set( branchSpot, cellDivisionFrequency( branchSpot ) );
-	}
+	private ObjPropertyMap< BranchSpot, Pair< Integer, Integer > > valueCache;
 
 	@Override
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new BranchCellDivisionFrequencyFeature(
-					new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ) );
+			output = new BranchCellDivisionFrequencyFeature( new DoublePropertyMap<>( branchGraph.vertices().getRefPool(), Double.NaN ) );
 	}
 
-	private double cellDivisionFrequency( final BranchSpot branchSpot )
+	@Override
+	public void run()
 	{
-		int leaves = BranchSpotFeatureUtils.countLeaves( model.getBranchGraph(), branchSpot );
-		int divisions = leaves - 1; // NB: we are assuming a binary tree
-		int totalDuration = BranchSpotFeatureUtils.totalBranchDurations( model.getBranchGraph(), branchSpot );
-		return divisions / ( double ) totalDuration;
+		super.run();
+		valueCache = new ObjPropertyMap<>( branchGraph.vertices().getRefPool(), 0 );
+		LineageTreeUtils.callDepthFirst( branchGraph, this::computeCellDivisionFrequency, this::isCanceled );
+	}
+
+	private void computeCellDivisionFrequency( @Nonnull BranchSpot branchSpot )
+	{
+		if ( output.valueIsSet( branchSpot ) && !forceComputeAll.get() )
+			return;
+		boolean isLeaf = branchSpot.outgoingEdges().isEmpty();
+
+		int duration = BranchSpotFeatureUtils.branchDuration( branchSpot );
+		if ( isLeaf )
+		{
+			valueCache.set( branchSpot, new ValuePair<>( 0, duration ) );
+			output.frequency.set( branchSpot, 0 );
+		}
+		else
+		{
+			BranchSpot ref = branchGraph.vertexRef();
+			int totalSubsequentDivsions = 0;
+			int totalDuration = 0;
+			for ( BranchLink link : branchSpot.outgoingEdges() )
+			{
+				BranchSpot child = link.getTarget( ref );
+				Pair< Integer, Integer > childValue = valueCache.get( child );
+				totalSubsequentDivsions += childValue.getA();
+				totalDuration += childValue.getB();
+			}
+			totalSubsequentDivsions += 1;
+			totalDuration += duration;
+			valueCache.set( branchSpot, new ValuePair<>( totalSubsequentDivsions, totalDuration ) );
+			output.frequency.set( branchSpot, ( double ) totalSubsequentDivsions / totalDuration );
+			branchGraph.releaseRef( ref );
+		}
 	}
 
 	@Override
 	protected void reset()
 	{
-		output.nCellDivisions.beforeClearPool();
-	}
-
-	@Override
-	protected ValueIsSetEvaluator< BranchSpot > getEvaluator()
-	{
-		return output;
-	}
-
-	@Override
-	protected Collection< BranchSpot > getVertices()
-	{
-		return model.getBranchGraph().vertices();
+		output.frequency.beforeClearPool();
 	}
 }

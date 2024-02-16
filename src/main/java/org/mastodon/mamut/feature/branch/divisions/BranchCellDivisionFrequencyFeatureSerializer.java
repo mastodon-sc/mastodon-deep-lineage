@@ -78,7 +78,7 @@ public class BranchCellDivisionFrequencyFeatureSerializer
 	public void serialize( BranchCellDivisionFrequencyFeature feature, ObjectToFileIdMap< Spot > idmap, ObjectOutputStream oos,
 			ModelBranchGraph branchGraph, ModelGraph graph ) throws IOException
 	{
-		DoublePropertyMap< BranchSpot > branchSpotMap = feature.nCellDivisions;
+		DoublePropertyMap< BranchSpot > branchSpotMap = feature.frequency;
 		final DoublePropertyMap< Spot > spotMap =
 				BranchFeatureSerializer.branchSpotMapToMap( branchSpotMap, branchGraph, graph );
 		final DoublePropertyMapSerializer< Spot > propertyMapSerializer = new DoublePropertyMapSerializer<>( spotMap );

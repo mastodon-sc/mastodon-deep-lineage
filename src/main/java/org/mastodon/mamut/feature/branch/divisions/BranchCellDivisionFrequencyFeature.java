@@ -79,7 +79,7 @@ public class BranchCellDivisionFrequencyFeature implements Feature< BranchSpot >
 
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY, Dimension.NONE );
 
-	public final DoublePropertyMap< BranchSpot > nCellDivisions;
+	public final DoublePropertyMap< BranchSpot > frequency;
 
 	protected final FeatureProjection< BranchSpot > projection;
 
@@ -102,7 +102,7 @@ public class BranchCellDivisionFrequencyFeature implements Feature< BranchSpot >
 
 	public BranchCellDivisionFrequencyFeature( final DoublePropertyMap< BranchSpot > map )
 	{
-		this.nCellDivisions = map;
+		this.frequency = map;
 		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );
 	}
 
@@ -127,12 +127,12 @@ public class BranchCellDivisionFrequencyFeature implements Feature< BranchSpot >
 	@Override
 	public void invalidate( final BranchSpot branchSpot )
 	{
-		nCellDivisions.remove( branchSpot );
+		frequency.remove( branchSpot );
 	}
 
 	@Override
-	public boolean valueIsSet( final BranchSpot vertex )
+	public boolean valueIsSet( final BranchSpot branchSpot )
 	{
-		return nCellDivisions.isSet( vertex );
+		return frequency.isSet( branchSpot );
 	}
 }
