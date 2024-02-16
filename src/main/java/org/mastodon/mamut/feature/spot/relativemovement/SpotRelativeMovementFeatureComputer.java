@@ -152,4 +152,9 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 		run();
 		model.getFeatureModel().declareFeature( feature );
 	}
+
+	public SpotRelativeMovementFeature getFeature()
+	{
+		return feature;
+	}
 }
