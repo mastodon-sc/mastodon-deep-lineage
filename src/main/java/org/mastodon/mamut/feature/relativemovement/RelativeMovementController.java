@@ -1,5 +1,6 @@
 package org.mastodon.mamut.feature.relativemovement;
 
+import org.mastodon.mamut.feature.branch.relativemovement.BranchRelativeMovementFeatureComputer;
 import org.mastodon.mamut.feature.spot.relativemovement.SpotRelativeMovementFeatureComputer;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
@@ -22,9 +23,13 @@ public class RelativeMovementController
 	public void computeRelativeMovement( final boolean forceComputeAll, final RelativeMovementFeatureSettings settings,
 			final Context context )
 	{
-		logger.debug( "Computing relative movement." );
-		SpotRelativeMovementFeatureComputer featureComputer = new SpotRelativeMovementFeatureComputer( model, context );
-		featureComputer.computeFeature( forceComputeAll, settings );
+		logger.debug( "Computing relative movement on spot level using this settings: {}", settings );
+		SpotRelativeMovementFeatureComputer spotFeatureComputer = new SpotRelativeMovementFeatureComputer( model, context );
+		spotFeatureComputer.computeFeature( forceComputeAll, settings );
+		logger.debug( "Computing relative movement on branch spot level using this settings: {}", settings );
+		BranchRelativeMovementFeatureComputer branchFeatureComputer =
+				new BranchRelativeMovementFeatureComputer( model, context, spotFeatureComputer.getFeature() );
+		branchFeatureComputer.computeFeature( forceComputeAll );
 		logger.debug( "Successfully computed relative movement." );
 	}
 }
