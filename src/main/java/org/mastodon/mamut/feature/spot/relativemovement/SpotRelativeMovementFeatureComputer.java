@@ -79,7 +79,7 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 		};
 		// Try to find an existing feature with the given settings.
 		SpotRelativeMovementFeature movementFeature =
-				FeatureUtils.getFeatureGeneric( model, predicate, SpotRelativeMovementFeature.SpotRelativeMovementFeatureSpec.class );
+				FeatureUtils.getFeature( model, predicate, SpotRelativeMovementFeature.SpotRelativeMovementFeatureSpec.class );
 		if ( movementFeature != null )
 			return movementFeature;
 
