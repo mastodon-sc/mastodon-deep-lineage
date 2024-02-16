@@ -52,8 +52,16 @@ public class RelativeMovementView implements Command
 	@Parameter( visibility = ItemVisibility.MESSAGE, required = false, persist = false )
 	private String documentation = "<html>\n"
 			+ "<body width=" + WIDTH + "cm align=left>\n"
-			+ "<h1>Export label image using ellipsoids</h1>\n"
-			+ "<p>This plugin is capable of saving a label image to a file using the existing ellipsoids in Mastodon.</p>\n"
+			+ "<h1>Compute relative movement in relation to nearest neighbors</h1>\n"
+			+ "<p>"
+			+ "With this plugin the relative movement of spots and branch spots in relation to their nearest neighbors can be computed. The number of nearest neighbor to consider can be specified. For each new number of nearest neighbors, a new feature is added."
+			+ "</p>\n"
+			+ "<p>"
+			+ "On spot level, for each spot the movement from the last timepoint to the current timepoint is computed and compared to the average movement of the nearest neighbors. A vector representing the relative movement in x, y, and z direction and the norm of it is computed. The result is stored as a feature. "
+			+ "</p>\n"
+			+ "<p>"
+			+ "On branch level, the average relative movement in relation to neighbors of the spots of the branch is computed."
+			+ "</p>\n"
 			+ "</body>\n"
 			+ "</html>\n";
 
@@ -63,10 +71,10 @@ public class RelativeMovementView implements Command
 	@Parameter
 	private Context context;
 
-	@Parameter( label = "Force compute all" )
+	@Parameter( label = "Recompute all", description = "If true, all features are recomputed, otherwise only missing ones." )
 	private boolean forceComputeAll;
 
-	@Parameter( label = "Number of nearest neighbors", min = "1", persist = false )
+	@Parameter( label = "Number of nearest neighbors", description = "Specify the number of neighbors to be taken into account. ", min = "1", persist = false )
 	private int nNearestNeighbors;
 
 	@Override
