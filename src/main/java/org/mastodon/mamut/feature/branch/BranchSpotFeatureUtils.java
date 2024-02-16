@@ -225,9 +225,27 @@ public class BranchSpotFeatureUtils
 		while ( it.hasNext() )
 		{
 			BranchSpot node = it.next();
-			int branchDuration = node.getTimepoint() - node.getFirstTimePoint();
+			int branchDuration = branchDuration( node );
 			totalDuration += branchDuration;
 		}
 		return totalDuration;
+	}
+
+	/**
+	 * Returns the duration of the given branch spot.
+	 * <p>
+	 * The duration of a branch spot is the number of timepoints it spans.
+	 * </p>
+	 * <ul>
+	 *     <li>A branch spot that spans from timepoint 3 to timepoint 5 has a duration of 3</li>
+	 *     <li>A branch spot contains only a single spot in a single timepoint has a duration of 1</li>
+	 * </ul>
+	 * .
+	 * @param branchSpot the branch spot
+	 * @return the duration of the branch spot
+	 */
+	public static int branchDuration( final BranchSpot branchSpot )
+	{
+		return branchSpot.getTimepoint() - branchSpot.getFirstTimePoint() + 1;
 	}
 }

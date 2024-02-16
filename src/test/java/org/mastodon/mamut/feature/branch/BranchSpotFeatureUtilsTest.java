@@ -114,4 +114,15 @@ public class BranchSpotFeatureUtilsTest
 		assertEquals( 2, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotE ), 0d );
 
 	}
+
+	@Test
+	public void testBranchDuration()
+	{
+		assertEquals( 4, BranchSpotFeatureUtils.branchDuration( graph1.branchSpotA ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotA ) );
+		assertEquals( 2, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotB ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotC ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotD ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotE ) );
+	}
 }
