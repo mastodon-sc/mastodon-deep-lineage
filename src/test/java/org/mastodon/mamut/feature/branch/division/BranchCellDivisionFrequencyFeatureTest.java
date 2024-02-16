@@ -42,8 +42,8 @@ public class BranchCellDivisionFrequencyFeatureTest extends AbstractFeatureTest<
 		FeatureProjection< BranchSpot > projection =
 				getProjection( branchNormalizedCellDivisionsFeature, BranchCellDivisionFrequencyFeature.PROJECTION_SPEC );
 
-		assertEquals( 2 / 9d, projection.value( graph.branchSpotA ), 0d );
-		assertEquals( 1d / 5d, projection.value( graph.branchSpotB ), 0d );
+		assertEquals( 2d / 14d, projection.value( graph.branchSpotA ), 0d );
+		assertEquals( 1d / 8d, projection.value( graph.branchSpotB ), 0d );
 		assertEquals( 0d, projection.value( graph.branchSpotC ), 0d );
 		assertEquals( 0d, projection.value( graph.branchSpotD ), 0d );
 		assertEquals( 0d, projection.value( graph.branchSpotE ), 0d );
