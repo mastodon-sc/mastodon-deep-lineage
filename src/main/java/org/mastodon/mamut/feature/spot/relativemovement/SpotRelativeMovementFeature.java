@@ -50,8 +50,12 @@ import java.util.Set;
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
 /**
+ * Computes the relative movement of a Spot in relation to nearest neighbors.
+ * <p>
+ * The feature computes the movement of a spot relative to its n nearest neighbours in the x, y, and z direction, as well as the norm of the movement.<p>
+ * For each spot, the movement from the last timepoint to the current timepoint is computed and compared to the average movement of the nearest neighbors.
+ * A vector representing the relative movement in x, y, and z direction and the norm of it is computed.
  *
- * <br>
  * @author Stefan Hahmann
  */
 public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetEvaluator< Spot >
