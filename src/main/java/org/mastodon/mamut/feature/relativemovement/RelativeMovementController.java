@@ -1,7 +1,7 @@
 package org.mastodon.mamut.feature.relativemovement;
 
-import org.mastodon.mamut.feature.branch.relativemovement.BranchRelativeMovementFeatureComputer;
-import org.mastodon.mamut.feature.spot.relativemovement.SpotRelativeMovementFeatureComputer;
+import org.mastodon.mamut.feature.branch.movement.relative.BranchRelativeMovementFeatureComputer;
+import org.mastodon.mamut.feature.spot.movement.relative.SpotRelativeMovementFeatureComputer;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
 import org.slf4j.Logger;

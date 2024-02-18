@@ -5,7 +5,7 @@ import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.mamut.feature.spot.SpotFeatureUtils;
-import org.mastodon.mamut.feature.spot.relativemovement.SpotRelativeMovementFeature;
+import org.mastodon.mamut.feature.spot.movement.relative.SpotRelativeMovementFeature;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;

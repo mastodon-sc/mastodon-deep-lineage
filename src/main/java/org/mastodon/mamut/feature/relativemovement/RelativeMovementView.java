@@ -29,7 +29,7 @@
 package org.mastodon.mamut.feature.relativemovement;
 
 import org.mastodon.mamut.feature.FeatureUtils;
-import org.mastodon.mamut.feature.spot.relativemovement.SpotRelativeMovementFeature;
+import org.mastodon.mamut.feature.spot.movement.relative.SpotRelativeMovementFeature;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
 import org.scijava.ItemVisibility;

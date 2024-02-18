@@ -26,13 +26,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.relativemovement;
+package org.mastodon.mamut.feature.branch.movement.relative;
 
 import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
 import org.mastodon.mamut.feature.FeatureUtils;
 import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
-import org.mastodon.mamut.feature.spot.relativemovement.SpotRelativeMovementFeature;
+import org.mastodon.mamut.feature.spot.movement.relative.SpotRelativeMovementFeature;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
