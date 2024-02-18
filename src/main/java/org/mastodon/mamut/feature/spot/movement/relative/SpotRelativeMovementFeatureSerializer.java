@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.spot.relativemovement;
+package org.mastodon.mamut.feature.spot.movement.relative;
 
 import org.mastodon.collection.RefCollection;
 import org.mastodon.feature.FeatureSpec;

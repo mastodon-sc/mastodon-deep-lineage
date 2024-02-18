@@ -6,7 +6,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.graph.algorithm.traversal.DepthFirstIterator;
 import org.mastodon.graph.branch.BranchGraph;
 import org.mastodon.mamut.feature.spot.SpotFeatureUtils;
-import org.mastodon.mamut.feature.spot.relativemovement.SpotRelativeMovementFeature;
+import org.mastodon.mamut.feature.spot.movement.relative.SpotRelativeMovementFeature;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
