@@ -42,6 +42,7 @@ import org.scijava.app.StatusService;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -56,10 +57,19 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 
 	private final StatusService statusService;
 
+	private final DoublePropertyMap< Spot > movementCacheX;
+
+	private final DoublePropertyMap< Spot > movementCacheY;
+
+	private final DoublePropertyMap< Spot > movementCacheZ;
+
 	public SpotRelativeMovementFeatureComputer( final Model model, final Context context )
 	{
 		this.model = model;
 		this.statusService = context.getService( StatusService.class );
+		this.movementCacheX = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+		this.movementCacheY = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
+		this.movementCacheZ = new DoublePropertyMap<>( model.getGraph().vertices().getRefPool(), Double.NaN );
 	}
 
 	@Override
@@ -102,7 +112,9 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 			feature.norm.set( spot, Double.NaN );
 			return;
 		}
-		double[] relativeMovement = SpotFeatureUtils.relativeMovement( spot, settings.numberOfNeighbors, model );
+		Function< Spot, double[] > movementProvider =
+				s -> new double[] { movementCacheX.get( s ), movementCacheY.get( s ), movementCacheZ.get( s ) };
+		double[] relativeMovement = SpotFeatureUtils.relativeMovement( spot, settings.numberOfNeighbors, model, movementProvider );
 		if ( relativeMovement.length == 0 )
 		{
 			feature.x.set( spot, Double.NaN );
@@ -149,8 +161,23 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 		this.forceComputeAll = new AtomicBoolean( forceComputeAll );
 		this.settings = settings;
 		createOutput();
+		updateMovementCache();
 		run();
 		model.getFeatureModel().declareFeature( feature );
+	}
+
+	private void updateMovementCache()
+	{
+		movementCacheX.beforeClearPool();
+		for ( Spot spot : model.getGraph().vertices() )
+		{
+			double[] movement = SpotFeatureUtils.spotMovement( spot );
+			if ( movement.length == 0 )
+				continue;
+			movementCacheX.set( spot, movement[ 0 ] );
+			movementCacheY.set( spot, movement[ 1 ] );
+			movementCacheZ.set( spot, movement[ 2 ] );
+		}
 	}
 
 	public SpotRelativeMovementFeature getFeature()
