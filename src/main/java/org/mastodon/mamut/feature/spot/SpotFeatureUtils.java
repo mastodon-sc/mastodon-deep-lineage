@@ -10,6 +10,7 @@ import org.mastodon.spatial.SpatialIndex;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Utility class with methods for spot features.
@@ -61,6 +62,29 @@ public class SpotFeatureUtils
 	 */
 	public static double[] relativeMovement( final Spot spot, final int n, final Model model )
 	{
+		Function< Spot, double[] > movementProvider = SpotFeatureUtils::spotMovement;
+		return relativeMovement( spot, n, model, movementProvider );
+	}
+
+	/**
+	 * Returns the relative movement vector of a spot with respect to its n nearest neighbors at the same timepoint.
+	 * <p>
+	 * Some edge cases:
+	 * <ul>
+	 *     <li>If the spot is null, an IllegalArgumentException is thrown.</li>
+	 *     <li>If the number of neighbors is less than 1, an IllegalArgumentException is thrown.</li>
+	 *     <li>If the spot has no (moving) neighbors, an empty array is returned.</li>
+	 *     <li>If the spot has no predecessor, an empty array is returned.</li>
+	 * </ul>
+	 * @param spot the spot. If null, an IllegalArgumentException is thrown.
+	 * @param n the number of neighbors to consider. Must be at least 1. If less than 1, an IllegalArgumentException is thrown.
+	 * @param model the model
+	 * @param movementProvider the function that provides the movement vector of a spot
+	 * @return the relative movement vector of the spot
+	 */
+	public static double[] relativeMovement( final Spot spot, final int n, final Model model,
+			final Function< Spot, double[] > movementProvider )
+	{
 		if ( spot == null )
 			throw new IllegalArgumentException( "Spot is null." );
 		if ( n < 1 )
@@ -68,13 +92,13 @@ public class SpotFeatureUtils
 		List< Spot > neighbors = getNearestNeighbors( model, spot, n );
 		if ( neighbors.isEmpty() )
 			return new double[ 0 ];
-		double[] spotMovement = spotMovement( spot );
+		double[] spotMovement = movementProvider.apply( spot );
 		if ( spotMovement.length == 0 )
 			return new double[ 0 ];
 		List< double[] > neighborMovements = new ArrayList<>();
 		for ( Spot neighbor : neighbors )
 		{
-			double[] neighborMovement = spotMovement( neighbor );
+			double[] neighborMovement = movementProvider.apply( neighbor );
 			if ( neighborMovement.length == 0 )
 				continue;
 			neighborMovements.add( neighborMovement );
