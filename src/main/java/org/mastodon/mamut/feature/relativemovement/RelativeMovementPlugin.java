@@ -48,7 +48,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 @Plugin( type = MamutPlugin.class )
 public class RelativeMovementPlugin implements MamutPlugin
 {
-	private static final String DESCRIPTION = "Spot movement relative to nearest neighbors";
+	private static final String DESCRIPTION = "Movement of spots relative to nearest neighbors";
 
 	private static final String[] IMAGE_J_KEYS = { "not mapped" };
 

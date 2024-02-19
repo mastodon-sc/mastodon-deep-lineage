@@ -41,6 +41,11 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
+/**
+ * A user interface to initiate computing relative movement of spots and branches in relation to nearest neighbors.
+ * <p>
+ * The UI is based on scijava's command framework.
+ */
 @Plugin( type = Command.class, label = "Compute movement in relation to nearest neighbors", initializer = "init" )
 public class RelativeMovementView implements Command
 {

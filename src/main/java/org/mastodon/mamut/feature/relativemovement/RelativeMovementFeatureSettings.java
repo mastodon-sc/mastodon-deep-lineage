@@ -1,16 +1,27 @@
 package org.mastodon.mamut.feature.relativemovement;
 
+/**
+ * Settings for relative movement feature.
+ */
 public class RelativeMovementFeatureSettings
 {
 	private static final int DEFAULT_NUMBER_OF_NEIGHBOURS = 5;
 
 	public final int numberOfNeighbors;
 
+	/**
+	 * Default constructor. Uses {@link #DEFAULT_NUMBER_OF_NEIGHBOURS}.
+	 */
 	public RelativeMovementFeatureSettings()
 	{
 		this( DEFAULT_NUMBER_OF_NEIGHBOURS );
 	}
 
+	/**
+	 * Constructor with number of neighbors.
+	 *
+	 * @param numberOfNeighbors the number of neighbors to consider for relative movement.
+	 */
 	public RelativeMovementFeatureSettings( final int numberOfNeighbors )
 	{
 		this.numberOfNeighbors = numberOfNeighbors;

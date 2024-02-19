@@ -9,17 +9,33 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
+/**
+ * A controller to compute relative movement of spots and branches in relation to nearest neighbors.
+ */
 public class RelativeMovementController
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final Model model;
 
+	/**
+	 * Creates a new relative movement controller.
+	 * @param model the model to operate on.
+	 */
 	public RelativeMovementController( final Model model )
 	{
 		this.model = model;
 	}
 
+	/**
+	 * Computes relative movement of spots and branches in relation to nearest neighbors.
+	 * <p>
+	 * Adds new features on spot and branch level to the model, except features with the same settings already exist.
+	 *
+	 * @param forceComputeAll if true, all the features are recomputed on all spots/branchspots, otherwise only missing ones. Applies only if the features with the same settings already exist.
+	 * @param settings the settings to use for computing the relative movement.
+	 * @param context the scijava context to operate in.
+	 */
 	public void computeRelativeMovement( final boolean forceComputeAll, final RelativeMovementFeatureSettings settings,
 			final Context context )
 	{
