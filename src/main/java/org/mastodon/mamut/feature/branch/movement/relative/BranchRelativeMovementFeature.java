@@ -64,7 +64,7 @@ public class BranchRelativeMovementFeature implements Feature< BranchSpot >, Val
 	private static final String HELP_STRING =
 			"Computes the normalized movement direction of a branch spot relative to its n nearest neighbours in the x, y, and z direction, and the norm of the movement.";
 
-	private static final String PROJECTION_NAME = "Normalized relative movement %s to %d nearest neighbors";
+	private static final String PROJECTION_NAME_TEMPLATE = "Normalized relative movement %s to %d nearest neighbors";
 
 	private final Map< FeatureProjectionKey, FeatureProjection< BranchSpot > > projectionMap;
 
@@ -83,6 +83,11 @@ public class BranchRelativeMovementFeature implements Feature< BranchSpot >, Val
 	public static final BranchRelativeMovementFeatureSpec GENERIC_SPEC = new BranchRelativeMovementFeatureSpec();
 
 	private final BranchRelativeMovementFeatureSpec adaptedSpec;
+
+	public String getProjectionName( final String name )
+	{
+		return String.format( PROJECTION_NAME_TEMPLATE, name, settings.numberOfNeighbors );
+	}
 
 	@Plugin( type = FeatureSpec.class )
 	public static class BranchRelativeMovementFeatureSpec extends FeatureSpec< BranchRelativeMovementFeature, BranchSpot >
@@ -108,16 +113,11 @@ public class BranchRelativeMovementFeature implements Feature< BranchSpot >, Val
 		this.normMap = normMap;
 		this.lengthUnits = lengthUnits;
 		this.settings = settings;
-		FeatureProjectionSpec projectionSpecX =
-				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "x", settings.numberOfNeighbors ), Dimension.NONE );
-		FeatureProjectionSpec projectionSpecY =
-				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "y", settings.numberOfNeighbors ), Dimension.NONE );
-		FeatureProjectionSpec projectionSpecZ =
-				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "z", settings.numberOfNeighbors ), Dimension.NONE );
-		FeatureProjectionSpec projectionSpecNorm =
-				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "norm", settings.numberOfNeighbors ), Dimension.LENGTH );
-		this.adaptedSpec =
-				new BranchRelativeMovementFeatureSpec( projectionSpecX, projectionSpecY, projectionSpecZ, projectionSpecNorm );
+		FeatureProjectionSpec projectionSpecX = new FeatureProjectionSpec( getProjectionName( "x" ), Dimension.NONE );
+		FeatureProjectionSpec projectionSpecY = new FeatureProjectionSpec( getProjectionName( "y" ), Dimension.NONE );
+		FeatureProjectionSpec projectionSpecZ = new FeatureProjectionSpec( getProjectionName( "z" ), Dimension.NONE );
+		FeatureProjectionSpec projectionSpecNorm = new FeatureProjectionSpec( getProjectionName( "norm" ), Dimension.LENGTH );
+		this.adaptedSpec = new BranchRelativeMovementFeatureSpec( projectionSpecX, projectionSpecY, projectionSpecZ, projectionSpecNorm );
 		this.projectionMap = new LinkedHashMap<>( 4 );
 
 		final FeatureProjectionKey keyX = key( projectionSpecX );
