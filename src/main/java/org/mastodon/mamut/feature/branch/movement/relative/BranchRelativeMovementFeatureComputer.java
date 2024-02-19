@@ -95,14 +95,6 @@ public class BranchRelativeMovementFeatureComputer extends AbstractSerialFeature
 	@Override
 	protected void compute( final BranchSpot branchSpot )
 	{
-		if ( branchSpot.incomingEdges().isEmpty() )
-		{
-			feature.xMap.set( branchSpot, Double.NaN );
-			feature.yMap.set( branchSpot, Double.NaN );
-			feature.zMap.set( branchSpot, Double.NaN );
-			feature.normMap.set( branchSpot, Double.NaN );
-			return;
-		}
 		double relativeMovement = BranchSpotFeatureUtils.relativeMovement( branchSpot, spotFeature, model );
 		feature.normMap.set( branchSpot, relativeMovement );
 
