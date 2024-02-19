@@ -65,7 +65,7 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 	private static final String HELP_STRING =
 			"Computes the movement of a spot relative to its n nearest neighbours in the x, y, and z direction, as well as the norm of the movement.";
 
-	private static final String PROJECTION_NAME = "Relative movement %s to %d nearest neighbors";
+	private static final String PROJECTION_NAME_TEMPLATE = "Relative movement %s to %d nearest neighbors";
 
 	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
 
@@ -84,6 +84,11 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 	public static final SpotRelativeMovementFeatureSpec GENERIC_SPEC = new SpotRelativeMovementFeatureSpec();
 
 	private final SpotRelativeMovementFeatureSpec adaptedSpec;
+
+	public String getProjectionName( final String name )
+	{
+		return String.format( PROJECTION_NAME_TEMPLATE, name, settings.numberOfNeighbors );
+	}
 
 	@Plugin( type = FeatureSpec.class )
 	public static class SpotRelativeMovementFeatureSpec extends FeatureSpec< SpotRelativeMovementFeature, Spot >
@@ -109,14 +114,10 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 		this.norm = norm;
 		this.lengthUnits = lengthUnits;
 		this.settings = settings;
-		FeatureProjectionSpec projectionSpecX =
-				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "x", settings.numberOfNeighbors ), Dimension.LENGTH );
-		FeatureProjectionSpec projectionSpecY =
-				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "y", settings.numberOfNeighbors ), Dimension.LENGTH );
-		FeatureProjectionSpec projectionSpecZ =
-				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "z", settings.numberOfNeighbors ), Dimension.LENGTH );
-		FeatureProjectionSpec projectionSpecNorm =
-				new FeatureProjectionSpec( String.format( PROJECTION_NAME, "norm", settings.numberOfNeighbors ), Dimension.LENGTH );
+		FeatureProjectionSpec projectionSpecX = new FeatureProjectionSpec( getProjectionName( "x" ), Dimension.LENGTH );
+		FeatureProjectionSpec projectionSpecY = new FeatureProjectionSpec( getProjectionName( "y" ), Dimension.LENGTH );
+		FeatureProjectionSpec projectionSpecZ = new FeatureProjectionSpec( getProjectionName( "z" ), Dimension.LENGTH );
+		FeatureProjectionSpec projectionSpecNorm = new FeatureProjectionSpec( getProjectionName( "norm" ), Dimension.LENGTH );
 		this.adaptedSpec = new SpotRelativeMovementFeatureSpec( projectionSpecX, projectionSpecY, projectionSpecZ, projectionSpecNorm );
 		this.projectionMap = new LinkedHashMap<>( 4 );
 
