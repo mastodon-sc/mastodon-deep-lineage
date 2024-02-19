@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.movement;
+package org.mastodon.mamut.feature.branch.movement.average;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +36,7 @@ import org.mastodon.mamut.feature.AbstractFeatureTest;
 import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.feature.FeatureSerializerTestUtils;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
+import org.mastodon.mamut.feature.branch.movement.average.BranchAverageMovementFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 

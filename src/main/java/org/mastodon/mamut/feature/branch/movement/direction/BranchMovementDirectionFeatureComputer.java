@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.movement;
+package org.mastodon.mamut.feature.branch.movement.direction;
 
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
@@ -41,39 +41,40 @@ import org.scijava.plugin.Plugin;
 import java.util.Collection;
 
 /**
- * Computes {@link BranchAverageMovementFeature}
+ * Computes {@link BranchMovementDirectionFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchAverageMovementFeatureComputer extends AbstractSerialFeatureComputer< BranchSpot >
+public class BranchMovementDirectionFeatureComputer extends AbstractSerialFeatureComputer< BranchSpot >
 {
 
 	@Parameter( type = ItemIO.OUTPUT )
-	protected BranchAverageMovementFeature output;
+	protected BranchMovementDirectionFeature output;
 
 	@Override
 	protected void compute( final BranchSpot branchSpot )
 	{
-		output.averageMovement.set( branchSpot, averageMovement( branchSpot ) );
+		double[] direction = BranchSpotFeatureUtils.normalizedDirection( model, branchSpot );
+		output.movementDirectionX.set( branchSpot, direction[ 0 ] );
+		output.movementDirectionY.set( branchSpot, direction[ 1 ] );
+		output.movementDirectionZ.set( branchSpot, direction[ 2 ] );
 	}
 
 	@Override
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new BranchAverageMovementFeature(
-					new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ), model.getSpaceUnits() );
-	}
-
-	private double averageMovement( final BranchSpot branchSpot )
-	{
-		int duration = BranchSpotFeatureUtils.branchDuration( branchSpot ) - 1;
-		return BranchSpotFeatureUtils.cumulatedDistance( model, branchSpot ) / duration;
+			output = new BranchMovementDirectionFeature(
+					new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ),
+					new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ),
+					new DoublePropertyMap<>( model.getBranchGraph().vertices().getRefPool(), Double.NaN ) );
 	}
 
 	@Override
 	protected void reset()
 	{
-		output.averageMovement.beforeClearPool();
+		output.movementDirectionX.beforeClearPool();
+		output.movementDirectionY.beforeClearPool();
+		output.movementDirectionZ.beforeClearPool();
 	}
 
 	@Override

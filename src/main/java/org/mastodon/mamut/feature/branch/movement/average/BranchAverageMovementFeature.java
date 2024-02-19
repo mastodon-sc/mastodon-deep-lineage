@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.movement;
+package org.mastodon.mamut.feature.branch.movement.average;
 
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
