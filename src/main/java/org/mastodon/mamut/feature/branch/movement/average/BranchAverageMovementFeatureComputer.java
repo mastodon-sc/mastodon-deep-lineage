@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.movement;
+package org.mastodon.mamut.feature.branch.movement.average;
 
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
