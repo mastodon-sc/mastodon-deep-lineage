@@ -1,11 +1,20 @@
 https://latex.codecogs.com/eqneditor/editor.php
 
-\frac{\text{cumulated track length}}{\text{track duration}}
 \\
-\frac{\sum_{i=1}^{k} \| \mathbf{s_i} - \mathbf{s_{i+1}} \|} {\left | tp_{s_k} - tp_{s_1} \right |}
+d_b := \text{cumulated branch length}
 \\
-k=\text{number of spots of branch}
+\Delta t:= \text{branch duration}
 \\
-\mathbf{s_{i}} = i^{th}\text{spot vector}
+k:=\text{number of spots of branch}
+\\
+\vec{s_{i}} = i^{th}\text{spot of branch}
 \\
 tp_{s_i} = \text{time point of } i^{th}\text{spot}\text{ of branch}
+\\
+\Delta t=tp_{s_k} - tp_{s_1}
+\\
+d_b=\sum_{i=1}^{k-1} \left | \vec{s_{i+1}} - \vec{s_{i}} \right|
+\\
+\overline{v_b} := \text{average movement of branch}
+\\
+\overline{v_b} = \frac{d_b} {\Delta t}
