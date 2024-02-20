@@ -1,11 +1,14 @@
 https://latex.codecogs.com/eqneditor/editor.php
 
-\frac{\text{total track length}}{\text{direct distance}}
-
-\frac{\sum_{i=1}^{k} \| \mathbf{s_i} - \mathbf{s_{i+1}} \|}{\| \mathbf{s_i} - \mathbf{s_{k}} \|}
 \\
-k=\text{number of spots of branch}
+d_b:=\text{cumulated branch length}
 \\
-\mathbf{s_{i}} = i^{th}\text{spot vector}
-
-
+k:=\text{number of spots of a branch}
+\\
+\vec{s_{i}} = i^{th}\text{spot of a branch}
+\\
+sin_b:=\text{sinuosity of branch}
+\\
+d_b=\sum_{i=1}^{k-1} \left | \vec{s_{i+1}} - \vec{s_{i}} \right|
+\\
+sin_b=\frac{d_b}{\left | \vec{s_k} - \vec{s_{1}} \right|}
