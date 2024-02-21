@@ -30,6 +30,8 @@ package org.mastodon.mamut.feature.branch.divisions;
 
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import org.mastodon.collection.RefObjectMap;
+import org.mastodon.collection.ref.RefObjectHashMap;
 import org.mastodon.mamut.feature.AbstractResettableFeatureComputer;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
@@ -38,7 +40,6 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.properties.ObjPropertyMap;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -58,7 +59,7 @@ public class BranchCellDivisionFrequencyFeatureComputer extends AbstractResettab
 	@Parameter( type = ItemIO.OUTPUT )
 	protected BranchCellDivisionFrequencyFeature output;
 
-	private ObjPropertyMap< BranchSpot, Pair< Integer, Integer > > valueCache;
+	private RefObjectMap< BranchSpot, Pair< Integer, Integer > > valueCache;
 
 	@Override
 	public void createOutput()
@@ -71,7 +72,7 @@ public class BranchCellDivisionFrequencyFeatureComputer extends AbstractResettab
 	public void run()
 	{
 		super.run();
-		valueCache = new ObjPropertyMap<>( branchGraph.vertices().getRefPool(), 0 );
+		valueCache = new RefObjectHashMap<>( branchGraph.vertices().getRefPool(), 0 );
 		LineageTreeUtils.callDepthFirst( branchGraph, this::computeCellDivisionFrequency, this::isCanceled );
 	}
 
@@ -84,7 +85,7 @@ public class BranchCellDivisionFrequencyFeatureComputer extends AbstractResettab
 		int duration = BranchSpotFeatureUtils.branchDuration( branchSpot );
 		if ( isLeaf )
 		{
-			valueCache.set( branchSpot, new ValuePair<>( 0, duration ) );
+			valueCache.put( branchSpot, new ValuePair<>( 0, duration ) );
 			output.frequency.set( branchSpot, 0 );
 		}
 		else
@@ -101,7 +102,7 @@ public class BranchCellDivisionFrequencyFeatureComputer extends AbstractResettab
 			}
 			totalSubsequentDivsions += 1;
 			totalDuration += duration;
-			valueCache.set( branchSpot, new ValuePair<>( totalSubsequentDivsions, totalDuration ) );
+			valueCache.put( branchSpot, new ValuePair<>( totalSubsequentDivsions, totalDuration ) );
 			output.frequency.set( branchSpot, ( double ) totalSubsequentDivsions / totalDuration );
 			branchGraph.releaseRef( ref );
 		}
