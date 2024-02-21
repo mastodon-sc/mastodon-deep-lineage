@@ -87,7 +87,7 @@ public class RelativeMovementView implements Command
 	{
 		RelativeMovementController controller = new RelativeMovementController( model );
 		RelativeMovementFeatureSettings settings = new RelativeMovementFeatureSettings( nNearestNeighbors );
-		controller.computeRelativeMovement( forceComputeAll, settings, context );
+		controller.computeRelativeMovement( settings, context );
 	}
 
 	@SuppressWarnings( "unused" )

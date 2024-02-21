@@ -43,7 +43,7 @@ public class BranchRelativeMovementFeatureTest extends AbstractFeatureTest< Bran
 		try (Context context = new Context())
 		{
 			RelativeMovementController relativeMovementController = new RelativeMovementController( graph3.getModel() );
-			relativeMovementController.computeRelativeMovement( true, settings, context );
+			relativeMovementController.computeRelativeMovement( settings, context );
 			branchRelativeMovementFeature =
 					FeatureUtils.getFeature( graph3.getModel(), BranchRelativeMovementFeature.BranchRelativeMovementFeatureSpec.class );
 			assertNotNull( branchRelativeMovementFeature );

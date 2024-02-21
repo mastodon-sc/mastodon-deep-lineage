@@ -139,9 +139,9 @@ public class BranchRelativeMovementFeatureComputer extends AbstractSerialFeature
 		statusService.showStatus( finished, total, "Computing SpotRelativeMovementFeature" );
 	}
 
-	public void computeFeature( final boolean forceComputeAll )
+	public void computeFeature()
 	{
-		this.forceComputeAll = new AtomicBoolean( forceComputeAll );
+		this.forceComputeAll = new AtomicBoolean( true );
 		createOutput();
 		run();
 		model.getFeatureModel().declareFeature( feature );

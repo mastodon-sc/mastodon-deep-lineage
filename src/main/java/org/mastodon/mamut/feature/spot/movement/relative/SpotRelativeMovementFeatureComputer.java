@@ -156,9 +156,9 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 		statusService.showStatus( finished, total, "Computing SpotRelativeMovementFeature" );
 	}
 
-	public void computeFeature( final boolean forceComputeAll, final RelativeMovementFeatureSettings settings )
+	public void computeFeature( final RelativeMovementFeatureSettings settings )
 	{
-		this.forceComputeAll = new AtomicBoolean( forceComputeAll );
+		this.forceComputeAll = new AtomicBoolean( true );
 		this.settings = settings;
 		createOutput();
 		updateMovementCache();

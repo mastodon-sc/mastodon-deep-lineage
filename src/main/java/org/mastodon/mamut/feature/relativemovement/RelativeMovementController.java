@@ -32,20 +32,19 @@ public class RelativeMovementController
 	 * <p>
 	 * Adds new features on spot and branch level to the model, except features with the same settings already exist.
 	 *
-	 * @param forceComputeAll if true, all the features are recomputed on all spots/branchspots, otherwise only missing ones. Applies only if the features with the same settings already exist.
 	 * @param settings the settings to use for computing the relative movement.
 	 * @param context the scijava context to operate in.
 	 */
-	public void computeRelativeMovement( final boolean forceComputeAll, final RelativeMovementFeatureSettings settings,
+	public void computeRelativeMovement( final RelativeMovementFeatureSettings settings,
 			final Context context )
 	{
 		logger.debug( "Computing relative movement on spot level using this settings: {}", settings );
 		SpotRelativeMovementFeatureComputer spotFeatureComputer = new SpotRelativeMovementFeatureComputer( model, context );
-		spotFeatureComputer.computeFeature( forceComputeAll, settings );
+		spotFeatureComputer.computeFeature( settings );
 		logger.debug( "Computing relative movement on branch spot level using this settings: {}", settings );
 		BranchRelativeMovementFeatureComputer branchFeatureComputer =
 				new BranchRelativeMovementFeatureComputer( model, context, spotFeatureComputer.getFeature() );
-		branchFeatureComputer.computeFeature( forceComputeAll );
+		branchFeatureComputer.computeFeature();
 		logger.debug( "Successfully computed relative movement." );
 	}
 }
