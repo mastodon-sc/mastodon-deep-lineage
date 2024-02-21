@@ -45,7 +45,7 @@ public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 		try (Context context = new Context())
 		{
 			RelativeMovementController relativeMovementController = new RelativeMovementController( graph2.getModel() );
-			relativeMovementController.computeRelativeMovement( true, settings, context );
+			relativeMovementController.computeRelativeMovement( settings, context );
 			spotRelativeMovementFeature =
 					FeatureUtils.getFeature( graph2.getModel(), SpotRelativeMovementFeature.SpotRelativeMovementFeatureSpec.class );
 			assertNotNull( spotRelativeMovementFeature );
