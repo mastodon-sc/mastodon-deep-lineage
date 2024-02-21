@@ -7,23 +7,37 @@
 
 # Mastodon Deep Lineage - a collection of plugins to analyse lineages of tracked objects in Mastodon
 
+## Table of Contents
+
+- [Documentation of Mastodon](#Documentation-of-Mastodon)
+- [Installation instructions](#Installation-instructions)
+- [Numerical Features added to Mastodon](#Numerical-Features-added-to-Mastodon)
+  - [Spot Features](#Spot-Features)
+  - [Branch-spot features](#Branch-spot-features)
+- [Lineage Tree Classification](#Lineage-Tree-Classification)
+  - [Parameters](#Parameters)
+  - [Example](#Example)
+- [Label image exporter](#Label-image-exporter)
+  - [Example](#Example-1)
+  - [Parameters](#Parameters-1)
+- [Maintainer](#Maintainer)
+- [Contributors](#Contributors)
+- [License](#License)
+- [Contribute Code or Provide Feedback](#Contribute-Code-or-Provide-Feedback)
+- [Contribute Documentation](#Contribute-Documentation)
+- [Acknowledgements](#Acknowledgements)
+
 ## Documentation of Mastodon
 
 [mastodon.readthedocs.io](https://mastodon.readthedocs.io/en/latest/index.html)
 
 ## Installation instructions
 
-* Add the Mastodon-Dev update site in Fiji:
-  * Help > Update > Manage update sites > Add Unlisted Site
-    * Name: Mastodon-Dev
-    * URL: https://sites.imagej.net/Mastodon-Dev/
-    * ![Mastodon Dev update site](doc/deep_lineage/installation/Mastodon-Dev.png)
-* Add the Humble-Video update site in Fiji:
-  * Help > Update > Manage update sites > Add Unlisted Site
-    * Name: Humble-Video
-    * URL: https://sites.imagej.net/Humble-Video/
-    * ![Mastodon Dev update site](doc/deep_lineage/installation/Mastodon-HumbleVideo.png)
-* Add the Mastodon Deep Lineage update site in Fiji:
+* Add the listed Mastodon update site in Fiji:
+  * Help > Update > Manage update sites
+    * Name: Mastodon
+    * ![Mastodon Update site](doc/deep_lineage/installation/Mastodon.png)
+* Add the unlisted Mastodon Deep Lineage update site in Fiji:
   * Help > Update > Manage update sites > Add Unlisted Site
     * Name: Mastodon-DeepLineage
     * URL: https://sites.imagej.net/Mastodon-DeepLineage/
@@ -205,12 +219,14 @@ Tree2
 * The export uses an image with signed integer value space, thus the maximum allowed id is 2.147.483.646.
 * Exporter can be found here:  ![Plugin Export Menu](doc/deep_lineage/export_label_image/plugin_export_menu.png)
 * The dialog:  ![Plugin Export Dialog](doc/deep_lineage/export_label_image/plugin_export_dialog.png)
+
+### Parameters:
   * Label Id: The id that is used for the labels. The default is the Spot track Id.
     * The ids correspond to the highlighted columns in the feature
       table: ![Feature Table](doc/deep_lineage/export_label_image/plugin_export_table.png)
   * Frame rate reduction: Only export every n-th frame. 1 means no reduction. Value must be >= 1.
     * The frame number corresponds to the _Spot frame_ column in the feature table.
-  * Save to: Path to the file to save the label image to.
+* Save to: Path to the file to save the label image to. Should end with '.tif'.
 
 ### Example:
 

@@ -46,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 
 public class SpotEllipsoidAspectRatiosFeatureTest extends AbstractEllipsoidFeatureTest
 {
-	protected Feature< Spot > ellipsoidAspectRatiosFeature;
+	private Feature< Spot > ellipsoidAspectRatiosFeature;
 
 	@Before
 	public void setUp()
