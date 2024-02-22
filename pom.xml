@@ -109,6 +109,12 @@
             <version>1.2.0</version>
         </dependency>
 
+        <!-- graph ml export -->
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-io</artifactId>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
