@@ -9,7 +9,7 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
 
 /**
  * TODO can be removed after mastodon-core beta-30 release
- * Represents a {@link AbstractExampleGraph} with the following {@link ModelGraph} and {@link ModelBranchGraph}:
+ * Represents a {@link AbstractExampleGraphDeepLineage} with the following {@link ModelGraph} and {@link ModelBranchGraph}:
  *
  * <h1>Model-Graph (i.e. Graph of Spots)</h1>
  * <pre>
@@ -30,7 +30,7 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
  * 	   branchSpotB         branchSpotC        branchSpotE    		   branchSpotF
  * </pre>
  */
-public class ExampleGraph4 extends AbstractExampleGraph
+public class ExampleGraph4 extends AbstractExampleGraphDeepLineage
 {
 
 	public final BranchSpot branchSpotA;

@@ -38,7 +38,7 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
 
 import javax.annotation.Nonnull;
 
-public abstract class AbstractExampleGraph
+public abstract class AbstractExampleGraphDeepLineage
 {
 	@Nonnull
 	protected final Model model;
@@ -51,7 +51,7 @@ public abstract class AbstractExampleGraph
 	@Nonnull
 	private final ModelBranchGraph modelBranchGraph;
 
-	public AbstractExampleGraph()
+	public AbstractExampleGraphDeepLineage()
 	{
 		this.model = new Model();
 		this.modelGraph = model.getGraph();
