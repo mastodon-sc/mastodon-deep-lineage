@@ -9,6 +9,7 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThrows;
@@ -81,10 +82,11 @@ public class SpotFeatureUtilsTest
 	}
 
 	@Test
-	public void testGetNearestNeighbors()
+	public void testGetNNearestNeighbors()
 	{
-		List< Spot > neighbors0 = SpotFeatureUtils.getNearestNeighbors( graph2.getModel(), graph2.spot13, 1 );
-		List< Spot > neighbors2 = SpotFeatureUtils.getNearestNeighbors( graph2.getModel(), graph2.spot13, 2 );
+		Predicate< Spot > excludeRootNeighbors = neighbor -> neighbor.incomingEdges().isEmpty();
+		List< Spot > neighbors0 = SpotFeatureUtils.getNNearestNeighbors( graph2.getModel(), graph2.spot13, 1, excludeRootNeighbors );
+		List< Spot > neighbors2 = SpotFeatureUtils.getNNearestNeighbors( graph2.getModel(), graph2.spot13, 2, excludeRootNeighbors );
 		assertArrayEquals( new Spot[] { graph2.spot8 }, neighbors0.toArray() );
 		assertArrayEquals( new Spot[] { graph2.spot8, graph2.spot5 }, neighbors2.toArray() );
 	}

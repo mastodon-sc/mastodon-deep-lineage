@@ -8,9 +8,11 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.spatial.SpatialIndex;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Utility class with methods for spot features.
@@ -89,7 +91,8 @@ public class SpotFeatureUtils
 			throw new IllegalArgumentException( "Spot is null." );
 		if ( n < 1 )
 			throw new IllegalArgumentException( "Number of neighbors must be at least 1." );
-		List< Spot > neighbors = getNearestNeighbors( model, spot, n );
+		Predicate< Spot > excludeRootNeighbors = neighbor -> neighbor.incomingEdges().isEmpty();
+		List< Spot > neighbors = getNNearestNeighbors( model, spot, n, excludeRootNeighbors );
 		if ( neighbors.isEmpty() )
 			return new double[ 0 ];
 		double[] spotMovement = movementProvider.apply( spot );
@@ -120,9 +123,11 @@ public class SpotFeatureUtils
 	 * @param model the model
 	 * @param spot the spot
 	 * @param n the number of neighbors
+	 * @param neighborFilter an optional filter to apply to the neighbors of the spot (can be null)
 	 * @return the n nearest neighbors of the spot
 	 */
-	public static List< Spot > getNearestNeighbors( final Model model, final Spot spot, final int n )
+	public static List< Spot > getNNearestNeighbors( final Model model, final Spot spot, final int n,
+			@Nullable final Predicate< Spot > neighborFilter )
 	{
 		// Spatial search.
 		final SpatialIndex< Spot > spatialIndex = model.getSpatioTemporalIndex().getSpatialIndex( spot.getTimepoint() );
@@ -132,7 +137,7 @@ public class SpotFeatureUtils
 		while ( search.hasNext() && neighbors.size() < n )
 		{
 			Spot neighbor = search.next();
-			if ( neighbor.equals( spot ) || neighbor.incomingEdges().isEmpty() )
+			if ( neighbor.equals( spot ) || ( neighborFilter != null && neighborFilter.test( neighbor ) ) )
 				continue;
 			neighbors.add( neighbor );
 		}
