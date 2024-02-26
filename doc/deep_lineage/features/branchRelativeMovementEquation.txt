@@ -15,4 +15,4 @@ b := \left \{ s_1, ..., s_k \right \} \text{ k ... branch duration}
 \\
 v_b := \text{relative movement distance of branch}
 \\
-v_b = \frac{1}{\left | b \right |} \sum_{s \in b}\vec{v_{s}} \text{  (relative movement distance of branch)}
+v_b = \frac{1}{\left | b \right |} \sum_{s \in b} \left |\vec{r_{s}}  \right | \text{ (} \vec{r_{s}} \text{... cf. relative movement of spot s)}
