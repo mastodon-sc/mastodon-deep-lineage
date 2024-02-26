@@ -59,6 +59,6 @@ public class ImportSpotsFromLabelImagePlugin implements MamutPlugin
 
 	private void importSpotsFromLabelImage()
 	{
-		commandService.run( ImportSpotsFromLabelImageView.class, true, "appModel", appModel );
+		commandService.run( ImportSpotsFromLabelImageView.class, true, "projectModel", appModel );
 	}
 }
