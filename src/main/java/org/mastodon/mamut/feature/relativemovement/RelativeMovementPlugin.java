@@ -76,7 +76,7 @@ public class RelativeMovementPlugin implements MamutPlugin
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				menu( "Plugins", menu( "Compute", item( DESCRIPTION ) ) ) );
+				menu( "Plugins", menu( "Compute Feature", item( DESCRIPTION ) ) ) );
 	}
 
 	@Override
