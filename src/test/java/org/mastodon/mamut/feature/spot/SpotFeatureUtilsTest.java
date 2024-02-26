@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 
 public class SpotFeatureUtilsTest
@@ -56,9 +57,11 @@ public class SpotFeatureUtilsTest
 		double[] expected = new double[ 3 ];
 		double[] movementSpot8 = SpotFeatureUtils.spotMovement( graph2.spot8 );
 		double[] movementSpot5 = SpotFeatureUtils.spotMovement( graph2.spot5 );
+		assertNotNull( movementSpot8 );
 		LinAlgHelpers.add( movementSpot8, movementSpot5, movementSpot8 );
 		LinAlgHelpers.scale( movementSpot8, 1 / 2d, movementSpot8 );
 		double[] movementSpot13 = SpotFeatureUtils.spotMovement( graph2.spot13 );
+		assertNotNull( movementSpot13 );
 		LinAlgHelpers.subtract( movementSpot13, movementSpot8, expected );
 		double[] actual = SpotFeatureUtils.relativeMovement( graph2.spot13, 2, graph2.getModel() );
 		assertArrayEquals( expected, actual, 0d );

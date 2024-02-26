@@ -28,17 +28,18 @@ public class SpotFeatureUtils
 	 * Returns the movement vector of a spot with respect to its predecessor.
 	 * <p>
 	 * The movement vector is the difference between the position of the spot and the position of its predecessor.
-	 * If the spot has no predecessor, an empty array is returned.
+	 * If the spot has no predecessor, {@code null} is returned.
 	 * @param spot the spot. If null, an empty array is returned.
 	 * @return the relative movement vector of the spot
 	 */
+	@SuppressWarnings( "squid:S1168" )
 	public static double[] spotMovement( final Spot spot )
 	{
 		if ( spot == null )
 			throw new IllegalArgumentException( "Spot is null." );
 		double[] spotPosition = new double[ spot.numDimensions() ];
 		if ( spot.incomingEdges() == null || spot.incomingEdges().isEmpty() )
-			return new double[ 0 ];
+			return null;
 		spot.localize( spotPosition );
 		double[] predecessorPosition = new double[ spot.numDimensions() ];
 		spot.incomingEdges().get( 0 ).getSource().localize( predecessorPosition );
@@ -84,6 +85,7 @@ public class SpotFeatureUtils
 	 * @param movementProvider the function that provides the movement vector of a spot
 	 * @return the relative movement vector of the spot
 	 */
+	@SuppressWarnings( "squid:S1168" )
 	public static double[] relativeMovement( final Spot spot, final int n, final Model model,
 			final Function< Spot, double[] > movementProvider )
 	{
@@ -94,20 +96,20 @@ public class SpotFeatureUtils
 		Predicate< Spot > excludeRootNeighbors = neighbor -> neighbor.incomingEdges().isEmpty();
 		List< Spot > neighbors = getNNearestNeighbors( model, spot, n, excludeRootNeighbors );
 		if ( neighbors.isEmpty() )
-			return new double[ 0 ];
+			return null;
 		double[] spotMovement = movementProvider.apply( spot );
-		if ( spotMovement.length == 0 )
-			return new double[ 0 ];
+		if ( spotMovement == null )
+			return null;
 		List< double[] > neighborMovements = new ArrayList<>();
 		for ( Spot neighbor : neighbors )
 		{
 			double[] neighborMovement = movementProvider.apply( neighbor );
-			if ( neighborMovement.length == 0 )
+			if ( neighborMovement == null )
 				continue;
 			neighborMovements.add( neighborMovement );
 		}
 		if ( neighborMovements.isEmpty() )
-			return new double[ 0 ];
+			return null;
 		double[] cumulatedNeighborMovement = new double[ spotMovement.length ];
 		neighborMovements
 				.forEach( neighborMovement -> LinAlgHelpers.add( cumulatedNeighborMovement, neighborMovement, cumulatedNeighborMovement ) );
