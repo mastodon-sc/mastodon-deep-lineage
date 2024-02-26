@@ -7,6 +7,8 @@ s := spot
 \\
 \vec{d_s}=\vec{pos_s} - \vec{pos_{predecessor(s)}}
 \\
+n := \text{number of nearest neighbors of s to consider}
+\\
 \vec{d_{s,i}}:=\text{direction of movement of i}^{th}\text{ nearest neighbor of s}
 \\
 \vec{r_s}:=\text{relative movement of spot s}
