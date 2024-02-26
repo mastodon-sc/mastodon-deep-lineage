@@ -10,11 +10,11 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
  *
  * <h1>Model-Graph (i.e. Graph of Spots)</h1>
  * <pre>
- * Spot( 0, X=1, Y=1, tp=0 )		Spot( 3, X=0, Y=1, tp=0 )		Spot( 0, X=2, Y=1, tp=0 )
- *              │								 │								 │
- * Spot( 1, X=1, Y=2, tp=1 )		Spot( 4, X=0, Y=0, tp=1 )	    Spot( 1, X=2, Y=0, tp=1 )
- *              │								 │								 │
- * Spot( 2, X=1, Y=3, tp=2 )        Spot( 5, X=0, Y=-1, tp=2 )		Spot( 2, X=2, Y=-1, tp=2 )
+ * Spot( 0, X=1, Y=1, tp=0 )        Spot( 3, X=0, Y=1, tp=0 )       Spot( 0, X=2, Y=1, tp=0 )
+ *              │                                │                               │
+ * Spot( 1, X=1, Y=2, tp=1 )        Spot( 4, X=0, Y=0, tp=1 )       Spot( 1, X=2, Y=0, tp=1 )
+ *              │                                │                               │
+ * Spot( 2, X=1, Y=3, tp=2 )        Spot( 5, X=0, Y=-1, tp=2 )      Spot( 2, X=2, Y=-1, tp=2 )
  * </pre>
  * <h1>Branch-Graph (i.e. Graph of BranchSpots)</h1>
  * <pre>
