@@ -114,7 +114,7 @@ public class SpotFeatureUtils
 		neighborMovements
 				.forEach( neighborMovement -> LinAlgHelpers.add( cumulatedNeighborMovement, neighborMovement, cumulatedNeighborMovement ) );
 		double[] averageNeighborMovement = new double[ spotMovement.length ];
-		LinAlgHelpers.scale( cumulatedNeighborMovement, 1d / neighbors.size(), averageNeighborMovement );
+		LinAlgHelpers.scale( cumulatedNeighborMovement, 1d / neighborMovements.size(), averageNeighborMovement );
 		double[] relativeMovement = new double[ spotMovement.length ];
 		LinAlgHelpers.subtract( spotMovement, averageNeighborMovement, relativeMovement );
 		return relativeMovement;
