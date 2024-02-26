@@ -13,6 +13,6 @@ s := spot
 \\
 \vec{r_s}=\vec{d_s}-\frac{1}{n} \sum_{i=1}^{n}\vec{d_{s,i}}
 \\
-v_s := \text{spot movement distance}
+v_s := \text{relative movement distance of spot s}
 \\
 v_s = \left | \vec{r_s} \right |
