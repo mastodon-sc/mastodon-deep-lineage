@@ -35,7 +35,7 @@ public class SpotFeatureUtils
 	public static double[] spotMovement( final Spot spot )
 	{
 		if ( spot == null )
-			return new double[ 0 ];
+			throw new IllegalArgumentException( "Spot is null." );
 		double[] spotPosition = new double[ spot.numDimensions() ];
 		if ( spot.incomingEdges() == null || spot.incomingEdges().isEmpty() )
 			return new double[ 0 ];
