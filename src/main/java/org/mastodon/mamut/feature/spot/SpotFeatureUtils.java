@@ -89,17 +89,26 @@ public class SpotFeatureUtils
 	public static double[] relativeMovement( final Spot spot, final int n, final Model model,
 			final Function< Spot, double[] > movementProvider )
 	{
-		if ( spot == null )
-			throw new IllegalArgumentException( "Spot is null." );
-		if ( n < 1 )
-			throw new IllegalArgumentException( "Number of neighbors must be at least 1." );
-		Predicate< Spot > excludeRootNeighbors = neighbor -> neighbor.incomingEdges().isEmpty();
-		List< Spot > neighbors = getNNearestNeighbors( model, spot, n, excludeRootNeighbors );
-		if ( neighbors.isEmpty() )
-			return null;
 		double[] spotMovement = movementProvider.apply( spot );
 		if ( spotMovement == null )
 			return null;
+		Predicate< Spot > excludeRootNeighbors = neighbor -> neighbor.incomingEdges().isEmpty();
+		double[] averageNeighborMovement = neighborsAverageMovement( spot, n, model, movementProvider, excludeRootNeighbors );
+		double[] relativeMovement = new double[ spot.numDimensions() ];
+		LinAlgHelpers.subtract( spotMovement, averageNeighborMovement, relativeMovement );
+		return relativeMovement;
+	}
+
+	@SuppressWarnings( "squid:S1168" )
+	private static double[] neighborsAverageMovement( final Spot spot, final int n, final Model model,
+			final Function< Spot, double[] > movementProvider, final Predicate< Spot > neighborFilter )
+	{
+		if ( n < 1 )
+			throw new IllegalArgumentException( "Number of neighbors must be at least 1." );
+		List< Spot > neighbors = getNNearestNeighbors( model, spot, n, neighborFilter );
+		if ( neighbors.isEmpty() )
+			return null;
+
 		List< double[] > neighborMovements = new ArrayList<>();
 		for ( Spot neighbor : neighbors )
 		{
@@ -110,14 +119,12 @@ public class SpotFeatureUtils
 		}
 		if ( neighborMovements.isEmpty() )
 			return null;
-		double[] cumulatedNeighborMovement = new double[ spotMovement.length ];
+		double[] cumulatedNeighborMovement = new double[ spot.numDimensions() ];
 		neighborMovements
 				.forEach( neighborMovement -> LinAlgHelpers.add( cumulatedNeighborMovement, neighborMovement, cumulatedNeighborMovement ) );
-		double[] averageNeighborMovement = new double[ spotMovement.length ];
+		double[] averageNeighborMovement = new double[ spot.numDimensions() ];
 		LinAlgHelpers.scale( cumulatedNeighborMovement, 1d / neighborMovements.size(), averageNeighborMovement );
-		double[] relativeMovement = new double[ spotMovement.length ];
-		LinAlgHelpers.subtract( spotMovement, averageNeighborMovement, relativeMovement );
-		return relativeMovement;
+		return averageNeighborMovement;
 	}
 
 	/**
