@@ -43,12 +43,11 @@ public class SpotFeatureUtilsTest
 		assertArrayEquals( expected, actual, 0 );
 	}
 
+	@SuppressWarnings( "all" )
 	@Test
 	public void testSpotMovementNull()
 	{
-		double[] expected = new double[ 0 ];
-		double[] actual = SpotFeatureUtils.spotMovement( null );
-		assertArrayEquals( expected, actual, 0 );
+		assertThrows( IllegalArgumentException.class, () -> SpotFeatureUtils.spotMovement( null ) );
 	}
 
 	@Test
