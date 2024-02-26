@@ -112,10 +112,13 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 			feature.norm.set( spot, Double.NaN );
 			return;
 		}
-		Function< Spot, double[] > movementProvider =
-				s -> new double[] { movementCacheX.get( s ), movementCacheY.get( s ), movementCacheZ.get( s ) };
+		Function< Spot, double[] > movementProvider = s -> {
+			if ( movementCacheX.get( s ) == null || movementCacheY.get( s ) == null || movementCacheZ.get( s ) == null )
+				return null;
+			return new double[] { movementCacheX.get( s ), movementCacheY.get( s ), movementCacheZ.get( s ) };
+		};
 		double[] relativeMovement = SpotFeatureUtils.relativeMovement( spot, settings.numberOfNeighbors, model, movementProvider );
-		if ( relativeMovement.length == 0 )
+		if ( relativeMovement == null )
 		{
 			feature.x.set( spot, Double.NaN );
 			feature.y.set( spot, Double.NaN );
@@ -172,7 +175,7 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 		for ( Spot spot : model.getGraph().vertices() )
 		{
 			double[] movement = SpotFeatureUtils.spotMovement( spot );
-			if ( movement.length == 0 )
+			if ( movement == null )
 				continue;
 			movementCacheX.set( spot, movement[ 0 ] );
 			movementCacheY.set( spot, movement[ 1 ] );
