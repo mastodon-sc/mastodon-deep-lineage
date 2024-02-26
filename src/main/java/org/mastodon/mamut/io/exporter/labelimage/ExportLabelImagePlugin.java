@@ -51,7 +51,7 @@ public class ExportLabelImagePlugin implements MamutPlugin
 {
 	private static final String EXPORT_LABEL_IMAGE_USING = "Export label image using ellipsoids";
 
-	private static final String[] LABEL_ELLIPSOIDS_IMAGE_J_KEYS = { "not mapped" };
+	private static final String[] SHORT_CUT = { "not mapped" };
 
 	private final AbstractNamedAction action;
 
@@ -84,7 +84,7 @@ public class ExportLabelImagePlugin implements MamutPlugin
 	@Override
 	public void installGlobalActions( Actions actions )
 	{
-		actions.namedAction( action, LABEL_ELLIPSOIDS_IMAGE_J_KEYS );
+		actions.namedAction( action, SHORT_CUT );
 	}
 
 	private void exportLabelImage()

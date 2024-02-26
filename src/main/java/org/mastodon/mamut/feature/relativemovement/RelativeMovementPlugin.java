@@ -50,7 +50,7 @@ public class RelativeMovementPlugin implements MamutPlugin
 {
 	private static final String DESCRIPTION = "Movement of spots relative to nearest neighbors";
 
-	private static final String[] IMAGE_J_KEYS = { "not mapped" };
+	private static final String[] SHORT_CUT = { "not mapped" };
 
 	private final AbstractNamedAction action;
 
@@ -82,7 +82,7 @@ public class RelativeMovementPlugin implements MamutPlugin
 	@Override
 	public void installGlobalActions( Actions actions )
 	{
-		actions.namedAction( action, IMAGE_J_KEYS );
+		actions.namedAction( action, SHORT_CUT );
 	}
 
 	private void showRelativeMovementDialog()
