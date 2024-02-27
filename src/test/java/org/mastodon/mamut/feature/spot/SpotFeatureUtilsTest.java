@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
 public class SpotFeatureUtilsTest
@@ -39,9 +40,7 @@ public class SpotFeatureUtilsTest
 	@Test
 	public void testSpotMovementNoPredecessor()
 	{
-		double[] expected = new double[ 0 ];
-		double[] actual = SpotFeatureUtils.spotMovement( graph1.spot0 );
-		assertArrayEquals( expected, actual, 0 );
+		assertNull( SpotFeatureUtils.spotMovement( graph1.spot0 ) );
 	}
 
 	@SuppressWarnings( "all" )
@@ -79,8 +78,7 @@ public class SpotFeatureUtilsTest
 	@Test
 	public void testRelativeMovementNoNeighbors()
 	{
-		double[] actual = SpotFeatureUtils.relativeMovement( graph2.spot1, 2, graph2.getModel() );
-		assertArrayEquals( new double[ 0 ], actual, 0d );
+		assertNull( SpotFeatureUtils.relativeMovement( graph2.spot1, 2, graph2.getModel() ) );
 	}
 
 	@Test
