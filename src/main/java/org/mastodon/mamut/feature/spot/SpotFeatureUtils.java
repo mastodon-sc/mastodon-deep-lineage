@@ -26,7 +26,7 @@ public class SpotFeatureUtils
 
 	/**
 	 * Returns the movement vector of a spot with respect to its predecessor.
-	 * <p>
+	 * <br><br>
 	 * The movement vector is the difference between the position of the spot and the position of its predecessor.
 	 * If the spot has no predecessor, {@code null} is returned.
 	 * @param spot the spot. If null, an empty array is returned.
@@ -50,10 +50,10 @@ public class SpotFeatureUtils
 
 	/**
 	 * Returns the relative movement vector of a spot with respect to its n nearest neighbors at the same timepoint.
-	 * <p>
+	 * <br><br>
 	 * Some edge cases:
 	 * <ul>
-	 *     <li>If the spot is null, an IllegalArgumentException is thrown.</li>
+	 *     <li>If the given spot is {@code null}, an IllegalArgumentException is thrown.</li>
 	 *     <li>If the number of neighbors is less than 1, an IllegalArgumentException is thrown.</li>
 	 *     <li>If the spot has no (moving) neighbors, {@code null}  is returned.</li>
 	 *     <li>If the spot has no predecessor, {@code null}  is returned.</li>
@@ -71,10 +71,10 @@ public class SpotFeatureUtils
 
 	/**
 	 * Returns the relative movement vector of a spot with respect to its n nearest neighbors at the same timepoint.
-	 * <p>
+	 * <br><br>
 	 * Some edge cases:
 	 * <ul>
-	 *     <li>If the spot is null, an IllegalArgumentException is thrown.</li>
+	 *     <li>If the given spot is {@code null}, an IllegalArgumentException is thrown.</li>
 	 *     <li>If the number of neighbors is less than 1, an IllegalArgumentException is thrown.</li>
 	 *     <li>If the spot has no (moving) neighbors, {@code null} is returned.</li>
 	 *     <li>If the spot has no predecessor, {@code null} is returned.</li>
@@ -101,6 +101,23 @@ public class SpotFeatureUtils
 		return relativeMovement;
 	}
 
+	/**
+	 * Returns the average movement vector of the n nearest neighbors of a spot at the same timepoint.
+	 * <br><br>
+	 * Some edge cases:
+	 * <ul>
+	 *     <li>If the given spot is {@code null}, an IllegalArgumentException is thrown.</li>
+	 *     <li>If the number of neighbors is less than 1, an IllegalArgumentException is thrown.</li>
+	 *     <li>If the spot has no (moving) neighbors, {@code null} is returned.</li>
+	 *     <li>If the spot has no predecessor, {@code null} is returned.</li>
+	 * </ul>
+	 * @param spot the spot
+	 * @param n the number of neighbors to consider
+	 * @param model the model
+	 * @param movementProvider the function that provides the movement vector of a spot
+	 * @param neighborFilter an optional filter to apply to the neighbors of the spot (can be null)
+	 * @return the average movement vector of the neighbors of the spot
+	 */
 	@SuppressWarnings( "squid:S1168" )
 	public static double[] neighborsAverageMovement( final Spot spot, final int n, final Model model,
 			final Function< Spot, double[] > movementProvider, final Predicate< Spot > neighborFilter )
