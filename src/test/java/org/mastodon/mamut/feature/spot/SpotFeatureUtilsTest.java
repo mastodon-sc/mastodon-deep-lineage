@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph4;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 
@@ -22,11 +23,14 @@ public class SpotFeatureUtilsTest
 
 	private ExampleGraph2 graph2;
 
+	private ExampleGraph4 graph4;
+
 	@Before
 	public void setUp()
 	{
 		graph1 = new ExampleGraph1();
 		graph2 = new ExampleGraph2();
+		graph4 = new ExampleGraph4();
 	}
 
 	@Test
@@ -89,5 +93,21 @@ public class SpotFeatureUtilsTest
 		List< Spot > neighbors2 = SpotFeatureUtils.getNNearestNeighbors( graph2.getModel(), graph2.spot13, 2, excludeRootNeighbors );
 		assertArrayEquals( new Spot[] { graph2.spot8 }, neighbors0.toArray() );
 		assertArrayEquals( new Spot[] { graph2.spot8, graph2.spot5 }, neighbors2.toArray() );
+	}
+
+	@Test
+	public void testNeighborsAverageMovement()
+	{
+		assertNull( SpotFeatureUtils.neighborsAverageMovement( graph4.spot0, 2, graph4.getModel(), SpotFeatureUtils::spotMovement, null ) );
+		assertArrayEquals( new double[] { 0, 2d, 0 },
+				SpotFeatureUtils.neighborsAverageMovement( graph4.spot1, 2, graph4.getModel(), SpotFeatureUtils::spotMovement, null ), 0d );
+		assertArrayEquals( new double[] { 0, 2d, 0 },
+				SpotFeatureUtils.neighborsAverageMovement( graph4.spot2, 2, graph4.getModel(), SpotFeatureUtils::spotMovement, null ), 0d );
+		assertArrayEquals( new double[] { 0, 2d, 0 },
+				SpotFeatureUtils.neighborsAverageMovement( graph4.spot3, 2, graph4.getModel(), SpotFeatureUtils::spotMovement, null ), 0d );
+		assertArrayEquals( new double[] { 1d, 2d, 0 },
+				SpotFeatureUtils.neighborsAverageMovement( graph4.spot4, 2, graph4.getModel(), SpotFeatureUtils::spotMovement, null ), 0d );
+		assertArrayEquals( new double[] { 0, 2d, 0 },
+				SpotFeatureUtils.neighborsAverageMovement( graph4.spot5, 2, graph4.getModel(), SpotFeatureUtils::spotMovement, null ), 0d );
 	}
 }
