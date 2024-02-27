@@ -102,7 +102,7 @@ public class SpotFeatureUtils
 	}
 
 	@SuppressWarnings( "squid:S1168" )
-	private static double[] neighborsAverageMovement( final Spot spot, final int n, final Model model,
+	public static double[] neighborsAverageMovement( final Spot spot, final int n, final Model model,
 			final Function< Spot, double[] > movementProvider, final Predicate< Spot > neighborFilter )
 	{
 		if ( n < 1 )
