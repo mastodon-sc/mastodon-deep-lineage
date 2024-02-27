@@ -94,6 +94,8 @@ public class SpotFeatureUtils
 			return null;
 		Predicate< Spot > excludeRootNeighbors = neighbor -> neighbor.incomingEdges().isEmpty();
 		double[] averageNeighborMovement = neighborsAverageMovement( spot, n, model, movementProvider, excludeRootNeighbors );
+		if ( averageNeighborMovement == null )
+			return null;
 		double[] relativeMovement = new double[ spot.numDimensions() ];
 		LinAlgHelpers.subtract( spotMovement, averageNeighborMovement, relativeMovement );
 		return relativeMovement;
