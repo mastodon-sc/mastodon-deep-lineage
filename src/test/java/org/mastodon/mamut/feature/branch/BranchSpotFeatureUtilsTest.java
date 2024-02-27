@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph3;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph4;
 import org.mastodon.mamut.model.Spot;
 
 import java.util.Iterator;
@@ -19,12 +20,15 @@ public class BranchSpotFeatureUtilsTest
 
 	private ExampleGraph3 graph3;
 
+	private ExampleGraph4 graph4;
+
 	@Before
 	public void setUp()
 	{
 		graph1 = new ExampleGraph1();
 		graph2 = new ExampleGraph2();
 		graph3 = new ExampleGraph3();
+		graph4 = new ExampleGraph4();
 	}
 
 	@Test
@@ -131,16 +135,32 @@ public class BranchSpotFeatureUtilsTest
 	}
 
 	@Test
-	public void testRelativeMovement()
+	public void testRelativeMovementGraph3()
 	{
 		double actual = BranchSpotFeatureUtils.relativeMovement( graph3.branchSpotA, 2, graph3.getModel() );
 		assertEquals( 2d, actual, 0d );
 	}
 
 	@Test
-	public void testNormalizedRelativeMovementDirection()
+	public void testNormalizedRelativeMovementDirectionGraph3()
 	{
 		double[] actual = BranchSpotFeatureUtils.normalizedRelativeMovementDirection( graph3.branchSpotA, 2, graph3.getModel() );
 		assertArrayEquals( new double[] { 0, 1, 0 }, actual, 0d );
+	}
+
+	@Test
+	public void testRelativeMovementGraph4()
+	{
+		double expected = ( 4 * 1d + Math.sqrt( 2d ) ) / 5d;
+		double actual = BranchSpotFeatureUtils.relativeMovement( graph4.branchSpotA, 2, graph4.getModel() );
+		assertEquals( expected, actual, 0d );
+	}
+
+	@Test
+	public void testNormalizedRelativeMovementDirectionGraph4()
+	{
+		double[] expected = new double[] { -1d / Math.sqrt( 26d ), -5d / Math.sqrt( 26 ), 0 };
+		double[] actual = BranchSpotFeatureUtils.normalizedRelativeMovementDirection( graph4.branchSpotA, 2, graph4.getModel() );
+		assertArrayEquals( expected, actual, 0d );
 	}
 }
