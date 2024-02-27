@@ -66,7 +66,7 @@ public class BranchAverageMovementFeatureComputer extends AbstractSerialFeatureC
 
 	private double averageMovement( final BranchSpot branchSpot )
 	{
-		int duration = branchSpot.getTimepoint() - branchSpot.getFirstTimePoint();
+		int duration = BranchSpotFeatureUtils.branchDuration( branchSpot ) - 1;
 		return BranchSpotFeatureUtils.cumulatedDistance( model, branchSpot ) / duration;
 	}
 

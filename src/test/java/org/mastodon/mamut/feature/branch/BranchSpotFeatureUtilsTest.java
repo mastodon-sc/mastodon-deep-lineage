@@ -3,6 +3,7 @@ package org.mastodon.mamut.feature.branch;
 import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph3;
 import org.mastodon.mamut.model.Spot;
 
@@ -14,12 +15,15 @@ public class BranchSpotFeatureUtilsTest
 {
 	private ExampleGraph1 graph1;
 
+	private ExampleGraph2 graph2;
+
 	private ExampleGraph3 graph3;
 
 	@Before
 	public void setUp()
 	{
 		graph1 = new ExampleGraph1();
+		graph2 = new ExampleGraph2();
 		graph3 = new ExampleGraph3();
 	}
 
@@ -90,6 +94,40 @@ public class BranchSpotFeatureUtilsTest
 		assertEquals( expectedX, normalizedDirection[ 0 ], 0d );
 		assertEquals( expectedY, normalizedDirection[ 1 ], 0d );
 		assertEquals( expectedZ, normalizedDirection[ 2 ], 0d );
+	}
+
+	@Test
+	public void testCountLeaves()
+	{
+		assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph1.getModel().getBranchGraph(), graph1.branchSpotA ) );
+		assertEquals( 3, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotA ) );
+		assertEquals( 2, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotB ) );
+		assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotC ) );
+		assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotD ) );
+		assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotE ) );
+	}
+
+	@Test
+	public void testTotalBranchDurations()
+	{
+		assertEquals( 4, BranchSpotFeatureUtils.totalBranchDurations( graph1.getModel().getBranchGraph(), graph1.branchSpotA ), 0d );
+		assertEquals( 14, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotA ), 0d );
+		assertEquals( 8, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotB ), 0d );
+		assertEquals( 3, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotC ), 0d );
+		assertEquals( 3, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotD ), 0d );
+		assertEquals( 3, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotE ), 0d );
+
+	}
+
+	@Test
+	public void testBranchDuration()
+	{
+		assertEquals( 4, BranchSpotFeatureUtils.branchDuration( graph1.branchSpotA ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotA ) );
+		assertEquals( 2, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotB ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotC ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotD ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotE ) );
 	}
 
 	@Test

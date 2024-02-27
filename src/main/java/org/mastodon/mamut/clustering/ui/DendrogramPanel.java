@@ -213,8 +213,8 @@ public class DendrogramPanel< T > extends JPanel
 
 	Line2D getVerticalLine( final double xModelValue, final DisplayMetrics displayMetrics )
 	{
-		int yDendrogramOrigin = BORDER_TOP + BORDER_BOTTOM;
-		int yDendrogramEnd = getHeight() - BORDER_TOP;
+		int yDendrogramOrigin = BORDER_TOP + BORDER_BOTTOM + SCALE_PADDING;
+		int yDendrogramEnd = getHeight() - BORDER_BOTTOM;
 		int lineX = getDisplayXCoordinate( xModelValue, displayMetrics );
 		return new Line2D.Float( lineX, yDendrogramOrigin, lineX, yDendrogramEnd );
 	}

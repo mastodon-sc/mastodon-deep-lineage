@@ -4,7 +4,7 @@ import org.scijava.plugin.Parameter;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class AbstractResettableFeatureComputer extends CancelableImpl implements MamutFeatureComputer
+public abstract class AbstractResettableFeatureComputer extends AbstractCancelableFeatureComputer
 {
 
 	@Parameter
@@ -13,7 +13,7 @@ public abstract class AbstractResettableFeatureComputer extends CancelableImpl i
 	@Override
 	public void run()
 	{
-		super.deleteCancelReason();
+		super.run();
 		final boolean recomputeAll = forceComputeAll.get();
 
 		if ( recomputeAll )
