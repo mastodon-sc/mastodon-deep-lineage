@@ -136,21 +136,21 @@ public class BranchSpotFeatureUtilsTest
 	}
 
 	@Test
-	public void testRelativeMovement()
+	public void testRelativeMovementGraph3()
 	{
 		double actual = BranchSpotFeatureUtils.relativeMovement( graph3.branchSpotA, 2, graph3.getModel() );
 		assertEquals( 2d, actual, 0d );
 	}
 
 	@Test
-	public void testNormalizedRelativeMovementDirection()
+	public void testNormalizedRelativeMovementDirectionGraph3()
 	{
 		double[] actual = BranchSpotFeatureUtils.normalizedRelativeMovementDirection( graph3.branchSpotA, 2, graph3.getModel() );
 		assertArrayEquals( new double[] { 0, 1, 0 }, actual, 0d );
 	}
 
 	@Test
-	public void testRelativeMovementGraph4()
+	public void testRelativeMovementGraph5()
 	{
 		double expected = ( 4 * 1d + Math.sqrt( 2d ) ) / 5d;
 		double actual = BranchSpotFeatureUtils.relativeMovement( graph5.branchSpotA, 2, graph5.getModel() );
@@ -158,7 +158,7 @@ public class BranchSpotFeatureUtilsTest
 	}
 
 	@Test
-	public void testNormalizedRelativeMovementDirectionGraph4()
+	public void testNormalizedRelativeMovementDirectionGraph5()
 	{
 		double[] expected = new double[] { -1d / Math.sqrt( 26d ), -5d / Math.sqrt( 26 ), 0 };
 		double[] actual = BranchSpotFeatureUtils.normalizedRelativeMovementDirection( graph5.branchSpotA, 2, graph5.getModel() );
