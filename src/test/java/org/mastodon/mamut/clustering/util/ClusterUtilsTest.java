@@ -59,8 +59,8 @@ public class ClusterUtilsTest
 	{
 		double threshold = 57.5d;
 		Classification< String > classification =
-				ClusterUtils.getClassificationByThreshold( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageUPGMAStrategy(),
-						threshold );
+				ClusterUtils.getClassificationByThreshold( ClusterData.example1.getKey(), ClusterData.example1.getValue(),
+						new AverageLinkageUPGMAStrategy(), threshold );
 
 		Set< String > class1 = new HashSet<>( Collections.singletonList( "F" ) );
 		Set< String > class2 = new HashSet<>( Arrays.asList( "A", "B", "E", "G", "H" ) );
@@ -74,8 +74,8 @@ public class ClusterUtilsTest
 	@Test
 	public void testGetClassificationByClassCountAverageLinkage()
 	{
-		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
-				new AverageLinkageUPGMAStrategy(), 3 );
+		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.example1.getKey(),
+				ClusterData.example1.getValue(), new AverageLinkageUPGMAStrategy(), 3 );
 		double cutoff = classification.getCutoff();
 
 		Set< String > class1 = new HashSet<>( Collections.singletonList( "F" ) );
@@ -90,8 +90,8 @@ public class ClusterUtilsTest
 	@Test
 	public void testGetClassificationByClassCountCompleteLinkage()
 	{
-		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
-				new CompleteLinkageStrategy(), 4
+		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.example1.getKey(),
+				ClusterData.example1.getValue(), new CompleteLinkageStrategy(), 4
 		);
 
 		double cutoff = classification.getCutoff();
@@ -118,9 +118,8 @@ public class ClusterUtilsTest
 	@Test
 	public void testGetClassificationByClassCountSingleLinkage()
 	{
-		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
-				new SingleLinkageStrategy(), 5
-		);
+		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.example1.getKey(),
+				ClusterData.example1.getValue(), new SingleLinkageStrategy(), 5 );
 		double cutoff = classification.getCutoff();
 
 		Cluster cluster = classification.getRootCluster();
@@ -183,23 +182,26 @@ public class ClusterUtilsTest
 	public void testExceptions()
 	{
 		LinkageStrategy linkageStrategy = new AverageLinkageUPGMAStrategy();
+		String[] classNames = ClusterData.example1.getKey();
+		double[][] distances = ClusterData.example1.getValue();
 		// zero classes
 		assertThrows( IllegalArgumentException.class,
-				() -> ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, linkageStrategy, 0 ) );
+				() -> ClusterUtils.getClassificationByClassCount( classNames, distances, linkageStrategy, 0 ) );
 		// too many classes
 		assertThrows( IllegalArgumentException.class,
-				() -> ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, linkageStrategy, 11 ) );
+				() -> ClusterUtils.getClassificationByClassCount( classNames, distances, linkageStrategy, 11 ) );
 		// negative threshold
 		assertThrows( IllegalArgumentException.class,
-				() -> ClusterUtils.getClassificationByThreshold( ClusterData.names, ClusterData.fixedDistances, linkageStrategy, -1 ) );
+				() -> ClusterUtils.getClassificationByThreshold( classNames, distances, linkageStrategy, -1 ) );
 	}
 
 	@Test
 	public void testOneClass()
 	{
-		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances,
+		Classification< String > classification =
+				ClusterUtils.getClassificationByClassCount( ClusterData.example1.getKey(), ClusterData.example1.getValue(),
 				new AverageLinkageUPGMAStrategy(), 1 );
-		Set< String > expected = new HashSet<>( Arrays.asList( ClusterData.names ) );
+		Set< String > expected = new HashSet<>( Arrays.asList( ClusterData.example1.getKey() ) );
 		Set< Set< String > > expectedClasses = new HashSet<>( Collections.singletonList( expected ) );
 		assertEquals( expectedClasses, classification.getClassifiedObjects() );
 		assertNotNull( classification.getRootCluster() );
@@ -210,7 +212,8 @@ public class ClusterUtilsTest
 	{
 		Classification< String > classification =
 				ClusterUtils
-						.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageUPGMAStrategy(),
+						.getClassificationByClassCount( ClusterData.example1.getKey(), ClusterData.example1.getValue(),
+								new AverageLinkageUPGMAStrategy(),
 								10 );
 		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList(
 				new HashSet<>( Collections.singletonList( "A" ) ),
