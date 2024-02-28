@@ -150,7 +150,7 @@ public class ClusterUtils
 		List< Cluster > resultClusters = new ArrayList<>();
 		for ( Cluster cluster : sortedClusters )
 		{
-			if ( cluster.getDistanceValue() < threshold )
+			if ( cluster.getDistanceValue() <= threshold )
 				break;
 			resultClusters.add( cluster );
 		}
@@ -205,10 +205,8 @@ public class ClusterUtils
 	 * @param classCount the number of classes to be built
 	 * @return a mapping from cluster id objects
 	 */
-	public static < T > Classification< T > getClassificationByClassCount(
-			final T[] objects, final double[][] distances,
-			final LinkageStrategy linkageStrategy, final int classCount
-	)
+	public static < T > Classification< T > getClassificationByClassCount( final T[] objects, final double[][] distances,
+			final LinkageStrategy linkageStrategy, final int classCount )
 	{
 		if ( classCount < 1 )
 			throw new IllegalArgumentException( "number of classes (" + classCount + ") must be greater than zero." );
@@ -254,11 +252,15 @@ public class ClusterUtils
 	{
 		if ( classCount == 1 )
 			return Double.MAX_VALUE;
+		// Threshold for clustering by class count is determined as the mean between the cutoff cluster and the next cluster
 		double threshold = sortedClusters.get( classCount - 2 ).getDistanceValue();
 		if ( sortedClusters.size() < classCount )
 			return threshold;
 		else
+		{
 			return ( threshold + sortedClusters.get( classCount - 1 ).getDistanceValue() ) / 2d;
+		}
+
 	}
 
 	private static < T > Cluster performClustering( double[][] distances, LinkageStrategy linkageStrategy,
