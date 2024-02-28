@@ -49,4 +49,17 @@ public class ClusterData
 	};
 
 	public final static Pair< String[], double[][] > example1 = Pair.of( names1, fixedDistances1 );
+
+	private final static String[] names2 = new String[] { "A", "B", "C", "D", "E" };
+
+	private final static double[][] fixedDistances2 = new double[][] {
+			{ 0, 1, 1, 2, 2 },
+			{ 1, 0, 0, 3, 3 },
+			{ 1, 0, 0, 3, 3 },
+			{ 2, 3, 3, 0, 0 },
+			{ 2, 3, 3, 0, 0 },
+	};
+
+	public final static Pair< String[], double[][] > example2 = Pair.of( names2, fixedDistances2 );
+
 }

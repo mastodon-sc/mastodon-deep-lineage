@@ -72,6 +72,24 @@ public class ClusterUtilsTest
 	}
 
 	@Test
+	public void testGetClassificationByThresholdTwoPairwiseIdenticalClasses()
+	{
+		double threshold = 0d;
+		Classification< String > classification =
+				ClusterUtils.getClassificationByThreshold( ClusterData.example2.getKey(), ClusterData.example2.getValue(),
+						new AverageLinkageUPGMAStrategy(), threshold );
+
+		Set< String > class1 = new HashSet<>( Collections.singletonList( "A" ) );
+		Set< String > class2 = new HashSet<>( Arrays.asList( "B", "C" ) );
+		Set< String > class3 = new HashSet<>( Arrays.asList( "D", "E" ) );
+		Set< Set< String > > expectedClasses = new HashSet<>( Arrays.asList( class1, class2, class3 ) );
+		assertEquals( 3, classification.getObjectClassifications().size() );
+		assertEquals( expectedClasses, classification.getClassifiedObjects() );
+		assertEquals( threshold, classification.getCutoff(), 0d );
+		assertNotNull( classification.getRootCluster() );
+	}
+
+	@Test
 	public void testGetClassificationByClassCountAverageLinkage()
 	{
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.example1.getKey(),
