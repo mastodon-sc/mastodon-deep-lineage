@@ -56,7 +56,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 	private String documentation = "<html>\n"
 			+ "<body width=" + WIDTH + "cm align=left>\n"
 			+ "<h1>Classification of Lineage Trees</h1>\n"
-			+ "<p>This plugin is capable of grouping similar lineage trees together. This is done by creating a tag set an assigning subtrees that are similar to each other with the same tag.</p>\n"
+			+ "<p>This plugin is capable of grouping similar lineage trees together. This is done by creating a tag set and assigning subtrees that are similar to each other with the same tag.</p>\n"
 			+ "<p>The similarity between two subtrees is computed based on the Zhang edit distance for unordered trees <a href=\"https://doi.org/10.1007/BF01975866\">(Zhang, K. Algorithmica 15, 205–222, 1996)</a>. The similarity measure uses the attribute the cell lifetime, which is computed as a difference of timepoints between to subsequent divisions. It is possible to apply the <i>absolute difference</i>, <i>average difference</i> or the <i>normalized difference</i> of cell lifetimes.</p>\n"
 			+ "<p>The similarity is computed between all possible combinations of subtrees leading to a two-dimensional similarity matrix. This matrix is then used to perform a <a href=\"https://en.wikipedia.org/wiki/Hierarchical_clustering\">agglomerative hierarchical clustering</a> into a specifiable number of classes. For the clustering three different <a href=\"https://en.wikipedia.org/wiki/Hierarchical_clustering#Cluster_Linkage\">linkage methods</a> can be chosen.</p>\n"
 			+ "</body>\n"
