@@ -102,11 +102,4 @@ public class ClusterWekaDemo
 
 		return attributes;
 	}
-
-	private static Instance createInstance( double[][] distances, int index )
-	{
-		double[] values = distances[ index ];
-
-		return new DenseInstance( 1.0, values );
-	}
 }
