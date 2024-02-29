@@ -58,13 +58,13 @@ public class ClusterApporientedDemo
 	private final static ClusteringAlgorithm algorithm = new DefaultClusteringAlgorithm();
 
 	private final static Cluster averageFixed =
-			algorithm.performClustering( ClusterData.fixedDistances, ClusterData.names, new AverageLinkageStrategy() );
+			algorithm.performClustering( ClusterData.example1.getValue(), ClusterData.example1.getKey(), new AverageLinkageStrategy() );
 
 	private final static Cluster singleFixed =
-			algorithm.performClustering( ClusterData.fixedDistances, ClusterData.names, new SingleLinkageStrategy() );
+			algorithm.performClustering( ClusterData.example1.getValue(), ClusterData.example1.getKey(), new SingleLinkageStrategy() );
 
 	private final static Cluster completeFixed =
-			algorithm.performClustering( ClusterData.fixedDistances, ClusterData.names, new CompleteLinkageStrategy() );
+			algorithm.performClustering( ClusterData.example1.getValue(), ClusterData.example1.getKey(), new CompleteLinkageStrategy() );
 
 	public static void main( String[] args )
 	{
@@ -73,9 +73,10 @@ public class ClusterApporientedDemo
 		frame.setSize( 1600, 1000 );
 
 		double[][] randomDistances = getRandomSymmetricDistanceMatrix();
-		Cluster averageRandom = algorithm.performClustering( randomDistances, ClusterData.names, new AverageLinkageStrategy() );
-		Cluster singleRandom = algorithm.performClustering( randomDistances, ClusterData.names, new SingleLinkageStrategy() );
-		Cluster completeRandom = algorithm.performClustering( randomDistances, ClusterData.names, new CompleteLinkageStrategy() );
+		Cluster averageRandom = algorithm.performClustering( randomDistances, ClusterData.example1.getKey(), new AverageLinkageStrategy() );
+		Cluster singleRandom = algorithm.performClustering( randomDistances, ClusterData.example1.getKey(), new SingleLinkageStrategy() );
+		Cluster completeRandom =
+				algorithm.performClustering( randomDistances, ClusterData.example1.getKey(), new CompleteLinkageStrategy() );
 		double median = Util.median( ClusterUtils.getUpperTriangle( randomDistances ) );
 
 		JPanel averagedFixedPanel = new DendrogramView<>(

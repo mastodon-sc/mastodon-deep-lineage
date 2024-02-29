@@ -53,7 +53,8 @@ public class CustomizedClusterComponentTest
 	public void testPaint()
 	{
 		Classification< String > classification =
-				ClusterUtils.getClassificationByClassCount( ClusterData.names, ClusterData.fixedDistances, new AverageLinkageStrategy(),
+				ClusterUtils.getClassificationByClassCount( ClusterData.example1.getKey(), ClusterData.example1.getValue(),
+						new AverageLinkageStrategy(),
 						3
 				);
 		Cluster cluster = classification.getRootCluster();

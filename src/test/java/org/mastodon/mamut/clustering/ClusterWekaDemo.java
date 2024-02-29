@@ -49,7 +49,7 @@ public class ClusterWekaDemo
 
 	public static void main( String[] args ) throws Exception
 	{
-		Instances data = createDataset( ClusterData.fixedDistances, ClusterData.names );
+		Instances data = createDataset( ClusterData.example1.getValue(), ClusterData.example1.getKey() );
 
 		HierarchicalClusterer clusterer = new HierarchicalClusterer();
 		int classCount = 3;
@@ -62,11 +62,11 @@ public class ClusterWekaDemo
 		logger.info( "Number of classes: {}", clusterer.getNumClusters() );
 		logger.info( "Newick: {}", newick );
 
-		for ( int i = 0; i < ClusterData.fixedDistances.length; i++ )
+		for ( int i = 0; i < ClusterData.example1.getKey().length; i++ )
 		{
 			Instance instance = data.get( i );
 			int cluster = clusterer.clusterInstance( instance );
-			logger.info( "Instance {}: {} is in cluster {}", ClusterData.names[ i ], instance, cluster );
+			logger.info( "Instance {}: {} is in cluster {}", ClusterData.example1.getKey()[ i ], instance, cluster );
 		}
 
 		// Visualize the dendrogram
@@ -101,12 +101,5 @@ public class ClusterWekaDemo
 			attributes.add( new Attribute( name ) );
 
 		return attributes;
-	}
-
-	private static Instance createInstance( double[][] distances, int index )
-	{
-		double[] values = distances[ index ];
-
-		return new DenseInstance( 1.0, values );
 	}
 }
