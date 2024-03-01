@@ -166,10 +166,10 @@ public class ExportLabelImageController
 		logger.debug( "Export finished." );
 
 		ImgPlus< IntType > imgplus = createImgPlus( img );
-		if ( showResult )
-			showImgPlus( imgplus );
 		saveImgPlus( file, imgplus );
 		logger.info( "Done saving label image to file." );
+		if ( showResult )
+			showImgPlus( imgplus );
 	}
 
 	private ReentrantReadWriteLock.ReadLock getReadLock( LabelOptions labelOption )
