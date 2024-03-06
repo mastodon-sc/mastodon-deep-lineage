@@ -145,6 +145,13 @@
             <artifactId>imagej-legacy</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- used for tests of covariance -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <mailingLists>
