@@ -199,9 +199,6 @@ public class LabelImageUtils
 			int labelIndex = pixelValue - minimumLabelValue;
 			if ( pixelValue <= 0 )
 				continue;
-			if ( labelIndex >= numLabels )
-				throw new IllegalArgumentException(
-						"Index " + labelIndex + " is out of bounds for the number of  " + numLabels + " labels in this frame." );
 			if ( labels[ labelIndex ] == null )
 				labels[ labelIndex ] = new Label( pixelValue, cursor.numDimensions() );
 			Label label = labels[ labelIndex ];
