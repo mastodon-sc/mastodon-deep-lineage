@@ -38,10 +38,10 @@ public class RelativeMovementController
 	public void computeRelativeMovement( final RelativeMovementFeatureSettings settings,
 			final Context context )
 	{
-		logger.debug( "Computing relative movement on spot level using this settings: {}", settings );
+		logger.debug( "Computing relative movement on spot level using these settings: {}", settings );
 		SpotRelativeMovementFeatureComputer spotFeatureComputer = new SpotRelativeMovementFeatureComputer( model, context );
 		spotFeatureComputer.computeFeature( settings );
-		logger.debug( "Computing relative movement on branch spot level using this settings: {}", settings );
+		logger.debug( "Computing relative movement on branch spot level using these settings: {}", settings );
 		BranchRelativeMovementFeatureComputer branchFeatureComputer =
 				new BranchRelativeMovementFeatureComputer( model, context, spotFeatureComputer.getFeature() );
 		branchFeatureComputer.computeFeature();
