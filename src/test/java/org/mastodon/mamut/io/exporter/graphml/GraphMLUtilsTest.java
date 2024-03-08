@@ -1,5 +1,6 @@
 package org.mastodon.mamut.io.exporter.graphml;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.collection.RefCollections;
@@ -10,6 +11,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -64,7 +66,7 @@ public class GraphMLUtilsTest
 		GraphMLUtils.exportBranches( branchSpots, branchLinks, tempFile );
 
 		// read file to string - java 8 style
-		String actualContent = new String( Files.readAllBytes( tempFile.toPath() ) );
+		String actualContent = FileUtils.readFileToString( tempFile, StandardCharsets.UTF_8 );
 		actualContent = actualContent.replaceAll( "[\\t\\n\\r\\s]", "" );
 
 		// expected content
