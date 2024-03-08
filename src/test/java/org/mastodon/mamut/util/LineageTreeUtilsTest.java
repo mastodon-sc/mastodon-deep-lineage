@@ -40,6 +40,8 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -93,13 +95,7 @@ public class LineageTreeUtilsTest
 		inputSpots.add( graph2.spot5 );
 		RefSet< Link > inputLinks = RefCollections.createRefSet( graph2.getModel().getGraph().edges() );
 		RefSet< BranchSpot > actual = LineageTreeUtils.getBranchSpots( graph2.getModel(), inputSpots, inputLinks );
-		Set< BranchSpot > expected = new HashSet< BranchSpot >()
-		{
-			{
-				add( graph2.branchSpotA );
-				add( graph2.branchSpotD );
-			}
-		};
+		Set< BranchSpot > expected = new HashSet<>( Arrays.asList( graph2.branchSpotA, graph2.branchSpotD ) );
 		assertEquals( expected, actual );
 	}
 
@@ -110,39 +106,19 @@ public class LineageTreeUtilsTest
 		inputLinks.add( graph4.link0 );
 		inputLinks.add( graph4.link1 );
 		RefSet< BranchLink > actual = LineageTreeUtils.getBranchLinks( graph4.getModel(), inputLinks );
-		Set< BranchLink > expected = new HashSet< BranchLink >()
-		{
-			{
-				add( graph4.branchLink0 );
-			}
-		};
+		Set< BranchLink > expected = new HashSet<>( Collections.singletonList( graph4.branchLink0 ) );
 		assertEquals( expected, actual );
 	}
 
 	@Test
 	public void testGetAllVertexSuccessors()
 	{
-		Set< BranchSpot > expected = new HashSet< BranchSpot >()
-		{
-			{
-				add( graph2.branchSpotA );
-				add( graph2.branchSpotB );
-				add( graph2.branchSpotC );
-				add( graph2.branchSpotD );
-				add( graph2.branchSpotE );
-			}
-		};
+		Set< BranchSpot > expected = new HashSet<>(
+				Arrays.asList( graph2.branchSpotA, graph2.branchSpotB, graph2.branchSpotC, graph2.branchSpotD, graph2.branchSpotE ) );
 		RefSet< BranchSpot > actual = LineageTreeUtils.getAllVertexSuccessors( graph2.branchSpotA, graph2.getModel().getBranchGraph() );
 		assertEquals( expected, actual );
 
-		expected = new HashSet< BranchSpot >()
-		{
-			{
-				add( graph2.branchSpotB );
-				add( graph2.branchSpotD );
-				add( graph2.branchSpotE );
-			}
-		};
+		expected = new HashSet<>( Arrays.asList( graph2.branchSpotB, graph2.branchSpotD, graph2.branchSpotE ) );
 		actual = LineageTreeUtils.getAllVertexSuccessors( graph2.branchSpotB, graph2.getModel().getBranchGraph() );
 		assertEquals( expected, actual );
 	}
@@ -150,23 +126,11 @@ public class LineageTreeUtilsTest
 	@Test
 	public void testGetAllEdgeSuccessors()
 	{
-		Set< BranchLink > expected = new HashSet< BranchLink >()
-		{
-			{
-				add( graph4.branchLink0 );
-				add( graph4.branchLink1 );
-			}
-		};
+		Set< BranchLink > expected = new HashSet<>( Arrays.asList( graph4.branchLink0, graph4.branchLink1 ) );
 		RefSet< BranchLink > actual = LineageTreeUtils.getAllEdgeSuccessors( graph4.branchSpotA, graph4.getModel().getBranchGraph() );
 		assertEquals( expected, actual );
 
-		expected = new HashSet< BranchLink >()
-		{
-			{
-				add( graph4.branchLink2 );
-				add( graph4.branchLink3 );
-			}
-		};
+		expected = new HashSet<>( Arrays.asList( graph4.branchLink2, graph4.branchLink3 ) );
 		actual = LineageTreeUtils.getAllEdgeSuccessors( graph4.branchSpotD, graph4.getModel().getBranchGraph() );
 		assertEquals( expected, actual );
 	}
