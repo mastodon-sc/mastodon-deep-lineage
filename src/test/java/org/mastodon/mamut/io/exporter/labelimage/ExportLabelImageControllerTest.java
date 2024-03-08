@@ -88,41 +88,43 @@ public class ExportLabelImageControllerTest
 	@Test
 	public void testSaveLabelImageToFile() throws IOException
 	{
-		AbstractSource< IntType > source = createRandomSource();
-		Context context = new Context();
-		TimePoint timePoint = new TimePoint( timepoint );
-		List< TimePoint > timePoints = Collections.singletonList( timePoint );
-		VoxelDimensions voxelDimensions = new DefaultVoxelDimensions( 3 );
-		voxelDimensions.dimensions( new double[] { 1, 1, 1 } );
-		ExportLabelImageController exportLabelImageController =
-				new ExportLabelImageController( model, timePoints, Cast.unchecked( source ), context, voxelDimensions );
-		File outputSpot = getTempFile( "resultSpot" );
-		File outputBranchSpot = getTempFile( "resultBranchSpot" );
-		File outputTrack = getTempFile( "resultTrack" );
-		exportLabelImageController.saveLabelImageToFile( LabelOptions.SPOT_ID, outputSpot, false, 1 );
-		exportLabelImageController.saveLabelImageToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, false, 1 );
-		exportLabelImageController.saveLabelImageToFile( LabelOptions.TRACK_ID, outputTrack, false, 1 );
+		try (final Context context = new Context())
+		{
+			AbstractSource< IntType > source = createRandomSource();
+			TimePoint timePoint = new TimePoint( timepoint );
+			List< TimePoint > timePoints = Collections.singletonList( timePoint );
+			VoxelDimensions voxelDimensions = new DefaultVoxelDimensions( 3 );
+			voxelDimensions.dimensions( new double[] { 1, 1, 1 } );
+			ExportLabelImageController exportLabelImageController =
+					new ExportLabelImageController( model, timePoints, Cast.unchecked( source ), context, voxelDimensions );
+			File outputSpot = getTempFile( "resultSpot" );
+			File outputBranchSpot = getTempFile( "resultBranchSpot" );
+			File outputTrack = getTempFile( "resultTrack" );
+			exportLabelImageController.saveLabelImageToFile( LabelOptions.SPOT_ID, outputSpot, false, 1 );
+			exportLabelImageController.saveLabelImageToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, false, 1 );
+			exportLabelImageController.saveLabelImageToFile( LabelOptions.TRACK_ID, outputTrack, false, 1 );
 
-		ImgOpener imgOpener = new ImgOpener( context );
-		SCIFIOImgPlus< IntType > imgSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputSpot );
-		SCIFIOImgPlus< IntType > imgBranchSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputBranchSpot );
-		SCIFIOImgPlus< IntType > imgTrack = getIntTypeSCIFIOImgPlus( imgOpener, outputTrack );
+			ImgOpener imgOpener = new ImgOpener( context );
+			SCIFIOImgPlus< IntType > imgSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputSpot );
+			SCIFIOImgPlus< IntType > imgBranchSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputBranchSpot );
+			SCIFIOImgPlus< IntType > imgTrack = getIntTypeSCIFIOImgPlus( imgOpener, outputTrack );
 
-		// check that the spot id / branchSpot id / track id is used as value in the center of the spot
-		assertNotNull( imgSpot );
-		assertEquals( 3, imgSpot.dimensionsAsLongArray().length );
-		assertEquals( 100, imgSpot.dimension( 0 ) );
-		assertEquals( 100, imgSpot.dimension( 1 ) );
-		assertEquals( 100, imgSpot.dimension( 2 ) );
-		assertEquals( spot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgSpot.getAt( center ).get() );
-		assertEquals(
-				branchSpot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgBranchSpot.getAt( center ).get() );
-		assertEquals( ExportLabelImageController.LABEL_ID_OFFSET, imgTrack.getAt( center ).get() );
-		// check that there is no value set outside the ellipsoid of the spot
-		long[] corner = new long[] { 0, 0, 0 };
-		assertEquals( 0, imgSpot.getAt( corner ).get() );
-		assertEquals( 0, imgBranchSpot.getAt( corner ).get() );
-		assertEquals( 0, imgTrack.getAt( corner ).get() );
+			// check that the spot id / branchSpot id / track id is used as value in the center of the spot
+			assertNotNull( imgSpot );
+			assertEquals( 3, imgSpot.dimensionsAsLongArray().length );
+			assertEquals( 100, imgSpot.dimension( 0 ) );
+			assertEquals( 100, imgSpot.dimension( 1 ) );
+			assertEquals( 100, imgSpot.dimension( 2 ) );
+			assertEquals( spot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgSpot.getAt( center ).get() );
+			assertEquals(
+					branchSpot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgBranchSpot.getAt( center ).get() );
+			assertEquals( ExportLabelImageController.LABEL_ID_OFFSET, imgTrack.getAt( center ).get() );
+			// check that there is no value set outside the ellipsoid of the spot
+			long[] corner = new long[] { 0, 0, 0 };
+			assertEquals( 0, imgSpot.getAt( corner ).get() );
+			assertEquals( 0, imgBranchSpot.getAt( corner ).get() );
+			assertEquals( 0, imgTrack.getAt( corner ).get() );
+		}
 	}
 
 	private static SCIFIOImgPlus< IntType > getIntTypeSCIFIOImgPlus( ImgOpener imgOpener, File outputSpot )
@@ -142,15 +144,18 @@ public class ExportLabelImageControllerTest
 	@Test
 	public void testExceptions() throws IOException
 	{
-		ExportLabelImageController controller =
-				new ExportLabelImageController( model, Collections.emptyList(), null, new Context(), null );
-		File file = File.createTempFile( "foo", "foo" );
-		file.deleteOnExit();
-		assertThrows(
-				IllegalArgumentException.class,
-				() -> controller.saveLabelImageToFile( LabelOptions.SPOT_ID, null, false, 1 )
-		);
-		assertThrows( IllegalArgumentException.class, () -> controller.saveLabelImageToFile( null, file, false, 1 ) );
+		try (final Context context = new Context())
+		{
+			ExportLabelImageController controller =
+					new ExportLabelImageController( model, Collections.emptyList(), null, context, null );
+			File file = File.createTempFile( "foo", "foo" );
+			file.deleteOnExit();
+			assertThrows(
+					IllegalArgumentException.class,
+					() -> controller.saveLabelImageToFile( LabelOptions.SPOT_ID, null, false, 1 )
+			);
+			assertThrows( IllegalArgumentException.class, () -> controller.saveLabelImageToFile( null, file, false, 1 ) );
+		}
 	}
 
 	private static AbstractSource< IntType > createRandomSource()
