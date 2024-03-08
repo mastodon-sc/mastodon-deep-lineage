@@ -1,5 +1,6 @@
 package org.mastodon.mamut.io.exporter.graphml;
 
+import org.apache.commons.io.FilenameUtils;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
@@ -121,7 +122,7 @@ public class GraphMLExportPlugin implements MamutPlugin
 	private void exportLineages( final File folder )
 	{
 		File projectRoot = projectModel.getProject().getProjectRoot();
-		String projectName = getFileNameWithoutExtension( projectRoot ).replace( File.separator, "_" );
+		String projectName = FilenameUtils.getBaseName( projectRoot.getName() );
 		GraphMLUtils.exportAllTracks( projectModel.getModel().getBranchGraph(), folder, projectName );
 	}
 
@@ -171,15 +172,5 @@ public class GraphMLExportPlugin implements MamutPlugin
 				FileChooser.DialogType.SAVE,
 				FileChooser.SelectionMode.DIRECTORIES_ONLY,
 				SAVE_ICON_MEDIUM.getImage() );
-	}
-
-	private static String getFileNameWithoutExtension( final File file )
-	{
-		String fileName = file.getName();
-		int lastDotIndex = fileName.lastIndexOf( '.' );
-		if ( lastDotIndex > 0 )
-			return fileName.substring( 0, lastDotIndex );
-		else
-			return fileName;
 	}
 }
