@@ -21,7 +21,7 @@ public class ImportSpotsFromImgPlusView< T > extends ContextCommand
 			+ "<body width=" + WIDTH + "cm align=left>\n"
 			+ "<h1>Import spots from ImageJ image.</h1>\n"
 			+ "<p>This command can import spots from an image that contains a segmentation that has been processed outside Mastodon. The segmentation is assumed to be represented as a label image that matches the existing big data viewer image in all dimensions (x,y,z and t). The existing labels will be used as spot names.</p>\n"
-			+ "<p>The value σ can be chosen. This value determines where Mastodon will draw the resulting ellipsoid. Default is 2.2σ.</p>"
+			+ "<p>The value σ can be chosen. This value determines where Mastodon will draw the resulting ellipsoid. Default is 2.1σ.</p>"
 			+ "<p>The active image in ImageJ is: %s.<br>\n"
 			+ "<p>It has the these dimensions: x=%s, y=%s, z=%s, t=%s.</p>\n"
 			+ "<p>The big data viewer image has these dimensions: x=%s, y=%s, z=%s, t=%s.</p>\n"
@@ -42,7 +42,7 @@ public class ImportSpotsFromImgPlusView< T > extends ContextCommand
 
 	@SuppressWarnings( "all" )
 	@Parameter( label = "Sigma", min = "0", description = "Deviations from center to draw the ellipsoid border" )
-	private double sigma = 2.2;
+	private double sigma = 2.1;
 
 	@SuppressWarnings( "unused" )
 	private void validateImageData()

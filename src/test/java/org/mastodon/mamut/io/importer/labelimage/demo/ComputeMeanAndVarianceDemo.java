@@ -73,7 +73,7 @@ public class ComputeMeanAndVarianceDemo
 
 			StopWatch stopWatchOnline = StopWatch.createAndStart();
 			Pair< double[], double[][] > results =
-					DemoUtils.computeMeanCovarianceOnline( Cast.unchecked( image ), pixelValue, Math.sqrt( 5 ) );
+					DemoUtils.computeMeanCovarianceOnline( Cast.unchecked( image ), pixelValue, 2.1 );
 			double[] onlineMean = results.getA();
 			double[][] onlineCovariance = results.getB();
 			stopWatchOnline.stop();
