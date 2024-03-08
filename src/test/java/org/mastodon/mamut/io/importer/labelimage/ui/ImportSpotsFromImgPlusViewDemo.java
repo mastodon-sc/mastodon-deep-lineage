@@ -24,7 +24,7 @@ public class ImportSpotsFromImgPlusViewDemo
 		Img< FloatType > img = ArrayImgs.floats( 10, 10, 10, 1 );
 		ImgPlus< FloatType > imgPlus = new ImgPlus<>( img, "Dummy Image" );
 		Model model = new Model();
-		ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model );
+		ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
 
 		ui.showUI();
 		cmd.run( ImportSpotsFromImgPlusView.class, true, "imgPlus", imgPlus, "projectModel", projectModel );

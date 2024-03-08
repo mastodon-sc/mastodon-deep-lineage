@@ -23,7 +23,7 @@ public class ImportSpotsFromBdvChannelViewDemo
 
 		Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
 		Model model = new Model();
-		ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model );
+		ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
 
 		ui.showUI();
 		cmd.run( ImportSpotsFromBdvChannelView.class, true, "projectModel", projectModel );

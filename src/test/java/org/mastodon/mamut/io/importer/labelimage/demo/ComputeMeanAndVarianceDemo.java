@@ -40,6 +40,7 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.StopWatch;
 import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
 import org.mastodon.mamut.model.Model;
+import org.scijava.Context;
 
 import java.util.Arrays;
 
@@ -56,42 +57,45 @@ public class ComputeMeanAndVarianceDemo
 	public static void main( String[] args )
 	{
 		LegacyInjector.preinit();
+		try (final Context context = new Context())
+		{
+			double[] center = { 40, 50, 60 };
+			double[][] givenCovariance = {
+					{ 400, 20, -10 },
+					{ 20, 200, 30 },
+					{ -10, 30, 100 }
+			};
 
-		double[] center = { 40, 50, 60 };
-		double[][] givenCovariance = {
-				{ 400, 20, -10 },
-				{ 20, 200, 30 },
-				{ -10, 30, 100 }
-		};
+			long[] dimensions = { 100, 100, 100 };
+			int background = 0;
+			int pixelValue = 1;
+			Img< FloatType > image = DemoUtils.generateExampleImage( center, givenCovariance, dimensions, background, pixelValue );
 
-		long[] dimensions = { 100, 100, 100 };
-		int background = 0;
-		int pixelValue = 1;
-		Img< FloatType > image = DemoUtils.generateExampleImage( center, givenCovariance, dimensions, background, pixelValue );
+			StopWatch stopWatchOnline = StopWatch.createAndStart();
+			Pair< double[], double[][] > results =
+					DemoUtils.computeMeanCovarianceOnline( Cast.unchecked( image ), pixelValue, Math.sqrt( 5 ) );
+			double[] onlineMean = results.getA();
+			double[][] onlineCovariance = results.getB();
+			stopWatchOnline.stop();
 
-		StopWatch stopWatchOnline = StopWatch.createAndStart();
-		Pair< double[], double[][] > results = DemoUtils.computeMeanCovarianceOnline( Cast.unchecked( image ), pixelValue, Math.sqrt( 5 ) );
-		double[] onlineMean = results.getA();
-		double[][] onlineCovariance = results.getB();
-		stopWatchOnline.stop();
+			StopWatch stopWatchTwoPass = StopWatch.createAndStart();
+			double[] mean = computeMean( image, pixelValue );
+			double[][] computedCovariance = computeCovariance( image, mean, pixelValue );
+			stopWatchTwoPass.stop();
 
-		StopWatch stopWatchTwoPass = StopWatch.createAndStart();
-		double[] mean = computeMean( image, pixelValue );
-		double[][] computedCovariance = computeCovariance( image, mean, pixelValue );
-		stopWatchTwoPass.stop();
+			System.out.println( "Given center: " + Arrays.toString( center ) );
+			System.out.println( "Computed mean: " + Arrays.toString( mean ) );
+			System.out.println( "Computed mean online: " + Arrays.toString( onlineMean ) );
+			System.out.println( "Given covariance: " + Arrays.deepToString( givenCovariance ) );
+			System.out.println( "Computed covariance: " + Arrays.deepToString( computedCovariance ) );
+			System.out.println( "Computed covariance online: " + Arrays.deepToString( onlineCovariance ) );
+			System.out.println( "Time to compute mean and covariance: \n" + stopWatchTwoPass.nanoTime() / 1e9 + " nano seconds" );
+			System.out.println( "Time to compute mean and covariance online: \n" + stopWatchOnline.nanoTime() / 1e9 + " nano seconds" );
 
-		System.out.println( "Given center: " + Arrays.toString( center ) );
-		System.out.println( "Computed mean: " + Arrays.toString( mean ) );
-		System.out.println( "Computed mean online: " + Arrays.toString( onlineMean ) );
-		System.out.println( "Given covariance: " + Arrays.deepToString( givenCovariance ) );
-		System.out.println( "Computed covariance: " + Arrays.deepToString( computedCovariance ) );
-		System.out.println( "Computed covariance online: " + Arrays.deepToString( onlineCovariance ) );
-		System.out.println( "Time to compute mean and covariance: \n" + stopWatchTwoPass.nanoTime() / 1e9 + " nano seconds" );
-		System.out.println( "Time to compute mean and covariance online: \n" + stopWatchOnline.nanoTime() / 1e9 + " nano seconds" );
-
-		Model model = new Model();
-		model.getGraph().addVertex().init( 0, onlineMean, onlineCovariance );
-		DemoUtils.showBdvWindow( DemoUtils.wrapAsAppModel( image, model ) );
+			Model model = new Model();
+			model.getGraph().addVertex().init( 0, onlineMean, onlineCovariance );
+			DemoUtils.showBdvWindow( DemoUtils.wrapAsAppModel( image, model, context ) );
+		}
 	}
 
 	/**

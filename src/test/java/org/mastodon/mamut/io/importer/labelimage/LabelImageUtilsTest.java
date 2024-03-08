@@ -29,6 +29,7 @@ import org.mastodon.mamut.io.importer.labelimage.demo.DemoUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
+import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,81 +113,89 @@ public class LabelImageUtilsTest
 	public void testImportSpotsFromBdvChannel()
 	{
 		LegacyInjector.preinit();
-		int pixelValue = 1;
-		Img< FloatType > img = createImageCubeCorners( pixelValue );
-		ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model );
-		LabelImageUtils.importSpotsFromBdvChannel( projectModel, 0, 1 );
+		try (Context context = new Context())
+		{
+			int pixelValue = 1;
+			Img< FloatType > img = createImageCubeCorners( pixelValue );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
+			LabelImageUtils.importSpotsFromBdvChannel( projectModel, 0, 1 );
 
-		Iterator< Spot > iter = model.getGraph().vertices().iterator();
-		Spot spot = iter.next();
-		double[][] covarianceMatrix = new double[ 3 ][ 3 ];
-		spot.getCovariance( covarianceMatrix );
-		final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
-		eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
-		final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
-		double axisA = Math.sqrt( eigenValues[ 0 ] );
-		double axisB = Math.sqrt( eigenValues[ 1 ] );
-		double axisC = Math.sqrt( eigenValues[ 2 ] );
+			Iterator< Spot > iter = model.getGraph().vertices().iterator();
+			Spot spot = iter.next();
+			double[][] covarianceMatrix = new double[ 3 ][ 3 ];
+			spot.getCovariance( covarianceMatrix );
+			final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
+			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
+			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
+			double axisA = Math.sqrt( eigenValues[ 0 ] );
+			double axisB = Math.sqrt( eigenValues[ 1 ] );
+			double axisC = Math.sqrt( eigenValues[ 2 ] );
 
-		assertNotNull( spot );
-		assertEquals( 0, spot.getTimepoint() );
-		assertEquals( 2, spot.getDoublePosition( 0 ), 0.01 );
-		assertEquals( 2, spot.getDoublePosition( 1 ), 0.01 );
-		assertEquals( 2, spot.getDoublePosition( 2 ), 0.01 );
-		assertEquals( 0, spot.getInternalPoolIndex() );
-		assertEquals( String.valueOf( pixelValue ), spot.getLabel() );
-		assertEquals( 1, axisA, 0.1d );
-		assertEquals( 1, axisB, 0.1d );
-		assertEquals( 1, axisC, 0.1d );
-		assertEquals( 1, spot.getBoundingSphereRadiusSquared(), 0.2d );
-		assertFalse( iter.hasNext() );
+			assertNotNull( spot );
+			assertEquals( 0, spot.getTimepoint() );
+			assertEquals( 2, spot.getDoublePosition( 0 ), 0.01 );
+			assertEquals( 2, spot.getDoublePosition( 1 ), 0.01 );
+			assertEquals( 2, spot.getDoublePosition( 2 ), 0.01 );
+			assertEquals( 0, spot.getInternalPoolIndex() );
+			assertEquals( String.valueOf( pixelValue ), spot.getLabel() );
+			assertEquals( 1, axisA, 0.1d );
+			assertEquals( 1, axisB, 0.1d );
+			assertEquals( 1, axisC, 0.1d );
+			assertEquals( 1, spot.getBoundingSphereRadiusSquared(), 0.2d );
+			assertFalse( iter.hasNext() );
+		}
 	}
 
 	@Test
 	public void testImportSpotsFromImgPlus()
 	{
 		LegacyInjector.preinit();
-		double[] center = { 18, 21, 22 };
-		double[][] givenCovariance = {
-				{ 33, 14, 0 },
-				{ 14, 32, 0 },
-				{ 0, 0, 95 }
-		};
-		Spot spot = model.getGraph().addVertex().init( 0, center, givenCovariance );
-		int pixelValue = 1;
-		Img< FloatType > image = createImageFromSpot( spot, pixelValue );
-		ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
-		ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model );
-		LabelImageUtils.importSpotsFromImgPlus( imgPlus, 2.1, projectModel );
+		try (Context context = new Context())
+		{
+			double[] center = { 18, 21, 22 };
+			double[][] givenCovariance = {
+					{ 33, 14, 0 },
+					{ 14, 32, 0 },
+					{ 0, 0, 95 }
+			};
+			Spot spot = model.getGraph().addVertex().init( 0, center, givenCovariance );
+			int pixelValue = 1;
+			Img< FloatType > image = createImageFromSpot( spot, pixelValue );
+			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
+			LabelImageUtils.importSpotsFromImgPlus( imgPlus, 2.1, projectModel );
 
-		Iterator< Spot > iterator = model.getGraph().vertices().iterator();
-		iterator.next();
-		Spot createdSpot = iterator.next();
-		double[] mean = createdSpot.positionAsDoubleArray();
-		double[][] computedCovariance = new double[ 3 ][ 3 ];
-		createdSpot.getCovariance( computedCovariance );
+			Iterator< Spot > iterator = model.getGraph().vertices().iterator();
+			iterator.next();
+			Spot createdSpot = iterator.next();
+			double[] mean = createdSpot.positionAsDoubleArray();
+			double[][] computedCovariance = new double[ 3 ][ 3 ];
+			createdSpot.getCovariance( computedCovariance );
 
-		logger.debug( "Given center: {}", Arrays.toString( center ) );
-		logger.debug( "Computed mean: {}", Arrays.toString( mean ) );
-		logger.debug( "Given covariance: {}", Arrays.deepToString( givenCovariance ) );
-		logger.debug( "Computed covariance: {}", Arrays.deepToString( computedCovariance ) );
+			logger.debug( "Given center: {}", Arrays.toString( center ) );
+			logger.debug( "Computed mean: {}", Arrays.toString( mean ) );
+			logger.debug( "Given covariance: {}", Arrays.deepToString( givenCovariance ) );
+			logger.debug( "Computed covariance: {}", Arrays.deepToString( computedCovariance ) );
 
-		assertArrayEquals( center, mean, 0.01d );
-		assertArrayEquals( givenCovariance[ 0 ], computedCovariance[ 0 ], 5d );
-		assertArrayEquals( givenCovariance[ 1 ], computedCovariance[ 1 ], 5d );
-		assertArrayEquals( givenCovariance[ 2 ], computedCovariance[ 2 ], 5d );
-		assertEquals( String.valueOf( pixelValue ), createdSpot.getLabel() );
+			assertArrayEquals( center, mean, 0.01d );
+			assertArrayEquals( givenCovariance[ 0 ], computedCovariance[ 0 ], 5d );
+			assertArrayEquals( givenCovariance[ 1 ], computedCovariance[ 1 ], 5d );
+			assertArrayEquals( givenCovariance[ 2 ], computedCovariance[ 2 ], 5d );
+			assertEquals( String.valueOf( pixelValue ), createdSpot.getLabel() );
+		}
 	}
 
 	@Test
 	public void testDimensionsMatch()
 	{
 		LegacyInjector.preinit();
-		Img< FloatType > image = ArrayImgs.floats( 10, 10, 10, 2 );
-		Model model = new Model();
-		ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model );
-		ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
-		assertTrue( LabelImageUtils.dimensionsMatch( projectModel.getSharedBdvData(), imgPlus ) );
+		try (final Context context = new Context())
+		{
+			Img< FloatType > image = ArrayImgs.floats( 10, 10, 10, 2 );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
+			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
+			assertTrue( LabelImageUtils.dimensionsMatch( projectModel.getSharedBdvData(), imgPlus ) );
+		}
 	}
 
 	@Test

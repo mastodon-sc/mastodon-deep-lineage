@@ -61,10 +61,10 @@ public class DemoUtils
 		// prevent from instantiation
 	}
 
-	public static ProjectModel wrapAsAppModel( final Img< FloatType > image, final Model model )
+	public static ProjectModel wrapAsAppModel( final Img< FloatType > image, final Model model, final Context context )
 	{
 		final SharedBigDataViewerData sharedBigDataViewerData = asSharedBdvDataXyz( image );
-		return ProjectModel.create( new Context(), model, sharedBigDataViewerData, null );
+		return ProjectModel.create( context, model, sharedBigDataViewerData, null );
 	}
 
 	public static SharedBigDataViewerData asSharedBdvDataXyz( final Img< FloatType > image1 )
