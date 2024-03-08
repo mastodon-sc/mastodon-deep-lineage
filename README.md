@@ -245,7 +245,7 @@ Tree2
   * The graph is directed. The branch spots are the vertices and the branch links are the edges.
   * The vertices receive a label attribute with the branch spot name. The vertices receive a duration attribute with the
     branch duration.
-  * The edges are not labeled. The edges are not attributed.
+  * The edges are not labeled and have no attributes.
 * GraphML can be visualized with [Cytoscape](https://cytoscape.org/), [yEd](https://www.yworks.com/products/yed)
   or [Gephi](https://gephi.org/).
 * GraphML can be processed in Java using the [JGraphT](https://jgrapht.org/) library.
