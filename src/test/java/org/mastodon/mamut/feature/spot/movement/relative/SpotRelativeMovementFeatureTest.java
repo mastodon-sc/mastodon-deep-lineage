@@ -49,10 +49,10 @@ public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 			spotRelativeMovementFeature =
 					FeatureUtils.getFeature( graph2.getModel(), SpotRelativeMovementFeature.SpotRelativeMovementFeatureSpec.class );
 			assertNotNull( spotRelativeMovementFeature );
-			specX = new FeatureProjectionSpec( spotRelativeMovementFeature.getProjectionName( "x" ), Dimension.LENGTH );
-			specY = new FeatureProjectionSpec( spotRelativeMovementFeature.getProjectionName( "y" ), Dimension.LENGTH );
-			specZ = new FeatureProjectionSpec( spotRelativeMovementFeature.getProjectionName( "z" ), Dimension.LENGTH );
-			specNorm = new FeatureProjectionSpec( spotRelativeMovementFeature.getProjectionName( "norm" ), Dimension.LENGTH );
+			specX = new FeatureProjectionSpec( spotRelativeMovementFeature.getProjectionName( "X-component" ), Dimension.LENGTH );
+			specY = new FeatureProjectionSpec( spotRelativeMovementFeature.getProjectionName( "Y-component" ), Dimension.LENGTH );
+			specZ = new FeatureProjectionSpec( spotRelativeMovementFeature.getProjectionName( "Z-component" ), Dimension.LENGTH );
+			specNorm = new FeatureProjectionSpec( spotRelativeMovementFeature.getProjectionName( "Distance" ), Dimension.LENGTH );
 		}
 	}
 
@@ -69,9 +69,11 @@ public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 		double[] expected = new double[ 3 ];
 		double[] movementSpot8 = SpotFeatureUtils.spotMovement( graph2.spot8 );
 		double[] movementSpot5 = SpotFeatureUtils.spotMovement( graph2.spot5 );
+		assertNotNull( movementSpot8 );
 		LinAlgHelpers.add( movementSpot8, movementSpot5, movementSpot8 );
 		LinAlgHelpers.scale( movementSpot8, 1 / 2d, movementSpot8 );
 		double[] movementSpot13 = SpotFeatureUtils.spotMovement( graph2.spot13 );
+		assertNotNull( movementSpot13 );
 		LinAlgHelpers.subtract( movementSpot13, movementSpot8, expected );
 
 		assertEquals( expected[ 0 ], actualX, 0d );

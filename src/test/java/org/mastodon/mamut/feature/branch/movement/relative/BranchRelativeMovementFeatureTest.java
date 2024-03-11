@@ -47,10 +47,10 @@ public class BranchRelativeMovementFeatureTest extends AbstractFeatureTest< Bran
 			branchRelativeMovementFeature =
 					FeatureUtils.getFeature( graph3.getModel(), BranchRelativeMovementFeature.BranchRelativeMovementFeatureSpec.class );
 			assertNotNull( branchRelativeMovementFeature );
-			specX = new FeatureProjectionSpec( branchRelativeMovementFeature.getProjectionName( "x" ), Dimension.NONE );
-			specY = new FeatureProjectionSpec( branchRelativeMovementFeature.getProjectionName( "y" ), Dimension.NONE );
-			specZ = new FeatureProjectionSpec( branchRelativeMovementFeature.getProjectionName( "z" ), Dimension.NONE );
-			specNorm = new FeatureProjectionSpec( branchRelativeMovementFeature.getProjectionName( "norm" ), Dimension.LENGTH );
+			specX = new FeatureProjectionSpec( branchRelativeMovementFeature.getProjectionName( " x-component" ), Dimension.NONE );
+			specY = new FeatureProjectionSpec( branchRelativeMovementFeature.getProjectionName( " y-component" ), Dimension.NONE );
+			specZ = new FeatureProjectionSpec( branchRelativeMovementFeature.getProjectionName( " z-component" ), Dimension.NONE );
+			specNorm = new FeatureProjectionSpec( branchRelativeMovementFeature.getProjectionName( "" ), Dimension.LENGTH );
 		}
 	}
 
