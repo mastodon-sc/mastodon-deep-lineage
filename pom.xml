@@ -19,7 +19,7 @@
         <license.organizationName>Mastodon authors</license.organizationName>
         <license.copyrightOwners>Stefan Hahmann</license.copyrightOwners>
 
-        <mastodon.version>1.0.0-beta-28</mastodon.version>
+        <mastodon.version>1.0.0-beta-29</mastodon.version>
         <mastodon.group>org.mastodon</mastodon.group>
         <!-- with pom-scijava >= 37.1.0, this can be removed again -->
         <scijava-common.version>2.97.1</scijava-common.version>
@@ -107,6 +107,12 @@
             <groupId>com.apporiented</groupId>
             <artifactId>hierarchical-clustering</artifactId>
             <version>1.2.0</version>
+        </dependency>
+
+        <!-- graph ml export -->
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-io</artifactId>
         </dependency>
 
         <!-- Test dependencies -->

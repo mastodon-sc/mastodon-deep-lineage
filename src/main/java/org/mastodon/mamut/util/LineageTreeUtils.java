@@ -32,19 +32,27 @@ import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.Edges;
 import org.mastodon.graph.Graph;
+import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.algorithm.RootFinder;
+import org.mastodon.graph.algorithm.traversal.BreadthFirstIterator;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.util.TreeUtils;
 
 import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -172,5 +180,107 @@ public class LineageTreeUtils {
 			if ( predicate.test( t ) )
 				filtered.add( t );
 		return filtered;
+	}
+
+	/**
+	 * Tests, whether the given vertex is a root in the given graph.
+	 * <br><br>
+	 * A root is a vertex with no incoming edges.
+	 * <br><br>
+	 * @param vertex the vertex to test.
+	 * @param <V> the vertex type.
+	 * @param <E> the edge type.
+	 * @return true if the vertex is a root, false otherwise.
+	 */
+	public static < V extends Vertex< E >, E extends Edge< V > > boolean isRoot( final V vertex )
+	{
+		return vertex.incomingEdges().isEmpty();
+	}
+
+	/**
+	 * Gets a new {@link RefSet} that contains all branch spots that share at least one of the given spots or links.
+	 * @param model the model to search in.
+	 * @param spots the spots used to search for branch spots.
+	 * @param links the links used to search for branch spots.
+	 * @return the resulting branch spots.
+	 */
+	public static RefSet< BranchSpot > getBranchSpots( final Model model, final RefSet< Spot > spots, final RefSet< Link > links )
+	{
+		ModelBranchGraph branchGraph = model.getBranchGraph();
+		RefSet< BranchSpot > selectedBranchSpots = RefCollections.createRefSet( model.getBranchGraph().vertices() );
+		if ( spots != null )
+			spots.forEach( spot -> selectedBranchSpots.add( branchGraph.getBranchVertex( spot, branchGraph.vertexRef() ) ) );
+		if ( links != null )
+			links.forEach( link -> {
+				BranchSpot branchSpot = branchGraph.getBranchVertex( link, branchGraph.vertexRef() );
+				if ( branchSpot != null )
+					selectedBranchSpots.add( branchSpot );
+			} );
+		return selectedBranchSpots;
+	}
+
+	/**
+	 * Gets a new {@link RefSet} that contains all branch links that share at least one of the given links.
+	 * @param model the model to search in.
+	 * @param links the links used to search for branch links.
+	 * @return the resulting branch links.
+	 */
+	public static RefSet< BranchLink > getBranchLinks( final Model model, final Set< Link > links )
+	{
+		ModelBranchGraph branchGraph = model.getBranchGraph();
+		RefSet< BranchLink > branchLinks = RefCollections.createRefSet( model.getBranchGraph().edges() );
+		if ( links != null )
+			links.forEach( link -> {
+				BranchLink branchLink = branchGraph.getBranchEdge( link, branchGraph.edgeRef() );
+				if ( branchLink != null )
+					branchLinks.add( branchLink );
+			} );
+		return branchLinks;
+	}
+
+	/**
+	 * Gets all the vertex successors of the given root in the given graph, including the root.
+	 * <br><br>
+	 * The vertex successors of a vertex are all the vertices that are reachable from the root by following the edges of the graph.
+	 * <br><br>
+	 * @param root the root vertex.
+	 * @param graph the graph to search in.
+	 * @param <V> the vertex type.
+	 * @param <E> the edge type.
+	 * @return a new {@link RefSet} containing all the successors of the root.
+	 */
+	public static < V extends Vertex< E >, E extends Edge< V > > RefSet< V > getAllVertexSuccessors( final V root,
+			final ReadOnlyGraph< V, E > graph )
+	{
+		BreadthFirstIterator< V, E > it = new BreadthFirstIterator<>( root, graph );
+		RefSet< V > children = RefCollections.createRefSet( graph.vertices() );
+		while ( it.hasNext() )
+			children.add( it.next() );
+		return children;
+	}
+
+	/**
+	 * Gets all the edge successors of the given root in the given graph.
+	 * <br><br>
+	 * The edge successors of a vertex are all the vertices that are reachable from the root by following the edges of the graph.
+	 * <br><br>
+	 * @param root the root vertex.
+	 * @param graph the graph to search in.
+	 * @param <V> the vertex type.
+	 * @param <E> the edge type.
+	 * @return a new {@link RefSet} containing all the edge successors of the root.
+	 */
+	public static < V extends Vertex< E >, E extends Edge< V > > RefSet< E > getAllEdgeSuccessors( final V root,
+			final ReadOnlyGraph< V, E > graph )
+	{
+		BreadthFirstIterator< V, E > it = new BreadthFirstIterator<>( root, graph );
+		RefSet< E > children = RefCollections.createRefSet( graph.edges() );
+		while ( it.hasNext() )
+		{
+			V vertex = it.next();
+			Edges< E > outgoingEdges = vertex.outgoingEdges();
+			outgoingEdges.forEach( children::add );
+		}
+		return children;
 	}
 }

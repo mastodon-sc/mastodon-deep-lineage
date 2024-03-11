@@ -28,17 +28,42 @@
  */
 package org.mastodon.mamut.util;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefSet;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph4;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class LineageTreeUtilsTest
 {
+	private ExampleGraph2 graph2;
+
+	private ExampleGraph4 graph4;
+
+	@Before
+	public void setUp()
+	{
+		graph2 = new ExampleGraph2();
+		graph4 = new ExampleGraph4();
+	}
+
 	@Test
 	public void testGetFirstTimepointWithNSpots()
 	{
@@ -48,5 +73,65 @@ public class LineageTreeUtilsTest
 		assertEquals( 5, LineageTreeUtils.getFirstTimepointWithNSpots( model, 3 ) );
 		assertEquals( 3, LineageTreeUtils.getFirstTimepointWithNSpots( model, 2 ) );
 		assertThrows( NoSuchElementException.class, () -> LineageTreeUtils.getFirstTimepointWithNSpots( model, 5 ) );
+	}
+
+	@Test
+	public void testIsRoot()
+	{
+		assertTrue( LineageTreeUtils.isRoot( graph2.spot0 ) );
+		assertFalse( LineageTreeUtils.isRoot( graph2.spot1 ) );
+		assertTrue( LineageTreeUtils.isRoot( graph2.branchSpotA ) );
+		assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotB ) );
+		assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotC ) );
+		assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotD ) );
+		assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotE ) );
+	}
+
+	@Test
+	public void testGetBranchSpots()
+	{
+		RefSet< Spot > inputSpots = RefCollections.createRefSet( graph2.getModel().getGraph().vertices() );
+		inputSpots.add( graph2.spot0 );
+		inputSpots.add( graph2.spot5 );
+		RefSet< Link > inputLinks = RefCollections.createRefSet( graph2.getModel().getGraph().edges() );
+		RefSet< BranchSpot > actual = LineageTreeUtils.getBranchSpots( graph2.getModel(), inputSpots, inputLinks );
+		Set< BranchSpot > expected = new HashSet<>( Arrays.asList( graph2.branchSpotA, graph2.branchSpotD ) );
+		assertEquals( expected, actual );
+	}
+
+	@Test
+	public void testGetBranchLinks()
+	{
+		RefSet< Link > inputLinks = RefCollections.createRefSet( graph4.getModel().getGraph().edges() );
+		inputLinks.add( graph4.link0 );
+		inputLinks.add( graph4.link1 );
+		RefSet< BranchLink > actual = LineageTreeUtils.getBranchLinks( graph4.getModel(), inputLinks );
+		Set< BranchLink > expected = new HashSet<>( Collections.singletonList( graph4.branchLink0 ) );
+		assertEquals( expected, actual );
+	}
+
+	@Test
+	public void testGetAllVertexSuccessors()
+	{
+		Set< BranchSpot > expected = new HashSet<>(
+				Arrays.asList( graph2.branchSpotA, graph2.branchSpotB, graph2.branchSpotC, graph2.branchSpotD, graph2.branchSpotE ) );
+		RefSet< BranchSpot > actual = LineageTreeUtils.getAllVertexSuccessors( graph2.branchSpotA, graph2.getModel().getBranchGraph() );
+		assertEquals( expected, actual );
+
+		expected = new HashSet<>( Arrays.asList( graph2.branchSpotB, graph2.branchSpotD, graph2.branchSpotE ) );
+		actual = LineageTreeUtils.getAllVertexSuccessors( graph2.branchSpotB, graph2.getModel().getBranchGraph() );
+		assertEquals( expected, actual );
+	}
+
+	@Test
+	public void testGetAllEdgeSuccessors()
+	{
+		Set< BranchLink > expected = new HashSet<>( Arrays.asList( graph4.branchLink0, graph4.branchLink1 ) );
+		RefSet< BranchLink > actual = LineageTreeUtils.getAllEdgeSuccessors( graph4.branchSpotA, graph4.getModel().getBranchGraph() );
+		assertEquals( expected, actual );
+
+		expected = new HashSet<>( Arrays.asList( graph4.branchLink2, graph4.branchLink3 ) );
+		actual = LineageTreeUtils.getAllEdgeSuccessors( graph4.branchSpotD, graph4.getModel().getBranchGraph() );
+		assertEquals( expected, actual );
 	}
 }
