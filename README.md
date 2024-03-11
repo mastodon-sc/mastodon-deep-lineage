@@ -26,7 +26,6 @@
 * [Contribute Code or Provide Feedback](#contribute-code-or-provide-feedback)
 * [Contribute Documentation](#contribute-documentation)
 * [Acknowledgements](#acknowledgements)
-*
 
 ## Documentation of Mastodon
 
