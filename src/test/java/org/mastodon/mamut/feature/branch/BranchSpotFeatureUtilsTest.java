@@ -6,7 +6,6 @@ import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph3;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph5;
-import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 
 import java.util.Iterator;
