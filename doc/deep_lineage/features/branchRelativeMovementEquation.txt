@@ -7,12 +7,13 @@ b := branch
 \\
 b := \left \{ s_1, ..., s_k \right \} \text{ k ... branch duration}
 \\
-\vec{r_b} := \sum_{s \in b} \vec{r_s}
+\vec{r_b} := \sum_{s \in b} \vec{r_s} \text{ (} \vec{r_{s}} \text{... cf. relative movement of spot s)}
 \\
-\vec{n_b} := \text{normalized movement direction of the branch}
+\vec{n_b} := \text{normalized relative movement direction of the branch}
 \\
 \vec{n_b} = \frac{\vec{r_b}}{\left | \vec{r_b} \right |}
 \\
-v_b := \text{relative movement distance of branch}
+v_b := \text{average relative movement speed of branch}
 \\
 v_b = \frac{1}{\left | b \right |} \sum_{s \in b} \left |\vec{r_{s}}  \right | \text{ (} \vec{r_{s}} \text{... cf. relative movement of spot s)}
+

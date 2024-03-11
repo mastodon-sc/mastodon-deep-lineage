@@ -328,7 +328,7 @@ public class BranchSpotFeatureUtils
 	}
 
 	/**
-	 * Computes the amount of movement of a branch spot relative to its nearest neighbours during its life cycle.
+	 * Computes the amount of movement of a branch spot relative to its nearest neighbors during its life cycle (i.e. average speed relative to its nearest neighbors).
 	 * <p>
 	 * The relative movement of a branch spot is equivalent to the average of the relative movements of the branch spot's spots.
 	 *

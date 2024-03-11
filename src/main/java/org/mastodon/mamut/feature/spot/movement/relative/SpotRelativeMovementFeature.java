@@ -63,9 +63,9 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 	public static final String KEY = "Spot relative movement";
 
 	private static final String HELP_STRING =
-			"Computes the movement of a spot relative to its n nearest neighbours in the x, y, and z direction, as well as the norm of the movement.";
+			"Computes the movement of a spot relative to its n nearest neighbours in the x, y, and z direction, as well as the norm (i.e. distance) of the movement.";
 
-	private static final String PROJECTION_NAME_TEMPLATE = "Relative movement %s to %d nearest neighbors";
+	private static final String PROJECTION_NAME_TEMPLATE = "%s relative to %d nearest neighbors";
 
 	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
 
@@ -114,10 +114,10 @@ public class SpotRelativeMovementFeature implements Feature< Spot >, ValueIsSetE
 		this.norm = norm;
 		this.lengthUnits = lengthUnits;
 		this.settings = settings;
-		FeatureProjectionSpec projectionSpecX = new FeatureProjectionSpec( getProjectionName( "x" ), Dimension.LENGTH );
-		FeatureProjectionSpec projectionSpecY = new FeatureProjectionSpec( getProjectionName( "y" ), Dimension.LENGTH );
-		FeatureProjectionSpec projectionSpecZ = new FeatureProjectionSpec( getProjectionName( "z" ), Dimension.LENGTH );
-		FeatureProjectionSpec projectionSpecNorm = new FeatureProjectionSpec( getProjectionName( "norm" ), Dimension.LENGTH );
+		FeatureProjectionSpec projectionSpecX = new FeatureProjectionSpec( getProjectionName( "X-component" ), Dimension.LENGTH );
+		FeatureProjectionSpec projectionSpecY = new FeatureProjectionSpec( getProjectionName( "Y-component" ), Dimension.LENGTH );
+		FeatureProjectionSpec projectionSpecZ = new FeatureProjectionSpec( getProjectionName( "Z-component" ), Dimension.LENGTH );
+		FeatureProjectionSpec projectionSpecNorm = new FeatureProjectionSpec( getProjectionName( "Distance" ), Dimension.LENGTH );
 		this.adaptedSpec = new SpotRelativeMovementFeatureSpec( projectionSpecX, projectionSpecY, projectionSpecZ, projectionSpecNorm );
 		this.projectionMap = new LinkedHashMap<>( 4 );
 
