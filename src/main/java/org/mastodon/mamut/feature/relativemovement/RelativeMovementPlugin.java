@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,12 +26,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.io.exporter.labelimage;
+package org.mastodon.mamut.feature.relativemovement;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.plugin.MamutPlugin;
-import org.mastodon.mamut.io.exporter.labelimage.ui.ExportLabelImageView;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -45,11 +44,11 @@ import java.util.List;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
-@SuppressWarnings("unused")
-@Plugin(type = MamutPlugin.class)
-public class ExportLabelImagePlugin implements MamutPlugin
+@SuppressWarnings( "unused" )
+@Plugin( type = MamutPlugin.class )
+public class RelativeMovementPlugin implements MamutPlugin
 {
-	private static final String EXPORT_LABEL_IMAGE_USING = "Export label image using ellipsoids";
+	private static final String DESCRIPTION = "Movement of spots relative to nearest neighbors";
 
 	private static final String[] SHORT_CUT = { "not mapped" };
 
@@ -57,15 +56,14 @@ public class ExportLabelImagePlugin implements MamutPlugin
 
 	private ProjectModel projectModel;
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings( "unused" )
 	@Parameter
 	private CommandService commandService;
 
-
-	@SuppressWarnings("unused")
-	public ExportLabelImagePlugin()
+	@SuppressWarnings( "unused" )
+	public RelativeMovementPlugin()
 	{
-		action = new RunnableAction( EXPORT_LABEL_IMAGE_USING, this::exportLabelImage );
+		action = new RunnableAction( DESCRIPTION, this::showRelativeMovementDialog );
 	}
 
 	@Override
@@ -78,7 +76,7 @@ public class ExportLabelImagePlugin implements MamutPlugin
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				menu( "Plugins", menu( "Exports", item( EXPORT_LABEL_IMAGE_USING ) ) ) );
+				menu( "Plugins", menu( "Compute Feature", item( DESCRIPTION ) ) ) );
 	}
 
 	@Override
@@ -87,8 +85,8 @@ public class ExportLabelImagePlugin implements MamutPlugin
 		actions.namedAction( action, SHORT_CUT );
 	}
 
-	private void exportLabelImage()
+	private void showRelativeMovementDialog()
 	{
-		commandService.run( ExportLabelImageView.class, true, "projectModel", projectModel );
+		commandService.run( RelativeMovementView.class, true, "model", projectModel.getModel(), "context", projectModel.getContext() );
 	}
 }

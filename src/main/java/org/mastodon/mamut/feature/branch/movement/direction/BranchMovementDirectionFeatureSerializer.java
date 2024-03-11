@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.movement;
+package org.mastodon.mamut.feature.branch.movement.direction;
 
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.io.FeatureSerializer;
