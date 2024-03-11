@@ -13,7 +13,7 @@
 * [Installation Instructions](#installation-instructions)
 * [Numerical Features added to Mastodon](#numerical-features-added-to-mastodon)
   * [Spot Features](#spot-features)
-  * [Branch-spot Features](#branch-spot-features)
+  * [Branch Features](#branch-features)
 * [Lineage Tree Classification](#lineage-tree-classification)
   * [Parameters](#parameters)
   * [Example](#example)
@@ -58,7 +58,7 @@
 |                              | Aspect ratio middle to long                       | The ratio between the middle axis and long axis.      | $\frac{\text{middle axis}}{\text{long axis}}$                                                                          |
 | Spot Branch ID               | _idem_                                            | The ID of the branch spot each spot belongs to.       |                                                                                                                        |
 
-### Branch-spot Features
+### Branch Features
 
 | **Feature name**                     | **Projections** | **Description**                                                                                                                                                                                                                                                                         | **Formula/Visualisation**                                                                                                                                                                                                                       |
 |--------------------------------------|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
