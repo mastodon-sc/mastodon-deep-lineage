@@ -223,6 +223,20 @@ public class LabelImageUtilsTest
 		assertArrayEquals( new long[] { 100, 100, 100, 2 }, dimensions );
 	}
 
+	@Test
+	public void testGetSourceNames()
+	{
+		LegacyInjector.preinit();
+		try (final Context context = new Context())
+		{
+			Img< FloatType > image = ArrayImgs.floats( 100, 100, 100, 2 );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
+			List< String > sourceNames = LabelImageUtils.getSourceNames( projectModel.getSharedBdvData() );
+			assertEquals( 1, sourceNames.size() );
+			assertEquals( "image channel 1", sourceNames.get( 0 ) );
+		}
+	}
+
 	private ImgPlus< FloatType > createImgPlus( final Img< FloatType > img, final VoxelDimensions voxelDimensions )
 	{
 		final CalibratedAxis[] axes = { new DefaultLinearAxis( Axes.X, voxelDimensions.dimension( 0 ) ),

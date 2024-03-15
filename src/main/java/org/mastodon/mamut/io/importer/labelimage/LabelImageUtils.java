@@ -1,6 +1,7 @@
 package org.mastodon.mamut.io.importer.labelimage;
 
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.sequence.TimePoint;
 import mpicbg.spim.data.sequence.VoxelDimensions;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -325,6 +327,20 @@ public class LabelImageUtils
 					covariance[ j ][ i ] = covariance[ i ][ j ];
 			}
 		}
+	}
+
+	/**
+	 * Returns the names of the sources contained in the given big data viewer data.
+	 * @param sharedBdvData the big data viewer data to get the source names from.
+	 * @return the names of the sources.
+	 */
+	public static List< String > getSourceNames( final SharedBigDataViewerData sharedBdvData )
+	{
+		final List< SourceAndConverter< ? > > sources = sharedBdvData.getSources();
+		List< String > choices = new ArrayList<>();
+		for ( SourceAndConverter< ? > source : sources )
+			choices.add( source.getSpimSource().getName() );
+		return choices;
 	}
 
 	/**

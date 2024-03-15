@@ -9,7 +9,6 @@ import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,10 +42,7 @@ public class ImportSpotsFromBdvChannelView extends DynamicCommand
 	@SuppressWarnings( "unused" )
 	private void initImgSourceChoices()
 	{
-		final ArrayList< SourceAndConverter< ? > > sources = projectModel.getSharedBdvData().getSources();
-		List< String > choices = new ArrayList<>();
-		for ( SourceAndConverter< ? > source : sources )
-			choices.add( source.getSpimSource().getName() );
+		List< String > choices = LabelImageUtils.getSourceNames( projectModel.getSharedBdvData() );
 		getInfo().getMutableInput( "imgSourceChoice", String.class ).setChoices( choices );
 	}
 
