@@ -39,4 +39,22 @@ public class Covariance
 			throw new IllegalArgumentException( "Number of samples is less than 2." );
 		return c / ( n - 1 );
 	}
+
+	/**
+	 * Gets the mean of the first variable.
+	 * @return the mean of the first variable
+	 */
+	public double getMeanX()
+	{
+		return meanX;
+	}
+
+	/**
+	 * Gets the mean of the second variable.
+	 * @return the mean of the second variable
+	 */
+	public double getMeanY()
+	{
+		return meanY;
+	}
 }

@@ -18,6 +18,7 @@ public class CovarianceMatrixTest
 			matrix.addValues( values );
 		double[][] actual = matrix.get();
 
+		assertArrayEquals( new double[] { 3d, 4d }, matrix.getMeans(), 0.0001d );
 		assertArrayEquals( new double[] { 2.5d, 2.5d }, actual[ 0 ], 0.0001d );
 		assertArrayEquals( new double[] { 2.5d, 2.5d }, actual[ 1 ], 0.0001d );
 	}

@@ -18,6 +18,8 @@ public class CovarianceTest
 			covariance.addValues( x[ i ], y[ i ] );
 		double actual = covariance.get();
 		assertEquals( 2.5d, actual, 0.0001d );
+		assertEquals( 3d, covariance.getMeanX(), 0.0001d );
+		assertEquals( 4d, covariance.getMeanY(), 0.0001d );
 	}
 
 	@Test

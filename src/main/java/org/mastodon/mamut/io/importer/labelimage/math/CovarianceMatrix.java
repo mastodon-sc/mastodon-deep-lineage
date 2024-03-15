@@ -56,4 +56,16 @@ public class CovarianceMatrix
 		}
 		return result;
 	}
+
+	/**
+	 * Gets the means of the variables.
+	 * @return the means of the variables
+	 */
+	public double[] getMeans()
+	{
+		double[] result = new double[ c.length ];
+		for ( int i = 0; i < c.length; i++ )
+			result[ i ] = c[ i ][ i ].getMeanX();
+		return result;
+	}
 }

@@ -162,7 +162,7 @@ public class LabelImageUtils
 			// skip labels that are not present in the image or have only one pixel
 			if ( label == null || label.numPixels < 2 )
 				continue;
-			double[] mean = label.means.get();
+			double[] mean = label.covariances.getMeans();
 			double[][] cov = label.covariances.get();
 			scale( mean, voxelDimensions );
 			scale( cov, scaleFactor, voxelDimensions );
