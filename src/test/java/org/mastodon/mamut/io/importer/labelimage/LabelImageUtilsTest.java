@@ -1,15 +1,22 @@
 package org.mastodon.mamut.io.importer.labelimage;
 
+import bdv.spimdata.SequenceDescriptionMinimal;
 import bdv.util.AbstractSource;
 import bdv.util.RandomAccessibleIntervalSource;
+import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.generic.sequence.BasicViewDescription;
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.FinalVoxelDimensions;
 import mpicbg.spim.data.sequence.TimePoint;
+import mpicbg.spim.data.sequence.TimePoints;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.DefaultLinearAxis;
 import net.imagej.patcher.LegacyInjector;
+import net.imglib2.Dimensions;
+import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -38,6 +45,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntFunction;
 
@@ -54,16 +62,17 @@ public class LabelImageUtilsTest
 
 	private Model model;
 
-	private List< TimePoint > frames;
-
-	private VoxelDimensions voxelDimensions;
+	private AbstractSequenceDescription< ?, ?, ? > sequenceDescription;
 
 	@Before
 	public void setUp()
 	{
 		model = new Model();
-		frames = Collections.singletonList( new TimePoint( 0 ) );
-		voxelDimensions = new FinalVoxelDimensions( "um", 1, 1, 1 );
+		TimePoints timePoints = new TimePoints( Collections.singletonList( new TimePoint( 0 ) ) );
+		VoxelDimensions voxelDimensions = new FinalVoxelDimensions( "um", 1, 1, 1 );
+		Map< Integer, ? extends BasicViewSetup > setups =
+				Collections.singletonMap( 0, new BasicViewSetup( 0, "setup 0", new FinalDimensions( 10, 10, 10 ), voxelDimensions ) );
+		sequenceDescription = new SequenceDescriptionMinimal( timePoints, setups, null, null );
 	}
 
 	@Test
@@ -82,7 +91,7 @@ public class LabelImageUtilsTest
 						"Segmentation" );
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
-		LabelImageUtils.createSpotsFromLabelImage( imgProvider, frames, model, voxelDimensions, 1, null );
+		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, sequenceDescription, null );
 		assertEquals( 0, model.getGraph().vertices().size() );
 	}
 
@@ -92,21 +101,27 @@ public class LabelImageUtilsTest
 		AbstractSource< FloatType > img = createNonLabelImage();
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
-		LabelImageUtils.createSpotsFromLabelImage( imgProvider, frames, model, voxelDimensions, 1, null );
+		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, sequenceDescription, null );
 		assertEquals( 0, model.getGraph().vertices().size() );
 	}
 
 	@Test
 	public void testCreateSpotFromWrongVoxelDimensions()
 	{
+
 		RandomAccessibleIntervalSource< FloatType > img =
 				new RandomAccessibleIntervalSource<>( createImageCubeCorners( 1 ), new FloatType(), new AffineTransform3D(),
 						"Segmentation" );
 
 		VoxelDimensions wrongDimensions = new FinalVoxelDimensions( "um", 1, 1 );
+		TimePoints timePoints = new TimePoints( Collections.singletonList( new TimePoint( 0 ) ) );
+		Map< Integer, ? extends BasicViewSetup > setups =
+				Collections.singletonMap( 0, new BasicViewSetup( 0, "setup 0", new FinalDimensions( 10, 10, 10 ), wrongDimensions ) );
+		AbstractSequenceDescription< ?, ?, ? > faultySequenceDescription = new SequenceDescriptionMinimal( timePoints, setups, null, null );
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
 		assertThrows( IllegalArgumentException.class,
-				() -> LabelImageUtils.createSpotsFromLabelImage( imgProvider, frames, model, wrongDimensions, 1, null ) );
+				() -> LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, faultySequenceDescription, null ) );
+
 	}
 
 	@Test

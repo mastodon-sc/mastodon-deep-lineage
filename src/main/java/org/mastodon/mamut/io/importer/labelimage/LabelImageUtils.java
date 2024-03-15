@@ -46,17 +46,19 @@ public class LabelImageUtils
 	 * Creates spots from the given label image.<br>
 	 * The method runs twice through each image (i.e. each frame). Once to determine maximum/minimum values for array initialization, and once to do summation for covariance and mean.
 	 * @param frameProvider a function that provides the image data for each frame.
-	 * @param frames a list of frames to process.
 	 * @param model the model to add the spots to.
-	 * @param voxelDimensions the dimensions of the voxels in the image.
 	 * @param sigma the standard deviation of the Gaussian distribution to use for the covariance matrix.
+	 * @param sequenceDescription the sequence description of the image data. Contains the voxel dimensions and the time points.
 	 * @param statusService the status service to report progress to.
 	 */
 	static void createSpotsFromLabelImage( final IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider,
-			final List< TimePoint > frames, final Model model, final VoxelDimensions voxelDimensions, final double sigma,
+			final Model model, final double sigma, final AbstractSequenceDescription< ?, ?, ? > sequenceDescription,
 			final StatusService statusService )
 	{
 		final ModelGraph graph = model.getGraph();
+		final List< TimePoint > frames = sequenceDescription.getTimePoints().getTimePointsOrdered();
+		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
+		final VoxelDimensions voxelDimensions = sequenceDescription.getViewSetups().get( 0 ).getVoxelSize();
 		ReentrantReadWriteLock lock = graph.getLock();
 		lock.writeLock().lock();
 		int count = 0;
@@ -277,13 +279,9 @@ public class LabelImageUtils
 		if ( !dimensionsMatch( sharedBdvData, imgPlus ) )
 			throw new IllegalArgumentException( "The dimensions of the ImageJ image " + imgPlus.getName()
 					+ " do not match the dimensions of the big data viewer image." );
-		final AbstractSequenceDescription< ?, ?, ? > sequenceDescription = sharedBdvData.getSpimData().getSequenceDescription();
-		final List< TimePoint > frames = sequenceDescription.getTimePoints().getTimePointsOrdered();
-		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
-		final VoxelDimensions voxelDimensions = sequenceDescription.getViewSetups().get( 0 ).getVoxelSize();
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
 				frameId -> Cast.unchecked( Views.hyperSlice( imgPlus.getImg(), 3, frameId ) );
-		createSpotsFromLabelImage( frameProvider, frames, projectModel.getModel(), voxelDimensions, sigma,
+		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), sigma, sharedBdvData.getSpimData().getSequenceDescription(),
 				projectModel.getContext().getService( StatusService.class ) );
 	}
 
@@ -296,14 +294,10 @@ public class LabelImageUtils
 	 */
 	public static void importSpotsFromBdvChannel( final ProjectModel projectModel, final Source< ? > source, final double sigma )
 	{
-		final SharedBigDataViewerData sharedBigDataViewerData = projectModel.getSharedBdvData();
-		final AbstractSequenceDescription< ?, ?, ? > sequenceDescription = sharedBigDataViewerData.getSpimData().getSequenceDescription();
-		final List< TimePoint > frames = sequenceDescription.getTimePoints().getTimePointsOrdered();
-		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
-		final VoxelDimensions voxelDimensions = sequenceDescription.getViewSetups().get( 0 ).getVoxelSize();
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
 				frameId -> Cast.unchecked( source.getSource( frameId, 0 ) );
-		createSpotsFromLabelImage( frameProvider, frames, projectModel.getModel(), voxelDimensions, sigma,
+		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), sigma,
+				projectModel.getSharedBdvData().getSpimData().getSequenceDescription(),
 				projectModel.getContext().getService( StatusService.class ) );
 	}
 
