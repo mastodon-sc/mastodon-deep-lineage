@@ -1,15 +1,20 @@
 package org.mastodon.mamut.io.importer.labelimage.ui;
 
+import bdv.viewer.SourceAndConverter;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
-import org.scijava.command.ContextCommand;
+import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @Plugin( type = Command.class, label = "Import spots from BDV channel" )
-public class ImportSpotsFromBdvChannelView extends ContextCommand
+public class ImportSpotsFromBdvChannelView extends DynamicCommand
 {
 	private static final int WIDTH = 15;
 
@@ -28,29 +33,30 @@ public class ImportSpotsFromBdvChannelView extends ContextCommand
 	@Parameter
 	private ProjectModel projectModel;
 
-	@SuppressWarnings( "all" )
-	@Parameter( label = "Index of channel with labels", min = "0", description = "The index of the BDV channel that contains the labels. Counting of label channel indeces starts at 0.", validater = "validateChannelIndex" )
-	private int labelChannelIndex = 0;
+	@Parameter( label = "Instance segmentation source", initializer = "initImgSourceChoices" )
+	public String imgSourceChoice = "";
 
 	@SuppressWarnings( "all" )
 	@Parameter( label = "Sigma", min = "0", description = "Deviations from center to draw the ellipsoid border" )
 	private double sigma = 2.1;
 
 	@SuppressWarnings( "unused" )
-	private void validateChannelIndex()
+	private void initImgSourceChoices()
 	{
-		int numChannels = projectModel.getSharedBdvData().getSources().size();
-		if ( labelChannelIndex >= numChannels )
-			cancel( "You have chosen " + labelChannelIndex + " as channel index, but the available big data viewer source only contains "
-					+ numChannels + " channels.\n"
-					+ "Please choose a lower channel index. Channel indices start at 0." );
+		final ArrayList< SourceAndConverter< ? > > sources = projectModel.getSharedBdvData().getSources();
+		List< String > choices = new ArrayList<>();
+		for ( SourceAndConverter< ? > source : sources )
+			choices.add( source.getSpimSource().getName() );
+		getInfo().getMutableInput( "imgSourceChoice", String.class ).setChoices( choices );
 	}
 
 	@Override
 	public void run()
 	{
-		if ( isCanceled() )
+		Optional< SourceAndConverter< ? > > sourceAndConverter = projectModel.getSharedBdvData().getSources().stream()
+				.filter( source -> source.getSpimSource().getName().equals( imgSourceChoice ) ).findFirst();
+		if ( !sourceAndConverter.isPresent() )
 			return;
-		LabelImageUtils.importSpotsFromBdvChannel( projectModel, labelChannelIndex, sigma );
+		LabelImageUtils.importSpotsFromBdvChannel( projectModel, sourceAndConverter.get().getSpimSource(), sigma );
 	}
 }

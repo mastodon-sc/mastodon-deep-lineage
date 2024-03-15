@@ -118,7 +118,8 @@ public class LabelImageUtilsTest
 			int pixelValue = 1;
 			Img< FloatType > img = createImageCubeCorners( pixelValue );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
-			LabelImageUtils.importSpotsFromBdvChannel( projectModel, 0, 1 );
+			LabelImageUtils.importSpotsFromBdvChannel( projectModel, projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource(),
+					1 );
 
 			Iterator< Spot > iter = model.getGraph().vertices().iterator();
 			Spot spot = iter.next();

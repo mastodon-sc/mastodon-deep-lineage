@@ -291,21 +291,15 @@ public class LabelImageUtils
 	/**
 	 * Imports spots from the given big data viewer channel into the given project model.
 	 * @param projectModel the project model to add the spots to.
-	 * @param labelChannelIndex the index of the channel to import the spots from. This channel should contain the labels.
+	 * @param source the source to import the spots from.
 	 * @param sigma the standard deviation of the Gaussian distribution to use for the covariance matrix.
 	 * @throws IllegalArgumentException if the label channel index is out of bounds, i.e. if it is greater than the number of channels in the big data viewer source contained in the project model.
 	 */
-	public static void importSpotsFromBdvChannel( final ProjectModel projectModel, final int labelChannelIndex, final double sigma )
+	public static void importSpotsFromBdvChannel( final ProjectModel projectModel, final Source< ? > source, final double sigma )
 	{
 		final SharedBigDataViewerData sharedBigDataViewerData = projectModel.getSharedBdvData();
-		int numChannels = sharedBigDataViewerData.getSources().size();
-		if ( labelChannelIndex >= numChannels )
-			throw new IllegalArgumentException( "The label channel index " + labelChannelIndex
-					+ " is out of bounds. The available big data viewer source only contains " + numChannels + " channels." );
 		final AbstractSequenceDescription< ?, ?, ? > sequenceDescription = sharedBigDataViewerData.getSpimData().getSequenceDescription();
 		final List< TimePoint > frames = sequenceDescription.getTimePoints().getTimePointsOrdered();
-		final Source< ? extends RealType< ? > > source =
-				Cast.unchecked( sharedBigDataViewerData.getSources().get( labelChannelIndex ).getSpimSource() );
 		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
 		final VoxelDimensions voxelDimensions = sequenceDescription.getViewSetups().get( 0 ).getVoxelSize();
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider =
