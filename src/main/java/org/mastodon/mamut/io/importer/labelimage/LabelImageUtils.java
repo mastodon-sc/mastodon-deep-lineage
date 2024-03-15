@@ -47,12 +47,12 @@ public class LabelImageUtils
 	 * The method runs twice through each image (i.e. each frame). Once to determine maximum/minimum values for array initialization, and once to do summation for covariance and mean.
 	 * @param frameProvider a function that provides the image data for each frame.
 	 * @param model the model to add the spots to.
-	 * @param sigma the standard deviation of the Gaussian distribution to use for the covariance matrix.
+	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @param sequenceDescription the sequence description of the image data. Contains the voxel dimensions and the time points.
 	 * @param statusService the status service to report progress to.
 	 */
 	static void createSpotsFromLabelImage( final IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider,
-			final Model model, final double sigma, final AbstractSequenceDescription< ?, ?, ? > sequenceDescription,
+			final Model model, final double scaleFactor, final AbstractSequenceDescription< ?, ?, ? > sequenceDescription,
 			final StatusService statusService )
 	{
 		final ModelGraph graph = model.getGraph();
@@ -70,7 +70,7 @@ public class LabelImageUtils
 				TimePoint frame = frames.get( i );
 				int frameId = frame.getId();
 				final RandomAccessibleInterval< RealType< ? > > rai = frameProvider.apply( frameId );
-				count += createSpotsForFrame( graph, rai, frameId, voxelDimensions, sigma );
+				count += createSpotsForFrame( graph, rai, frameId, voxelDimensions, scaleFactor );
 				if ( statusService != null )
 					statusService.showProgress( i + 1, numTimepoints );
 			}
@@ -90,11 +90,11 @@ public class LabelImageUtils
 	 * @param frame the image data to read and process.
 	 * @param frameId the frame id the spots should belong to.
 	 * @param voxelDimensions the dimensions of the voxels in the image.
-	 * @param sigma the standard deviation of the Gaussian distribution to use for the covariance matrix.
+	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @return the number of spots created.
 	 */
 	private static int createSpotsForFrame( final ModelGraph graph, final RandomAccessibleInterval< RealType< ? > > frame,
-			final int frameId, final VoxelDimensions voxelDimensions, final double sigma )
+			final int frameId, final VoxelDimensions voxelDimensions, final double scaleFactor )
 	{
 		logger.debug( "Computing mean, covariance of all labels at frame {}", frameId );
 		logger.debug( "Dimensions of frame: {}, {}, {}", frame.dimension( 0 ), frame.dimension( 1 ), frame.dimension( 2 ) );
@@ -115,7 +115,7 @@ public class LabelImageUtils
 
 		logger.debug( "Found {} label(s) in frame {}. Range: [{}, {}]", numLabels, frameId, minimumLabel, maximumLabel );
 		Label[] labels = extractLabelsFromFrame( frame, minimumLabel, numLabels );
-		return createSpotsFromFrameLabels( graph, frameId, labels, voxelDimensions, sigma );
+		return createSpotsFromFrameLabels( graph, frameId, labels, voxelDimensions, scaleFactor );
 	}
 
 	/**
@@ -149,11 +149,11 @@ public class LabelImageUtils
 	 * @param frameId the frame id the spots should belong to.
 	 * @param labels the labels in the frame.
 	 * @param voxelDimensions the dimensions of the voxels in the image.
-	 * @param sigma the standard deviation of the Gaussian distribution to use for the covariance matrix.
+	 * @param scaleFactor the size factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @return the number of spots created.
 	 */
 	private static int createSpotsFromFrameLabels( final ModelGraph graph, final int frameId, final Label[] labels,
-			final VoxelDimensions voxelDimensions, final double sigma )
+			final VoxelDimensions voxelDimensions, final double scaleFactor )
 	{
 		int count = 0;
 		// combine the sums into mean and covariance matrices, then add the corresponding spot
@@ -165,7 +165,7 @@ public class LabelImageUtils
 			double[] mean = label.means.get();
 			double[][] cov = label.covariances.get();
 			scale( mean, voxelDimensions );
-			scale( cov, sigma, voxelDimensions );
+			scale( cov, scaleFactor, voxelDimensions );
 			try
 			{
 				Spot spot = graph.addVertex().init( frameId, mean, cov );
@@ -269,10 +269,10 @@ public class LabelImageUtils
 	 * Imports spots from the given ImageJ image into the given project model.
 	 * @param projectModel the project model to add the spots to.
 	 * @param imgPlus the image to import the spots from.
-	 * @param sigma the standard deviation of the Gaussian distribution to use for the covariance matrix.
+	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @throws IllegalArgumentException if the dimensions of the given image do not match the dimensions of the big data viewer image contained in the project model.
 	 */
-	public static void importSpotsFromImgPlus( final ProjectModel projectModel, final ImgPlus< ? > imgPlus, final double sigma )
+	public static void importSpotsFromImgPlus( final ProjectModel projectModel, final ImgPlus< ? > imgPlus, final double scaleFactor )
 	{
 		logger.debug( "ImageJ image: {}", imgPlus.getName() );
 		final SharedBigDataViewerData sharedBdvData = projectModel.getSharedBdvData();
@@ -281,7 +281,8 @@ public class LabelImageUtils
 					+ " do not match the dimensions of the big data viewer image." );
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
 				frameId -> Cast.unchecked( Views.hyperSlice( imgPlus.getImg(), 3, frameId ) );
-		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), sigma, sharedBdvData.getSpimData().getSequenceDescription(),
+		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), scaleFactor,
+				sharedBdvData.getSpimData().getSequenceDescription(),
 				projectModel.getContext().getService( StatusService.class ) );
 	}
 
@@ -289,14 +290,14 @@ public class LabelImageUtils
 	 * Imports spots from the given big data viewer channel into the given project model.
 	 * @param projectModel the project model to add the spots to.
 	 * @param source the source to import the spots from.
-	 * @param sigma the standard deviation of the Gaussian distribution to use for the covariance matrix.
+	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @throws IllegalArgumentException if the label channel index is out of bounds, i.e. if it is greater than the number of channels in the big data viewer source contained in the project model.
 	 */
-	public static void importSpotsFromBdvChannel( final ProjectModel projectModel, final Source< ? > source, final double sigma )
+	public static void importSpotsFromBdvChannel( final ProjectModel projectModel, final Source< ? > source, final double scaleFactor )
 	{
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
 				frameId -> Cast.unchecked( source.getSource( frameId, 0 ) );
-		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), sigma,
+		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), scaleFactor,
 				projectModel.getSharedBdvData().getSpimData().getSequenceDescription(),
 				projectModel.getContext().getService( StatusService.class ) );
 	}
@@ -304,11 +305,11 @@ public class LabelImageUtils
 	/**
 	 * Scales the covariance matrix the given sigma and the voxel dimensions.
 	 * @param covariance the covariance matrix to scale.
-	 * @param sigma the standard deviation of the Gaussian distribution to use for the covariance matrix.
+	 * @param scaleFactor the factor to scale the covariance matrix with.
 	 * @param voxelDimensions the dimensions of the voxels in the image.
 	 * @throws IllegalArgumentException if the covariance matrix has not the same dimensions as the given voxelDimensions.
 	 */
-	public static void scale( final double[][] covariance, final double sigma, final VoxelDimensions voxelDimensions )
+	public static void scale( final double[][] covariance, final double scaleFactor, final VoxelDimensions voxelDimensions )
 	{
 		if ( covariance.length != voxelDimensions.numDimensions() )
 			throw new IllegalArgumentException( "Covariance matrix has wrong dimension." );
@@ -318,7 +319,7 @@ public class LabelImageUtils
 				throw new IllegalArgumentException( "Covariance matrix has wrong dimension." );
 			for ( int j = i; j < covariance.length; j++ )
 			{
-				covariance[ i ][ j ] *= Math.pow( sigma, 2 ) * voxelDimensions.dimension( i ) * voxelDimensions.dimension( j );
+				covariance[ i ][ j ] *= Math.pow( scaleFactor, 2 ) * 5 * voxelDimensions.dimension( i ) * voxelDimensions.dimension( j );
 				// the covariance matrix is symmetric!
 				if ( i != j )
 					covariance[ j ][ i ] = covariance[ i ][ j ];

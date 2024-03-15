@@ -22,10 +22,10 @@ public class ImportSpotsFromBdvChannelView extends DynamicCommand
 	@Parameter( visibility = ItemVisibility.MESSAGE, required = false, persist = false )
 	private String documentation = "<html>\n"
 			+ "<body width=" + WIDTH + "cm align=left>\n"
-			+ "<h1>Import spots from BDV channel</h1>\n"
-			+ "<p>This command can import spots from image data contained in a channel of the Big Data Viewer. The image data in that channel is assumed to represent a segmentation (i.e. a label image) that has been processed outside Mastodon. The existing labels in that channel will be used as spot names.</p>\n"
-			+ "<p>The index of the BDV channel that contains the labels has to be chosen. Counting starts at 0. </p>\n"
-			+ "<p>The value σ can be chosen. This value determines where Mastodon will draw the resulting ellipsoid. Default is 2.1σ.</p>\n"
+			+ "<h1>Import spots from instance segmentation in BDV channel</h1>\n"
+			+ "<p>This command can import spots from label image data contained in a channel of the Big Data Viewer. The image data in that channel is assumed to represent an instance segmentation (i.e. a label image) that has been processed outside Mastodon. The existing labels in that channel will be used as spot names.</p>\n"
+			+ "<p>The BDV channel that contains the labels has to be chosen.</p>\n"
+			+ "<p>The ellipsoid scaling factor can be used to increase (>1) or decrease (&lt;1) the size of the resulting ellipsoid. 1 is equivalent of ellipsoids drawn at 2.2σ.</p>\n"
 			+ "</body>\n"
 			+ "</html>\n";
 
@@ -37,8 +37,8 @@ public class ImportSpotsFromBdvChannelView extends DynamicCommand
 	public String imgSourceChoice = "";
 
 	@SuppressWarnings( "all" )
-	@Parameter( label = "Sigma", min = "0", description = "Deviations from center to draw the ellipsoid border" )
-	private double sigma = 2.1;
+	@Parameter( label = "Ellipsoid scaling factor", min = "0", description = "Changes the size of the resulting ellipsoid in all dimensions. 1 means that the ellipsoid is drawn at 2.2σ, which is the default." )
+	private double scaleFactor = 1;
 
 	@SuppressWarnings( "unused" )
 	private void initImgSourceChoices()
@@ -57,6 +57,6 @@ public class ImportSpotsFromBdvChannelView extends DynamicCommand
 				.filter( source -> source.getSpimSource().getName().equals( imgSourceChoice ) ).findFirst();
 		if ( !sourceAndConverter.isPresent() )
 			return;
-		LabelImageUtils.importSpotsFromBdvChannel( projectModel, sourceAndConverter.get().getSpimSource(), sigma );
+		LabelImageUtils.importSpotsFromBdvChannel( projectModel, sourceAndConverter.get().getSpimSource(), scaleFactor );
 	}
 }

@@ -154,10 +154,10 @@ public class LabelImageUtilsTest
 			assertEquals( 2, spot.getDoublePosition( 2 ), 0.01 );
 			assertEquals( 0, spot.getInternalPoolIndex() );
 			assertEquals( String.valueOf( pixelValue ), spot.getLabel() );
-			assertEquals( 1, axisA, 0.1d );
-			assertEquals( 1, axisB, 0.1d );
-			assertEquals( 1, axisC, 0.1d );
-			assertEquals( 1, spot.getBoundingSphereRadiusSquared(), 0.2d );
+			assertEquals( 2.2, axisA, 0.2d );
+			assertEquals( 2.2, axisB, 0.2d );
+			assertEquals( 2.2, axisC, 0.2d );
+			assertEquals( 5d, spot.getBoundingSphereRadiusSquared(), 1d );
 			assertFalse( iter.hasNext() );
 		}
 	}
@@ -179,7 +179,7 @@ public class LabelImageUtilsTest
 			Img< FloatType > image = createImageFromSpot( spot, pixelValue );
 			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
-			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 2.1 );
+			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1 );
 
 			Iterator< Spot > iterator = model.getGraph().vertices().iterator();
 			iterator.next();
@@ -194,9 +194,9 @@ public class LabelImageUtilsTest
 			logger.debug( "Computed covariance: {}", Arrays.deepToString( computedCovariance ) );
 
 			assertArrayEquals( center, mean, 0.01d );
-			assertArrayEquals( givenCovariance[ 0 ], computedCovariance[ 0 ], 5d );
-			assertArrayEquals( givenCovariance[ 1 ], computedCovariance[ 1 ], 5d );
-			assertArrayEquals( givenCovariance[ 2 ], computedCovariance[ 2 ], 5d );
+			assertArrayEquals( givenCovariance[ 0 ], computedCovariance[ 0 ], 10d );
+			assertArrayEquals( givenCovariance[ 1 ], computedCovariance[ 1 ], 10d );
+			assertArrayEquals( givenCovariance[ 2 ], computedCovariance[ 2 ], 10d );
 			assertEquals( String.valueOf( pixelValue ), createdSpot.getLabel() );
 		}
 	}
