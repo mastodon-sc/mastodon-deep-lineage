@@ -56,7 +56,7 @@ public class ImportSpotsFromLabelImagePlugin implements MamutPlugin
 	{
 		return Collections.singletonList(
 				menu( "Plugins", menu( "Imports",
-						menu( "Import spots from image data", item( IMPORT_SPOTS_FROM_IMAGEJ ),
+						menu( "Import spots from label image", item( IMPORT_SPOTS_FROM_IMAGEJ ),
 								item( IMPORT_SPOTS_FROM_BDV_CHANNEL ) ) ) ) );
 	}
 
