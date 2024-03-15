@@ -3,6 +3,7 @@ package org.mastodon.mamut.io.importer.labelimage.ui;
 import java.util.Arrays;
 import java.util.List;
 
+import ij.ImagePlus;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -30,9 +31,13 @@ public class ImportSpotsFromImgPlusViewDemo
 
 		Img< FloatType > image = generateExampleImage();
 
-		// show image in ImageJ
+		// show ImageJ
 		ui.showUI();
-		ImageJFunctions.wrap( image, "label image" ).show(); 
+		// show image in ImageJ
+		ImagePlus imagePlus = ImageJFunctions.wrap( image, "label image" );
+		imagePlus.setDimensions( 1, 100, 2 );
+		imagePlus.setZ( 50 );
+		imagePlus.show();
 		// open the image in Mastodon
 		Model model = new Model();
 		ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
@@ -44,7 +49,7 @@ public class ImportSpotsFromImgPlusViewDemo
 
 	private static Img< FloatType > generateExampleImage()
 	{
-		double[] center = { 40, 50, 60 };
+		double[] center = { 40, 80, 50 };
 		double[][] givenCovariance = {
 				{ 400, 20, -10 },
 				{ 20, 200, 30 },
