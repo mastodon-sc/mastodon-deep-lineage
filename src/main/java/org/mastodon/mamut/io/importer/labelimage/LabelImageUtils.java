@@ -64,13 +64,14 @@ public class LabelImageUtils
 		try
 		{
 			int numTimepoints = frames.size();
-			for ( TimePoint frame : frames )
+			for ( int i = 0; i < numTimepoints; i++ )
 			{
+				TimePoint frame = frames.get( i );
 				int frameId = frame.getId();
 				final RandomAccessibleInterval< RealType< ? > > rai = frameProvider.apply( frameId );
 				count += createSpotsForFrame( graph, rai, frameId, voxelDimensions, sigma );
 				if ( statusService != null )
-					statusService.showProgress( frameId + 1, numTimepoints );
+					statusService.showProgress( i + 1, numTimepoints );
 			}
 			model.setUndoPoint();
 		}
