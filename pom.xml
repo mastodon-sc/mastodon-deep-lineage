@@ -19,7 +19,7 @@
         <license.organizationName>Mastodon authors</license.organizationName>
         <license.copyrightOwners>Stefan Hahmann</license.copyrightOwners>
 
-        <mastodon.version>1.0.0-beta-29</mastodon.version>
+        <mastodon.version>1.0.0-beta-30-SNAPSHOT</mastodon.version>
         <mastodon.group>org.mastodon</mastodon.group>
         <!-- with pom-scijava >= 37.1.0, this can be removed again -->
         <scijava-common.version>2.97.1</scijava-common.version>
@@ -143,13 +143,6 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>imagej-legacy</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- used for tests of covariance -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-math3</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -12,14 +12,12 @@ public class CovarianceTest
 	{
 		double[] x = { 1, 2, 3, 4, 5 };
 		double[] y = { 2, 3, 4, 5, 6 };
-		org.apache.commons.math3.stat.correlation.Covariance covarianceApache = new org.apache.commons.math3.stat.correlation.Covariance();
-		double expected = covarianceApache.covariance( x, y );
 		org.mastodon.mamut.io.importer.labelimage.math.Covariance covariance =
 				new org.mastodon.mamut.io.importer.labelimage.math.Covariance();
 		for ( int i = 0; i < x.length; i++ )
 			covariance.addValues( x[ i ], y[ i ] );
 		double actual = covariance.get();
-		assertEquals( expected, actual, 0.0001d );
+		assertEquals( 2.5d, actual, 0.0001d );
 	}
 
 	@Test
