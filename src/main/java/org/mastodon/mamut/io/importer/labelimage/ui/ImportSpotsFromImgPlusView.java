@@ -64,7 +64,7 @@ public class ImportSpotsFromImgPlusView< T > extends ContextCommand
 	{
 		if ( isCanceled() )
 			return;
-		LabelImageUtils.importSpotsFromImgPlus( imgPlus, sigma, projectModel );
+		LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, sigma );
 	}
 
 	@SuppressWarnings( "unused" )

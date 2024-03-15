@@ -19,7 +19,6 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
-import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -266,27 +265,26 @@ public class LabelImageUtils
 
 	/**
 	 * Imports spots from the given ImageJ image into the given project model.
+	 * @param projectModel the project model to add the spots to.
 	 * @param imgPlus the image to import the spots from.
 	 * @param sigma the standard deviation of the Gaussian distribution to use for the covariance matrix.
-	 * @param projectModel the project model to add the spots to.
 	 * @throws IllegalArgumentException if the dimensions of the given image do not match the dimensions of the big data viewer image contained in the project model.
 	 */
-	public static void importSpotsFromImgPlus( final ImgPlus< ? > imgPlus, final double sigma, final ProjectModel projectModel )
+	public static void importSpotsFromImgPlus( final ProjectModel projectModel, final ImgPlus< ? > imgPlus, final double sigma )
 	{
 		logger.debug( "ImageJ image: {}", imgPlus.getName() );
 		final SharedBigDataViewerData sharedBdvData = projectModel.getSharedBdvData();
 		if ( !dimensionsMatch( sharedBdvData, imgPlus ) )
 			throw new IllegalArgumentException( "The dimensions of the ImageJ image " + imgPlus.getName()
 					+ " do not match the dimensions of the big data viewer image." );
-		final Context context = projectModel.getContext();
 		final AbstractSequenceDescription< ?, ?, ? > sequenceDescription = sharedBdvData.getSpimData().getSequenceDescription();
 		final List< TimePoint > frames = sequenceDescription.getTimePoints().getTimePointsOrdered();
 		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
 		final VoxelDimensions voxelDimensions = sequenceDescription.getViewSetups().get( 0 ).getVoxelSize();
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
 				frameId -> Cast.unchecked( Views.hyperSlice( imgPlus.getImg(), 3, frameId ) );
-		LabelImageUtils.createSpotsFromLabelImage( frameProvider, frames, projectModel.getModel(), voxelDimensions, sigma,
-				context.getService( StatusService.class ) );
+		createSpotsFromLabelImage( frameProvider, frames, projectModel.getModel(), voxelDimensions, sigma,
+				projectModel.getContext().getService( StatusService.class ) );
 	}
 
 	/**
@@ -303,9 +301,9 @@ public class LabelImageUtils
 		final List< TimePoint > frames = sequenceDescription.getTimePoints().getTimePointsOrdered();
 		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
 		final VoxelDimensions voxelDimensions = sequenceDescription.getViewSetups().get( 0 ).getVoxelSize();
-		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider =
+		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
 				frameId -> Cast.unchecked( source.getSource( frameId, 0 ) );
-		LabelImageUtils.createSpotsFromLabelImage( imgProvider, frames, projectModel.getModel(), voxelDimensions, sigma,
+		createSpotsFromLabelImage( frameProvider, frames, projectModel.getModel(), voxelDimensions, sigma,
 				projectModel.getContext().getService( StatusService.class ) );
 	}
 

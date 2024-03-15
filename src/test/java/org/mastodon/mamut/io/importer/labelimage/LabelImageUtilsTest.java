@@ -164,7 +164,7 @@ public class LabelImageUtilsTest
 			Img< FloatType > image = createImageFromSpot( spot, pixelValue );
 			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
-			LabelImageUtils.importSpotsFromImgPlus( imgPlus, 2.1, projectModel );
+			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 2.1 );
 
 			Iterator< Spot > iterator = model.getGraph().vertices().iterator();
 			iterator.next();
