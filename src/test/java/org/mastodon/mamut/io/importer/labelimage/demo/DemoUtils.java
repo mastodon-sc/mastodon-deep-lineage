@@ -35,6 +35,7 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImgToVirtualStack;
 import net.imglib2.loops.LoopBuilder;
@@ -42,6 +43,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import net.imglib2.view.Views;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
 import org.mastodon.mamut.io.importer.labelimage.math.CovarianceMatrix;
@@ -52,6 +54,8 @@ import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class DemoUtils
@@ -101,6 +105,25 @@ public class DemoUtils
 				pixel.set( background );
 		} );
 		return image;
+	}
+
+	/**
+	 * Returns an example image with a single ellipsoid and black background.
+	 */
+	public static Img< FloatType > generateExampleImage()
+	{
+		double[] center = { 40, 80, 50 };
+		double[][] givenCovariance = {
+				{ 400, 20, -10 },
+				{ 20, 200, 30 },
+				{ -10, 30, 100 }
+		};
+		long[] dimensions = { 100, 100, 100 };
+		int background = 0;
+		int pixelValue = 1;
+		Img< FloatType > frame = generateExampleImage( center, givenCovariance, dimensions, background, pixelValue );
+		List< Img< FloatType > > twoIdenticalFrames = Arrays.asList( frame, frame );
+		return ImgView.wrap( Views.stack( twoIdenticalFrames ) );
 	}
 
 	/**

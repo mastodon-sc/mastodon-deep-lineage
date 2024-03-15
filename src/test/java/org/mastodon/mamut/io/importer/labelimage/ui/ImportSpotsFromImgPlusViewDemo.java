@@ -29,7 +29,7 @@ public class ImportSpotsFromImgPlusViewDemo
 		UIService ui = context.service( UIService.class );
 		CommandService cmd = context.service( CommandService.class );
 
-		Img< FloatType > image = generateExampleImage();
+		Img< FloatType > image = DemoUtils.generateExampleImage();
 
 		// show ImageJ
 		ui.showUI();
@@ -45,21 +45,5 @@ public class ImportSpotsFromImgPlusViewDemo
 		projectModel.getWindowManager().createView( MamutViewBdv.class );
 		// run import spots command
 		cmd.run( ImportSpotsFromImgPlusView.class, true, "projectModel", projectModel );
-	}
-
-	private static Img< FloatType > generateExampleImage()
-	{
-		double[] center = { 40, 80, 50 };
-		double[][] givenCovariance = {
-				{ 400, 20, -10 },
-				{ 20, 200, 30 },
-				{ -10, 30, 100 }
-		};
-		long[] dimensions = { 100, 100, 100 };
-		int background = 0;
-		int pixelValue = 1;
-		Img< FloatType > frame = DemoUtils.generateExampleImage( center, givenCovariance, dimensions, background, pixelValue );
-		List< Img< FloatType > > twoIdenticalFrames = Arrays.asList( frame, frame );
-		return ImgView.wrap( Views.stack( twoIdenticalFrames ) );
 	}
 }
