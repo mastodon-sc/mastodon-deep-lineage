@@ -300,14 +300,18 @@ public class LineageTreeUtils {
 	 * Spot(label=0,X=1,Y=2,tp=1)        Spot(label=1,X=0,Y=0,tp=1 )       Spot(label=2,X=2,Y=0,tp=1 )
 	 *
 	 * Spot(label=0,X=1,Y=3,tp=2 )       Spot(label=1,X=0,Y=-1,tp=2 )      Spot(label=3,X=2,Y=-1,tp=2 )
+	 *
+	 * Spot(label=0,X=1,Y=4,tp=3 )       Spot(label=0,X=0,Y=-2,tp=3 )
 	 * </pre>
 	 * This method will add edges between the following spots:
 	 * <pre>
 	 * Spot(label=0,X=1,Y=1,tp=0)        Spot(label=1,X=0,Y=1,tp=0 )       Spot(label=2,X=2,Y=1,tp=0 )
-	 *              │                                │                               │
+	 *              │                                 │                                 │
 	 * Spot(label=0,X=1,Y=2,tp=1)        Spot(label=1,X=0,Y=0,tp=1 )       Spot(label=2,X=2,Y=0,tp=1 )
-	 *              │                                │
+	 *              │                                 │
 	 * Spot(label=0,X=1,Y=3,tp=2 )       Spot(label=1,X=0,Y=-1,tp=2 )      Spot(label=3,X=2,Y=-1,tp=2 )
+	 *       ┌──────┴────────────────────────────┐
+	 * Spot(label=0,X=1,Y=4,tp=3 )  Spot(label=0,X=0,Y=-2,tp=3 )
 	 * </pre>
 	 * @param model the model to link spots in.
 	 */
