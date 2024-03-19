@@ -1,14 +1,9 @@
 package org.mastodon.mamut.io.importer.labelimage.ui;
 
-import java.util.Arrays;
-import java.util.List;
-
 import ij.ImagePlus;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgView;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.Views;
 
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.ProjectModel;
