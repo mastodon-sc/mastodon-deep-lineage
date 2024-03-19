@@ -17,6 +17,8 @@
 * [Lineage Tree Classification](#lineage-tree-classification)
   * [Parameters](#parameters)
   * [Example](#example)
+* [Imports](#imports)
+  * [Import Spots from Label Image](#import-spots-from-label-image)
 * [Exports](#exports)
   * [Label Image Exporter](#label-image-exporter)
   * [GraphML Exporter](#graphml-exporter)
