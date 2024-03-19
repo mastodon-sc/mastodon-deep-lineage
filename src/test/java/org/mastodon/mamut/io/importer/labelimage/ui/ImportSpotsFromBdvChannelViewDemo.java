@@ -4,7 +4,7 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.importer.labelimage.demo.DemoUtils;
+import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.views.bdv.MamutViewBdv;
 import org.scijava.Context;

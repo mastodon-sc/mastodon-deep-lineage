@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.io.importer.labelimage.demo;
+package org.mastodon.mamut.io.importer.labelimage.util;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.loops.LoopBuilder;

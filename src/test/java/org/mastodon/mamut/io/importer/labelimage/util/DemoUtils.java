@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.io.importer.labelimage.demo;
+package org.mastodon.mamut.io.importer.labelimage.util;
 
 import ij.ImagePlus;
 import mpicbg.spim.data.sequence.DefaultVoxelDimensions;

@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.feature.EllipsoidIterable;
-import org.mastodon.mamut.io.importer.labelimage.demo.DemoUtils;
+import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
