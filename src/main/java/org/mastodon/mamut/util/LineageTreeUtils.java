@@ -48,9 +48,13 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.util.TreeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandles;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -58,6 +62,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class LineageTreeUtils {
+
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private LineageTreeUtils()
 	{
@@ -282,5 +288,42 @@ public class LineageTreeUtils {
 			outgoingEdges.forEach( children::add );
 		}
 		return children;
+	}
+
+	/**
+	 * This method adds edges to the graph of the model between spots that have the same label and are in consecutive time points.
+	 * <br><br>
+	 * E.g. assume this set of spots:
+	 * <pre>
+	 * Spot(label=0,X=1,Y=1,tp=0)        Spot(label=1,X=0,Y=1,tp=0 )       Spot(label=2,X=2,Y=1,tp=0 )
+	 *
+	 * Spot(label=0,X=1,Y=2,tp=1)        Spot(label=1,X=0,Y=0,tp=1 )       Spot(label=2,X=2,Y=0,tp=1 )
+	 *
+	 * Spot(label=0,X=1,Y=3,tp=2 )       Spot(label=1,X=0,Y=-1,tp=2 )      Spot(label=3,X=2,Y=-1,tp=2 )
+	 * </pre>
+	 * This method will add edges between the following spots:
+	 * <pre>
+	 * Spot(label=0,X=1,Y=1,tp=0)        Spot(label=1,X=0,Y=1,tp=0 )       Spot(label=2,X=2,Y=1,tp=0 )
+	 *              │                                │                               │
+	 * Spot(label=0,X=1,Y=2,tp=1)        Spot(label=1,X=0,Y=0,tp=1 )       Spot(label=2,X=2,Y=0,tp=1 )
+	 *              │                                │
+	 * Spot(label=0,X=1,Y=3,tp=2 )       Spot(label=1,X=0,Y=-1,tp=2 )      Spot(label=3,X=2,Y=-1,tp=2 )
+	 * </pre>
+	 * @param model the model to link spots in.
+	 */
+	public static void linkSpotsWithSameLabel( final Model model )
+	{
+		Link edgeRef = model.getGraph().edgeRef();
+		for ( int timepoint = TreeUtils.getMinTimepoint( model ); timepoint < TreeUtils.getMaxTimepoint( model ); timepoint++ )
+		{
+			SpatialIndex< Spot > currentTimepoint = model.getSpatioTemporalIndex().getSpatialIndex( timepoint );
+			SpatialIndex< Spot > nextTimepoint = model.getSpatioTemporalIndex().getSpatialIndex( timepoint + 1 );
+			currentTimepoint.forEach( spotA -> nextTimepoint.forEach( spotB -> {
+				if ( spotA.getLabel().equals( spotB.getLabel() ) )
+					model.getGraph().addEdge( spotA, spotB, edgeRef ).init();
+			} ) );
+		}
+		model.getGraph().releaseRef( edgeRef );
+		logger.debug( "Added {} edges to the graph.", model.getGraph().edges().size() );
 	}
 }
