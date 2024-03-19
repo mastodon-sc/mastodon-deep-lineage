@@ -39,6 +39,10 @@ public class ImportSpotsFromBdvChannelView extends DynamicCommand
 	@Parameter( label = "Ellipsoid scaling factor", min = "0", description = "Changes the size of the resulting ellipsoid in all dimensions. 1 means that the ellipsoid is drawn at 2.2σ, which is the default." )
 	private double scaleFactor = 1;
 
+	@SuppressWarnings( "all" )
+	@Parameter( label = "Link spots having the same labels in consecutive frames", description = "This option assumes that labels from the input images are unique for one tracklet." )
+	boolean linkSpotsWithSameLabels = false;
+
 	@SuppressWarnings( "unused" )
 	private void initImgSourceChoices()
 	{
@@ -53,6 +57,7 @@ public class ImportSpotsFromBdvChannelView extends DynamicCommand
 				.filter( source -> source.getSpimSource().getName().equals( imgSourceChoice ) ).findFirst();
 		if ( !sourceAndConverter.isPresent() )
 			return;
-		LabelImageUtils.importSpotsFromBdvChannel( projectModel, sourceAndConverter.get().getSpimSource(), scaleFactor );
+		LabelImageUtils.importSpotsFromBdvChannel( projectModel, sourceAndConverter.get().getSpimSource(), scaleFactor,
+				linkSpotsWithSameLabels );
 	}
 }

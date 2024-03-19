@@ -89,7 +89,7 @@ public class LabelImageUtilsTest
 						"Segmentation" );
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
-		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, sequenceDescription, null );
+		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
 		assertEquals( 0, model.getGraph().vertices().size() );
 	}
 
@@ -99,7 +99,7 @@ public class LabelImageUtilsTest
 		AbstractSource< FloatType > img = createNonLabelImage();
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
-		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, sequenceDescription, null );
+		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
 		assertEquals( 0, model.getGraph().vertices().size() );
 	}
 
@@ -118,7 +118,7 @@ public class LabelImageUtilsTest
 		AbstractSequenceDescription< ?, ?, ? > faultySequenceDescription = new SequenceDescriptionMinimal( timePoints, setups, null, null );
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
 		assertThrows( IllegalArgumentException.class,
-				() -> LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, faultySequenceDescription, null ) );
+				() -> LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, faultySequenceDescription, null ) );
 
 	}
 
@@ -132,7 +132,7 @@ public class LabelImageUtilsTest
 			Img< FloatType > img = createImageCubeCorners( pixelValue );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
 			LabelImageUtils.importSpotsFromBdvChannel( projectModel, projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource(),
-					1 );
+					1, false );
 
 			Iterator< Spot > iter = model.getGraph().vertices().iterator();
 			Spot spot = iter.next();
@@ -177,7 +177,7 @@ public class LabelImageUtilsTest
 			Img< FloatType > image = createImageFromSpot( spot, pixelValue );
 			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
-			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1 );
+			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1, false );
 
 			Iterator< Spot > iterator = model.getGraph().vertices().iterator();
 			iterator.next();
@@ -196,6 +196,24 @@ public class LabelImageUtilsTest
 			assertArrayEquals( givenCovariance[ 1 ], computedCovariance[ 1 ], 10d );
 			assertArrayEquals( givenCovariance[ 2 ], computedCovariance[ 2 ], 10d );
 			assertEquals( String.valueOf( pixelValue ), createdSpot.getLabel() );
+		}
+	}
+
+	@Test
+	public void testImportSpotsFromImgPlusAndLinkSameLabels()
+	{
+		LegacyInjector.preinit();
+		try (Context context = new Context())
+		{
+			Img< FloatType > twoFramesImage = DemoUtils.generateExampleImage();
+			ImgPlus< FloatType > imgPlus = createImgPlus( twoFramesImage, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( twoFramesImage, model, context );
+			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1, true );
+
+			assertEquals( 2, model.getGraph().vertices().size() );
+			assertEquals( 1, model.getGraph().edges().size() );
+			assertEquals( 1, model.getSpatioTemporalIndex().getSpatialIndex( 0 ).size() );
+			assertEquals( 1, model.getSpatioTemporalIndex().getSpatialIndex( 1 ).size() );
 		}
 	}
 

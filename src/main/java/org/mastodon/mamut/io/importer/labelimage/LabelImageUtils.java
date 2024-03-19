@@ -19,6 +19,7 @@ import org.mastodon.mamut.io.importer.labelimage.math.MeansVector;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.app.StatusService;
 import org.slf4j.Logger;
@@ -50,11 +51,13 @@ public class LabelImageUtils
 	 * @param frameProvider a function that provides the image data for each frame.
 	 * @param model the model to add the spots to.
 	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
+	 * @param linkSpotsWithSameLabels whether to link spots with the same labels.
 	 * @param sequenceDescription the sequence description of the image data. Contains the voxel dimensions and the time points.
 	 * @param statusService the status service to report progress to.
 	 */
 	static void createSpotsFromLabelImage( final IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider,
-			final Model model, final double scaleFactor, final AbstractSequenceDescription< ?, ?, ? > sequenceDescription,
+			final Model model, final double scaleFactor, final boolean linkSpotsWithSameLabels,
+			final AbstractSequenceDescription< ?, ?, ? > sequenceDescription,
 			final StatusService statusService )
 	{
 		final ModelGraph graph = model.getGraph();
@@ -76,6 +79,8 @@ public class LabelImageUtils
 				if ( statusService != null )
 					statusService.showProgress( i + 1, numTimepoints );
 			}
+			if ( linkSpotsWithSameLabels )
+				LineageTreeUtils.linkSpotsWithSameLabel( model );
 			model.setUndoPoint();
 		}
 		finally
@@ -272,9 +277,11 @@ public class LabelImageUtils
 	 * @param projectModel the project model to add the spots to.
 	 * @param imgPlus the image to import the spots from.
 	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
+	 * @param linkSpotsWithSameLabels whether to link spots with the same labels.
 	 * @throws IllegalArgumentException if the dimensions of the given image do not match the dimensions of the big data viewer image contained in the project model.
 	 */
-	public static void importSpotsFromImgPlus( final ProjectModel projectModel, final ImgPlus< ? > imgPlus, final double scaleFactor )
+	public static void importSpotsFromImgPlus( final ProjectModel projectModel, final ImgPlus< ? > imgPlus, final double scaleFactor,
+			final boolean linkSpotsWithSameLabels )
 	{
 		logger.debug( "ImageJ image: {}", imgPlus.getName() );
 		final SharedBigDataViewerData sharedBdvData = projectModel.getSharedBdvData();
@@ -283,7 +290,7 @@ public class LabelImageUtils
 					+ " do not match the dimensions of the big data viewer image." );
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
 				frameId -> Cast.unchecked( Views.hyperSlice( imgPlus.getImg(), 3, frameId ) );
-		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), scaleFactor,
+		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), scaleFactor, linkSpotsWithSameLabels,
 				sharedBdvData.getSpimData().getSequenceDescription(),
 				projectModel.getContext().getService( StatusService.class ) );
 	}
@@ -293,13 +300,15 @@ public class LabelImageUtils
 	 * @param projectModel the project model to add the spots to.
 	 * @param source the source to import the spots from.
 	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
+	 * @param linkSpotsWithSameLabels whether to link spots with the same labels.
 	 * @throws IllegalArgumentException if the label channel index is out of bounds, i.e. if it is greater than the number of channels in the big data viewer source contained in the project model.
 	 */
-	public static void importSpotsFromBdvChannel( final ProjectModel projectModel, final Source< ? > source, final double scaleFactor )
+	public static void importSpotsFromBdvChannel( final ProjectModel projectModel, final Source< ? > source, final double scaleFactor,
+			final boolean linkSpotsWithSameLabels )
 	{
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
 				frameId -> Cast.unchecked( source.getSource( frameId, 0 ) );
-		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), scaleFactor,
+		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), scaleFactor, linkSpotsWithSameLabels,
 				projectModel.getSharedBdvData().getSpimData().getSequenceDescription(),
 				projectModel.getContext().getService( StatusService.class ) );
 	}
