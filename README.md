@@ -229,6 +229,10 @@ Tree2
 * Labels are processed frame by frame.
 * Multiple blobs with the same id in the same frame are considered to belong to the same spot by this importer. It is
   advised to use a unique ids for spots in the same frame.
+* The resulting spots are ellipsoids with the semi axes computed from the variance covariance matrix of this pixel
+  positions of each label.
+* The resulting spots may be linked using the linker plugin in Mastodon (`Plugins > Tracking > Linking...`)
+  or [Elephant](https://elephant-track.github.io/#/?id=linking-workflow).
 
 #### Parameters
 
