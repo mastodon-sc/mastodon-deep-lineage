@@ -324,6 +324,6 @@ public class LineageTreeUtils {
 			} ) );
 		}
 		model.getGraph().releaseRef( edgeRef );
-		logger.debug( "Added {} edges to the graph.", model.getGraph().edges().size() );
+		logger.debug( "Added {} edge(s) to the graph.", model.getGraph().edges().size() );
 	}
 }

@@ -83,7 +83,7 @@ public class LabelImageUtils
 			lock.writeLock().unlock();
 		}
 		graph.notifyGraphChanged();
-		logger.info( "Created {} new spots in {} frames.", count, frames.size() );
+		logger.info( "Created {} new spot(s) in {} frame(s).", count, frames.size() );
 	}
 
 	/**
@@ -180,7 +180,7 @@ public class LabelImageUtils
 						Arrays.deepToString( cov ) );
 			}
 		}
-		logger.debug( "Added {} spots to frame {}", count, frameId );
+		logger.debug( "Added {} spot(s) to frame {}", count, frameId );
 		return count;
 	}
 
