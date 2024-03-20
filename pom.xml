@@ -19,7 +19,7 @@
         <license.organizationName>Mastodon authors</license.organizationName>
         <license.copyrightOwners>Stefan Hahmann</license.copyrightOwners>
 
-        <mastodon.version>1.0.0-beta-29</mastodon.version>
+        <mastodon.version>1.0.0-beta-30-SNAPSHOT</mastodon.version>
         <mastodon.group>org.mastodon</mastodon.group>
         <!-- with pom-scijava >= 37.1.0, this can be removed again -->
         <scijava-common.version>2.97.1</scijava-common.version>
@@ -201,15 +201,13 @@
             <id>build</id>
             <build>
                 <plugins>
-                    <!-- Configure the maven-surefire-plugin to use a larger heap size while running tests. -->
-                    <!-- This is necessary for the tests to run, since there is a memory leak in mastodon. -->
-                    <!-- Can be removed after https://github.com/mastodon-sc/mastodon/issues/225 has been resolved -->
+                    <!-- Configure the maven-surefire-plugin to use a heap size of 1gb while running tests. -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>3.1.0</version>
                         <configuration>
-                            <argLine>-Xmx4096m</argLine>
+                            <argLine>-Xmx1g</argLine>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -219,6 +217,15 @@
             <id>coverage</id>
             <build>
                 <plugins>
+                    <!-- Configure the maven-surefire-plugin to use a heap size of 1gb while running tests for jacoco coverage analysis. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <argLine>@{argLine} -Xmx1g</argLine>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>

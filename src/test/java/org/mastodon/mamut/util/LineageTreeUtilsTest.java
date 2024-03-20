@@ -34,6 +34,7 @@ import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph4;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph6;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
@@ -57,11 +58,14 @@ public class LineageTreeUtilsTest
 
 	private ExampleGraph4 graph4;
 
+	private ExampleGraph6 graph6;
+
 	@Before
 	public void setUp()
 	{
 		graph2 = new ExampleGraph2();
 		graph4 = new ExampleGraph4();
+		graph6 = new ExampleGraph6();
 	}
 
 	@Test
@@ -132,6 +136,28 @@ public class LineageTreeUtilsTest
 
 		expected = new HashSet<>( Arrays.asList( graph4.branchLink2, graph4.branchLink3 ) );
 		actual = LineageTreeUtils.getAllEdgeSuccessors( graph4.branchSpotD, graph4.getModel().getBranchGraph() );
+		assertEquals( expected, actual );
+	}
+
+	@Test
+	public void testLinkSpotsWithSameLabel()
+	{
+		assertEquals( 0, graph6.getModel().getGraph().edges().size() );
+		LineageTreeUtils.linkSpotsWithSameLabel( graph6.getModel() );
+		assertEquals( 7, graph6.getModel().getGraph().edges().size() );
+		assertSpotEquals( graph6.spot0.outgoingEdges().get( 0 ).getTarget(), graph6.spot1 );
+		assertSpotEquals( graph6.spot1.outgoingEdges().get( 0 ).getTarget(), graph6.spot2 );
+		assertSpotEquals( graph6.spot3.outgoingEdges().get( 0 ).getTarget(), graph6.spot4 );
+		assertSpotEquals( graph6.spot4.outgoingEdges().get( 0 ).getTarget(), graph6.spot5 );
+		assertSpotEquals( graph6.spot6.outgoingEdges().get( 0 ).getTarget(), graph6.spot7 );
+		assertEquals( 2, graph6.spot2.outgoingEdges().size() );
+		assertSpotEquals( graph6.spot2.outgoingEdges().get( 0 ).getTarget(), graph6.spot10 );
+		assertSpotEquals( graph6.spot2.outgoingEdges().get( 1 ).getTarget(), graph6.spot9 );
+		assertEquals( 0, graph6.spot7.outgoingEdges().size() );
+	}
+
+	private void assertSpotEquals( final Spot expected, final Spot actual )
+	{
 		assertEquals( expected, actual );
 	}
 }
