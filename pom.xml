@@ -199,6 +199,9 @@
     <profiles>
         <profile>
             <id>build</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <!-- Configure the maven-surefire-plugin to use a heap size of 1gb while running tests. -->
