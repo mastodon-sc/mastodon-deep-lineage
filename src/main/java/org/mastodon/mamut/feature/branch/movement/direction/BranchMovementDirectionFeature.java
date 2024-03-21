@@ -53,8 +53,9 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  * <p>
  * The movement direction is a normalized directional vector pointing from the start Spot position to the end Spot position of the BranchSpot.
  * <p>
- * <h1>Example</h1>
- * <h2>Model-Graph (i.e. Graph of Spots)</h2>
+ * Cf. the following example:
+ * <p>
+ * <strong>Model-Graph (i.e. Graph of Spots)</strong>
  * <pre>
  *    Spot( 0, X=0.0, Y=0.0, Z=0.0, tp=0 )
  *                      │
@@ -64,11 +65,11 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  *                      │
  *    Spot( 3, X=6.0, Y=3.0, Z=6.0, tp=3 )
  * </pre>
- * <h2>Branch-Graph (i.e. Graph of BranchSpots)</h2>
+ * <strong>Branch-Graph (i.e. Graph of BranchSpots)</strong>
  * <pre>
  *     branchSpotA
  * </pre>
- * <h2>BranchSpot Movement Direction</h2>
+ * <strong>BranchSpot Movement Direction</strong>
  * <ul>
  *     <li>{@code x = 2/3}</li>
  *     <li>{@code y = 1/3}</li>

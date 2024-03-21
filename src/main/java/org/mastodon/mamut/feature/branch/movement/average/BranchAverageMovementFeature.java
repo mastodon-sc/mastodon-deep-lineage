@@ -51,8 +51,9 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  * Assumed that the time between time points (tp) of the spots that are represented by the branch spot is constant,
  * this also represents the average movement speed of a BranchSpot.
  * <p>
- * <h1>Example</h1>
- * <h2>Model-Graph (i.e. Graph of Spots)</h2>
+ * Cf. the following example:
+ * <p>
+ * <strong>Model-Graph (i.e. Graph of Spots)</strong>
  * <pre>
  *    Spot( 0, X=0.0, Y=0.0, Z=0.0, tp=0 )
  *                      │
@@ -67,17 +68,19 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  *                      │
  *    Spot( 3, X=8.0, Y=12.0, Z=27.0, tp=*4* )
  * </pre>
- * <h2>Branch-Graph (i.e. Graph of BranchSpots)</h2>
+ * <strong>Branch-Graph (i.e. Graph of BranchSpots)</strong>
  * <pre>
  *     branchSpotA
  * </pre>
- * <h2>Spot Movements</h2>
+ * <p>
+ * <strong>Spot Movements</strong>
  * <ul>
  * <li>{@code spot 0 -> spot 1 = 5}</li>
  * <li>{@code spot 1 -> spot 2 = 13}</li>
  * <li>{@code spot 2 -> spot 3 = 17}</li>
  * </ul>
- * <h2>BranchSpot Average Movement</h2>
+ * <p>
+ * <strong>BranchSpot Average Movement</strong>
  * <ul>
  *     <li>{@code branchSpotA = (5 + 13 + 17) / *4* = 8.75}</li>
  * </ul>

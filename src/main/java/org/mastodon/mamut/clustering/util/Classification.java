@@ -112,7 +112,7 @@ public class Classification< T >
 	}
 
 	/**
-	 * Returns the median of the upper triangle values of the distance matrix that this classification represents.<p>
+	 * Returns the median of the upper triangle values of the distance matrix that this classification represents.
 	 *
 	 * @return the median of the upper triangle values of the distance matrix
 	 */
