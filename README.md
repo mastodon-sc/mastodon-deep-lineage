@@ -162,7 +162,7 @@ Tree2
   * one node has a difference of 1
   * two nodes have a difference of 24 each
   * two extra nodes are added with a weight of 10 each
-  * ![zhang_example.gif](/doc/deep_lineage/classification/zhang_example.gif)
+  * ![zhang_example.gif](/doc/deep_lineage/lineage_classification/zhang_example.gif)
 * The tree edit distances are computed between all possible combinations of lineage trees leading to a two-dimensional
   matrix. The values in this matrix are considered to reflect similarities of lineage trees. Low tree edit distances
   represent a high similarity between a discrete pair of lineage trees.
@@ -180,8 +180,8 @@ Tree2
 * Number of classes (minimum 2)
 * Minimum number of divisions
 * Similarity measures:
-  1. (default) ![normalized_zhang_distance.gif](/doc/deep_lineage/classification/normalized_zhang_distance.gif)
-  2. ![per_branch_zhang_distance.gif](/doc/deep_lineage/classification/per_branch_zhang_distance.gif)
+  1. (default) ![normalized_zhang_distance.gif](/doc/deep_lineage/lineage_classification/normalized_zhang_distance.gif)
+  2. ![per_branch_zhang_distance.gif](/doc/deep_lineage/lineage_classification/per_branch_zhang_distance.gif)
   3. Zhang Tree Edit Distance as described in ([Zhang](https://doi.org/10.1007/BF01975866)).
 * Linkage strategy for hierarchical clustering,
   cf. [linkage methods](https://en.wikipedia.org/wiki/Hierarchical_clustering#Cluster_Linkage)
