@@ -35,15 +35,11 @@
 
 ## Installation Instructions
 
-* Add the listed Mastodon update site in Fiji:
-  * Help > Update > Manage update sites
-    * Name: Mastodon
-    * ![Mastodon Update site](doc/deep_lineage/installation/Mastodon.png)
-* Add the unlisted Mastodon Deep Lineage update site in Fiji:
-  * Help > Update > Manage update sites > Add Unlisted Site
-    * Name: Mastodon-DeepLineage
-    * URL: https://sites.imagej.net/Mastodon-DeepLineage/
-    * ![Mastodon Deep Lineage update site](doc/deep_lineage/installation/Mastodon-DeepLineage.png)
+* Add the listed Mastodon update sites in Fiji:
+  * `Help > Update > Manage update sites`
+    1. `Mastodon`
+    1. `Mastodon-DeepLineage`
+       ![Mastodon Update sites](doc/deep_lineage/installation/Mastodon.png)
 
 ## Numerical Features added to Mastodon
 
