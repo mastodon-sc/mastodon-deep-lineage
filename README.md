@@ -12,7 +12,7 @@
 * [Documentation of Mastodon](#documentation-of-mastodon)
 * [Installation Instructions](#installation-instructions)
 * [Numerical Features added to Mastodon](/doc/deep_lineage/features)
-* [Lineage Tree Classification](/doc/deep_lineage/lineage_classification)
+* [Lineage Tree Classification](/doc/deep_lineage/classification)
 * [Imports](/doc/deep_lineage/import)
 * [Exports](/doc/deep_lineage/export)
 * [Maintainer](#maintainer)
