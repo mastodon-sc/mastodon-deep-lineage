@@ -1,0 +1,3 @@
+https://latex.codecogs.com/eqneditor/editor.php
+
+\text{Normalized Zhang Tree Edit Distance} = \frac{distance_{treeA,treeB}}{numBranchSpotsA + numBranchSpotsB}

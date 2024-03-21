@@ -137,8 +137,7 @@ plugin menu: ![](/doc/deep_lineage/features/relativemovement.png)
                                   TB and TC are kept as children of D)
 ```
 
-* A basic example of the tree edit
-  distance:
+* A basic example of the tree edit distance:
 
 ```
 Tree1
@@ -163,7 +162,7 @@ Tree2
   * one node has a difference of 1
   * two nodes have a difference of 24 each
   * two extra nodes are added with a weight of 10 each
-  * $\text{Zhang Tree Edit Distance}_{Tree1,Tree2} = 1 + 2 \times 24 + 2 \times 10 = 69$
+  * ![zhang_example.gif](/doc/deep_lineage/classification/zhang_example.gif)
 * The tree edit distances are computed between all possible combinations of lineage trees leading to a two-dimensional
   matrix. The values in this matrix are considered to reflect similarities of lineage trees. Low tree edit distances
   represent a high similarity between a discrete pair of lineage trees.
@@ -180,17 +179,15 @@ Tree2
 * Crop end
 * Number of classes (minimum 2)
 * Minimum number of divisions
-* Similarity measure:
-  * Normalized Zhang Tree Edit Distance (default). $\frac{distance_{treeA,treeB}}{distance_{treeA,emptyTree} +
-    distance_
-    {treeB,emptyTree}}$
-  * Per Branch Spot Zhang Tree Edit Distance. $\frac{distance_{treeA,treeB}}{numBranchSpotsA + numBranchSpotsB}$
-  * Zhang Tree Edit Distance as described in ([Zhang](https://doi.org/10.1007/BF01975866)).
+* Similarity measures:
+  1. (default) ![normalized_zhang_distance.gif](/doc/deep_lineage/classification/normalized_zhang_distance.gif)
+  2. ![per_branch_zhang_distance.gif](/doc/deep_lineage/classification/per_branch_zhang_distance.gif)
+  3. Zhang Tree Edit Distance as described in ([Zhang](https://doi.org/10.1007/BF01975866)).
 * Linkage strategy for hierarchical clustering,
   cf. [linkage methods](https://en.wikipedia.org/wiki/Hierarchical_clustering#Cluster_Linkage)
-  * Average (default)
-  * Single
-  * Complete
+  1. Average (default)
+  2. Single
+  3. Complete
 * Feature:
   * Branch duration (default and currently only selectable feature)
 * Show dendrogram of clustering
