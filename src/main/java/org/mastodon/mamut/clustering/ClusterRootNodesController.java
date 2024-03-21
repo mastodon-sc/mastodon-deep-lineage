@@ -60,6 +60,10 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Controller class that serves as bridge between the clustering algorithm and the user interface.
+ * It is responsible for setting the parameters of the clustering algorithm, running the algorithm and displaying the results.
+ */
 public class ClusterRootNodesController
 {
 
@@ -89,12 +93,20 @@ public class ClusterRootNodesController
 
 	private boolean showDendrogram = true;
 
+	/**
+	 * Create a new controller for clustering root nodes of lineage trees.
+	 * @param model the model
+	 * @param synchronizer the branch graph synchronizer
+	 */
 	public ClusterRootNodesController( final Model model, final BranchGraphSynchronizer synchronizer )
 	{
 		this.model = model;
 		this.synchronizer = synchronizer;
 	}
 
+	/**
+	 * Create a new tag set based on the current settings of the controller.
+	 */
 	public void createTagSet()
 	{
 		if ( running )

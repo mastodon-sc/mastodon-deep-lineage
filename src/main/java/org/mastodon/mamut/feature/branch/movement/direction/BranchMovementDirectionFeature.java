@@ -112,6 +112,12 @@ public class BranchMovementDirectionFeature implements Feature< BranchSpot >, Va
 		}
 	}
 
+	/**
+	 * Create a new {@link BranchMovementDirectionFeature}.
+	 * @param movementDirectionX the {@link DoublePropertyMap} that stores the x-component of the movement direction.
+	 * @param movementDirectionY the {@link DoublePropertyMap} that stores the y-component of the movement direction.
+	 * @param movementDirectionZ the {@link DoublePropertyMap} that stores the z-component of the movement direction.
+	 */
 	public BranchMovementDirectionFeature( final DoublePropertyMap< BranchSpot > movementDirectionX,
 			final DoublePropertyMap< BranchSpot > movementDirectionY, final DoublePropertyMap< BranchSpot > movementDirectionZ )
 	{

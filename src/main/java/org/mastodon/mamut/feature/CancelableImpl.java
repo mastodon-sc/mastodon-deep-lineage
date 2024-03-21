@@ -30,6 +30,9 @@ package org.mastodon.mamut.feature;
 
 import org.scijava.Cancelable;
 
+/**
+ * Default implementation of {@link Cancelable}.
+ */
 public class CancelableImpl implements Cancelable
 {
 	private String cancelReason;

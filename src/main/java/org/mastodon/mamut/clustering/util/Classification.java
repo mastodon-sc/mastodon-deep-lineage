@@ -52,6 +52,7 @@ import java.util.stream.Collectors;
  *         <li>the median of the upper triangle values of the distance matrix that this classification represents</li>
  *     </ul>
  * @author Stefan Hahmann
+ * @param <T> the type of the objects that are classified
  */
 public class Classification< T >
 {
@@ -91,11 +92,24 @@ public class Classification< T >
 		this.median = median;
 	}
 
+	/**
+	 * Returns a {@link Set} of {@link ObjectClassification} objects, where each objects contain:
+	 *    <ul>
+	 *        <li>a {@link Cluster} object, which represents the classified objects in the dendrogram</li>
+	 *        <li>a {@link Set} of objects, which are classified into the same class</li>
+	 *        <li>a color, which is associated with that class</li>
+	 *    </ul>
+	 * @return a {@link Set} of {@link ObjectClassification} objects
+	 */
 	public Set< ObjectClassification< T > > getObjectClassifications()
 	{
 		return objectClassifications;
 	}
 
+	/**
+	 * Returns the root {@link Cluster} object, from which the results of the algorithm can be accessed.
+	 * @return the root {@link Cluster} object
+	 */
 	public Cluster getRootCluster()
 	{
 		return rootCluster;
@@ -150,16 +164,28 @@ public class Classification< T >
 			this.objects = objects;
 		}
 
+		/**
+		 * Returns the color associated with this classification.
+		 * @return the color
+		 */
 		public int getColor()
 		{
 			return color;
 		}
 
+		/**
+		 * Returns the {@link Cluster} object, which represents the classified objects in the dendrogram.
+		 * @return the {@link Cluster} object
+		 */
 		public Cluster getCluster()
 		{
 			return cluster;
 		}
 
+		/**
+		 * Returns the {@link Set} of objects, which are classified into the same class.
+		 * @return the {@link Set} of objects
+		 */
 		public Set< T > getObjects()
 		{
 			return objects;
