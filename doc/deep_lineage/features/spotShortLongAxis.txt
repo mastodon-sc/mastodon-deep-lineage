@@ -1,0 +1,3 @@
+https://latex.codecogs.com/eqneditor/editor.php
+
+\frac{\text{short axis}}{\text{long axis}}
