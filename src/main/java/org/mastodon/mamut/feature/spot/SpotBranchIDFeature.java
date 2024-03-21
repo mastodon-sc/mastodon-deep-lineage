@@ -46,6 +46,9 @@ import java.util.Set;
 
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
+/**
+ * Feature returning the ID of the branch each spot belongs to.
+ */
 public class SpotBranchIDFeature implements Feature< Spot >
 {
 

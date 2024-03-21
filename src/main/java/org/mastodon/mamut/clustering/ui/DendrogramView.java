@@ -41,6 +41,7 @@ import java.awt.Color;
 /**
  * A class that represents a UI view of a dendrogram.<br>
  * It encapsulates a {@link Classification} object and a headline that can describe the classification, e.g. the parameters that were used for it.
+ * @param <T> the type of the objects that are classified
  */
 public class DendrogramView< T >
 {

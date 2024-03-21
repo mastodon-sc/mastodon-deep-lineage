@@ -31,13 +31,14 @@ package org.mastodon.mamut.feature;
 import org.scijava.Cancelable;
 
 /**
- * Default implementation of {@link Cancelable}.
+ * This class can be used as super class when implementing a SciJava {@link org.scijava.command.Command}.
+ * The GUI that is created for the command will have a "Cancel" button.
  */
 public class CancelableImpl implements Cancelable
 {
 	private String cancelReason;
 
-	public void deleteCancelReason()
+	protected void deleteCancelReason()
 	{
 		cancelReason = null;
 	}

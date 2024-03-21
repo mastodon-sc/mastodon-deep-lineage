@@ -28,6 +28,9 @@
  */
 package org.mastodon.mamut.feature;
 
+/**
+ * Abstract class for computing features in a cancelable way.
+ */
 public abstract class AbstractCancelableFeatureComputer extends CancelableImpl implements MamutFeatureComputer
 {
 	@Override

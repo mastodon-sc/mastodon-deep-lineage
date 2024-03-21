@@ -56,6 +56,7 @@ import java.util.Set;
  * </ul>
  *
  * @author Stefan Hahmann
+ * @param <T> the type of the objects in the dendrogram
  */
 public class DendrogramPanel< T > extends JPanel
 {

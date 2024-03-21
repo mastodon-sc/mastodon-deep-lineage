@@ -35,6 +35,10 @@ import org.scijava.plugin.Parameter;
 
 import java.util.Collection;
 
+/**
+ * Abstract class for computing features in a serial way.
+ * @param <V> the type of vertex.
+ */
 public abstract class AbstractSerialFeatureComputer< V extends Vertex< ? > > extends AbstractResettableFeatureComputer
 {
 	@Parameter

@@ -30,7 +30,17 @@ package org.mastodon.mamut.feature;
 
 import org.mastodon.graph.Vertex;
 
+/**
+ * Interface for evaluating whether a value is set for a vertex.
+ * @param <V> the type of vertex.
+ */
 public interface ValueIsSetEvaluator< V extends Vertex< ? > >
 {
+	/**
+	 * Returns whether a value is set for the specified vertex.
+	 *
+	 * @param vertex the vertex.
+	 * @return true if a value is set for the vertex, false otherwise.
+	 */
 	boolean valueIsSet( final V vertex );
 }

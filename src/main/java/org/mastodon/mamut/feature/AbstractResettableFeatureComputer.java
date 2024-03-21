@@ -32,6 +32,9 @@ import org.scijava.plugin.Parameter;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Abstract class for computing features in a resettable way.
+ */
 public abstract class AbstractResettableFeatureComputer extends AbstractCancelableFeatureComputer
 {
 
