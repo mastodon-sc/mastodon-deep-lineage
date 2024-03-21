@@ -11,10 +11,10 @@
 
 * [Documentation of Mastodon](#documentation-of-mastodon)
 * [Installation Instructions](#installation-instructions)
-* [Numerical Features added to Mastodon](/doc/deep_lineage/features)
-* [Lineage Tree Classification](/doc/deep_lineage/classification)
-* [Imports](/doc/deep_lineage/import)
-* [Exports](/doc/deep_lineage/export)
+* [Numerical Features added to Mastodon](/doc/features)
+* [Lineage Tree Classification](/doc/classification)
+* [Imports](/doc/import)
+* [Exports](/doc/export)
 * [Maintainer](#maintainer)
 * [Contributors](#contributors)
 * [License](#license)
@@ -32,7 +32,7 @@
   * `Help > Update > Manage update sites`
     1. `Mastodon`
     1. `Mastodon-DeepLineage`
-       ![Mastodon Update sites](doc/deep_lineage/installation/Mastodon.png)
+       ![Mastodon Update sites](doc/installation/Mastodon.png)
 
 ## Maintainer
 
