@@ -1,14 +1,20 @@
-cff-version: 1.1.0
-message: "If you use this software, please cite it as below."
+cff-version: 1.2.0
+title: Mastodon Deep-Lineage
+message: If you use this software, please cite it as below.
+type: software
 authors:
-    - family-names: "Hahmann"
-      given-names: "Stefan"
-      orcid: "https://orcid.org/0000-0002-8145-7090"
-    - family-names: "Arzt"
-      given-names: "Matthias"
-    - family-names: "Tinevez"
-      given-names: "Jean-Yves"
-      orcid: "https://orcid.org/0000-0002-0998-4718"
-title:mastodon-sc/mastodon-deep-lineage: Mastodon Deep-Lineage 0.0.1
-version: mastodon-deep-lineage-0.0.1
+    - family-names: Hahmann
+      given-names: Stefan
+      orcid: https://orcid.org/0000-0002-8145-7090
+    - family-names: Arzt
+      given-names: Matthias
+    - family-names: Tinevez
+      given-names: Jean-Yves
+      orcid: https://orcid.org/0000-0002-0998-4718
 date-released: 2023-12-04
+identifiers:
+  - description: All versions of this software
+    type: doi
+    value: 10.5281/zenodo.10262664
+license: BSD-2-Clause
+repository-code: https://github.com/mastodon-sc/mastodon-deep-lineage
