@@ -45,6 +45,13 @@ public class BranchSpotTree implements Tree< Double >
 
 	private final Collection< Tree< Double > > children;
 
+	protected BranchSpotTree( final BranchSpotTree branchSpotTree )
+	{
+		this.branchSpot = branchSpotTree.branchSpot;
+		this.endTimepoint = branchSpotTree.endTimepoint;
+		this.children = branchSpotTree.children;
+	}
+
 	/**
 	 * Create a new tree with the given branchSpot and endTimepoint.
 	 *
