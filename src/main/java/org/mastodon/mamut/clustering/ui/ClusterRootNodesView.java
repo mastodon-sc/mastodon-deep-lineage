@@ -32,14 +32,21 @@ import org.mastodon.mamut.clustering.ClusterRootNodesController;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
+import org.mastodon.mamut.clustering.util.ClusterUtils;
+import org.mastodon.model.tag.TagSetModel;
 import org.scijava.ItemVisibility;
 import org.scijava.command.InteractiveCommand;
+import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.Button;
 
-@Plugin(type = InteractiveCommand.class, visible = false, label = "Classification of Lineage Trees")
-public class ClusterRootNodesView extends InteractiveCommand
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+@Plugin( type = InteractiveCommand.class, visible = false, label = "Classification of Lineage Trees", initializer = "init" )
+public class ClusterRootNodesView extends InteractiveCommand implements TagSetModel.TagSetModelListener
 {
 
 	private static final int WIDTH = 15;
@@ -104,6 +111,9 @@ public class ClusterRootNodesView extends InteractiveCommand
 	@Parameter(label = "Show dendrogram of clustering", callback = "update")
 	private boolean showDendrogram = true;
 
+	@Parameter( label = "Dendrogram leave tag set", description = "Specify the tag set that will be used to label the leaves of the resulting dendrogram. Choose 'None', if no tag set should be used.", persist = false, initializer = "initTagSetChoices" )
+	private String tagSetChoice;
+
 	@SuppressWarnings("unused")
 	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false, label = " ")
 	private String paramFeedback;
@@ -113,8 +123,14 @@ public class ClusterRootNodesView extends InteractiveCommand
 	private String computeFeedback;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Classify lineage trees", callback = "createTagSet", persist = false)
+	@Parameter( label = "Classify lineage trees", callback = "createTagSet" )
 	private Button createTagSet;
+
+	@SuppressWarnings( "unused" )
+	private void init()
+	{
+		controller.getModel().getTagSetModel().listeners().add( this );
+	}
 
 	/**
 	 * This method is executed whenever a parameter changes
@@ -151,7 +167,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 			String feedback;
 			try
 			{
-				controller.createTagSet( showDendrogram );
+				controller.createTagSet( showDendrogram, tagSetChoice );
 				feedback = "Classified lineage trees.<p>";
 				feedback += "Tag set created.";
 			}
@@ -161,5 +177,20 @@ public class ClusterRootNodesView extends InteractiveCommand
 			}
 			computeFeedback = "<html><body width=" + WIDTH_INPUT + "cm><font color=\"green\">" + feedback + "</font></body></html>";
 		}
+	}
+
+	@SuppressWarnings( "unused" )
+	private void initTagSetChoices()
+	{
+		List< String > choices = new ArrayList<>( Collections.singletonList( "None" ) );
+		choices.addAll( ClusterUtils.getTagSetNames( controller.getModel() ) );
+		MutableModuleItem< String > tagSetInput = getInfo().getMutableInput( "tagSetChoice", String.class );
+		tagSetInput.setChoices( choices );
+	}
+
+	@Override
+	public void tagSetStructureChanged()
+	{
+		initTagSetChoices();
 	}
 }
