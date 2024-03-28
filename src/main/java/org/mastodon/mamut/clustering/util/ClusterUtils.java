@@ -36,9 +36,15 @@ import net.imglib2.parallel.Parallelization;
 import net.imglib2.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
+import org.mastodon.mamut.util.LineageTreeUtils;
+import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.ColorUtils;
+import org.mastodon.util.TagSetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -377,5 +383,33 @@ public class ClusterUtils
 			for ( int j = i + 1; j < inputLength; j++ )
 				array[ index++ ] = twoDimensionalArray[ i ][ j ];
 		return array;
+	}
+
+	/**
+	 * Returns the names of all tag sets in the model.
+	 * @param model the model to get the tag-set model from.
+	 * @return the names of all tag sets in the model.
+	 * TODO remove after mastodon-core release 1.0.0-beta-30 and replace by TagSetUtils.getTagSetNames
+	 */
+	public static List< String > getTagSetNames( final Model model )
+	{
+		List< String > tagSetNames = new ArrayList<>();
+		model.getTagSetModel().getTagSetStructure().getTagSets().forEach( tagSet -> tagSetNames.add( tagSet.getName() ) );
+		return tagSetNames;
+	}
+
+	/**
+	 * Gets the tag value of the first spot in the given branchSpot within the given tagSet.
+	 * @param model the model to which the branch belongs
+	 * @param branchSpot the branch spot
+	 * @param tagSet the tag set
+	 * @return the tag value
+	 * TODO remove after mastodon-core release 1.0.0-beta-30 and replace by TagSetUtils.getTagValue
+	 */
+	public static String getTagValue( final Model model, final BranchSpot branchSpot, final TagSetStructure.TagSet tagSet )
+	{
+		Spot first = LineageTreeUtils.getFirstSpot( model, branchSpot );
+		TagSetStructure.Tag tag = tagSet == null ? null : TagSetUtils.getBranchTag( model, tagSet, first );
+		return tag == null ? null : tag.label();
 	}
 }
