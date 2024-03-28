@@ -99,7 +99,6 @@ public class ClusterRootNodesView extends InteractiveCommand
 	@SuppressWarnings("unused")
 	@Parameter(label = "Feature", choices = "Branch duration", callback = "update")
 	private String branchDuration;
-	// NB: dynamic choices: https://github.com/imagej/tutorials/blob/c78764438d774295d00fc8a4273e4c4f25c8ad46/maven-projects/dynamic-commands/src/main/java/DynamicCallbacks.java
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Show dendrogram of clustering", callback = "update")
