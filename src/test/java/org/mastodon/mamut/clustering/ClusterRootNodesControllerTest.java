@@ -71,7 +71,7 @@ public class ClusterRootNodesControllerTest
 		ClusterRootNodesController controller = new ClusterRootNodesController( model, synchronizer );
 		controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
-		controller.createTagSet( false );
+		controller.createTagSet( false, null );
 
 		List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
 		TagSetStructure.TagSet tagSet0 = model.getTagSetModel().getTagSetStructure().getTagSets().get( 0 );
@@ -108,7 +108,7 @@ public class ClusterRootNodesControllerTest
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
 		assertEquals( 2, controller.getFeedback().size() );
 		assertFalse( controller.isValidParams() );
-		assertThrows( IllegalArgumentException.class, () -> controller.createTagSet( false ) );
+		assertThrows( IllegalArgumentException.class, () -> controller.createTagSet( false, null ) );
 	}
 
 	@Test
