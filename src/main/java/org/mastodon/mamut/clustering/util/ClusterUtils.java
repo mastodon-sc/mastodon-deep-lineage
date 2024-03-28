@@ -263,9 +263,7 @@ public class ClusterUtils
 		if ( sortedClusters.size() < classCount )
 			return threshold;
 		else
-		{
 			return ( threshold + sortedClusters.get( classCount - 1 ).getDistanceValue() ) / 2d;
-		}
 
 	}
 
