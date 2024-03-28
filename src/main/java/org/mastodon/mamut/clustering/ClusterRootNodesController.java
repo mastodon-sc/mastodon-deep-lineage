@@ -91,8 +91,6 @@ public class ClusterRootNodesController
 
 	private boolean running = false;
 
-	private boolean showDendrogram = true;
-
 	/**
 	 * Create a new controller for clustering root nodes of lineage trees.
 	 * @param model the model
@@ -107,7 +105,7 @@ public class ClusterRootNodesController
 	/**
 	 * Create a new tag set based on the current settings of the controller.
 	 */
-	public void createTagSet()
+	public void createTagSet( final boolean showDendrogram )
 	{
 		if ( running )
 			return;
@@ -118,7 +116,7 @@ public class ClusterRootNodesController
 		try
 		{
 			running = true;
-			runClassification();
+			runClassification( showDendrogram );
 		}
 		finally
 		{
@@ -127,7 +125,7 @@ public class ClusterRootNodesController
 		}
 	}
 
-	private void runClassification()
+	private void runClassification( final boolean showDendrogram )
 	{
 		List< BranchSpotTree > roots = getRoots();
 		classification = classifyLineageTrees( roots );
@@ -272,11 +270,6 @@ public class ClusterRootNodesController
 		this.similarityMeasure = similarityMeasure;
 		this.clusteringMethod = clusteringMethod;
 		this.numberOfClasses = numberOfClasses;
-	}
-
-	public void setShowDendrogram( boolean showDendrogram )
-	{
-		this.showDendrogram = showDendrogram;
 	}
 
 	public List< String > getFeedback()

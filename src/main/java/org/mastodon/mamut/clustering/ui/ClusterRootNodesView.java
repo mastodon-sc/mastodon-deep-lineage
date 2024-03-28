@@ -131,7 +131,6 @@ public class ClusterRootNodesView extends InteractiveCommand
 		controller.setInputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
 		controller.setComputeParams(
 				SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses );
-		controller.setShowDendrogram( showDendrogram );
 
 		paramFeedback = "<html><body width=" + WIDTH_INPUT + "cm>";
 		if ( controller.isValidParams() )
@@ -152,7 +151,7 @@ public class ClusterRootNodesView extends InteractiveCommand
 			String feedback;
 			try
 			{
-				controller.createTagSet();
+				controller.createTagSet( showDendrogram );
 				feedback = "Classified lineage trees.<p>";
 				feedback += "Tag set created.";
 			}
