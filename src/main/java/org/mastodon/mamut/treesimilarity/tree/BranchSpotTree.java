@@ -34,6 +34,9 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * A tree data structure representing a branch spot and its children.
+ */
 public class BranchSpotTree implements Tree< Double >
 {
 	private final BranchSpot branchSpot;
@@ -42,6 +45,19 @@ public class BranchSpotTree implements Tree< Double >
 
 	private final Collection< Tree< Double > > children;
 
+	protected BranchSpotTree( final BranchSpotTree branchSpotTree )
+	{
+		this.branchSpot = branchSpotTree.branchSpot;
+		this.endTimepoint = branchSpotTree.endTimepoint;
+		this.children = branchSpotTree.children;
+	}
+
+	/**
+	 * Create a new tree with the given branchSpot and endTimepoint.
+	 *
+	 * @param branchSpot the branchSpot of the tree.
+	 * @param endTimepoint the end time point of the tree, i.e. the time point at which the tree is cut off.
+	 */
 	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
 	{
 		if ( branchSpot == null )

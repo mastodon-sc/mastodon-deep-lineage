@@ -31,6 +31,11 @@ package org.mastodon.mamut.treesimilarity.tree;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * A simple tree data structure.
+ *
+ * @param <T> the type of the attribute of the tree nodes.
+ */
 public class SimpleTree< T > implements Tree< T >
 {
 
@@ -38,6 +43,11 @@ public class SimpleTree< T > implements Tree< T >
 
 	private final T attribute;
 
+	/**
+	 * Create a new tree with the given attribute.
+	 *
+	 * @param attribute the attribute of the tree.
+	 */
 	public SimpleTree( final T attribute )
 	{
 		children = new ArrayList<>();

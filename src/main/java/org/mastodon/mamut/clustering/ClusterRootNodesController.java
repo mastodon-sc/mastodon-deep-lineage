@@ -35,6 +35,7 @@ import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.clustering.ui.DendrogramView;
+import org.mastodon.mamut.clustering.ui.BranchSpotTreeWithExtraLabel;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
 import org.mastodon.mamut.model.Link;
@@ -91,8 +92,6 @@ public class ClusterRootNodesController
 
 	private boolean running = false;
 
-	private boolean showDendrogram = true;
-
 	/**
 	 * Create a new controller for clustering root nodes of lineage trees.
 	 * @param model the model
@@ -104,10 +103,15 @@ public class ClusterRootNodesController
 		this.synchronizer = synchronizer;
 	}
 
+	public Model getModel()
+	{
+		return model;
+	}
+
 	/**
 	 * Create a new tag set based on the current settings of the controller.
 	 */
-	public void createTagSet()
+	public void createTagSet( final boolean showDendrogram, final String tagSetName )
 	{
 		if ( running )
 			return;
@@ -118,7 +122,7 @@ public class ClusterRootNodesController
 		try
 		{
 			running = true;
-			runClassification();
+			runClassification( showDendrogram, tagSetName );
 		}
 		finally
 		{
@@ -127,9 +131,21 @@ public class ClusterRootNodesController
 		}
 	}
 
-	private void runClassification()
+	private void runClassification( final boolean showDendrogram, final String tagSetName )
 	{
-		List< BranchSpotTree > roots = getRoots();
+		TagSetStructure.TagSet tagSet = null;
+		if ( showDendrogram && tagSetName != null && !tagSetName.isEmpty() )
+		{
+			try
+			{
+				tagSet = TagSetUtils.findTagSet( model, tagSetName );
+			}
+			catch ( NoSuchElementException ignored )
+			{
+				// tag set does not exist
+			}
+		}
+		List< BranchSpotTree > roots = getRoots( tagSet );
 		classification = classifyLineageTrees( roots );
 		List< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
 		applyClassification( classification, tagsAndColors );
@@ -219,6 +235,11 @@ public class ClusterRootNodesController
 
 	private List< BranchSpotTree > getRoots()
 	{
+		return getRoots( null );
+	}
+
+	private List< BranchSpotTree > getRoots( final TagSetStructure.TagSet tagSet )
+	{
 		if ( !synchronizer.isUptodate() )
 			model.getBranchGraph().graphRebuilt();
 
@@ -245,10 +266,12 @@ public class ClusterRootNodesController
 			try
 			{
 				BranchSpotTree branchSpotTree = new BranchSpotTree( rootBranchSpot, cropEndTime );
+				String tagValue = ClusterUtils.getTagValue( model, rootBranchSpot, tagSet );
+				BranchSpotTreeWithExtraLabel tree = new BranchSpotTreeWithExtraLabel( branchSpotTree, tagValue );
 				int minTreeSize = 2 * minCellDivisions + 1;
-				if ( TreeUtils.size( branchSpotTree ) < minTreeSize )
+				if ( TreeUtils.size( tree ) < minTreeSize )
 					continue;
-				trees.add( branchSpotTree );
+				trees.add( tree );
 			}
 			catch ( IllegalArgumentException e )
 			{
@@ -272,11 +295,6 @@ public class ClusterRootNodesController
 		this.similarityMeasure = similarityMeasure;
 		this.clusteringMethod = clusteringMethod;
 		this.numberOfClasses = numberOfClasses;
-	}
-
-	public void setShowDendrogram( boolean showDendrogram )
-	{
-		this.showDendrogram = showDendrogram;
 	}
 
 	public List< String > getFeedback()

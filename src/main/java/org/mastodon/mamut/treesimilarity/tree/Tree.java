@@ -30,6 +30,11 @@ package org.mastodon.mamut.treesimilarity.tree;
 
 import java.util.Collection;
 
+/**
+ * A tree data structure.
+ *
+ * @param <T> the type of the attribute of the tree nodes.
+ */
 public interface Tree< T >
 {
 	/**
