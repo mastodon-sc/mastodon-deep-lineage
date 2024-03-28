@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph4;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph6;
@@ -154,6 +155,16 @@ public class LineageTreeUtilsTest
 		assertSpotEquals( graph6.spot2.outgoingEdges().get( 0 ).getTarget(), graph6.spot10 );
 		assertSpotEquals( graph6.spot2.outgoingEdges().get( 1 ).getTarget(), graph6.spot9 );
 		assertEquals( 0, graph6.spot7.outgoingEdges().size() );
+	}
+
+	@Test
+	public void testGetFirstSpot()
+	{
+		ExampleGraph1 exampleGraph1 = new ExampleGraph1();
+		assertEquals( exampleGraph1.spot0, LineageTreeUtils.getFirstSpot( exampleGraph1.getModel(), exampleGraph1.branchSpotA ) );
+
+		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
+		assertEquals( exampleGraph2.spot5, LineageTreeUtils.getFirstSpot( exampleGraph2.getModel(), exampleGraph2.branchSpotD ) );
 	}
 
 	private void assertSpotEquals( final Spot expected, final Spot actual )
