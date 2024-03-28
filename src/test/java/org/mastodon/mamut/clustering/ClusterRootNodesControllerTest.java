@@ -38,9 +38,11 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.util.TagSetUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,11 +73,13 @@ public class ClusterRootNodesControllerTest
 		ClusterRootNodesController controller = new ClusterRootNodesController( model, synchronizer );
 		controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
-		controller.createTagSet( false, null );
+		String tagSetName = "Test Tag Set";
+		TagSetUtils.addNewTagSetToModel( model, tagSetName, Collections.emptyList() );
+		controller.createTagSet( false, tagSetName );
 
 		List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
-		TagSetStructure.TagSet tagSet0 = model.getTagSetModel().getTagSetStructure().getTagSets().get( 0 );
-		List< TagSetStructure.Tag > tags = tagSet0.getTags();
+		TagSetStructure.TagSet tagSet1 = model.getTagSetModel().getTagSetStructure().getTagSets().get( 1 );
+		List< TagSetStructure.Tag > tags = tagSet1.getTags();
 		TagSetStructure.Tag tag0 = tags.get( 0 );
 		TagSetStructure.Tag tag1 = tags.get( 1 );
 		TagSetStructure.Tag tag2 = tags.get( 2 );
@@ -90,9 +94,10 @@ public class ClusterRootNodesControllerTest
 		Set< Integer > expectedClassCounts = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
 		Set< Integer > actualClassCounts = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
 
-		assertEquals( "Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet0.getName() );
+		assertEquals( model, controller.getModel() );
+		assertEquals( "Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet1.getName() );
 		assertTrue( controller.isValidParams() );
-		assertEquals( 1, tagSets.size() );
+		assertEquals( 2, tagSets.size() );
 		assertEquals( 3, tags.size() );
 		assertEquals( expectedClassNames, actualClassNames );
 		assertEquals( expectedClassCounts, actualClassCounts );
@@ -109,6 +114,12 @@ public class ClusterRootNodesControllerTest
 		assertEquals( 2, controller.getFeedback().size() );
 		assertFalse( controller.isValidParams() );
 		assertThrows( IllegalArgumentException.class, () -> controller.createTagSet( false, null ) );
+
+		controller.setInputParams( CropCriteria.NUMBER_OF_SPOTS, 5, 10, 0 );
+		assertEquals( 3, controller.getFeedback().size() );
+		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 2 );
+		controller.setInputParams( CropCriteria.NUMBER_OF_SPOTS, 0, 3, 0 );
+		assertEquals( 1, controller.getFeedback().size() );
 	}
 
 	@Test
