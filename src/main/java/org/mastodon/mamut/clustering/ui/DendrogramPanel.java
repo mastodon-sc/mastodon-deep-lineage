@@ -104,10 +104,7 @@ public class DendrogramPanel< T > extends JPanel
 	 */
 	public DendrogramPanel()
 	{
-		super();
-		this.classification = null;
-		this.component = null;
-		this.modelMetrics = null;
+		this( null );
 	}
 
 	/**
@@ -119,6 +116,12 @@ public class DendrogramPanel< T > extends JPanel
 	{
 		super();
 		this.classification = classification;
+		if ( classification == null )
+		{
+			this.component = null;
+			this.modelMetrics = null;
+			return;
+		}
 		this.component = createComponent( classification.getRootCluster() );
 		this.modelMetrics = createModelMetrics( this.component );
 	}
