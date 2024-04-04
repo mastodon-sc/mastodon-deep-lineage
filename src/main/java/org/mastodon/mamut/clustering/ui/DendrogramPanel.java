@@ -32,17 +32,33 @@ import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.visualization.ClusterComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.util.Classification;
+import org.mastodon.ui.util.ExtensionFileFilter;
+import org.mastodon.ui.util.FileChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,6 +78,8 @@ public class DendrogramPanel< T > extends JPanel
 {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final Classification< T > classification;
 
@@ -116,6 +134,7 @@ public class DendrogramPanel< T > extends JPanel
 	{
 		super();
 		this.classification = classification;
+		addMouseListener( new PopupListener() );
 		if ( classification == null )
 		{
 			this.component = null;
@@ -252,6 +271,46 @@ public class DendrogramPanel< T > extends JPanel
 		double maxY = component.getRectMaxY();
 
 		return new ModelMetrics( minX, minY, maxX - minX, maxY - minY );
+	}
+
+	private final class PopupListener extends MouseAdapter
+	{
+		@Override
+		public void mouseReleased( MouseEvent event )
+		{
+			if ( event.isPopupTrigger() )
+				showPopup( event );
+		}
+
+		private void showPopup( MouseEvent event )
+		{
+			JPopupMenu menu = new JPopupMenu();
+			JMenuItem item = new JMenuItem( "Export dendrogram as image" );
+			item.addActionListener( actionEvent -> chooseFileAndExport() );
+			menu.add( item );
+			menu.show( event.getComponent(), event.getX(), event.getY() );
+		}
+
+		private void chooseFileAndExport()
+		{
+			String imageFormatName = "png";
+			File chosenFile = FileChooser.chooseFile( DendrogramPanel.this, "dendrogram." + imageFormatName,
+					new ExtensionFileFilter( imageFormatName ), "Save dendrogram image", FileChooser.DialogType.SAVE );
+			if ( chosenFile != null )
+			{
+				int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
+				export( chosenFile, imageFormatName, screenResolution );
+				try
+				{
+					Desktop.getDesktop().open( chosenFile );
+				}
+				catch ( IOException ex )
+				{
+					logger.error( "Could not open dendrogram image file: {}. Message: {}", chosenFile.getAbsolutePath(),
+							ex.getMessage() );
+				}
+			}
+		}
 	}
 
 	private static class ModelMetrics
