@@ -35,8 +35,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 import java.awt.Color;
+import java.awt.Dimension;
 
 /**
  * A class that represents a UI view of a dendrogram.<br>
@@ -74,6 +76,9 @@ public class DendrogramView< T >
 
 	public JPanel getPanel()
 	{
+		JPanel panel = new JPanel( new MigLayout( "fill" ) );
+		JLabel label = new JLabel( headline );
+
 		DendrogramPanel< T > dendrogramPanel;
 		if ( classification == null )
 			dendrogramPanel = new DendrogramPanel<>(); // NB: empty dendrogram
@@ -81,16 +86,21 @@ public class DendrogramView< T >
 		{
 			dendrogramPanel = new DendrogramPanel<>( classification );
 			dendrogramPanel.setBackground( Color.WHITE );
+			int minHeight = ( classification.getObjectCount() - 1 ) * getDefaultFontSize();
+			dendrogramPanel.setPreferredSize( new Dimension( -1, minHeight ) );
 		}
 
-		JPanel panel = new JPanel( new MigLayout( "fill" ) );
-		JLabel label = new JLabel( headline );
-
 		panel.add( label, "wrap, align center" );
-		panel.add( dendrogramPanel, "grow, push" );
+		JScrollPane scrollPane = new JScrollPane( dendrogramPanel );
+		panel.add( scrollPane, "grow, push" );
 
 		panel.setBorder( BorderFactory.createEtchedBorder() );
 
 		return panel;
+	}
+
+	private static int getDefaultFontSize()
+	{
+		return new JLabel().getFontMetrics( new JLabel().getFont() ).getHeight();
 	}
 }
