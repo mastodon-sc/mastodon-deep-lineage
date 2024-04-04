@@ -210,6 +210,25 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
+	void export( final File file, final String formatName, int screenResolution )
+	{
+		int printResolution = 600;
+		double scale = printResolution / ( double ) screenResolution;
+		BufferedImage image =
+				new BufferedImage( ( int ) ( getWidth() * scale ), ( int ) ( getHeight() * scale ), BufferedImage.TYPE_INT_RGB );
+		Graphics2D g = image.createGraphics();
+		g.setTransform( AffineTransform.getScaleInstance( scale, scale ) );
+		paint( g );
+		try
+		{
+			ImageIO.write( image, formatName, file );
+		}
+		catch ( IOException ex )
+		{
+			logger.error( "Could not save dendrogram image to File: {}. Message: {}", file.getAbsolutePath(), ex.getMessage() );
+		}
+	}
+
 	private CustomizedClusterComponent createComponent( final Cluster cluster )
 	{
 		return new CustomizedClusterComponent( cluster, classification.getObjectClassifications() );

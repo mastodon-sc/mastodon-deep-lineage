@@ -39,6 +39,7 @@ import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
 import org.mockito.Mockito;
 
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -47,6 +48,8 @@ import java.awt.Image;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -144,6 +147,26 @@ class DendrogramPanelTest
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
 		Line2D line = dendrogramPanel.getVerticalLine( 25d, dendrogramPanel.new DisplayMetrics( 507, 426, graphics ) );
 		assertEquals( 312d, line.getX1(), 0.01 );
+	}
+
+	@Test
+	void testExport() throws IOException
+	{
+		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
+		int width = 600;
+		int height = 600;
+		Image image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+		Graphics graphics = image.getGraphics();
+		dendrogramPanel.setSize( width, height );
+		dendrogramPanel.paint( graphics );
+		File tempFile = File.createTempFile( "dendrogram", ".png" );
+		tempFile.deleteOnExit();
+		int screenResolution = 96;
+		int printResolution = 600;
+		dendrogramPanel.export( tempFile, "png", screenResolution );
+		Image test = ImageIO.read( tempFile );
+		assertEquals( width * printResolution / screenResolution, test.getWidth( null ) );
+		assertEquals( height * printResolution / screenResolution, test.getHeight( null ) );
 	}
 
 	private void adaptClusterValues( Cluster cluster )
