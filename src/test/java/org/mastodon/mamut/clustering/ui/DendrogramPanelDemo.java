@@ -38,9 +38,11 @@ import org.mastodon.mamut.clustering.util.ClusterUtils;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.Collections;
 
 /**
@@ -71,7 +73,9 @@ public class DendrogramPanelDemo
 		frame.setContentPane( content );
 		content.setBackground( Color.red );
 		content.setLayout( new BorderLayout() );
-		content.add( dp, BorderLayout.CENTER );
+		JScrollPane scrollPane = new JScrollPane( dp );
+		dp.setPreferredSize( new Dimension( 350, 250 ) );
+		content.add( scrollPane, BorderLayout.CENTER );
 		dp.setBackground( Color.WHITE );
 
 		frame.setVisible( true );
