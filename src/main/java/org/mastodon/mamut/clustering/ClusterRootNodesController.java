@@ -284,15 +284,16 @@ public class ClusterRootNodesController
 		List< String > feedback = new ArrayList<>();
 		if ( cropStart >= cropEnd )
 		{
-			String message = "Crop start (" + cropStart + ") must be smaller than crop end (" + cropEnd + ")";
+			String message = "Crop start (" + cropStart + ") must be smaller than crop end (" + cropEnd + ").";
 			feedback.add( message );
 			logger.debug( message );
 		}
 
 		int roots = getRoots().size();
-		if ( numberOfClasses >= roots )
+		if ( numberOfClasses > roots )
 		{
-			String message = "Number of classes (" + numberOfClasses + ") must be smaller than number of valid roots (" + roots + ")";
+			String message =
+					"Number of classes (" + numberOfClasses + ") must not be greater than the number of valid roots (" + roots + ").";
 			feedback.add( message );
 			logger.debug( message );
 		}
