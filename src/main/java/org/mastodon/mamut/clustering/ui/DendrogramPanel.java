@@ -263,8 +263,6 @@ public class DendrogramPanel< T > extends JPanel
 
 	private ModelMetrics createModelMetrics( final ClusterComponent component )
 	{
-		if ( component == null )
-			return null;
 		double minX = component.getRectMinX();
 		double maxX = component.getRectMaxX();
 		double minY = component.getRectMinY();
