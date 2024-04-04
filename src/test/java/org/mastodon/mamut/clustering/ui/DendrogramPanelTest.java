@@ -55,6 +55,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -139,6 +140,17 @@ class DendrogramPanelTest
 		graphics.setColor( defaultColor );
 		dendrogramPanel.paint( graphics );
 		assertEquals( DendrogramPanel.CLUSTER_LINE_COLOR, graphics.getColor() );
+	}
+
+	@Test
+	void testPaintNoData()
+	{
+		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( null );
+		int width = 600;
+		int height = 600;
+		Image image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+		Graphics graphics = image.getGraphics();
+		assertDoesNotThrow( () -> dendrogramPanel.paint( graphics ) );
 	}
 
 	@Test

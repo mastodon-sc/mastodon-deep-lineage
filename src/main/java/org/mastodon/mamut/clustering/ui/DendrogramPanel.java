@@ -367,11 +367,21 @@ public class DendrogramPanel< T > extends JPanel
 			xDisplayOrigin = BORDER_LEFT;
 			yDisplayOrigin = BORDER_TOP + axisHeight;
 
-			xConversionFactor = widthDisplay / modelMetrics.wModel;
-			yConversionFactor = heightDisplay / modelMetrics.hModel;
+			if ( modelMetrics == null )
+			{
+				xConversionFactor = 1;
+				yConversionFactor = 1;
+				xOffset = 0;
+				yOffset = 0;
+			}
+			else
+			{
+				xConversionFactor = widthDisplay / modelMetrics.wModel;
+				yConversionFactor = heightDisplay / modelMetrics.hModel;
 
-			xOffset = ( int ) ( xDisplayOrigin - modelMetrics.xModelOrigin * xConversionFactor );
-			yOffset = ( int ) ( yDisplayOrigin - modelMetrics.yModelOrigin * yConversionFactor );
+				xOffset = ( int ) ( xDisplayOrigin - modelMetrics.xModelOrigin * xConversionFactor );
+				yOffset = ( int ) ( yDisplayOrigin - modelMetrics.yModelOrigin * yConversionFactor );
+			}
 		}
 	}
 
