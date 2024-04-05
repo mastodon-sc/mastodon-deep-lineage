@@ -341,6 +341,17 @@ class ZhangUnorderedTreeEditDistanceTest
 	}
 
 	@Test
+	void testFlowNetworkBug()
+	{
+		SimpleTree< Double > tree2a2 = SimpleTreeExamples.tree2a2();
+		SimpleTree< Double > tree2d11 = SimpleTreeExamples.tree2d11();
+		double distance =
+				ZhangUnorderedTreeEditDistance.guignardAverageDistance( tree2a2, tree2d11,
+						ZhangUnorderedTreeEditDistance.GUIGNARD_COST_FUNCTION, ZhangUnorderedTreeEditDistance.ATTRIBUTE_SUMMARIZER );
+		assertEquals( 0.0158d, distance, 0.0001d );
+	}
+
+	@Test
 	void testGuignardExample2()
 	{
 		Tree< Double > treePm01a80008 = SimpleTreeExamples.treePm01a80008();

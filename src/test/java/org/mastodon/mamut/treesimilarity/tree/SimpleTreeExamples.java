@@ -567,6 +567,54 @@ public class SimpleTreeExamples
 		return node1;
 	}
 
+	public static SimpleTree< Double > tree2a2()
+	{
+		SimpleTree< Double > node0 = new SimpleTree<>( 44.0 );
+		SimpleTree< Double > node00 = addNode( 60.0, node0 );
+		SimpleTree< Double > node000 = addNode( 68.0, node00 );
+		addNode( 0.0, node000 );
+		addNode( 0.0, node000 );
+		addNode( 69.0, node00 );
+		addNode( 130.0, node0 );
+		return node0;
+	}
+
+	public static SimpleTree< Double > tree2d11()
+	{
+		SimpleTree< Double > node0 = new SimpleTree<>( 6.0 );
+		SimpleTree< Double > node00 = addNode( 117.0, node0 );
+		addNode( 50.0, node00 );
+		addNode( 50.0, node00 );
+		SimpleTree< Double > node01 = addNode( 23.0, node0 );
+		SimpleTree< Double > node010 = addNode( 25.0, node01 );
+		SimpleTree< Double > node0100 = addNode( 24.0, node010 );
+		SimpleTree< Double > node01000 = addNode( 27.0, node0100 );
+		SimpleTree< Double > node010000 = addNode( 26.0, node01000 );
+		SimpleTree< Double > node0100000 = addNode( 30.0, node010000 );
+		addNode( 7.0, node0100000 );
+		addNode( 7.0, node0100000 );
+		SimpleTree< Double > node0100001 = addNode( 37.0, node010000 );
+		addNode( 0.0, node0100001 );
+		addNode( 0.0, node0100001 );
+		addNode( 65.0, node01000 );
+		SimpleTree< Double > node01001 = addNode( 63.0, node0100 );
+		addNode( 29.0, node01001 );
+		addNode( 29.0, node01001 );
+		addNode( 118.0, node010 );
+		SimpleTree< Double > node011 = addNode( 26.0, node01 );
+		addNode( 117.0, node011 );
+		SimpleTree< Double > node0111 = addNode( 25.0, node011 );
+		SimpleTree< Double > node01110 = addNode( 61.0, node0111 );
+		addNode( 29.0, node01110 );
+		addNode( 29.0, node01110 );
+		SimpleTree< Double > node01111 = addNode( 26.0, node0111 );
+		addNode( 64.0, node01111 );
+		SimpleTree< Double > node011111 = addNode( 26.0, node01111 );
+		addNode( 37.0, node011111 );
+		addNode( 37.0, node011111 );
+		return node0;
+	}
+
 	/**
 	 * a8.0008* of Pm01
 	 *
