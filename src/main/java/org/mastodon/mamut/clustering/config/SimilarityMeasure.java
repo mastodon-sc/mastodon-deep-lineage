@@ -46,6 +46,11 @@ public enum SimilarityMeasure
 	),
 	ABSOLUTE_DIFFERENCE( "Zhang Tree Distance", ZhangUnorderedTreeEditDistance::distance,
 			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION
+	),
+	GUIGNARD_DIFFERENCE( "Guignard et al. 2020 Tree Distance",
+			( tree1, tree2, costFunction1 ) -> ZhangUnorderedTreeEditDistance.guignardAverageDistance( tree1, tree2, costFunction1,
+					ZhangUnorderedTreeEditDistance.ATTRIBUTE_SUMMARIZER ),
+			ZhangUnorderedTreeEditDistance.GUIGNARD_COST_FUNCTION
 	);
 
 	private final String name;
