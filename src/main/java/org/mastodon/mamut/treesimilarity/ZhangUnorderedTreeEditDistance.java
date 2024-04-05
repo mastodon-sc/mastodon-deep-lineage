@@ -208,7 +208,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
-	 * Calculates the normalized Zhang edit distance between two labeled unordered trees.
+	 * Calculates the average Zhang edit distance between two labeled unordered trees.
 	 * <br>
 	 * The average distance is defined as the absolute distance divided by the sum of the sizes (i.e. number of nodes) of the trees.
 	 *
