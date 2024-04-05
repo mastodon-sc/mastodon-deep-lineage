@@ -41,7 +41,7 @@ public enum SimilarityMeasure implements HasName
 	NORMALIZED_DIFFERENCE( "Normalized Zhang Tree Distance", ZhangUnorderedTreeEditDistance::normalizedDistance,
 			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION
 	),
-	AVERAGE_DIFFERENCE_PER_CELL_LIFE_CYCLE( "Per Branch Spot Zhang Tree Distance", ZhangUnorderedTreeEditDistance::averageDistance,
+	AVERAGE_DIFFERENCE_PER_CELL_LIFE_CYCLE( "Per Branch Zhang Tree Distance", ZhangUnorderedTreeEditDistance::averageDistance,
 			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION
 	),
 	ABSOLUTE_DIFFERENCE( "Zhang Tree Distance", ZhangUnorderedTreeEditDistance::distance,
