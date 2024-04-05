@@ -450,6 +450,24 @@ class ClusterUtilsTest
 	}
 
 	@Test
+	void testDumpSimilarityMatrix()
+	{
+		double[][] matrix = new double[][] {
+				{ 0, 1.234, 2468 },
+				{ 1.234, 0, 0.667 },
+				{ 2468, 0.667, 0 },
+		};
+		String expected = "Similarity matrix (3x3):\n"
+				+ "       0     1.2    2468\n"
+				+ "               0    0.67\n"
+				+ "                       0";
+		assertEquals( expected, ClusterUtils.dumpSimilarityMatrix( matrix, 8, 2 ) );
+
+		assertEquals( "matrix is null.", ClusterUtils.dumpSimilarityMatrix( null, 1, 1 ) );
+		assertEquals( "matrix is empty.", ClusterUtils.dumpSimilarityMatrix( new double[][] {}, 1, 1 ) );
+	}
+
+	@Test
 	void testGetTagSetNames()
 	{
 		ExampleGraph1 exampleGraph1 = new ExampleGraph1();

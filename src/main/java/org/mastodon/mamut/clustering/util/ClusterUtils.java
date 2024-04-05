@@ -56,6 +56,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -114,6 +115,50 @@ public class ClusterUtils
 		logger.debug( "Computed all distances in {} s.", stopWatch.getTime() / 1000d );
 
 		return distances;
+	}
+
+	/**
+	 * Generates a formatted String object that represents the upper right triangle of the given two-dimensional array (similarity matrix).
+	 * @param array the two-dimensional array
+	 * @param columnWidth the width of the columns in the output
+	 * @param digits the number of digits after the decimal point to be printed for values &#60; 1
+	 */
+	public static String dumpSimilarityMatrix( double[][] array, int columnWidth, int digits )
+	{
+		if ( array == null )
+			return "matrix is null.";
+		if ( array.length == 0 || array[ 0 ].length == 0 )
+			return "matrix is empty.";
+		StringBuilder sb = new StringBuilder();
+		int rows = array.length;
+		int cols = array[ 0 ].length;
+		sb.append( "Similarity matrix (" ).append( rows ).append( "x" ).append( cols ).append( "):" ).append( '\n' );
+
+		String templateEmpty = "%" + columnWidth + "s";
+		for ( int i = 0; i < array.length; i++ )
+		{
+			for ( int j = 0; j < array[ i ].length; j++ )
+			{
+				if ( j >= i )
+				{
+					double value = array[ i ][ j ];
+					int printDigits = digits;
+					if ( value == 0 )
+						printDigits = 0;
+					if ( value > 1 && value < 10 )
+						printDigits = 1;
+					if ( value >= 10 )
+						printDigits = 0;
+					String templateValues = "%" + columnWidth + "." + printDigits + "f";
+					sb.append( String.format( Locale.US, templateValues, array[ i ][ j ] ) );
+				}
+				else
+					sb.append( String.format( templateEmpty, "" ) );
+			}
+			if ( i < array.length - 1 )
+				sb.append( '\n' );
+		}
+		return sb.toString();
 	}
 
 	/**
