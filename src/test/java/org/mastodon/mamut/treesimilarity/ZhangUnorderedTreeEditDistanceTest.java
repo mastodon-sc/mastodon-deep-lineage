@@ -129,7 +129,6 @@ class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > simpleTree3 = SimpleTreeExamples.tree3();
 		Tree< Double > simpleTree4 = SimpleTreeExamples.tree4();
 
-		Tree< Double > branchSpotEmptyTree = BranchSpotTreeExamples.emptyTree();
 		Tree< Double > branchSpotTree1 = BranchSpotTreeExamples.tree1();
 		Tree< Double > branchSpotTree2 = BranchSpotTreeExamples.tree2();
 		Tree< Double > branchSpotTree3 = BranchSpotTreeExamples.tree3();
@@ -139,23 +138,23 @@ class ZhangUnorderedTreeEditDistanceTest
 		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
 		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleEmptyTree, defaultCosts ), 0d );
 		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( simpleEmptyTree, simpleTree1, defaultCosts ), 0d );
-		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree1, branchSpotEmptyTree, defaultCosts ), 0d );
-		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, branchSpotTree1, defaultCosts ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree1, null, defaultCosts ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( null, branchSpotTree1, defaultCosts ), 0d );
 		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
 		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( simpleTree2, simpleEmptyTree, defaultCosts ), 0d );
 		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( simpleEmptyTree, simpleTree2, defaultCosts ), 0d );
-		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree2, branchSpotEmptyTree, defaultCosts ), 0d );
-		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, branchSpotTree2, defaultCosts ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree2, null, defaultCosts ), 0d );
+		assertEquals( 60d, ZhangUnorderedTreeEditDistance.distance( null, branchSpotTree2, defaultCosts ), 0d );
 		// 104, because: 3 nodes with a total weight of 104 are added to the empty tree
 		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( simpleTree3, simpleEmptyTree, defaultCosts ), 0d );
 		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( simpleEmptyTree, simpleTree3, defaultCosts ), 0d );
-		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree3, branchSpotEmptyTree, defaultCosts ), 0d );
-		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, branchSpotTree3, defaultCosts ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree3, null, defaultCosts ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( null, branchSpotTree3, defaultCosts ), 0d );
 		// 104, because: 3 nodes with a total weight of 104 are added to the empty tree
 		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( simpleTree4, simpleEmptyTree, defaultCosts ), 0d );
 		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( simpleEmptyTree, simpleTree4, defaultCosts ), 0d );
-		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree4, branchSpotEmptyTree, defaultCosts ), 0d );
-		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotEmptyTree, branchSpotTree4, defaultCosts ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( branchSpotTree4, null, defaultCosts ), 0d );
+		assertEquals( 104d, ZhangUnorderedTreeEditDistance.distance( null, branchSpotTree4, defaultCosts ), 0d );
 	}
 
 	@Test
