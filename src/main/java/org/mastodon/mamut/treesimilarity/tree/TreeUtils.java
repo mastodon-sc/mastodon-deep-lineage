@@ -68,6 +68,19 @@ public class TreeUtils
 	}
 
 	/**
+	 * Returns a complete {@link List} of the attributes of all descendant subtrees of the given {@code Tree}, including the attribute of the given {@code Tree} itself.
+	 * @param tree the tree
+	 * @param <T> the type of the tree
+	 * @return the list of attributes
+	 */
+	public static < T > List< T > getAllAttributes( final Tree< T > tree )
+	{
+		List< T > attributes = new ArrayList<>();
+		listOfSubtrees( tree ).forEach( subtree -> attributes.add( subtree.getAttribute() ) );
+		return attributes;
+	}
+
+	/**
 	 * Creates a String of the given tree as a Java code snippet that can be used to create the tree.
 	 * @param tree The tree to print.
 	 * @return the code snippet
