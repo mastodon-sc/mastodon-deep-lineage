@@ -50,6 +50,7 @@ import java.util.StringJoiner;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 
 /**
  * Implementation of "A Constrained Edit Distance Between Unordered Labeled Trees", Kaizhong Zhang, Algorithmica (1996) 15:205-222<br>
@@ -144,6 +145,19 @@ public class ZhangUnorderedTreeEditDistance< T >
 	public static final BinaryOperator< Double > TREE_X_COST_FUNCTION = ZhangUnorderedTreeEditDistance::treeXCostFunction;
 
 	/**
+	 * Cost function as used in Guignard et al. 2020. It returns the normalized absolute difference between two attributes or 1 if one attribute is {@code null}.
+	 *
+	 * @see <a href="https://www.science.org/doi/suppl/10.1126/science.aar5663/suppl_file/aar5663_guignard_sm.pdf">Guignard et al. (2020) Page 38-39</a>
+	 */
+	public static final BinaryOperator< Double > GUIGNARD_COST_FUNCTION = ZhangUnorderedTreeEditDistance::guignardCostFunction;
+
+	/**
+	 * Summarizer function to calculate the sum of the attribute values of a list of attributes.
+	 */
+	public static final ToDoubleFunction< List< Double > > ATTRIBUTE_SUMMARIZER =
+			list -> list.stream().mapToDouble( Double::doubleValue ).sum();
+
+	/**
 	 * Calculates the absolute Zhang edit distance between two labeled unordered trees.
 	 *
 	 * @param tree1 Tree object representing the first tree.
@@ -216,6 +230,33 @@ public class ZhangUnorderedTreeEditDistance< T >
 	}
 
 	/**
+	 * Calculates the average Zhang edit distance between two labeled unordered trees using averaging by the combined sum of the attribute values.
+	 * <br>
+	 * @see <a href="https://www.science.org/doi/suppl/10.1126/science.aar5663/suppl_file/aar5663_guignard_sm.pdf">Guignard et al. (2020) Page 38-39</a>
+	 *
+	 * @param tree1 Tree object representing the first tree.
+	 * @param tree2 Tree object representing the second tree.
+	 * @param costFunction mandatory cost function.
+	 * @param attributeSummarizer function to summarize the attribute values of the trees.
+	 * @param <T> Attribute type of the tree nodes.
+	 *
+	 * @return The average Zhang edit distance between tree1 and tree2.
+	 */
+	public static < T > double guignardAverageDistance(
+			@Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
+			final BiFunction< T, T, Double > costFunction, final ToDoubleFunction< List< T > > attributeSummarizer
+	)
+	{
+		List< T > attributes = TreeUtils.getAllAttributes( tree1 );
+		attributes.addAll( TreeUtils.getAllAttributes( tree2 ) );
+		double denominator = attributeSummarizer.applyAsDouble( attributes );
+		// NB: avoid division by zero. Two trees without any attribute values are considered equal.
+		if ( denominator == 0 )
+			return 0;
+		return distance( tree1, tree2, costFunction ) / denominator;
+	}
+
+	/**
 	 * Calculates a mapping between nodes in the given two trees ({@code tree1} and {@code tree2}) that links the nodes from the two trees, which have the minimum tree edit distance to each other.<br>
 	 * The required minimum tree edit distance is calculated using the Zhang unordered edit distance.
 	 * @param tree1 The first tree.
@@ -276,9 +317,20 @@ public class ZhangUnorderedTreeEditDistance< T >
 		else if ( o1 == null )
 			return o2;
 		else
-			// TODO: standardize the cost function?
-			// return Math.abs( o1 - o2) / (o1 + o2);
 			return Math.abs( o1 - o2 );
+	}
+
+	/**
+	 * @see <a href="https://www.science.org/doi/suppl/10.1126/science.aar5663/suppl_file/aar5663_guignard_sm.pdf">Guignard et al. (2020) Page 38</a>
+	 */
+	private static Double guignardCostFunction( final Double o1, final Double o2 )
+	{
+		if ( o1 == null || o2 == null )
+			return 1d;
+		else if ( o1.equals( o2 ) ) // NB: avoid non-required division and possible division by zero
+			return 0d;
+		else
+			return Math.abs( o1 - o2 ) / ( o1 + o2 );
 	}
 
 	/**
