@@ -35,7 +35,7 @@ import org.mastodon.mamut.clustering.util.AverageLinkageUPGMAStrategy;
 
 import java.util.NoSuchElementException;
 
-public enum ClusteringMethod
+public enum ClusteringMethod implements HasName
 {
 	AVERAGE_LINKAGE( "Average linkage", new AverageLinkageUPGMAStrategy() ),
 	SINGLE_LINKAGE( "Single Linkage", new SingleLinkageStrategy() ),

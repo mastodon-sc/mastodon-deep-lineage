@@ -30,7 +30,7 @@ package org.mastodon.mamut.clustering.config;
 
 import java.util.NoSuchElementException;
 
-public enum CropCriteria
+public enum CropCriteria implements HasName
 {
 	TIMEPOINT( "Timepoint", "time" ),
 	NUMBER_OF_SPOTS( "Number of spots", "spots" );

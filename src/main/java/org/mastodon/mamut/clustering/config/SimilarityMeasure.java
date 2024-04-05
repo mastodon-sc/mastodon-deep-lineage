@@ -36,7 +36,7 @@ import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 
-public enum SimilarityMeasure
+public enum SimilarityMeasure implements HasName
 {
 	NORMALIZED_DIFFERENCE( "Normalized Zhang Tree Distance", ZhangUnorderedTreeEditDistance::normalizedDistance,
 			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION
