@@ -38,19 +38,29 @@ import java.util.function.BinaryOperator;
 
 public enum SimilarityMeasure
 {
-	NORMALIZED_DIFFERENCE( "Normalized Zhang Tree Distance", ZhangUnorderedTreeEditDistance::normalizedDistance ),
-	AVERAGE_DIFFERENCE_PER_CELL_LIFE_CYCLE( "Per Branch Spot Zhang Tree Distance", ZhangUnorderedTreeEditDistance::averageDistance ),
-	ABSOLUTE_DIFFERENCE( "Zhang Tree Distance", ZhangUnorderedTreeEditDistance::distance );
+	NORMALIZED_DIFFERENCE( "Normalized Zhang Tree Distance", ZhangUnorderedTreeEditDistance::normalizedDistance,
+			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION
+	),
+	AVERAGE_DIFFERENCE_PER_CELL_LIFE_CYCLE( "Per Branch Spot Zhang Tree Distance", ZhangUnorderedTreeEditDistance::averageDistance,
+			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION
+	),
+	ABSOLUTE_DIFFERENCE( "Zhang Tree Distance", ZhangUnorderedTreeEditDistance::distance,
+			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION
+	);
 
 	private final String name;
 
 	private final TriFunction< Tree< Double >, Tree< Double >, BiFunction< Double, Double, Double >, Double > distanceFunction;
 
-	SimilarityMeasure( String name,
-			TriFunction< Tree< Double >, Tree< Double >, BiFunction< Double, Double, Double >, Double > distanceFunction )
+	private final BinaryOperator< Double > costFunction;
+
+	SimilarityMeasure( final String name,
+			final TriFunction< Tree< Double >, Tree< Double >, BiFunction< Double, Double, Double >, Double > distanceFunction,
+			final BinaryOperator< Double > costFunction )
 	{
 		this.name = name;
 		this.distanceFunction = distanceFunction;
+		this.costFunction = costFunction;
 	}
 
 	public static SimilarityMeasure getByName(final String name)
@@ -62,7 +72,7 @@ public enum SimilarityMeasure
 		throw new NoSuchElementException();
 	}
 
-	public double compute( Tree< Double > tree1, Tree< Double > tree2, BinaryOperator< Double > costFunction )
+	public double compute( final Tree< Double > tree1, final Tree< Double > tree2 )
 	{
 		return distanceFunction.apply( tree1, tree2, costFunction );
 	}
