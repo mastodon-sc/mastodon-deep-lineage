@@ -201,7 +201,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			final BiFunction< T, T, Double > costFunction )
 	{
 		double denominator = distance( tree1, null, costFunction ) + distance( null, tree2, costFunction );
-		// NB: avoid division by zero. Two empty trees are considered equal. Two trees with zero distance are considered equal.
+		// NB: avoid division by zero. Two empty trees are considered equal and also two trees with zero edit distance are considered equal.
 		if ( denominator == 0 )
 			return 0;
 		return distance( tree1, tree2, costFunction ) / denominator;
@@ -223,7 +223,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			final BiFunction< T, T, Double > costFunction )
 	{
 		double denominator = ( double ) TreeUtils.size( tree1 ) + ( double ) TreeUtils.size( tree2 );
-		// NB: avoid division by zero. Two empty trees are considered equal. Two trees with zero distance are considered equal.
+		// NB: avoid division by zero. Two empty trees are considered equal.
 		if ( denominator == 0 )
 			return 0;
 		return distance( tree1, tree2, costFunction ) / denominator;
