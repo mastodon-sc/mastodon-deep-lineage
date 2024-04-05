@@ -271,7 +271,6 @@ public class BranchSpotFeatureUtils
 	 *     <li>A branch spot that spans from timepoint 3 to timepoint 5 has a duration of 3</li>
 	 *     <li>A branch spot contains only a single spot in a single timepoint has a duration of 1</li>
 	 * </ul>
-	 * .
 	 * @param branchSpot the branch spot
 	 * @return the duration of the branch spot
 	 */
