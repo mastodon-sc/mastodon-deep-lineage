@@ -4107,7 +4107,7 @@ public class DenseSimpleTreeExamples
 		Tree< Double > tree1bab = DenseSimpleTreeExamples.tree1bab();
 		long start = System.currentTimeMillis();
 		System.out.println(
-				ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION ) );
+				ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION ) );
 		System.out.println( System.currentTimeMillis() - start );
 	}
 }
