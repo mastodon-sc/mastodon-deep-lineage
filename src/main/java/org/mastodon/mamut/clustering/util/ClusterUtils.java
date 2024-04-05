@@ -36,7 +36,6 @@ import net.imglib2.parallel.Parallelization;
 import net.imglib2.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
-import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.util.ColorUtils;
 import org.slf4j.Logger;
@@ -95,8 +94,7 @@ public class ClusterUtils
 		Parallelization.getTaskExecutor().forEach( pairs, pair -> {
 			int i = pair.getLeft();
 			int j = pair.getRight();
-			double distance = similarityMeasure.compute( trees.get( i ), trees.get( j ),
-					ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION );
+			double distance = similarityMeasure.compute( trees.get( i ), trees.get( j ) );
 			distances[ i ][ j ] = distance;
 			distances[ j ][ i ] = distance; // symmetric
 			int finishedTasks = counter.incrementAndGet();
