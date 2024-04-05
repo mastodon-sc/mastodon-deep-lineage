@@ -41,8 +41,12 @@ import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.Button;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,6 +59,7 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 
 	private static final int WIDTH_INPUT = 7;
 
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	@SuppressWarnings("unused")
 	@Parameter
@@ -160,17 +165,21 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 		if ( controller.isValidParams() )
 		{
 			String feedback;
+			String color;
 			try
 			{
 				controller.createTagSet();
 				feedback = "Classified lineage trees.<p>";
 				feedback += "Tag set created.";
+				color = "green";
 			}
 			catch ( IllegalArgumentException e )
 			{
 				feedback = e.getMessage();
+				color = "red";
+				logger.error( "Error during lineage classification: {}", e.getMessage() );
 			}
-			computeFeedback = "<html><body width=" + WIDTH_INPUT + "cm><font color=\"green\">" + feedback + "</font></body></html>";
+			computeFeedback = "<html><body width=" + WIDTH_INPUT + "cm><font color=\"" + color + "\">" + feedback + "</font></body></html>";
 		}
 	}
 
