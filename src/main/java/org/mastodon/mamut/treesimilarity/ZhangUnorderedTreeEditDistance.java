@@ -136,10 +136,12 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private final Map< Pair< Tree< T >, Tree< T > >, Double > attributeDistances;
 
 	/**
-	 * Simple default cost function that returns the absolute value of the difference between two costs,
-	 * if both costs exist or the cost value of the other, if one value is {@code null}.
+	 * Cost function as used in the treex library tests that returns the absolute value of the difference between two attributes,
+	 * if both attributes exist or the attribute value of the other, if one attribute is {@code null}.
+	 *
+	 * @see <a href="https://gitlab.inria.fr/mosaic/treex/-/blob/master/test/test_analysis/test_zhang_labeled_trees.py?ref_type=heads#L99">treex library</a>
 	 */
-	public static final BinaryOperator< Double > DEFAULT_COST_FUNCTION = ZhangUnorderedTreeEditDistance::defaultCostFunction;
+	public static final BinaryOperator< Double > TREE_X_COST_FUNCTION = ZhangUnorderedTreeEditDistance::treeXCostFunction;
 
 	/**
 	 * Calculates the absolute Zhang edit distance between two labeled unordered trees.
@@ -264,7 +266,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 		forestDistances = new HashMap<>();
 	}
 
-	private static Double defaultCostFunction( Double o1, Double o2 )
+	/**
+	 * @see <a href="https://gitlab.inria.fr/mosaic/treex/-/blob/master/test/test_analysis/test_zhang_labeled_trees.py?ref_type=heads#L99">treex library</a>
+	 */
+	private static Double treeXCostFunction( final Double o1, final Double o2 )
 	{
 		if ( o2 == null )
 			return o1;

@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ZhangUnorderedTreeEditDistanceTest
 {
 
-	private final static BiFunction< Double, Double, Double > defaultCosts = ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION;
+	private final static BiFunction< Double, Double, Double > defaultCosts = ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION;
 
 	@SuppressWarnings("all")
 	@Test
