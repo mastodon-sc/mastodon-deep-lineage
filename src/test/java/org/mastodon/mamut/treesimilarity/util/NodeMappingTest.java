@@ -38,13 +38,14 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTree;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class NodeMappingTest
 {
@@ -142,8 +143,8 @@ class NodeMappingTest
 	private void testNodeMappingForward( Tree< Double > tree1, Tree< Double > tree2, double expectedCosts, String expectedMapping )
 	{
 		Map< Tree< Double >, Tree< Double > > mapping = ZhangUnorderedTreeEditDistance.nodeMapping( tree1, tree2, DEFAULT_COSTS );
-		Assertions.assertEquals( expectedMapping, asString( mapping ) );
-		Assertions.assertEquals( expectedCosts, computeCosts( tree1, tree2, mapping ), 0.0 );
+		assertEquals( expectedMapping, asString( mapping ) );
+		assertEquals( expectedCosts, computeCosts( tree1, tree2, mapping ), 0.0 );
 	}
 
 	private String revertExpectedMapping( String expectedMapping )

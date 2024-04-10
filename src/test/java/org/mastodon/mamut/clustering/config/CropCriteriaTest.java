@@ -28,11 +28,11 @@
  */
 package org.mastodon.mamut.clustering.config;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CropCriteriaTest
@@ -41,13 +41,13 @@ class CropCriteriaTest
 	@Test
 	void testGetName()
 	{
-		Assertions.assertEquals( "Timepoint", CropCriteria.TIMEPOINT.getName() );
+		assertEquals( "Timepoint", CropCriteria.TIMEPOINT.getName() );
 	}
 
 	@Test
 	void testGetByName()
 	{
-		Assertions.assertEquals( CropCriteria.TIMEPOINT, CropCriteria.getByName( "Timepoint" ) );
+		assertEquals( CropCriteria.TIMEPOINT, CropCriteria.getByName( "Timepoint" ) );
 		assertThrows( NoSuchElementException.class, () -> CropCriteria.getByName( "foo" ) );
 	}
 }

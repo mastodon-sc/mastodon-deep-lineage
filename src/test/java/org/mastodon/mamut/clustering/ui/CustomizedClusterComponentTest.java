@@ -30,7 +30,6 @@ package org.mastodon.mamut.clustering.ui;
 
 import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.Cluster;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.clustering.ClusterData;
 import org.mastodon.mamut.clustering.util.Classification;
@@ -41,6 +40,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CustomizedClusterComponentTest
 {
@@ -68,6 +69,6 @@ class CustomizedClusterComponentTest
 		graphics.setColor( defaultColor );
 
 		customizedClusterComponent.paint( ( Graphics2D ) graphics, 0, 0, 1d, 1d, false );
-		Assertions.assertEquals( defaultColor, graphics.getColor() );
+		assertEquals( defaultColor, graphics.getColor() );
 	}
 }

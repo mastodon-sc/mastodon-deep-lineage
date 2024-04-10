@@ -28,13 +28,15 @@
  */
 package org.mastodon.mamut.treesimilarity.tree;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 
 import java.util.Iterator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BranchSpotTreeTest
 {
@@ -42,44 +44,44 @@ class BranchSpotTreeTest
 	@Test
 	void testGetChildren()
 	{
-		Assertions.assertEquals( 2, BranchSpotTreeExamples.tree1().getChildren().size() );
-		Assertions.assertEquals( 2, BranchSpotTreeExamples.tree2().getChildren().size() );
+		assertEquals( 2, BranchSpotTreeExamples.tree1().getChildren().size() );
+		assertEquals( 2, BranchSpotTreeExamples.tree2().getChildren().size() );
 	}
 
 	@Test
 	void testGetAttribute()
 	{
-		Assertions.assertEquals( 20d, BranchSpotTreeExamples.tree1().getAttribute(), 0d );
-		Assertions.assertEquals( 30d, BranchSpotTreeExamples.tree2().getAttribute(), 0d );
+		assertEquals( 20d, BranchSpotTreeExamples.tree1().getAttribute(), 0d );
+		assertEquals( 30d, BranchSpotTreeExamples.tree2().getAttribute(), 0d );
 	}
 
 	@Test
 	void testIsLeaf()
 	{
 		Tree< Double > tree1 = BranchSpotTreeExamples.tree1();
-		Assertions.assertFalse( tree1.isLeaf() );
+		assertFalse( tree1.isLeaf() );
 		Iterator< Tree< Double > > iterator1 = tree1.getChildren().iterator();
-		Assertions.assertTrue( iterator1.next().isLeaf() );
-		Assertions.assertTrue( iterator1.next().isLeaf() );
+		assertTrue( iterator1.next().isLeaf() );
+		assertTrue( iterator1.next().isLeaf() );
 
 		Tree< Double > tree2 = BranchSpotTreeExamples.tree2();
-		Assertions.assertFalse( tree2.isLeaf() );
+		assertFalse( tree2.isLeaf() );
 		Iterator< Tree< Double > > iterator2 = tree1.getChildren().iterator();
-		Assertions.assertTrue( iterator2.next().isLeaf() );
-		Assertions.assertTrue( iterator2.next().isLeaf() );
+		assertTrue( iterator2.next().isLeaf() );
+		assertTrue( iterator2.next().isLeaf() );
 	}
 
 	@Test
 	void testGetBranchSpot()
 	{
-		Assertions.assertEquals( 0d, BranchSpotTreeExamples.emptyTree().getBranchSpot().getTimepoint(), 0d );
-		Assertions.assertEquals( 20d, BranchSpotTreeExamples.tree1().getBranchSpot().getTimepoint(), 0d );
-		Assertions.assertEquals( 30d, BranchSpotTreeExamples.tree2().getBranchSpot().getTimepoint(), 0d );
-		Assertions.assertEquals( 1d, BranchSpotTreeExamples.tree3().getBranchSpot().getTimepoint(), 0d );
-		Assertions.assertEquals( 1d, BranchSpotTreeExamples.tree4().getBranchSpot().getTimepoint(), 0d );
-		Assertions.assertEquals( 13d, BranchSpotTreeExamples.tree5().getBranchSpot().getTimepoint(), 0d );
-		Assertions.assertEquals( 12d, BranchSpotTreeExamples.tree6().getBranchSpot().getTimepoint(), 0d );
-		Assertions.assertEquals( 12d, BranchSpotTreeExamples.tree7().getBranchSpot().getTimepoint(), 0d );
+		assertEquals( 0d, BranchSpotTreeExamples.emptyTree().getBranchSpot().getTimepoint(), 0d );
+		assertEquals( 20d, BranchSpotTreeExamples.tree1().getBranchSpot().getTimepoint(), 0d );
+		assertEquals( 30d, BranchSpotTreeExamples.tree2().getBranchSpot().getTimepoint(), 0d );
+		assertEquals( 1d, BranchSpotTreeExamples.tree3().getBranchSpot().getTimepoint(), 0d );
+		assertEquals( 1d, BranchSpotTreeExamples.tree4().getBranchSpot().getTimepoint(), 0d );
+		assertEquals( 13d, BranchSpotTreeExamples.tree5().getBranchSpot().getTimepoint(), 0d );
+		assertEquals( 12d, BranchSpotTreeExamples.tree6().getBranchSpot().getTimepoint(), 0d );
+		assertEquals( 12d, BranchSpotTreeExamples.tree7().getBranchSpot().getTimepoint(), 0d );
 	}
 
 	@Test
@@ -88,7 +90,7 @@ class BranchSpotTreeTest
 		ExampleGraph2 example = new ExampleGraph2();
 		BranchSpotTree tree = new BranchSpotTree( example.branchSpotB, 20 );
 		// Note: spot3 is the first spot of branchSpotB.
-		Assertions.assertEquals( example.spot3.getLabel(), tree.toString() );
+		assertEquals( example.spot3.getLabel(), tree.toString() );
 	}
 
 	@Test

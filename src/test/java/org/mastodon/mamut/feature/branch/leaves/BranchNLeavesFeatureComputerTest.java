@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.feature.branch.leaves;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.mamut.feature.FeatureComputerTestUtils;
@@ -36,6 +35,8 @@ import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BranchNLeavesFeatureComputerTest
 {
@@ -49,7 +50,7 @@ class BranchNLeavesFeatureComputerTest
 					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph1.getModel(),
 							BranchNLeavesFeature.BRANCH_N_LEAVES_FEATURE_SPEC, BranchNLeavesFeature.PROJECTION_SPEC );
 
-			Assertions.assertEquals( 1, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
+			assertEquals( 1, featureProjection.value( exampleGraph1.branchSpotA ), 0 );
 		}
 	}
 
@@ -63,11 +64,11 @@ class BranchNLeavesFeatureComputerTest
 					FeatureComputerTestUtils.getFeatureProjection( context, exampleGraph2.getModel(),
 							BranchNLeavesFeature.BRANCH_N_LEAVES_FEATURE_SPEC, BranchNLeavesFeature.PROJECTION_SPEC );
 
-			Assertions.assertEquals( 3, featureProjection.value( exampleGraph2.branchSpotA ), 0 );
-			Assertions.assertEquals( 2, featureProjection.value( exampleGraph2.branchSpotB ), 0 );
-			Assertions.assertEquals( 1, featureProjection.value( exampleGraph2.branchSpotC ), 0 );
-			Assertions.assertEquals( 1, featureProjection.value( exampleGraph2.branchSpotD ), 0 );
-			Assertions.assertEquals( 1, featureProjection.value( exampleGraph2.branchSpotE ), 0 );
+			assertEquals( 3, featureProjection.value( exampleGraph2.branchSpotA ), 0 );
+			assertEquals( 2, featureProjection.value( exampleGraph2.branchSpotB ), 0 );
+			assertEquals( 1, featureProjection.value( exampleGraph2.branchSpotC ), 0 );
+			assertEquals( 1, featureProjection.value( exampleGraph2.branchSpotD ), 0 );
+			assertEquals( 1, featureProjection.value( exampleGraph2.branchSpotE ), 0 );
 		}
 	}
 }

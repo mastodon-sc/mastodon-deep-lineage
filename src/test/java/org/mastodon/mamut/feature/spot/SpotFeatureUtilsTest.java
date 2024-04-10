@@ -29,7 +29,6 @@
 package org.mastodon.mamut.feature.spot;
 
 import net.imglib2.util.LinAlgHelpers;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
@@ -41,6 +40,9 @@ import org.mastodon.mamut.model.Spot;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SpotFeatureUtilsTest
@@ -64,13 +66,13 @@ class SpotFeatureUtilsTest
 	{
 		double[] expected = new double[] { 1, 2, 3 };
 		double[] actual = SpotFeatureUtils.spotMovement( graph1.spot1 );
-		Assertions.assertArrayEquals( expected, actual, 0 );
+		assertArrayEquals( expected, actual, 0 );
 	}
 
 	@Test
 	void testSpotMovementNoPredecessor()
 	{
-		Assertions.assertNull( SpotFeatureUtils.spotMovement( graph1.spot0 ) );
+		assertNull( SpotFeatureUtils.spotMovement( graph1.spot0 ) );
 	}
 
 	@SuppressWarnings( "all" )
@@ -86,14 +88,14 @@ class SpotFeatureUtilsTest
 		double[] expected = new double[ 3 ];
 		double[] movementSpot8 = SpotFeatureUtils.spotMovement( graph2.spot8 );
 		double[] movementSpot5 = SpotFeatureUtils.spotMovement( graph2.spot5 );
-		Assertions.assertNotNull( movementSpot8 );
+		assertNotNull( movementSpot8 );
 		LinAlgHelpers.add( movementSpot8, movementSpot5, movementSpot8 );
 		LinAlgHelpers.scale( movementSpot8, 1 / 2d, movementSpot8 );
 		double[] movementSpot13 = SpotFeatureUtils.spotMovement( graph2.spot13 );
-		Assertions.assertNotNull( movementSpot13 );
+		assertNotNull( movementSpot13 );
 		LinAlgHelpers.subtract( movementSpot13, movementSpot8, expected );
 		double[] actual = SpotFeatureUtils.relativeMovement( graph2.spot13, 2, graph2.getModel() );
-		Assertions.assertArrayEquals( expected, actual, 0d );
+		assertArrayEquals( expected, actual, 0d );
 	}
 
 	@SuppressWarnings( "all" )
@@ -108,7 +110,7 @@ class SpotFeatureUtilsTest
 	@Test
 	void testRelativeMovementNoNeighbors()
 	{
-		Assertions.assertNull( SpotFeatureUtils.relativeMovement( graph2.spot1, 2, graph2.getModel() ) );
+		assertNull( SpotFeatureUtils.relativeMovement( graph2.spot1, 2, graph2.getModel() ) );
 	}
 
 	@Test
@@ -117,24 +119,24 @@ class SpotFeatureUtilsTest
 		Predicate< Spot > excludeRootNeighbors = neighbor -> neighbor.incomingEdges().isEmpty();
 		List< Spot > neighbors0 = SpotFeatureUtils.getNNearestNeighbors( graph2.getModel(), graph2.spot13, 1, excludeRootNeighbors );
 		List< Spot > neighbors2 = SpotFeatureUtils.getNNearestNeighbors( graph2.getModel(), graph2.spot13, 2, excludeRootNeighbors );
-		Assertions.assertArrayEquals( new Spot[] { graph2.spot8 }, neighbors0.toArray() );
-		Assertions.assertArrayEquals( new Spot[] { graph2.spot8, graph2.spot5 }, neighbors2.toArray() );
+		assertArrayEquals( new Spot[] { graph2.spot8 }, neighbors0.toArray() );
+		assertArrayEquals( new Spot[] { graph2.spot8, graph2.spot5 }, neighbors2.toArray() );
 	}
 
 	@Test
 	void testNeighborsAverageMovement()
 	{
-		Assertions.assertNull(
+		assertNull(
 				SpotFeatureUtils.neighborsAverageMovement( graph5.spot0, 2, graph5.getModel(), SpotFeatureUtils::spotMovement, null ) );
-		Assertions.assertArrayEquals( new double[] { 0, 2d, 0 },
+		assertArrayEquals( new double[] { 0, 2d, 0 },
 				SpotFeatureUtils.neighborsAverageMovement( graph5.spot1, 2, graph5.getModel(), SpotFeatureUtils::spotMovement, null ), 0d );
-		Assertions.assertArrayEquals( new double[] { 0, 2d, 0 },
+		assertArrayEquals( new double[] { 0, 2d, 0 },
 				SpotFeatureUtils.neighborsAverageMovement( graph5.spot2, 2, graph5.getModel(), SpotFeatureUtils::spotMovement, null ), 0d );
-		Assertions.assertArrayEquals( new double[] { 0, 2d, 0 },
+		assertArrayEquals( new double[] { 0, 2d, 0 },
 				SpotFeatureUtils.neighborsAverageMovement( graph5.spot3, 2, graph5.getModel(), SpotFeatureUtils::spotMovement, null ), 0d );
-		Assertions.assertArrayEquals( new double[] { 1d, 2d, 0 },
+		assertArrayEquals( new double[] { 1d, 2d, 0 },
 				SpotFeatureUtils.neighborsAverageMovement( graph5.spot4, 2, graph5.getModel(), SpotFeatureUtils::spotMovement, null ), 0d );
-		Assertions.assertArrayEquals( new double[] { 0, 2d, 0 },
+		assertArrayEquals( new double[] { 0, 2d, 0 },
 				SpotFeatureUtils.neighborsAverageMovement( graph5.spot5, 2, graph5.getModel(), SpotFeatureUtils::spotMovement, null ), 0d );
 	}
 }

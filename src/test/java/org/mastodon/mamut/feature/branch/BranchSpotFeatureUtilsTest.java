@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.feature.branch;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
@@ -38,6 +37,12 @@ import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph5;
 import org.mastodon.mamut.model.Spot;
 
 import java.util.Iterator;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BranchSpotFeatureUtilsTest
 {
@@ -62,18 +67,18 @@ class BranchSpotFeatureUtilsTest
 	void testGetSpotIterator()
 	{
 		Iterator< Spot > spotIterator = BranchSpotFeatureUtils.getSpotIterator( graph1.getModel(), graph1.branchSpotA );
-		Assertions.assertNotNull( spotIterator );
-		Assertions.assertTrue( spotIterator.hasNext() );
-		Assertions.assertEquals( graph1.spot0, spotIterator.next() );
-		Assertions.assertTrue( spotIterator.hasNext() );
-		Assertions.assertEquals( graph1.spot1, spotIterator.next() );
-		Assertions.assertTrue( spotIterator.hasNext() );
-		Assertions.assertEquals( graph1.spot2, spotIterator.next() );
-		Assertions.assertTrue( spotIterator.hasNext() );
-		Assertions.assertEquals( graph1.spot3, spotIterator.next() );
-		Assertions.assertTrue( spotIterator.hasNext() );
-		Assertions.assertEquals( graph1.spot4, spotIterator.next() );
-		Assertions.assertFalse( spotIterator.hasNext() );
+		assertNotNull( spotIterator );
+		assertTrue( spotIterator.hasNext() );
+		assertEquals( graph1.spot0, spotIterator.next() );
+		assertTrue( spotIterator.hasNext() );
+		assertEquals( graph1.spot1, spotIterator.next() );
+		assertTrue( spotIterator.hasNext() );
+		assertEquals( graph1.spot2, spotIterator.next() );
+		assertTrue( spotIterator.hasNext() );
+		assertEquals( graph1.spot3, spotIterator.next() );
+		assertTrue( spotIterator.hasNext() );
+		assertEquals( graph1.spot4, spotIterator.next() );
+		assertFalse( spotIterator.hasNext() );
 		graph1.getModel().getBranchGraph().releaseIterator( spotIterator );
 	}
 
@@ -81,7 +86,7 @@ class BranchSpotFeatureUtilsTest
 	void testCumulatedDistance()
 	{
 		double expected = 4 * Math.sqrt( 1 + 4 + 9 );
-		Assertions.assertEquals( expected, BranchSpotFeatureUtils.cumulatedDistance( graph1.getModel(), graph1.branchSpotA ), 0d );
+		assertEquals( expected, BranchSpotFeatureUtils.cumulatedDistance( graph1.getModel(), graph1.branchSpotA ), 0d );
 	}
 
 	@Test
@@ -89,7 +94,7 @@ class BranchSpotFeatureUtilsTest
 	{
 		Spot spotRef = BranchSpotFeatureUtils.getSpotRef( graph1.getModel() );
 		graph1.getModel().getBranchGraph().getLastLinkedVertex( graph1.branchSpotA, spotRef );
-		Assertions.assertEquals( graph1.spot4, spotRef );
+		assertEquals( graph1.spot4, spotRef );
 		graph1.getModel().getGraph().releaseRef( spotRef );
 	}
 
@@ -97,14 +102,14 @@ class BranchSpotFeatureUtilsTest
 	void testDirectDistance()
 	{
 		double expected = Math.sqrt( 16 + 64 + 144 );
-		Assertions.assertEquals( expected, BranchSpotFeatureUtils.directDistance( graph1.getModel(), graph1.branchSpotA ), 0d );
+		assertEquals( expected, BranchSpotFeatureUtils.directDistance( graph1.getModel(), graph1.branchSpotA ), 0d );
 	}
 
 	@Test
 	void testGetFirstSpotCoordinates()
 	{
 		double[] expected = new double[] { 1, 2, 3 };
-		Assertions.assertArrayEquals( expected, BranchSpotFeatureUtils.getFirstSpotCoordinates( graph1.getModel(), graph1.branchSpotA ),
+		assertArrayEquals( expected, BranchSpotFeatureUtils.getFirstSpotCoordinates( graph1.getModel(), graph1.branchSpotA ),
 				0d );
 	}
 
@@ -112,7 +117,7 @@ class BranchSpotFeatureUtilsTest
 	void testGetLastSpotCoordinates()
 	{
 		double[] expected = new double[] { 5, 10, 15 };
-		Assertions.assertArrayEquals( expected, BranchSpotFeatureUtils.getLastSpotCoordinates( graph1.getModel(), graph1.branchSpotA ),
+		assertArrayEquals( expected, BranchSpotFeatureUtils.getLastSpotCoordinates( graph1.getModel(), graph1.branchSpotA ),
 				0d );
 	}
 
@@ -124,63 +129,57 @@ class BranchSpotFeatureUtilsTest
 		double expectedX = 4 / distance;
 		double expectedY = 8 / distance;
 		double expectedZ = 12 / distance;
-		Assertions.assertEquals( expectedX, normalizedDirection[ 0 ], 0d );
-		Assertions.assertEquals( expectedY, normalizedDirection[ 1 ], 0d );
-		Assertions.assertEquals( expectedZ, normalizedDirection[ 2 ], 0d );
+		assertEquals( expectedX, normalizedDirection[ 0 ], 0d );
+		assertEquals( expectedY, normalizedDirection[ 1 ], 0d );
+		assertEquals( expectedZ, normalizedDirection[ 2 ], 0d );
 	}
 
 	@Test
 	void testCountLeaves()
 	{
-		Assertions.assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph1.getModel().getBranchGraph(), graph1.branchSpotA ) );
-		Assertions.assertEquals( 3, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotA ) );
-		Assertions.assertEquals( 2, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotB ) );
-		Assertions.assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotC ) );
-		Assertions.assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotD ) );
-		Assertions.assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotE ) );
+		assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph1.getModel().getBranchGraph(), graph1.branchSpotA ) );
+		assertEquals( 3, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotA ) );
+		assertEquals( 2, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotB ) );
+		assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotC ) );
+		assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotD ) );
+		assertEquals( 1, BranchSpotFeatureUtils.countLeaves( graph2.getModel().getBranchGraph(), graph2.branchSpotE ) );
 	}
 
 	@Test
 	void testTotalBranchDurations()
 	{
-		Assertions.assertEquals( 4, BranchSpotFeatureUtils.totalBranchDurations( graph1.getModel().getBranchGraph(), graph1.branchSpotA ),
-				0d );
-		Assertions.assertEquals( 14, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotA ),
-				0d );
-		Assertions.assertEquals( 8, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotB ),
-				0d );
-		Assertions.assertEquals( 3, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotC ),
-				0d );
-		Assertions.assertEquals( 3, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotD ),
-				0d );
-		Assertions.assertEquals( 3, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotE ),
-				0d );
+		assertEquals( 4, BranchSpotFeatureUtils.totalBranchDurations( graph1.getModel().getBranchGraph(), graph1.branchSpotA ), 0d );
+		assertEquals( 14, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotA ), 0d );
+		assertEquals( 8, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotB ), 0d );
+		assertEquals( 3, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotC ), 0d );
+		assertEquals( 3, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotD ), 0d );
+		assertEquals( 3, BranchSpotFeatureUtils.totalBranchDurations( graph2.getModel().getBranchGraph(), graph2.branchSpotE ), 0d );
 
 	}
 
 	@Test
 	void testBranchDuration()
 	{
-		Assertions.assertEquals( 4, BranchSpotFeatureUtils.branchDuration( graph1.branchSpotA ) );
-		Assertions.assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotA ) );
-		Assertions.assertEquals( 2, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotB ) );
-		Assertions.assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotC ) );
-		Assertions.assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotD ) );
-		Assertions.assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotE ) );
+		assertEquals( 4, BranchSpotFeatureUtils.branchDuration( graph1.branchSpotA ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotA ) );
+		assertEquals( 2, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotB ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotC ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotD ) );
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotE ) );
 	}
 
 	@Test
 	void testRelativeMovementGraph3()
 	{
 		double actual = BranchSpotFeatureUtils.relativeMovement( graph3.branchSpotA, 2, graph3.getModel() );
-		Assertions.assertEquals( 2d, actual, 0d );
+		assertEquals( 2d, actual, 0d );
 	}
 
 	@Test
 	void testNormalizedRelativeMovementDirectionGraph3()
 	{
 		double[] actual = BranchSpotFeatureUtils.normalizedRelativeMovementDirection( graph3.branchSpotA, 2, graph3.getModel() );
-		Assertions.assertArrayEquals( new double[] { 0, 1, 0 }, actual, 0d );
+		assertArrayEquals( new double[] { 0, 1, 0 }, actual, 0d );
 	}
 
 	@Test
@@ -188,7 +187,7 @@ class BranchSpotFeatureUtilsTest
 	{
 		double expected = ( 4 * 1d + Math.sqrt( 2d ) ) / 5d;
 		double actual = BranchSpotFeatureUtils.relativeMovement( graph5.branchSpotA, 2, graph5.getModel() );
-		Assertions.assertEquals( expected, actual, 0d );
+		assertEquals( expected, actual, 0d );
 	}
 
 	@Test
@@ -196,6 +195,6 @@ class BranchSpotFeatureUtilsTest
 	{
 		double[] expected = new double[] { -1d / Math.sqrt( 26d ), -5d / Math.sqrt( 26 ), 0 };
 		double[] actual = BranchSpotFeatureUtils.normalizedRelativeMovementDirection( graph5.branchSpotA, 2, graph5.getModel() );
-		Assertions.assertArrayEquals( expected, actual, 0d );
+		assertArrayEquals( expected, actual, 0d );
 	}
 }

@@ -28,9 +28,9 @@
  */
 package org.mastodon.mamut.io.importer.labelimage.math;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CovarianceMatrixTest
@@ -44,9 +44,9 @@ class CovarianceMatrixTest
 			matrix.addValues( values );
 		double[][] actual = matrix.get();
 
-		Assertions.assertArrayEquals( new double[] { 3d, 4d }, matrix.getMeans(), 0.0001d );
-		Assertions.assertArrayEquals( new double[] { 2.5d, 2.5d }, actual[ 0 ], 0.0001d );
-		Assertions.assertArrayEquals( new double[] { 2.5d, 2.5d }, actual[ 1 ], 0.0001d );
+		assertArrayEquals( new double[] { 3d, 4d }, matrix.getMeans(), 0.0001d );
+		assertArrayEquals( new double[] { 2.5d, 2.5d }, actual[ 0 ], 0.0001d );
+		assertArrayEquals( new double[] { 2.5d, 2.5d }, actual[ 1 ], 0.0001d );
 	}
 
 	@Test

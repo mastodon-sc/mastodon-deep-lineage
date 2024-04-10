@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.feature.branch.division;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.feature.Feature;
@@ -43,6 +42,10 @@ import org.scijava.Context;
 
 import java.io.IOException;
 import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BranchCellDivisionFrequencyFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
@@ -67,11 +70,11 @@ public class BranchCellDivisionFrequencyFeatureTest extends AbstractFeatureTest<
 		FeatureProjection< BranchSpot > projection =
 				getProjection( branchNormalizedCellDivisionsFeature, BranchCellDivisionFrequencyFeature.PROJECTION_SPEC );
 
-		Assertions.assertEquals( 2d / 14d, projection.value( graph.branchSpotA ), 0d );
-		Assertions.assertEquals( 1d / 8d, projection.value( graph.branchSpotB ), 0d );
-		Assertions.assertEquals( 0d, projection.value( graph.branchSpotC ), 0d );
-		Assertions.assertEquals( 0d, projection.value( graph.branchSpotD ), 0d );
-		Assertions.assertEquals( 0d, projection.value( graph.branchSpotE ), 0d );
+		assertEquals( 2d / 14d, projection.value( graph.branchSpotA ), 0d );
+		assertEquals( 1d / 8d, projection.value( graph.branchSpotB ), 0d );
+		assertEquals( 0d, projection.value( graph.branchSpotC ), 0d );
+		assertEquals( 0d, projection.value( graph.branchSpotD ), 0d );
+		assertEquals( 0d, projection.value( graph.branchSpotE ), 0d );
 	}
 
 	@Test
@@ -86,7 +89,7 @@ public class BranchCellDivisionFrequencyFeatureTest extends AbstractFeatureTest<
 							branchNormalizedCellDivisionsFeature );
 		}
 		// check that the feature has correct values after saving and reloading
-		Assertions.assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchNormalizedCellDivisionsFeature,
+		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchNormalizedCellDivisionsFeature,
 				branchCellDivisionFrequencyFeatureReloaded,
 				Collections.singleton( graph.branchSpotA ) ) );
 	}
@@ -96,7 +99,7 @@ public class BranchCellDivisionFrequencyFeatureTest extends AbstractFeatureTest<
 	public void testFeatureInvalidate()
 	{
 		// test, if features are not NaN before invalidation
-		Assertions.assertFalse( Double.isNaN(
+		assertFalse( Double.isNaN(
 				getProjection( branchNormalizedCellDivisionsFeature, BranchCellDivisionFrequencyFeature.PROJECTION_SPEC )
 						.value( graph.branchSpotA ) ) );
 
@@ -104,7 +107,7 @@ public class BranchCellDivisionFrequencyFeatureTest extends AbstractFeatureTest<
 		branchNormalizedCellDivisionsFeature.invalidate( graph.branchSpotA );
 
 		// test, if features are NaN after invalidation
-		Assertions.assertTrue( Double.isNaN(
+		assertTrue( Double.isNaN(
 				getProjection( branchNormalizedCellDivisionsFeature, BranchCellDivisionFrequencyFeature.PROJECTION_SPEC )
 						.value( graph.branchSpotA ) ) );
 	}
