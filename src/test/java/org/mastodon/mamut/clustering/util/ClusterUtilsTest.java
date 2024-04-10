@@ -470,7 +470,7 @@ public class ClusterUtilsTest
 	}
 
 	@Test
-	public void testGetTagValue()
+	public void testGetTagLabel()
 	{
 		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
 		String tagSetName = "TagSet";
@@ -479,6 +479,6 @@ public class ClusterUtilsTest
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( exampleGraph2.getModel(), tagSetName, tagAndColor );
 		TagSetStructure.Tag tag = tagSet.getTags().get( 0 );
 		TagSetUtils.tagBranch( exampleGraph2.getModel(), tagSet, tag, exampleGraph2.spot5 );
-		assertEquals( tag.label(), ClusterUtils.getTagValue( exampleGraph2.getModel(), exampleGraph2.branchSpotD, tagSet ) );
+		assertEquals( tag.label(), ClusterUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, tagSet ) );
 	}
 }

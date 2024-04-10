@@ -397,14 +397,14 @@ public class ClusterUtils
 	}
 
 	/**
-	 * Gets the tag value of the first spot in the given branchSpot within the given tagSet.
+	 * Gets the tag label of the first spot in the given branchSpot within the given tagSet.
 	 * @param model the model to which the branch belongs
 	 * @param branchSpot the branch spot
 	 * @param tagSet the tag set
-	 * @return the tag value
+	 * @return the tag label
 	 * TODO remove after mastodon-core release 1.0.0-beta-30 and replace by TagSetUtils.getTagValue
 	 */
-	public static String getTagValue( final Model model, final BranchSpot branchSpot, final TagSetStructure.TagSet tagSet )
+	public static String getTagLabel( final Model model, final BranchSpot branchSpot, final TagSetStructure.TagSet tagSet )
 	{
 		Spot first = LineageTreeUtils.getFirstSpot( model, branchSpot );
 		TagSetStructure.Tag tag = tagSet == null ? null : TagSetUtils.getBranchTag( model, tagSet, first );

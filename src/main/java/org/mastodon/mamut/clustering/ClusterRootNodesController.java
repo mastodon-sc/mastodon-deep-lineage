@@ -266,7 +266,7 @@ public class ClusterRootNodesController
 			try
 			{
 				BranchSpotTree branchSpotTree = new BranchSpotTree( rootBranchSpot, cropEndTime );
-				String tagValue = ClusterUtils.getTagValue( model, rootBranchSpot, tagSet );
+				String tagValue = ClusterUtils.getTagLabel( model, rootBranchSpot, tagSet );
 				BranchSpotTreeWithExtraLabel tree = new BranchSpotTreeWithExtraLabel( branchSpotTree, tagValue );
 				int minTreeSize = 2 * minCellDivisions + 1;
 				if ( TreeUtils.size( tree ) < minTreeSize )
