@@ -28,6 +28,6 @@ public class BranchSpotTreeWithExtraLabel extends BranchSpotTree
 	@Override
 	public String toString()
 	{
-		return super.toString().concat( extraLabel == null ? "" : " " + extraLabel );
+		return super.toString() + " " + extraLabel;
 	}
 }
