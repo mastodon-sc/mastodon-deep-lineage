@@ -174,10 +174,12 @@ class DendrogramPanelTest
 		File tempFile = File.createTempFile( "dendrogram", ".png" );
 		tempFile.deleteOnExit();
 		int screenResolution = 96;
+		int outputWidth = width * DendrogramPanel.PRINT_RESOLUTION / screenResolution;
+		int outputHeight = height * DendrogramPanel.PRINT_RESOLUTION / screenResolution;
 		dendrogramPanel.export( tempFile, "png", screenResolution );
 		Image test = ImageIO.read( tempFile );
-		assertEquals( width * DendrogramPanel.PRINT_RESOLUTION / screenResolution, test.getWidth( null ) );
-		assertEquals( height * DendrogramPanel.PRINT_RESOLUTION / screenResolution, test.getHeight( null ) );
+		assertEquals( outputWidth, test.getWidth( null ) );
+		assertEquals( outputHeight, test.getHeight( null ) );
 	}
 
 	private void adaptClusterValues( Cluster cluster )
