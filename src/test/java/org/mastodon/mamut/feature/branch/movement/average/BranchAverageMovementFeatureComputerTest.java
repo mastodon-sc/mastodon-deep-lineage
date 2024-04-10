@@ -28,21 +28,19 @@
  */
 package org.mastodon.mamut.feature.branch.movement.average;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
-import org.mastodon.mamut.feature.branch.movement.average.BranchAverageMovementFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
-import static org.junit.Assert.assertEquals;
-
-public class BranchAverageMovementFeatureComputerTest
+class BranchAverageMovementFeatureComputerTest
 {
 
 	@Test
-	public void testCompute()
+	void testCompute()
 	{
 		try (Context context = new Context())
 		{
@@ -52,13 +50,13 @@ public class BranchAverageMovementFeatureComputerTest
 							BranchAverageMovementFeature.BRANCH_AVERAGE_MOVEMENT_FEATURE_SPEC,
 							BranchAverageMovementFeature.PROJECTION_SPEC );
 
-			assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 9 + 36 + 81 ) ) / 2d,
+			Assertions.assertEquals( ( Math.sqrt( 1 + 4 + 9 ) + Math.sqrt( 9 + 36 + 81 ) ) / 2d,
 					featureProjection.value( exampleGraph2.branchSpotA ), 0 );
-			assertEquals( Math.sqrt( 4 + 16 + 36 ) / 2d, featureProjection.value( exampleGraph2.branchSpotC ), 0 );
-			assertEquals( Math.sqrt( 1 + 4 + 9 ), featureProjection.value( exampleGraph2.branchSpotB ), 0 );
-			assertEquals( ( Math.sqrt( 36 + 144 + 324 ) + Math.sqrt( 64 + 256 + 576 ) ) / 2d,
+			Assertions.assertEquals( Math.sqrt( 4 + 16 + 36 ) / 2d, featureProjection.value( exampleGraph2.branchSpotC ), 0 );
+			Assertions.assertEquals( Math.sqrt( 1 + 4 + 9 ), featureProjection.value( exampleGraph2.branchSpotB ), 0 );
+			Assertions.assertEquals( ( Math.sqrt( 36 + 144 + 324 ) + Math.sqrt( 64 + 256 + 576 ) ) / 2d,
 					featureProjection.value( exampleGraph2.branchSpotD ), 0 );
-			assertEquals( Math.sqrt( 4 + 16 + 36 ) / 2d, featureProjection.value( exampleGraph2.branchSpotE ), 0 );
+			Assertions.assertEquals( Math.sqrt( 4 + 16 + 36 ) / 2d, featureProjection.value( exampleGraph2.branchSpotE ), 0 );
 		}
 	}
 }

@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.treesimilarity.util;
 
-import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,14 +38,15 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTree;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
 
-public class NodeMappingTest
+class NodeMappingTest
 {
 
 	private static final BiFunction< Double, Double, Double > DEFAULT_COSTS = ( o1, o2 ) -> {
@@ -57,77 +57,77 @@ public class NodeMappingTest
 	};
 
 	@Test
-	public void testTree1vs2()
+	void testTree1vs2()
 	{
 		testNodeMapping( SimpleTreeExamples.tree1(), SimpleTreeExamples.tree2(),
 				20, "10->10, 20->30, 30->20" );
 	}
 
 	@Test
-	public void testTree3vs4()
+	void testTree3vs4()
 	{
 		testNodeMapping( SimpleTreeExamples.tree3(), SimpleTreeExamples.tree4(),
 				4, "1->1, 1->1, 100->100" );
 	}
 
 	@Test
-	public void testTree5vs6()
+	void testTree5vs6()
 	{
 		testNodeMapping( SimpleTreeExamples.tree5(), SimpleTreeExamples.tree6(),
 				49, "13->12, 203->227, 203->227" );
 	}
 
 	@Test
-	public void testTree5vs7()
+	void testTree5vs7()
 	{
 		testNodeMapping( SimpleTreeExamples.tree5(), SimpleTreeExamples.tree7(),
 				69, "13->12, 203->227, 203->227" );
 	}
 
 	@Test
-	public void testTree8vs9()
+	void testTree8vs9()
 	{
 		testNodeMapping( SimpleTreeExamples.tree8(), SimpleTreeExamples.tree9(),
 				1, "1->1, 2->2, 3->3, 4->4, 5->4, 8->8, 8->8" );
 	}
 
 	@Test
-	public void testTree12vs13()
+	void testTree12vs13()
 	{
 		testNodeMapping( SimpleTreeExamples.tree12(), SimpleTreeExamples.tree13(),
 				2, "100->100, 1000->1000, 200->200" );
 	}
 
 	@Test
-	public void testNonBinaryTree()
+	void testNonBinaryTree()
 	{
 		testNodeMapping( SimpleTreeExamples.tree14(), SimpleTreeExamples.nonBinaryTree(),
 				1_000_003, "10000->10001, 2->3, 4->5" );
 	}
 
 	@Test
-	public void testTree15vs16()
+	void testTree15vs16()
 	{
 		testNodeMapping( SimpleTreeExamples.tree15(), SimpleTreeExamples.tree16(),
 				203, "1000->1000, 200->200, 300->300" );
 	}
 
 	@Test
-	public void testTree18vs19()
+	void testTree18vs19()
 	{
 		testNodeMapping( SimpleTreeExamples.tree18(), SimpleTreeExamples.tree19(),
 				21, "100->100, 200->200, 300->300" );
 	}
 
 	@Test
-	public void testEmptyTrees()
+	void testEmptyTrees()
 	{
 		testNodeMapping( SimpleTreeExamples.tree1(), null, 60, "" );
 		testNodeMapping( null, null, 0, "" );
 	}
 
 	@Test
-	public void testLeaves()
+	void testLeaves()
 	{
 		testNodeMapping( new SimpleTree<>( 10d ), null, 10, "" );
 		testNodeMapping( new SimpleTree<>( 10d ), new SimpleTree<>( 20d ), 10, "10->20" );
@@ -142,8 +142,8 @@ public class NodeMappingTest
 	private void testNodeMappingForward( Tree< Double > tree1, Tree< Double > tree2, double expectedCosts, String expectedMapping )
 	{
 		Map< Tree< Double >, Tree< Double > > mapping = ZhangUnorderedTreeEditDistance.nodeMapping( tree1, tree2, DEFAULT_COSTS );
-		assertEquals( expectedMapping, asString( mapping ) );
-		assertEquals( expectedCosts, computeCosts( tree1, tree2, mapping ), 0.0 );
+		Assertions.assertEquals( expectedMapping, asString( mapping ) );
+		Assertions.assertEquals( expectedCosts, computeCosts( tree1, tree2, mapping ), 0.0 );
 	}
 
 	private String revertExpectedMapping( String expectedMapping )

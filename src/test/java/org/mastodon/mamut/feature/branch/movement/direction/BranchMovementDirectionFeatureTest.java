@@ -28,24 +28,20 @@
  */
 package org.mastodon.mamut.feature.branch.movement.direction;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.mamut.feature.AbstractFeatureTest;
 import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.feature.FeatureSerializerTestUtils;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
-import org.mastodon.mamut.feature.branch.movement.direction.BranchMovementDirectionFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
 import java.io.IOException;
 import java.util.Collections;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class BranchMovementDirectionFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
@@ -54,7 +50,7 @@ public class BranchMovementDirectionFeatureTest extends AbstractFeatureTest< Bra
 
 	private final ExampleGraph1 graph = new ExampleGraph1();
 
-	@Before
+	@BeforeEach
 	public void setUp()
 	{
 		try (Context context = new Context())
@@ -80,9 +76,9 @@ public class BranchMovementDirectionFeatureTest extends AbstractFeatureTest< Bra
 		FeatureProjection< BranchSpot > zProjection =
 				getProjection( branchMovementDirectionFeature, BranchMovementDirectionFeature.MOVEMENT_DIRECTION_Z_PROJECTION_SPEC );
 
-		assertEquals( expectedX, xProjection.value( graph.branchSpotA ), 0.0001d );
-		assertEquals( expectedY, yProjection.value( graph.branchSpotA ), 0.0001d );
-		assertEquals( expectedZ, zProjection.value( graph.branchSpotA ), 0.0001d );
+		Assertions.assertEquals( expectedX, xProjection.value( graph.branchSpotA ), 0.0001d );
+		Assertions.assertEquals( expectedY, yProjection.value( graph.branchSpotA ), 0.0001d );
+		Assertions.assertEquals( expectedZ, zProjection.value( graph.branchSpotA ), 0.0001d );
 	}
 
 	@Test
@@ -97,7 +93,7 @@ public class BranchMovementDirectionFeatureTest extends AbstractFeatureTest< Bra
 							branchMovementDirectionFeature );
 		}
 		// check that the feature has correct values after saving and reloading
-		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchMovementDirectionFeature,
+		Assertions.assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchMovementDirectionFeature,
 				branchMovementDirectionFeatureReloaded,
 				Collections.singleton( graph.branchSpotA ) ) );
 	}
@@ -107,30 +103,27 @@ public class BranchMovementDirectionFeatureTest extends AbstractFeatureTest< Bra
 	public void testFeatureInvalidate()
 	{
 		// test, if features are not NaN before invalidation
-		assertFalse(
-				Double.isNaN(
-						getProjection( branchMovementDirectionFeature, BranchMovementDirectionFeature.MOVEMENT_DIRECTION_Y_PROJECTION_SPEC )
-								.value( graph.branchSpotA ) ) );
-		assertFalse(
-				Double.isNaN(
-						getProjection( branchMovementDirectionFeature, BranchMovementDirectionFeature.MOVEMENT_DIRECTION_Y_PROJECTION_SPEC )
-								.value( graph.branchSpotA ) ) );
-		assertFalse(
-				Double.isNaN(
-						getProjection( branchMovementDirectionFeature, BranchMovementDirectionFeature.MOVEMENT_DIRECTION_Z_PROJECTION_SPEC )
-								.value( graph.branchSpotA ) ) );
+		Assertions.assertFalse( Double.isNaN(
+				getProjection( branchMovementDirectionFeature, BranchMovementDirectionFeature.MOVEMENT_DIRECTION_Y_PROJECTION_SPEC )
+						.value( graph.branchSpotA ) ) );
+		Assertions.assertFalse( Double.isNaN(
+				getProjection( branchMovementDirectionFeature, BranchMovementDirectionFeature.MOVEMENT_DIRECTION_Y_PROJECTION_SPEC )
+						.value( graph.branchSpotA ) ) );
+		Assertions.assertFalse( Double.isNaN(
+				getProjection( branchMovementDirectionFeature, BranchMovementDirectionFeature.MOVEMENT_DIRECTION_Z_PROJECTION_SPEC )
+						.value( graph.branchSpotA ) ) );
 
 		// invalidate feature
 		branchMovementDirectionFeature.invalidate( graph.branchSpotA );
 
 		// test, if features are NaN after invalidation
-		assertTrue( Double.isNaN(
+		Assertions.assertTrue( Double.isNaN(
 				getProjection( branchMovementDirectionFeature, BranchMovementDirectionFeature.MOVEMENT_DIRECTION_X_PROJECTION_SPEC ).value(
 						graph.branchSpotA ) ) );
-		assertTrue( Double.isNaN(
+		Assertions.assertTrue( Double.isNaN(
 				getProjection( branchMovementDirectionFeature, BranchMovementDirectionFeature.MOVEMENT_DIRECTION_Y_PROJECTION_SPEC ).value(
 						graph.branchSpotA ) ) );
-		assertTrue( Double.isNaN(
+		Assertions.assertTrue( Double.isNaN(
 				getProjection( branchMovementDirectionFeature, BranchMovementDirectionFeature.MOVEMENT_DIRECTION_Z_PROJECTION_SPEC ).value(
 						graph.branchSpotA ) ) );
 	}

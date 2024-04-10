@@ -28,79 +28,72 @@
  */
 package org.mastodon.mamut.treesimilarity.tree;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
-import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.mamut.model.branch.ModelBranchGraph;
 
 import java.util.Iterator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class BranchSpotTreeTest
+class BranchSpotTreeTest
 {
 
 	@Test
-	public void testGetChildren()
+	void testGetChildren()
 	{
-		assertEquals( 2, BranchSpotTreeExamples.tree1().getChildren().size() );
-		assertEquals( 2, BranchSpotTreeExamples.tree2().getChildren().size() );
+		Assertions.assertEquals( 2, BranchSpotTreeExamples.tree1().getChildren().size() );
+		Assertions.assertEquals( 2, BranchSpotTreeExamples.tree2().getChildren().size() );
 	}
 
 	@Test
-	public void testGetAttribute()
+	void testGetAttribute()
 	{
-		assertEquals( 20d, BranchSpotTreeExamples.tree1().getAttribute(), 0d );
-		assertEquals( 30d, BranchSpotTreeExamples.tree2().getAttribute(), 0d );
+		Assertions.assertEquals( 20d, BranchSpotTreeExamples.tree1().getAttribute(), 0d );
+		Assertions.assertEquals( 30d, BranchSpotTreeExamples.tree2().getAttribute(), 0d );
 	}
 
 	@Test
-	public void testIsLeaf()
+	void testIsLeaf()
 	{
 		Tree< Double > tree1 = BranchSpotTreeExamples.tree1();
-		assertFalse( tree1.isLeaf() );
+		Assertions.assertFalse( tree1.isLeaf() );
 		Iterator< Tree< Double > > iterator1 = tree1.getChildren().iterator();
-		assertTrue( iterator1.next().isLeaf() );
-		assertTrue( iterator1.next().isLeaf() );
+		Assertions.assertTrue( iterator1.next().isLeaf() );
+		Assertions.assertTrue( iterator1.next().isLeaf() );
 
 		Tree< Double > tree2 = BranchSpotTreeExamples.tree2();
-		assertFalse( tree2.isLeaf() );
+		Assertions.assertFalse( tree2.isLeaf() );
 		Iterator< Tree< Double > > iterator2 = tree1.getChildren().iterator();
-		assertTrue( iterator2.next().isLeaf() );
-		assertTrue( iterator2.next().isLeaf() );
+		Assertions.assertTrue( iterator2.next().isLeaf() );
+		Assertions.assertTrue( iterator2.next().isLeaf() );
 	}
 
 	@Test
-	public void testGetBranchSpot()
+	void testGetBranchSpot()
 	{
-		assertEquals( 0d, BranchSpotTreeExamples.emptyTree().getBranchSpot().getTimepoint(), 0d );
-		assertEquals( 20d, BranchSpotTreeExamples.tree1().getBranchSpot().getTimepoint(), 0d );
-		assertEquals( 30d, BranchSpotTreeExamples.tree2().getBranchSpot().getTimepoint(), 0d );
-		assertEquals( 1d, BranchSpotTreeExamples.tree3().getBranchSpot().getTimepoint(), 0d );
-		assertEquals( 1d, BranchSpotTreeExamples.tree4().getBranchSpot().getTimepoint(), 0d );
-		assertEquals( 13d, BranchSpotTreeExamples.tree5().getBranchSpot().getTimepoint(), 0d );
-		assertEquals( 12d, BranchSpotTreeExamples.tree6().getBranchSpot().getTimepoint(), 0d );
-		assertEquals( 12d, BranchSpotTreeExamples.tree7().getBranchSpot().getTimepoint(), 0d );
+		Assertions.assertEquals( 0d, BranchSpotTreeExamples.emptyTree().getBranchSpot().getTimepoint(), 0d );
+		Assertions.assertEquals( 20d, BranchSpotTreeExamples.tree1().getBranchSpot().getTimepoint(), 0d );
+		Assertions.assertEquals( 30d, BranchSpotTreeExamples.tree2().getBranchSpot().getTimepoint(), 0d );
+		Assertions.assertEquals( 1d, BranchSpotTreeExamples.tree3().getBranchSpot().getTimepoint(), 0d );
+		Assertions.assertEquals( 1d, BranchSpotTreeExamples.tree4().getBranchSpot().getTimepoint(), 0d );
+		Assertions.assertEquals( 13d, BranchSpotTreeExamples.tree5().getBranchSpot().getTimepoint(), 0d );
+		Assertions.assertEquals( 12d, BranchSpotTreeExamples.tree6().getBranchSpot().getTimepoint(), 0d );
+		Assertions.assertEquals( 12d, BranchSpotTreeExamples.tree7().getBranchSpot().getTimepoint(), 0d );
 	}
 
 	@Test
-	public void testToString()
+	void testToString()
 	{
 		ExampleGraph2 example = new ExampleGraph2();
 		BranchSpotTree tree = new BranchSpotTree( example.branchSpotB, 20 );
 		// Note: spot3 is the first spot of branchSpotB.
-		assertEquals( example.spot3.getLabel(), tree.toString() );
+		Assertions.assertEquals( example.spot3.getLabel(), tree.toString() );
 	}
 
 	@Test
 	@SuppressWarnings("all")
-	public void testBranchSpot()
+	void testBranchSpot()
 	{
 		ExampleGraph2 example = new ExampleGraph2();
 		// NB: 2 is not a timepoint of branchSpotB, it only starts at 4.

@@ -40,8 +40,9 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.test.RandomImgs;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.util.Cast;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
@@ -56,11 +57,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ExportLabelImageControllerTest
+class ExportLabelImageControllerTest
 {
 	private Model model;
 
@@ -72,8 +71,8 @@ public class ExportLabelImageControllerTest
 
 	private final long[] center = new long[] { 50, 50, 50 };
 
-	@Before
-	public void setUp()
+	@BeforeEach
+	void setUp()
 	{
 		model = new Model();
 		ModelGraph modelGraph = model.getGraph();
@@ -86,7 +85,7 @@ public class ExportLabelImageControllerTest
 	}
 
 	@Test
-	public void testSaveLabelImageToFile() throws IOException
+	void testSaveLabelImageToFile() throws IOException
 	{
 		try (final Context context = new Context())
 		{
@@ -110,20 +109,21 @@ public class ExportLabelImageControllerTest
 			SCIFIOImgPlus< IntType > imgTrack = getIntTypeSCIFIOImgPlus( imgOpener, outputTrack );
 
 			// check that the spot id / branchSpot id / track id is used as value in the center of the spot
-			assertNotNull( imgSpot );
-			assertEquals( 3, imgSpot.dimensionsAsLongArray().length );
-			assertEquals( 100, imgSpot.dimension( 0 ) );
-			assertEquals( 100, imgSpot.dimension( 1 ) );
-			assertEquals( 100, imgSpot.dimension( 2 ) );
-			assertEquals( spot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgSpot.getAt( center ).get() );
-			assertEquals(
+			Assertions.assertNotNull( imgSpot );
+			Assertions.assertEquals( 3, imgSpot.dimensionsAsLongArray().length );
+			Assertions.assertEquals( 100, imgSpot.dimension( 0 ) );
+			Assertions.assertEquals( 100, imgSpot.dimension( 1 ) );
+			Assertions.assertEquals( 100, imgSpot.dimension( 2 ) );
+			Assertions.assertEquals(
+					spot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgSpot.getAt( center ).get() );
+			Assertions.assertEquals(
 					branchSpot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgBranchSpot.getAt( center ).get() );
-			assertEquals( ExportLabelImageController.LABEL_ID_OFFSET, imgTrack.getAt( center ).get() );
+			Assertions.assertEquals( ExportLabelImageController.LABEL_ID_OFFSET, imgTrack.getAt( center ).get() );
 			// check that there is no value set outside the ellipsoid of the spot
 			long[] corner = new long[] { 0, 0, 0 };
-			assertEquals( 0, imgSpot.getAt( corner ).get() );
-			assertEquals( 0, imgBranchSpot.getAt( corner ).get() );
-			assertEquals( 0, imgTrack.getAt( corner ).get() );
+			Assertions.assertEquals( 0, imgSpot.getAt( corner ).get() );
+			Assertions.assertEquals( 0, imgBranchSpot.getAt( corner ).get() );
+			Assertions.assertEquals( 0, imgTrack.getAt( corner ).get() );
 		}
 	}
 
@@ -142,7 +142,7 @@ public class ExportLabelImageControllerTest
 	}
 
 	@Test
-	public void testExceptions() throws IOException
+	void testExceptions() throws IOException
 	{
 		try (final Context context = new Context())
 		{

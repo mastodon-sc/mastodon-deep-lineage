@@ -29,8 +29,9 @@
 package org.mastodon.mamut.io.exporter.graphml;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph4;
@@ -45,39 +46,36 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-public class GraphMLUtilsTest
+class GraphMLUtilsTest
 {
 
 	private ExampleGraph4 graph4;
 
-	@Before
-	public void setUp()
+	@BeforeEach
+	void setUp()
 	{
 		graph4 = new ExampleGraph4();
 	}
 
 	@Test
-	public void testExportAllTracks() throws IOException
+	void testExportAllTracks() throws IOException
 	{
 		File tempDirectory = Files.createTempDirectory( "prefix" ).toFile();
 		String prefix = "test";
 		GraphMLUtils.exportAllTracks( graph4.getModel().getBranchGraph(), tempDirectory, prefix );
 
 		File[] files = tempDirectory.listFiles();
-		assertNotNull( files );
+		Assertions.assertNotNull( files );
 		Set< String > actual = new HashSet<>( Arrays.asList( Arrays.stream( files ).map( File::getName ).toArray( String[]::new ) ) );
 
 		Set< String > expected = new HashSet<>();
 		expected.add( "test-0.graphml" );
 		expected.add( "test-4.graphml" );
-		assertEquals( expected, actual );
+		Assertions.assertEquals( expected, actual );
 	}
 
 	@Test
-	public void testExportBranches() throws IOException
+	void testExportBranches() throws IOException
 	{
 		RefSet< BranchSpot > branchSpots = RefCollections.createRefSet( graph4.getModel().getBranchGraph().vertices() );
 		branchSpots.add( graph4.branchSpotA );
@@ -130,6 +128,6 @@ public class GraphMLUtilsTest
 						+ "</graphml>";
 
 		expectedContent = expectedContent.replaceAll( "[\\t\\n\\r\\s]", "" );
-		assertEquals( expectedContent, actualContent );
+		Assertions.assertEquals( expectedContent, actualContent );
 	}
 }

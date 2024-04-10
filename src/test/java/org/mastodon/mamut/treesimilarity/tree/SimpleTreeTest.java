@@ -28,21 +28,18 @@
  */
 package org.mastodon.mamut.treesimilarity.tree;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-
-public class SimpleTreeTest
+class SimpleTreeTest
 {
 
 	@Test
-	public void testGetChildren()
+	void testGetChildren()
 	{
 		SimpleTree< Number > tree = new SimpleTree<>( 0 );
 		SimpleTree< Number > child1 = new SimpleTree<>( 1 );
@@ -50,30 +47,30 @@ public class SimpleTreeTest
 		tree.addChild( child1 );
 		tree.addChild( child2 );
 		List< SimpleTree< Number > > expected = new ArrayList<>( Arrays.asList( child1, child2 ) );
-		assertEquals( expected, tree.getChildren() );
+		Assertions.assertEquals( expected, tree.getChildren() );
 	}
 
 	@Test
-	public void testGetAttribute()
+	void testGetAttribute()
 	{
 		int attribute = 1;
 		SimpleTree< Number > tree = new SimpleTree<>( attribute );
-		assertEquals( attribute, tree.getAttribute() );
+		Assertions.assertEquals( attribute, tree.getAttribute() );
 	}
 
 	@Test
-	public void testAddSubtree()
+	void testAddSubtree()
 	{
 		SimpleTree< Number > tree = new SimpleTree<>( 0 );
 		SimpleTree< Number > child1 = new SimpleTree<>( 1 );
 		tree.addChild( child1 );
-		assertEquals( child1, tree.getChildren().iterator().next() );
+		Assertions.assertEquals( child1, tree.getChildren().iterator().next() );
 	}
 
 	@Test
-	public void testTestToString()
+	void testTestToString()
 	{
 		SimpleTree< Number > tree = new SimpleTree<>( 0 );
-		assertEquals( "SimpleTree@" + tree.hashCode(), tree.toString() );
+		Assertions.assertEquals( "SimpleTree@" + tree.hashCode(), tree.toString() );
 	}
 }
