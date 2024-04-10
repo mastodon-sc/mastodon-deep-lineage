@@ -50,8 +50,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.Toolkit;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
@@ -134,7 +132,7 @@ public class DendrogramPanel< T > extends JPanel
 	{
 		super();
 		this.classification = classification;
-		addMouseListener( new PopupListener() );
+		setComponentPopupMenu( new PopupMenu() );
 		if ( classification == null )
 		{
 			this.component = null;
@@ -271,22 +269,13 @@ public class DendrogramPanel< T > extends JPanel
 		return new ModelMetrics( minX, minY, maxX - minX, maxY - minY );
 	}
 
-	private final class PopupListener extends MouseAdapter
+	private final class PopupMenu extends JPopupMenu
 	{
-		@Override
-		public void mouseReleased( MouseEvent event )
+		private PopupMenu()
 		{
-			if ( event.isPopupTrigger() )
-				showPopup( event );
-		}
-
-		private void showPopup( MouseEvent event )
-		{
-			JPopupMenu menu = new JPopupMenu();
 			JMenuItem item = new JMenuItem( "Export dendrogram as image" );
 			item.addActionListener( actionEvent -> chooseFileAndExport() );
-			menu.add( item );
-			menu.show( event.getComponent(), event.getX(), event.getY() );
+			add( item );
 		}
 
 		private void chooseFileAndExport()
