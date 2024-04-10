@@ -32,15 +32,21 @@ import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.CompleteLinkageStrategy;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
 import com.apporiented.algorithm.clustering.SingleLinkageStrategy;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.mastodon.mamut.clustering.ClusterData;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
+import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.ColorUtils;
+import org.mastodon.util.TagSetUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -445,5 +451,34 @@ public class ClusterUtilsTest
 		assertArrayEquals( expectedResult2x2, ClusterUtils.getUpperTriangle( inputMatrix2x2 ), 0d );
 		assertArrayEquals( expectedResult3x3, ClusterUtils.getUpperTriangle( inputMatrix3x3 ), 0d );
 		assertArrayEquals( expectedResult4x4, ClusterUtils.getUpperTriangle( inputMatrix4x4 ), 0d );
+	}
+
+	@Test
+	public void testGetTagSetNames()
+	{
+		ExampleGraph1 exampleGraph1 = new ExampleGraph1();
+		String tagSetName1 = "TagSet1";
+		String tagSetName2 = "TagSet2";
+		String tagSetName3 = "TagSet2";
+		Collection< Pair< String, Integer > > emptyTagsAndColors = Collections.emptyList();
+		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), tagSetName1, emptyTagsAndColors );
+		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), tagSetName2, emptyTagsAndColors );
+		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), tagSetName3, emptyTagsAndColors );
+		Collection< String > tagSetNames = ClusterUtils.getTagSetNames( exampleGraph1.getModel() );
+		List< String > expected = Arrays.asList( tagSetName1, tagSetName2, tagSetName3 );
+		assertEquals( expected, tagSetNames );
+	}
+
+	@Test
+	public void testGetTagLabel()
+	{
+		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
+		String tagSetName = "TagSet";
+		Pair< String, Integer > tag0 = Pair.of( "Tag", 0 );
+		Collection< Pair< String, Integer > > tagAndColor = Collections.singletonList( tag0 );
+		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( exampleGraph2.getModel(), tagSetName, tagAndColor );
+		TagSetStructure.Tag tag = tagSet.getTags().get( 0 );
+		TagSetUtils.tagBranch( exampleGraph2.getModel(), tagSet, tag, exampleGraph2.spot5 );
+		assertEquals( tag.label(), ClusterUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, tagSet ) );
 	}
 }

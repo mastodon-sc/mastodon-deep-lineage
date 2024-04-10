@@ -59,7 +59,7 @@ public class DendrogramView< T >
 
 		frame = new JFrame( "Hierarchical clustering of lineage trees" );
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
-		frame.setSize( 600, 700 );
+		frame.setSize( 1000, 700 );
 		frame.setLayout( new MigLayout( "insets 10, fill" ) );
 		frame.add( getPanel(), "grow" );
 	}
