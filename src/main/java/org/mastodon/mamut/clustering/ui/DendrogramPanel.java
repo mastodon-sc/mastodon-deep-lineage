@@ -115,6 +115,8 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final String NO_DATA_AVAILABLE = "No cluster data available.";
 
+	static final int PRINT_RESOLUTION = 600;
+
 	/**
 	 * Creates an empty {@link DendrogramPanel}.
 	 */
@@ -229,8 +231,7 @@ public class DendrogramPanel< T > extends JPanel
 
 	void export( final File file, final String formatName, int screenResolution )
 	{
-		int printResolution = 600;
-		double scale = printResolution / ( double ) screenResolution;
+		double scale = PRINT_RESOLUTION / ( double ) screenResolution;
 		BufferedImage image =
 				new BufferedImage( ( int ) ( getWidth() * scale ), ( int ) ( getHeight() * scale ), BufferedImage.TYPE_INT_RGB );
 		Graphics2D g = image.createGraphics();
