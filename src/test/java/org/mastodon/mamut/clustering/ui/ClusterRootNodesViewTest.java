@@ -28,8 +28,9 @@
  */
 package org.mastodon.mamut.clustering.ui;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ClusterRootNodesViewTest
 {
@@ -38,6 +39,6 @@ class ClusterRootNodesViewTest
 	void testClusterRootNodesView()
 	{
 		ClusterRootNodesView clusterRootNodesView = new ClusterRootNodesView();
-		Assertions.assertNotNull( clusterRootNodesView );
+		assertNotNull( clusterRootNodesView );
 	}
 }

@@ -29,7 +29,6 @@
 package org.mastodon.mamut.io.exporter.graphml;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.collection.RefCollections;
@@ -45,6 +44,9 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class GraphMLUtilsTest
 {
@@ -65,13 +67,13 @@ class GraphMLUtilsTest
 		GraphMLUtils.exportAllTracks( graph4.getModel().getBranchGraph(), tempDirectory, prefix );
 
 		File[] files = tempDirectory.listFiles();
-		Assertions.assertNotNull( files );
+		assertNotNull( files );
 		Set< String > actual = new HashSet<>( Arrays.asList( Arrays.stream( files ).map( File::getName ).toArray( String[]::new ) ) );
 
 		Set< String > expected = new HashSet<>();
 		expected.add( "test-0.graphml" );
 		expected.add( "test-4.graphml" );
-		Assertions.assertEquals( expected, actual );
+		assertEquals( expected, actual );
 	}
 
 	@Test
@@ -128,6 +130,6 @@ class GraphMLUtilsTest
 						+ "</graphml>";
 
 		expectedContent = expectedContent.replaceAll( "[\\t\\n\\r\\s]", "" );
-		Assertions.assertEquals( expectedContent, actualContent );
+		assertEquals( expectedContent, actualContent );
 	}
 }

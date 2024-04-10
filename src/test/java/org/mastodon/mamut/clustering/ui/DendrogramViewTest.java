@@ -30,12 +30,13 @@ package org.mastodon.mamut.clustering.ui;
 
 import com.apporiented.algorithm.clustering.Cluster;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 
 import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class DendrogramViewTest
 {
@@ -47,9 +48,9 @@ class DendrogramViewTest
 				new Classification<>( Collections.singletonList( Pair.of( null, cluster ) ), new Cluster( null ), 0d, 0d );
 		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, "test" );
 		DendrogramView< BranchSpotTree > dendrogramViewNull = new DendrogramView<>( null, "test" );
-		Assertions.assertNotNull( dendrogramView );
-		Assertions.assertNotNull( dendrogramView.getPanel() );
-		Assertions.assertNotNull( dendrogramViewNull );
-		Assertions.assertNotNull( dendrogramViewNull.getPanel() );
+		assertNotNull( dendrogramView );
+		assertNotNull( dendrogramView.getPanel() );
+		assertNotNull( dendrogramViewNull );
+		assertNotNull( dendrogramViewNull.getPanel() );
 	}
 }

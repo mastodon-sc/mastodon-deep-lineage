@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.util;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.collection.RefCollections;
@@ -49,7 +48,10 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LineageTreeUtilsTest
 {
@@ -73,21 +75,21 @@ class LineageTreeUtilsTest
 		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
 		Model model = exampleGraph2.getModel();
 
-		Assertions.assertEquals( 5, LineageTreeUtils.getFirstTimepointWithNSpots( model, 3 ) );
-		Assertions.assertEquals( 3, LineageTreeUtils.getFirstTimepointWithNSpots( model, 2 ) );
+		assertEquals( 5, LineageTreeUtils.getFirstTimepointWithNSpots( model, 3 ) );
+		assertEquals( 3, LineageTreeUtils.getFirstTimepointWithNSpots( model, 2 ) );
 		assertThrows( NoSuchElementException.class, () -> LineageTreeUtils.getFirstTimepointWithNSpots( model, 5 ) );
 	}
 
 	@Test
 	void testIsRoot()
 	{
-		Assertions.assertTrue( LineageTreeUtils.isRoot( graph2.spot0 ) );
-		Assertions.assertFalse( LineageTreeUtils.isRoot( graph2.spot1 ) );
-		Assertions.assertTrue( LineageTreeUtils.isRoot( graph2.branchSpotA ) );
-		Assertions.assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotB ) );
-		Assertions.assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotC ) );
-		Assertions.assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotD ) );
-		Assertions.assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotE ) );
+		assertTrue( LineageTreeUtils.isRoot( graph2.spot0 ) );
+		assertFalse( LineageTreeUtils.isRoot( graph2.spot1 ) );
+		assertTrue( LineageTreeUtils.isRoot( graph2.branchSpotA ) );
+		assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotB ) );
+		assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotC ) );
+		assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotD ) );
+		assertFalse( LineageTreeUtils.isRoot( graph2.branchSpotE ) );
 	}
 
 	@Test
@@ -99,7 +101,7 @@ class LineageTreeUtilsTest
 		RefSet< Link > inputLinks = RefCollections.createRefSet( graph2.getModel().getGraph().edges() );
 		RefSet< BranchSpot > actual = LineageTreeUtils.getBranchSpots( graph2.getModel(), inputSpots, inputLinks );
 		Set< BranchSpot > expected = new HashSet<>( Arrays.asList( graph2.branchSpotA, graph2.branchSpotD ) );
-		Assertions.assertEquals( expected, actual );
+		assertEquals( expected, actual );
 	}
 
 	@Test
@@ -110,7 +112,7 @@ class LineageTreeUtilsTest
 		inputLinks.add( graph4.link1 );
 		RefSet< BranchLink > actual = LineageTreeUtils.getBranchLinks( graph4.getModel(), inputLinks );
 		Set< BranchLink > expected = new HashSet<>( Collections.singletonList( graph4.branchLink0 ) );
-		Assertions.assertEquals( expected, actual );
+		assertEquals( expected, actual );
 	}
 
 	@Test
@@ -119,11 +121,11 @@ class LineageTreeUtilsTest
 		Set< BranchSpot > expected = new HashSet<>(
 				Arrays.asList( graph2.branchSpotA, graph2.branchSpotB, graph2.branchSpotC, graph2.branchSpotD, graph2.branchSpotE ) );
 		RefSet< BranchSpot > actual = LineageTreeUtils.getAllVertexSuccessors( graph2.branchSpotA, graph2.getModel().getBranchGraph() );
-		Assertions.assertEquals( expected, actual );
+		assertEquals( expected, actual );
 
 		expected = new HashSet<>( Arrays.asList( graph2.branchSpotB, graph2.branchSpotD, graph2.branchSpotE ) );
 		actual = LineageTreeUtils.getAllVertexSuccessors( graph2.branchSpotB, graph2.getModel().getBranchGraph() );
-		Assertions.assertEquals( expected, actual );
+		assertEquals( expected, actual );
 	}
 
 	@Test
@@ -131,44 +133,44 @@ class LineageTreeUtilsTest
 	{
 		Set< BranchLink > expected = new HashSet<>( Arrays.asList( graph4.branchLink0, graph4.branchLink1 ) );
 		RefSet< BranchLink > actual = LineageTreeUtils.getAllEdgeSuccessors( graph4.branchSpotA, graph4.getModel().getBranchGraph() );
-		Assertions.assertEquals( expected, actual );
+		assertEquals( expected, actual );
 
 		expected = new HashSet<>( Arrays.asList( graph4.branchLink2, graph4.branchLink3 ) );
 		actual = LineageTreeUtils.getAllEdgeSuccessors( graph4.branchSpotD, graph4.getModel().getBranchGraph() );
-		Assertions.assertEquals( expected, actual );
+		assertEquals( expected, actual );
 	}
 
 	@Test
 	void testLinkSpotsWithSameLabel()
 	{
-		Assertions.assertEquals( 0, graph6.getModel().getGraph().edges().size() );
+		assertEquals( 0, graph6.getModel().getGraph().edges().size() );
 		LineageTreeUtils.linkSpotsWithSameLabel( graph6.getModel() );
-		Assertions.assertEquals( 7, graph6.getModel().getGraph().edges().size() );
+		assertEquals( 7, graph6.getModel().getGraph().edges().size() );
 		assertSpotEquals( graph6.spot0.outgoingEdges().get( 0 ).getTarget(), graph6.spot1 );
 		assertSpotEquals( graph6.spot1.outgoingEdges().get( 0 ).getTarget(), graph6.spot2 );
 		assertSpotEquals( graph6.spot3.outgoingEdges().get( 0 ).getTarget(), graph6.spot4 );
 		assertSpotEquals( graph6.spot4.outgoingEdges().get( 0 ).getTarget(), graph6.spot5 );
 		assertSpotEquals( graph6.spot6.outgoingEdges().get( 0 ).getTarget(), graph6.spot7 );
-		Assertions.assertEquals( 2, graph6.spot2.outgoingEdges().size() );
+		assertEquals( 2, graph6.spot2.outgoingEdges().size() );
 		assertSpotEquals( graph6.spot2.outgoingEdges().get( 0 ).getTarget(), graph6.spot10 );
 		assertSpotEquals( graph6.spot2.outgoingEdges().get( 1 ).getTarget(), graph6.spot9 );
-		Assertions.assertEquals( 0, graph6.spot7.outgoingEdges().size() );
+		assertEquals( 0, graph6.spot7.outgoingEdges().size() );
 	}
 
 	@Test
 	void testGetFirstSpot()
 	{
 		ExampleGraph1 exampleGraph1 = new ExampleGraph1();
-		Assertions.assertEquals(
+		assertEquals(
 				exampleGraph1.spot0, LineageTreeUtils.getFirstSpot( exampleGraph1.getModel(), exampleGraph1.branchSpotA ) );
 
 		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
-		Assertions.assertEquals(
+		assertEquals(
 				exampleGraph2.spot5, LineageTreeUtils.getFirstSpot( exampleGraph2.getModel(), exampleGraph2.branchSpotD ) );
 	}
 
 	private void assertSpotEquals( final Spot expected, final Spot actual )
 	{
-		Assertions.assertEquals( expected, actual );
+		assertEquals( expected, actual );
 	}
 }

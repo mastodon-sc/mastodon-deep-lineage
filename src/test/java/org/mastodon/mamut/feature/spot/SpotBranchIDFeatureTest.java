@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.feature.spot;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.feature.Feature;
@@ -42,6 +41,10 @@ import org.scijava.Context;
 
 import java.io.IOException;
 import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SpotBranchIDFeatureTest extends AbstractFeatureTest< Spot >
 {
@@ -63,8 +66,8 @@ public class SpotBranchIDFeatureTest extends AbstractFeatureTest< Spot >
 	public void testFeatureComputation()
 	{
 		FeatureProjection< Spot > featureProjection = getProjection( feature, SpotBranchIDFeature.PROJECTION_SPEC );
-		Assertions.assertEquals( graph.branchSpotA.getInternalPoolIndex(), ( int ) featureProjection.value( graph.spot0 ) );
-		Assertions.assertEquals( graph.branchSpotE.getInternalPoolIndex(), ( int ) featureProjection.value( graph.spot10 ) );
+		assertEquals( graph.branchSpotA.getInternalPoolIndex(), ( int ) featureProjection.value( graph.spot0 ) );
+		assertEquals( graph.branchSpotE.getInternalPoolIndex(), ( int ) featureProjection.value( graph.spot10 ) );
 	}
 
 	@Override
@@ -77,9 +80,8 @@ public class SpotBranchIDFeatureTest extends AbstractFeatureTest< Spot >
 			featureReloaded = ( SpotBranchIDFeature ) FeatureSerializerTestUtils.saveAndReload( context, graph.getModel(), feature );
 		}
 		// check that the feature has correct values after saving and reloading
-		Assertions.assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( feature, featureReloaded,
-				Collections.singleton( graph.spot0 )
-		) );
+		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( feature, featureReloaded,
+				Collections.singleton( graph.spot0 ) ) );
 	}
 
 	@Override
@@ -88,12 +90,12 @@ public class SpotBranchIDFeatureTest extends AbstractFeatureTest< Spot >
 	{
 		Spot spot = graph.spot0;
 		// test, if features have a non "-1" value before invalidation
-		Assertions.assertNotEquals( -1, ( int ) getProjection( feature, SpotBranchIDFeature.PROJECTION_SPEC ).value( spot ) );
+		assertNotEquals( -1, ( int ) getProjection( feature, SpotBranchIDFeature.PROJECTION_SPEC ).value( spot ) );
 
 		// invalidate feature
 		feature.invalidate( spot );
 
 		// test, if features are "-1" after invalidation
-		Assertions.assertEquals( -1, ( int ) getProjection( feature, SpotBranchIDFeature.PROJECTION_SPEC ).value( spot ) );
+		assertEquals( -1, ( int ) getProjection( feature, SpotBranchIDFeature.PROJECTION_SPEC ).value( spot ) );
 	}
 }

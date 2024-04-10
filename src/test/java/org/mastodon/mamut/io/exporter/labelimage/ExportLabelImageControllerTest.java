@@ -40,7 +40,6 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.test.RandomImgs;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.util.Cast;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.model.Model;
@@ -57,6 +56,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ExportLabelImageControllerTest
@@ -109,21 +110,20 @@ class ExportLabelImageControllerTest
 			SCIFIOImgPlus< IntType > imgTrack = getIntTypeSCIFIOImgPlus( imgOpener, outputTrack );
 
 			// check that the spot id / branchSpot id / track id is used as value in the center of the spot
-			Assertions.assertNotNull( imgSpot );
-			Assertions.assertEquals( 3, imgSpot.dimensionsAsLongArray().length );
-			Assertions.assertEquals( 100, imgSpot.dimension( 0 ) );
-			Assertions.assertEquals( 100, imgSpot.dimension( 1 ) );
-			Assertions.assertEquals( 100, imgSpot.dimension( 2 ) );
-			Assertions.assertEquals(
-					spot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgSpot.getAt( center ).get() );
-			Assertions.assertEquals(
-					branchSpot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgBranchSpot.getAt( center ).get() );
-			Assertions.assertEquals( ExportLabelImageController.LABEL_ID_OFFSET, imgTrack.getAt( center ).get() );
+			assertNotNull( imgSpot );
+			assertEquals( 3, imgSpot.dimensionsAsLongArray().length );
+			assertEquals( 100, imgSpot.dimension( 0 ) );
+			assertEquals( 100, imgSpot.dimension( 1 ) );
+			assertEquals( 100, imgSpot.dimension( 2 ) );
+			assertEquals( spot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgSpot.getAt( center ).get() );
+			assertEquals( branchSpot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET,
+					imgBranchSpot.getAt( center ).get() );
+			assertEquals( ExportLabelImageController.LABEL_ID_OFFSET, imgTrack.getAt( center ).get() );
 			// check that there is no value set outside the ellipsoid of the spot
 			long[] corner = new long[] { 0, 0, 0 };
-			Assertions.assertEquals( 0, imgSpot.getAt( corner ).get() );
-			Assertions.assertEquals( 0, imgBranchSpot.getAt( corner ).get() );
-			Assertions.assertEquals( 0, imgTrack.getAt( corner ).get() );
+			assertEquals( 0, imgSpot.getAt( corner ).get() );
+			assertEquals( 0, imgBranchSpot.getAt( corner ).get() );
+			assertEquals( 0, imgTrack.getAt( corner ).get() );
 		}
 	}
 

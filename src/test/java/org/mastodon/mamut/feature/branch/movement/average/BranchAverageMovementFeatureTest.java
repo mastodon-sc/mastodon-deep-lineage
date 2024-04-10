@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.feature.branch.movement.average;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.feature.Feature;
@@ -42,6 +41,10 @@ import org.scijava.Context;
 
 import java.io.IOException;
 import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BranchAverageMovementFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
@@ -66,7 +69,7 @@ public class BranchAverageMovementFeatureTest extends AbstractFeatureTest< Branc
 		FeatureProjection< BranchSpot > projection =
 				getProjection( branchAverageMovementFeature, BranchAverageMovementFeature.PROJECTION_SPEC );
 		double expected = 4 * Math.sqrt( 1 + 4 + 9 ) / 3;
-		Assertions.assertEquals( expected, projection.value( graph.branchSpotA ), 0 );
+		assertEquals( expected, projection.value( graph.branchSpotA ), 0 );
 	}
 
 	@Test
@@ -81,9 +84,8 @@ public class BranchAverageMovementFeatureTest extends AbstractFeatureTest< Branc
 							branchAverageMovementFeature );
 		}
 		// check that the feature has correct values after saving and reloading
-		Assertions.assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchAverageMovementFeature,
-				branchAverageMovementFeatureReloaded,
-				Collections.singleton( graph.branchSpotA ) ) );
+		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchAverageMovementFeature,
+				branchAverageMovementFeatureReloaded, Collections.singleton( graph.branchSpotA ) ) );
 	}
 
 	@Test
@@ -91,14 +93,14 @@ public class BranchAverageMovementFeatureTest extends AbstractFeatureTest< Branc
 	public void testFeatureInvalidate()
 	{
 		// test, if features are not NaN before invalidation
-		Assertions.assertFalse( Double.isNaN(
+		assertFalse( Double.isNaN(
 				getProjection( branchAverageMovementFeature, BranchAverageMovementFeature.PROJECTION_SPEC ).value( graph.branchSpotA ) ) );
 
 		// invalidate feature
 		branchAverageMovementFeature.invalidate( graph.branchSpotA );
 
 		// test, if features are NaN after invalidation
-		Assertions.assertTrue( Double.isNaN(
+		assertTrue( Double.isNaN(
 				getProjection( branchAverageMovementFeature, BranchAverageMovementFeature.PROJECTION_SPEC ).value( graph.branchSpotA ) ) );
 	}
 }

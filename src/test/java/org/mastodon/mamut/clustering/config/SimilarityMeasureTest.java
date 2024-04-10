@@ -28,11 +28,11 @@
  */
 package org.mastodon.mamut.clustering.config;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SimilarityMeasureTest
@@ -41,13 +41,13 @@ class SimilarityMeasureTest
 	@Test
 	void testGetName()
 	{
-		Assertions.assertEquals( "Normalized Zhang Tree Distance", SimilarityMeasure.NORMALIZED_DIFFERENCE.getName() );
+		assertEquals( "Normalized Zhang Tree Distance", SimilarityMeasure.NORMALIZED_DIFFERENCE.getName() );
 	}
 
 	@Test
 	void testGetByName()
 	{
-		Assertions.assertEquals( SimilarityMeasure.NORMALIZED_DIFFERENCE, SimilarityMeasure.getByName( "Normalized Zhang Tree Distance" ) );
+		assertEquals( SimilarityMeasure.NORMALIZED_DIFFERENCE, SimilarityMeasure.getByName( "Normalized Zhang Tree Distance" ) );
 		assertThrows( NoSuchElementException.class, () -> SimilarityMeasure.getByName( "foo" ) );
 	}
 
