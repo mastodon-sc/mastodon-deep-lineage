@@ -120,9 +120,14 @@ Tree2
 * Number of classes (minimum 2)
 * Minimum number of divisions
 * Similarity measures:
-    1. (default) ![normalized_zhang_distance.gif](normalized_zhang_distance.gif)
-    2. ![per_branch_zhang_distance.gif](per_branch_zhang_distance.gif)
-    3. Zhang Tree Edit Distance as described in ([Zhang](https://doi.org/10.1007/BF01975866)).
+  1. (default) ![normalized_zhang_distance.gif](normalized_zhang_distance.gif)<sup>1</sup>
+  2. ![per_branch_zhang_distance.gif](per_branch_zhang_distance.gif)<sup>1</sup>
+  3. [Zhang](https://doi.org/10.1007/BF01975866) Tree Edit Distance<sup>1</sup>
+  4. [Guignard et al.](https://doi.org/10.1126/science.aar5663) Tree Edit
+     Distance ![guignard_zhang_distance.gif](guignard_zhang_distance.gif)<sup>2</sup>
+
+  * <sup>1</sup>Local cost function: ![local_cost.gif](local_cost.gif)
+  * <sup>2</sup>Local cost function: ![local_cost_normalized.gif](local_cost_normalized.gif)
 * Linkage strategy for hierarchical clustering,
   cf. [linkage methods](https://en.wikipedia.org/wiki/Hierarchical_clustering#Cluster_Linkage)
     1. Average (default)
