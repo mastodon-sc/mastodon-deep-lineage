@@ -134,7 +134,7 @@ public class ClusterRootNodesController
 	private void runClassification( final boolean showDendrogram, final String tagSetName )
 	{
 		TagSetStructure.TagSet tagSet = null;
-		if ( showDendrogram && tagSetName != null && !tagSetName.isEmpty() )
+		if ( tagSetName != null && !tagSetName.isEmpty() )
 		{
 			try
 			{
