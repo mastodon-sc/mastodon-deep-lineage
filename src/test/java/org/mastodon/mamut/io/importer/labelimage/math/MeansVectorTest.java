@@ -28,14 +28,14 @@
  */
 package org.mastodon.mamut.io.importer.labelimage.math;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class MeansVectorTest
+class MeansVectorTest
 {
 	@Test
-	public void testAddValuesException()
+	void testAddValuesException()
 	{
 		MeansVector meansVector = new MeansVector( 3 );
 		assertThrows( IllegalArgumentException.class, () -> meansVector.addValues( new int[] { 1, 2 } ) );

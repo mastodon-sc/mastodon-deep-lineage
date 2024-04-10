@@ -28,25 +28,26 @@
  */
 package org.mastodon.mamut.clustering.config;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ClusteringMethodTest
+class ClusteringMethodTest
 {
 
 	@Test
-	public void testGetName()
+	void testGetName()
 	{
-		assertEquals( "Average linkage", ClusteringMethod.AVERAGE_LINKAGE.getName() );
+		Assertions.assertEquals( "Average linkage", ClusteringMethod.AVERAGE_LINKAGE.getName() );
 	}
 
 	@Test
-	public void testGetByName()
+	void testGetByName()
 	{
-		assertEquals( ClusteringMethod.AVERAGE_LINKAGE, ClusteringMethod.getByName( "Average linkage" ) );
+		Assertions.assertEquals( ClusteringMethod.AVERAGE_LINKAGE, ClusteringMethod.getByName( "Average linkage" ) );
 		assertThrows( NoSuchElementException.class, () -> ClusteringMethod.getByName( "foo" ) );
 	}
 }

@@ -28,8 +28,9 @@
  */
 package org.mastodon.mamut.feature.branch.successors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.mamut.feature.AbstractFeatureTest;
@@ -42,9 +43,7 @@ import org.scijava.Context;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class BranchNSuccessorsPredecessorsFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
@@ -52,7 +51,7 @@ public class BranchNSuccessorsPredecessorsFeatureTest extends AbstractFeatureTes
 
 	private final ExampleGraph2 graph = new ExampleGraph2();
 
-	@Before
+	@BeforeEach
 	public void setUp()
 	{
 		try (Context context = new Context())
@@ -72,17 +71,17 @@ public class BranchNSuccessorsPredecessorsFeatureTest extends AbstractFeatureTes
 		FeatureProjection< BranchSpot > predecessorsProjection =
 				getProjection( branchSuccessorsPredecessorsFeature, BranchNSuccessorsPredecessorsFeature.PREDECESSORS_PROJECTION_SPEC );
 
-		assertEquals( 4, successorsProjection.value( graph.branchSpotA ), 0 );
-		assertEquals( 2, successorsProjection.value( graph.branchSpotB ), 0 );
-		assertEquals( 0, successorsProjection.value( graph.branchSpotC ), 0 );
-		assertEquals( 0, successorsProjection.value( graph.branchSpotD ), 0 );
-		assertEquals( 0, successorsProjection.value( graph.branchSpotE ), 0 );
+		Assertions.assertEquals( 4, successorsProjection.value( graph.branchSpotA ), 0 );
+		Assertions.assertEquals( 2, successorsProjection.value( graph.branchSpotB ), 0 );
+		Assertions.assertEquals( 0, successorsProjection.value( graph.branchSpotC ), 0 );
+		Assertions.assertEquals( 0, successorsProjection.value( graph.branchSpotD ), 0 );
+		Assertions.assertEquals( 0, successorsProjection.value( graph.branchSpotE ), 0 );
 
-		assertEquals( 0, predecessorsProjection.value( graph.branchSpotA ), 0 );
-		assertEquals( 1, predecessorsProjection.value( graph.branchSpotB ), 0 );
-		assertEquals( 1, predecessorsProjection.value( graph.branchSpotC ), 0 );
-		assertEquals( 2, predecessorsProjection.value( graph.branchSpotD ), 0 );
-		assertEquals( 2, predecessorsProjection.value( graph.branchSpotE ), 0 );
+		Assertions.assertEquals( 0, predecessorsProjection.value( graph.branchSpotA ), 0 );
+		Assertions.assertEquals( 1, predecessorsProjection.value( graph.branchSpotB ), 0 );
+		Assertions.assertEquals( 1, predecessorsProjection.value( graph.branchSpotC ), 0 );
+		Assertions.assertEquals( 2, predecessorsProjection.value( graph.branchSpotD ), 0 );
+		Assertions.assertEquals( 2, predecessorsProjection.value( graph.branchSpotE ), 0 );
 	}
 
 	@Test
@@ -97,7 +96,7 @@ public class BranchNSuccessorsPredecessorsFeatureTest extends AbstractFeatureTes
 							branchSuccessorsPredecessorsFeature );
 		}
 		// check that the feature has correct values after saving and reloading
-		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchSuccessorsPredecessorsFeature,
+		Assertions.assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( branchSuccessorsPredecessorsFeature,
 				branchNSuccessorsPredecessorsFeatureReloaded,
 				Arrays.asList( graph.branchSpotA, graph.branchSpotB, graph.branchSpotC, graph.branchSpotD, graph.branchSpotE ) ) );
 	}
@@ -120,11 +119,11 @@ public class BranchNSuccessorsPredecessorsFeatureTest extends AbstractFeatureTes
 		branchSuccessorsPredecessorsFeature.invalidate( graph.branchSpotA );
 
 		// test, if features are -1 (i.e. default value) after invalidation
-		assertEquals( -1, getProjection( branchSuccessorsPredecessorsFeature,
+		Assertions.assertEquals( -1, getProjection( branchSuccessorsPredecessorsFeature,
 				BranchNSuccessorsPredecessorsFeature.SUCCESSORS_PROJECTION_SPEC )
 						.value( graph.branchSpotA ),
 				0d );
-		assertEquals( -1, getProjection( branchSuccessorsPredecessorsFeature,
+		Assertions.assertEquals( -1, getProjection( branchSuccessorsPredecessorsFeature,
 				BranchNSuccessorsPredecessorsFeature.PREDECESSORS_PROJECTION_SPEC )
 						.value( graph.branchSpotA ),
 				0d );

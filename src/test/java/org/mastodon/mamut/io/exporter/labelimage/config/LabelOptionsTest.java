@@ -28,30 +28,30 @@
  */
 package org.mastodon.mamut.io.exporter.labelimage.config;
 
-import org.junit.Test;
-import org.mastodon.mamut.io.exporter.labelimage.config.LabelOptions;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class LabelOptionsTest
+class LabelOptionsTest
 {
 
 	@Test
-	public void getByName()
+	void getByName()
 	{
-		assertEquals( LabelOptions.SPOT_ID, LabelOptions.getByName( "Spot ID" ) );
-		assertEquals( LabelOptions.BRANCH_SPOT_ID, LabelOptions.getByName( "Branch spot ID" ) );
-		assertEquals( LabelOptions.TRACK_ID, LabelOptions.getByName( "Spot track Id" ) );
+		Assertions.assertEquals( LabelOptions.SPOT_ID, LabelOptions.getByName( "Spot ID" ) );
+		Assertions.assertEquals( LabelOptions.BRANCH_SPOT_ID, LabelOptions.getByName( "Branch spot ID" ) );
+		Assertions.assertEquals( LabelOptions.TRACK_ID, LabelOptions.getByName( "Spot track Id" ) );
 		assertThrows( NoSuchElementException.class, () -> LabelOptions.getByName( "Foo" ) );
 	}
 
 	@Test
-	public void getName()
+	void getName()
 	{
-		assertEquals( "Spot ID", LabelOptions.SPOT_ID.getName() );
-		assertEquals( "Branch spot ID", LabelOptions.BRANCH_SPOT_ID.getName() );
-		assertEquals( "Spot track Id", LabelOptions.TRACK_ID.getName() );
+		Assertions.assertEquals( "Spot ID", LabelOptions.SPOT_ID.getName() );
+		Assertions.assertEquals( "Branch spot ID", LabelOptions.BRANCH_SPOT_ID.getName() );
+		Assertions.assertEquals( "Spot track Id", LabelOptions.TRACK_ID.getName() );
 	}
 }

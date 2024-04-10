@@ -54,8 +54,9 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Cast;
 import net.imglib2.view.Views;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.feature.EllipsoidIterable;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
@@ -75,14 +76,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntFunction;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class LabelImageUtilsTest
+class LabelImageUtilsTest
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
@@ -90,8 +86,8 @@ public class LabelImageUtilsTest
 
 	private AbstractSequenceDescription< ?, ?, ? > sequenceDescription;
 
-	@Before
-	public void setUp()
+	@BeforeEach
+	void setUp()
 	{
 		model = new Model();
 		TimePoints timePoints = new TimePoints( Collections.singletonList( new TimePoint( 0 ) ) );
@@ -102,7 +98,7 @@ public class LabelImageUtilsTest
 	}
 
 	@Test
-	public void testScaleExceptions()
+	void testScaleExceptions()
 	{
 		VoxelDimensions voxelDimensions = new FinalVoxelDimensions( "um", 1, 1, 1 );
 		assertThrows( IllegalArgumentException.class, () -> LabelImageUtils.scale( new double[ 2 ][ 2 ], 1, voxelDimensions ) );
@@ -110,7 +106,7 @@ public class LabelImageUtilsTest
 	}
 
 	@Test
-	public void testCreateSpotFromLabelImageEmpty()
+	void testCreateSpotFromLabelImageEmpty()
 	{
 		RandomAccessibleIntervalSource< FloatType > img =
 				new RandomAccessibleIntervalSource<>( createImageCubeCorners( 0 ), new FloatType(), new AffineTransform3D(),
@@ -118,21 +114,21 @@ public class LabelImageUtilsTest
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
 		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
-		assertEquals( 0, model.getGraph().vertices().size() );
+		Assertions.assertEquals( 0, model.getGraph().vertices().size() );
 	}
 
 	@Test
-	public void testCreateSpotFromNonLabelImage()
+	void testCreateSpotFromNonLabelImage()
 	{
 		AbstractSource< FloatType > img = createNonLabelImage();
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
 		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
-		assertEquals( 0, model.getGraph().vertices().size() );
+		Assertions.assertEquals( 0, model.getGraph().vertices().size() );
 	}
 
 	@Test
-	public void testCreateSpotFromWrongVoxelDimensions()
+	void testCreateSpotFromWrongVoxelDimensions()
 	{
 
 		RandomAccessibleIntervalSource< FloatType > img =
@@ -151,7 +147,7 @@ public class LabelImageUtilsTest
 	}
 
 	@Test
-	public void testImportSpotsFromBdvChannel()
+	void testImportSpotsFromBdvChannel()
 	{
 		LegacyInjector.preinit();
 		try (Context context = new Context())
@@ -173,23 +169,23 @@ public class LabelImageUtilsTest
 			double axisB = Math.sqrt( eigenValues[ 1 ] );
 			double axisC = Math.sqrt( eigenValues[ 2 ] );
 
-			assertNotNull( spot );
-			assertEquals( 0, spot.getTimepoint() );
-			assertEquals( 2, spot.getDoublePosition( 0 ), 0.01 );
-			assertEquals( 2, spot.getDoublePosition( 1 ), 0.01 );
-			assertEquals( 2, spot.getDoublePosition( 2 ), 0.01 );
-			assertEquals( 0, spot.getInternalPoolIndex() );
-			assertEquals( String.valueOf( pixelValue ), spot.getLabel() );
-			assertEquals( 2.2, axisA, 0.2d );
-			assertEquals( 2.2, axisB, 0.2d );
-			assertEquals( 2.2, axisC, 0.2d );
-			assertEquals( 5d, spot.getBoundingSphereRadiusSquared(), 1d );
-			assertFalse( iter.hasNext() );
+			Assertions.assertNotNull( spot );
+			Assertions.assertEquals( 0, spot.getTimepoint() );
+			Assertions.assertEquals( 2, spot.getDoublePosition( 0 ), 0.01 );
+			Assertions.assertEquals( 2, spot.getDoublePosition( 1 ), 0.01 );
+			Assertions.assertEquals( 2, spot.getDoublePosition( 2 ), 0.01 );
+			Assertions.assertEquals( 0, spot.getInternalPoolIndex() );
+			Assertions.assertEquals( String.valueOf( pixelValue ), spot.getLabel() );
+			Assertions.assertEquals( 2.2, axisA, 0.2d );
+			Assertions.assertEquals( 2.2, axisB, 0.2d );
+			Assertions.assertEquals( 2.2, axisC, 0.2d );
+			Assertions.assertEquals( 5d, spot.getBoundingSphereRadiusSquared(), 1d );
+			Assertions.assertFalse( iter.hasNext() );
 		}
 	}
 
 	@Test
-	public void testImportSpotsFromImgPlus()
+	void testImportSpotsFromImgPlus()
 	{
 		LegacyInjector.preinit();
 		try (Context context = new Context())
@@ -219,16 +215,16 @@ public class LabelImageUtilsTest
 			logger.debug( "Given covariance: {}", Arrays.deepToString( givenCovariance ) );
 			logger.debug( "Computed covariance: {}", Arrays.deepToString( computedCovariance ) );
 
-			assertArrayEquals( center, mean, 0.01d );
-			assertArrayEquals( givenCovariance[ 0 ], computedCovariance[ 0 ], 10d );
-			assertArrayEquals( givenCovariance[ 1 ], computedCovariance[ 1 ], 10d );
-			assertArrayEquals( givenCovariance[ 2 ], computedCovariance[ 2 ], 10d );
-			assertEquals( String.valueOf( pixelValue ), createdSpot.getLabel() );
+			Assertions.assertArrayEquals( center, mean, 0.01d );
+			Assertions.assertArrayEquals( givenCovariance[ 0 ], computedCovariance[ 0 ], 10d );
+			Assertions.assertArrayEquals( givenCovariance[ 1 ], computedCovariance[ 1 ], 10d );
+			Assertions.assertArrayEquals( givenCovariance[ 2 ], computedCovariance[ 2 ], 10d );
+			Assertions.assertEquals( String.valueOf( pixelValue ), createdSpot.getLabel() );
 		}
 	}
 
 	@Test
-	public void testImportSpotsFromImgPlusAndLinkSameLabels()
+	void testImportSpotsFromImgPlusAndLinkSameLabels()
 	{
 		LegacyInjector.preinit();
 		try (Context context = new Context())
@@ -238,15 +234,15 @@ public class LabelImageUtilsTest
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( twoFramesImage, model, context );
 			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1, true );
 
-			assertEquals( 2, model.getGraph().vertices().size() );
-			assertEquals( 1, model.getGraph().edges().size() );
-			assertEquals( 1, model.getSpatioTemporalIndex().getSpatialIndex( 0 ).size() );
-			assertEquals( 1, model.getSpatioTemporalIndex().getSpatialIndex( 1 ).size() );
+			Assertions.assertEquals( 2, model.getGraph().vertices().size() );
+			Assertions.assertEquals( 1, model.getGraph().edges().size() );
+			Assertions.assertEquals( 1, model.getSpatioTemporalIndex().getSpatialIndex( 0 ).size() );
+			Assertions.assertEquals( 1, model.getSpatioTemporalIndex().getSpatialIndex( 1 ).size() );
 		}
 	}
 
 	@Test
-	public void testDimensionsMatch()
+	void testDimensionsMatch()
 	{
 		LegacyInjector.preinit();
 		try (final Context context = new Context())
@@ -254,21 +250,21 @@ public class LabelImageUtilsTest
 			Img< FloatType > image = ArrayImgs.floats( 10, 10, 10, 2 );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
 			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
-			assertTrue( LabelImageUtils.dimensionsMatch( projectModel.getSharedBdvData(), imgPlus ) );
+			Assertions.assertTrue( LabelImageUtils.dimensionsMatch( projectModel.getSharedBdvData(), imgPlus ) );
 		}
 	}
 
 	@Test
-	public void testGetImgPlusDimensions()
+	void testGetImgPlusDimensions()
 	{
 		Img< FloatType > image = ArrayImgs.floats( 100, 100, 100, 2 );
 		ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 		long[] dimensions = LabelImageUtils.getImgPlusDimensions( imgPlus );
-		assertArrayEquals( new long[] { 100, 100, 100, 2 }, dimensions );
+		Assertions.assertArrayEquals( new long[] { 100, 100, 100, 2 }, dimensions );
 	}
 
 	@Test
-	public void testGetSourceNames()
+	void testGetSourceNames()
 	{
 		LegacyInjector.preinit();
 		try (final Context context = new Context())
@@ -276,8 +272,8 @@ public class LabelImageUtilsTest
 			Img< FloatType > image = ArrayImgs.floats( 100, 100, 100, 2 );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
 			List< String > sourceNames = LabelImageUtils.getSourceNames( projectModel.getSharedBdvData() );
-			assertEquals( 1, sourceNames.size() );
-			assertEquals( "image channel 1", sourceNames.get( 0 ) );
+			Assertions.assertEquals( 1, sourceNames.size() );
+			Assertions.assertEquals( "image channel 1", sourceNames.get( 0 ) );
 		}
 	}
 

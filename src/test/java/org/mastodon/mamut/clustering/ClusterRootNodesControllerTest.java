@@ -28,7 +28,8 @@
  */
 package org.mastodon.mamut.clustering;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
@@ -47,15 +48,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ClusterRootNodesControllerTest
+class ClusterRootNodesControllerTest
 {
 	@Test
-	public void testCreateTagSet()
+	void testCreateTagSet()
 	{
 		final Model model = new Model();
 
@@ -95,17 +93,17 @@ public class ClusterRootNodesControllerTest
 		Set< Integer > expectedClassCounts = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
 		Set< Integer > actualClassCounts = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
 
-		assertEquals( model, controller.getModel() );
-		assertEquals( "Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet1.getName() );
-		assertTrue( controller.isValidParams() );
-		assertEquals( 2, tagSets.size() );
-		assertEquals( 3, tags.size() );
-		assertEquals( expectedClassNames, actualClassNames );
-		assertEquals( expectedClassCounts, actualClassCounts );
+		Assertions.assertEquals( model, controller.getModel() );
+		Assertions.assertEquals( "Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet1.getName() );
+		Assertions.assertTrue( controller.isValidParams() );
+		Assertions.assertEquals( 2, tagSets.size() );
+		Assertions.assertEquals( 3, tags.size() );
+		Assertions.assertEquals( expectedClassNames, actualClassNames );
+		Assertions.assertEquals( expectedClassCounts, actualClassCounts );
 	}
 
 	@Test
-	public void testGetFeedback()
+	void testGetFeedback()
 	{
 		ExampleGraph2 exampleGraph = new ExampleGraph2();
 		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
@@ -113,19 +111,19 @@ public class ClusterRootNodesControllerTest
 		controller.setInputParams( CropCriteria.TIMEPOINT, 1, 0, 1 );
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
 		controller.setVisualisationParams( false, null );
-		assertEquals( 2, controller.getFeedback().size() );
-		assertFalse( controller.isValidParams() );
+		Assertions.assertEquals( 2, controller.getFeedback().size() );
+		Assertions.assertFalse( controller.isValidParams() );
 		assertThrows( IllegalArgumentException.class, controller::createTagSet );
 
 		controller.setInputParams( CropCriteria.NUMBER_OF_SPOTS, 5, 10, 0 );
-		assertEquals( 3, controller.getFeedback().size() );
+		Assertions.assertEquals( 3, controller.getFeedback().size() );
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 2 );
 		controller.setInputParams( CropCriteria.NUMBER_OF_SPOTS, 0, 3, 0 );
-		assertEquals( 1, controller.getFeedback().size() );
+		Assertions.assertEquals( 1, controller.getFeedback().size() );
 	}
 
 	@Test
-	public void testGetParameters()
+	void testGetParameters()
 	{
 		ExampleGraph2 exampleGraph = new ExampleGraph2();
 		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
@@ -133,10 +131,9 @@ public class ClusterRootNodesControllerTest
 		controller.setInputParams( CropCriteria.TIMEPOINT, 1, 10, 1 );
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
 
-		assertEquals(
+		Assertions.assertEquals(
 				"Crop criterion: Timepoint, Crop start: 1, Crop end: 10, Number of classes: 3, Minimum cell divisions: 1, Similarity measure: Normalized Zhang Tree Distance, Clustering method: Average linkage, Resulting lineage trees: 1",
-				controller.getParameters()
-		);
+				controller.getParameters() );
 	}
 
 	/**

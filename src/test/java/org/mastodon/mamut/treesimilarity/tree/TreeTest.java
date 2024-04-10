@@ -28,20 +28,21 @@
  */
 package org.mastodon.mamut.treesimilarity.tree;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 
-public class TreeTest extends TestCase
+class TreeTest
 {
-
-	public void testIsLeaf()
+	@Test
+	void testIsLeaf()
 	{
-		assertTrue( SimpleTreeExamples.emptyTree().isLeaf() );
+		Assertions.assertTrue( SimpleTreeExamples.emptyTree().isLeaf() );
 		Tree< Double > tree1 = SimpleTreeExamples.tree1();
-		assertFalse( tree1.isLeaf() );
+		Assertions.assertFalse( tree1.isLeaf() );
 		Iterator< Tree< Double > > iterator = tree1.getChildren().iterator();
-		assertTrue( iterator.next().isLeaf() );
-		assertTrue( iterator.next().isLeaf() );
+		Assertions.assertTrue( iterator.next().isLeaf() );
+		Assertions.assertTrue( iterator.next().isLeaf() );
 	}
 }

@@ -30,17 +30,16 @@ package org.mastodon.mamut.treesimilarity.util;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-
-public class JGraphtToolsTest
+class JGraphtToolsTest
 {
 	@Test
-	public void testMinCostMaxFlow()
+	void testMinCostMaxFlow()
 	{
 		SimpleDirectedWeightedGraph< Integer, DefaultWeightedEdge > graph = new SimpleDirectedWeightedGraph<>( DefaultWeightedEdge.class );
 
@@ -96,6 +95,6 @@ public class JGraphtToolsTest
 
 		double cost = JGraphtTools.maxFlowMinCost( graph, capacities, 1, 7 ).getCost();
 
-		assertEquals( 373, ( int ) cost );
+		Assertions.assertEquals( 373, ( int ) cost );
 	}
 }

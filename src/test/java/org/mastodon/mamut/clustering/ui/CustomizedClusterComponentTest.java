@@ -30,7 +30,8 @@ package org.mastodon.mamut.clustering.ui;
 
 import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.Cluster;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.clustering.ClusterData;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
@@ -41,16 +42,14 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-import static org.junit.Assert.assertEquals;
-
-public class CustomizedClusterComponentTest
+class CustomizedClusterComponentTest
 {
 
 	/**
 	 * this tests only if the paint method resets the color to default and runs without exceptions, not if the dendrogram is drawn correctly
 	 */
 	@Test
-	public void testPaint()
+	void testPaint()
 	{
 		Classification< String > classification =
 				ClusterUtils.getClassificationByClassCount( ClusterData.example1.getKey(), ClusterData.example1.getValue(),
@@ -69,6 +68,6 @@ public class CustomizedClusterComponentTest
 		graphics.setColor( defaultColor );
 
 		customizedClusterComponent.paint( ( Graphics2D ) graphics, 0, 0, 1d, 1d, false );
-		assertEquals( defaultColor, graphics.getColor() );
+		Assertions.assertEquals( defaultColor, graphics.getColor() );
 	}
 }

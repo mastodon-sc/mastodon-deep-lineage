@@ -29,8 +29,9 @@
 package org.mastodon.mamut.feature.spot.movement.relative;
 
 import net.imglib2.util.LinAlgHelpers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.mamut.feature.AbstractFeatureTest;
@@ -45,11 +46,6 @@ import org.scijava.Context;
 
 import java.io.IOException;
 import java.util.Collections;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 {
@@ -67,7 +63,7 @@ public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 
 	private FeatureProjectionSpec specNorm;
 
-	@Before
+	@BeforeEach
 	public void setUp()
 	{
 		try (Context context = new Context())
@@ -76,7 +72,7 @@ public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 			relativeMovementController.computeRelativeMovement( settings, context );
 			spotRelativeMovementFeature =
 					FeatureUtils.getFeature( graph2.getModel(), SpotRelativeMovementFeature.SpotRelativeMovementFeatureSpec.class );
-			assertNotNull( spotRelativeMovementFeature );
+			Assertions.assertNotNull( spotRelativeMovementFeature );
 			specX = new FeatureProjectionSpec( spotRelativeMovementFeature.getProjectionName( "X-component" ), Dimension.LENGTH );
 			specY = new FeatureProjectionSpec( spotRelativeMovementFeature.getProjectionName( "Y-component" ), Dimension.LENGTH );
 			specZ = new FeatureProjectionSpec( spotRelativeMovementFeature.getProjectionName( "Z-component" ), Dimension.LENGTH );
@@ -88,7 +84,7 @@ public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 	@Override
 	public void testFeatureComputation()
 	{
-		assertNotNull( spotRelativeMovementFeature );
+		Assertions.assertNotNull( spotRelativeMovementFeature );
 		double actualX = getProjection( spotRelativeMovementFeature, specX ).value( graph2.spot13 );
 		double actualY = getProjection( spotRelativeMovementFeature, specY ).value( graph2.spot13 );
 		double actualZ = getProjection( spotRelativeMovementFeature, specZ ).value( graph2.spot13 );
@@ -97,17 +93,17 @@ public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 		double[] expected = new double[ 3 ];
 		double[] movementSpot8 = SpotFeatureUtils.spotMovement( graph2.spot8 );
 		double[] movementSpot5 = SpotFeatureUtils.spotMovement( graph2.spot5 );
-		assertNotNull( movementSpot8 );
+		Assertions.assertNotNull( movementSpot8 );
 		LinAlgHelpers.add( movementSpot8, movementSpot5, movementSpot8 );
 		LinAlgHelpers.scale( movementSpot8, 1 / 2d, movementSpot8 );
 		double[] movementSpot13 = SpotFeatureUtils.spotMovement( graph2.spot13 );
-		assertNotNull( movementSpot13 );
+		Assertions.assertNotNull( movementSpot13 );
 		LinAlgHelpers.subtract( movementSpot13, movementSpot8, expected );
 
-		assertEquals( expected[ 0 ], actualX, 0d );
-		assertEquals( expected[ 1 ], actualY, 0d );
-		assertEquals( expected[ 2 ], actualZ, 0d );
-		assertEquals( LinAlgHelpers.length( expected ), actualNorm, 0d );
+		Assertions.assertEquals( expected[ 0 ], actualX, 0d );
+		Assertions.assertEquals( expected[ 1 ], actualY, 0d );
+		Assertions.assertEquals( expected[ 2 ], actualZ, 0d );
+		Assertions.assertEquals( LinAlgHelpers.length( expected ), actualNorm, 0d );
 	}
 
 	@Test
@@ -120,9 +116,9 @@ public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 			spotRelativeMovementFeatureReloaded = ( SpotRelativeMovementFeature ) FeatureSerializerTestUtils.saveAndReload( context,
 					graph2.getModel(), spotRelativeMovementFeature );
 		}
-		assertNotNull( spotRelativeMovementFeatureReloaded );
+		Assertions.assertNotNull( spotRelativeMovementFeatureReloaded );
 		// check that the feature has correct values after saving and reloading
-		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( spotRelativeMovementFeature,
+		Assertions.assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( spotRelativeMovementFeature,
 				spotRelativeMovementFeatureReloaded, Collections.singleton( graph2.spot13 ) ) );
 	}
 
@@ -131,18 +127,18 @@ public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 	public void testFeatureInvalidate()
 	{
 		// test, if features are not NaN before invalidation
-		assertFalse( Double.isNaN( getProjection( spotRelativeMovementFeature, specX ).value( graph2.spot13 ) ) );
-		assertFalse( Double.isNaN( getProjection( spotRelativeMovementFeature, specY ).value( graph2.spot13 ) ) );
-		assertFalse( Double.isNaN( getProjection( spotRelativeMovementFeature, specZ ).value( graph2.spot13 ) ) );
-		assertFalse( Double.isNaN( getProjection( spotRelativeMovementFeature, specNorm ).value( graph2.spot13 ) ) );
+		Assertions.assertFalse( Double.isNaN( getProjection( spotRelativeMovementFeature, specX ).value( graph2.spot13 ) ) );
+		Assertions.assertFalse( Double.isNaN( getProjection( spotRelativeMovementFeature, specY ).value( graph2.spot13 ) ) );
+		Assertions.assertFalse( Double.isNaN( getProjection( spotRelativeMovementFeature, specZ ).value( graph2.spot13 ) ) );
+		Assertions.assertFalse( Double.isNaN( getProjection( spotRelativeMovementFeature, specNorm ).value( graph2.spot13 ) ) );
 
 		// invalidate feature
 		spotRelativeMovementFeature.invalidate( graph2.spot13 );
 
 		// test, if features are NaN after invalidation
-		assertTrue( Double.isNaN( getProjection( spotRelativeMovementFeature, specX ).value( graph2.spot13 ) ) );
-		assertTrue( Double.isNaN( getProjection( spotRelativeMovementFeature, specY ).value( graph2.spot13 ) ) );
-		assertTrue( Double.isNaN( getProjection( spotRelativeMovementFeature, specZ ).value( graph2.spot13 ) ) );
-		assertTrue( Double.isNaN( getProjection( spotRelativeMovementFeature, specNorm ).value( graph2.spot13 ) ) );
+		Assertions.assertTrue( Double.isNaN( getProjection( spotRelativeMovementFeature, specX ).value( graph2.spot13 ) ) );
+		Assertions.assertTrue( Double.isNaN( getProjection( spotRelativeMovementFeature, specY ).value( graph2.spot13 ) ) );
+		Assertions.assertTrue( Double.isNaN( getProjection( spotRelativeMovementFeature, specZ ).value( graph2.spot13 ) ) );
+		Assertions.assertTrue( Double.isNaN( getProjection( spotRelativeMovementFeature, specNorm ).value( graph2.spot13 ) ) );
 	}
 }
