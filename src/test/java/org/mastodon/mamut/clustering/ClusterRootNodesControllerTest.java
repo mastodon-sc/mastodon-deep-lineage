@@ -70,12 +70,13 @@ public class ClusterRootNodesControllerTest
 		addLineageTree5( modelGraph );
 		addEmptyTree( modelGraph );
 
+		String tagSetName = "Test Tag Set";
+		TagSetUtils.addNewTagSetToModel( model, tagSetName, Collections.emptyList() );
 		ClusterRootNodesController controller = new ClusterRootNodesController( model, synchronizer );
 		controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
-		String tagSetName = "Test Tag Set";
-		TagSetUtils.addNewTagSetToModel( model, tagSetName, Collections.emptyList() );
-		controller.createTagSet( false, tagSetName );
+		controller.setVisualisationParams( false, tagSetName );
+		controller.createTagSet();
 
 		List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
 		TagSetStructure.TagSet tagSet1 = model.getTagSetModel().getTagSetStructure().getTagSets().get( 1 );
@@ -111,9 +112,10 @@ public class ClusterRootNodesControllerTest
 		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel(), synchronizer );
 		controller.setInputParams( CropCriteria.TIMEPOINT, 1, 0, 1 );
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
+		controller.setVisualisationParams( false, null );
 		assertEquals( 2, controller.getFeedback().size() );
 		assertFalse( controller.isValidParams() );
-		assertThrows( IllegalArgumentException.class, () -> controller.createTagSet( false, null ) );
+		assertThrows( IllegalArgumentException.class, controller::createTagSet );
 
 		controller.setInputParams( CropCriteria.NUMBER_OF_SPOTS, 5, 10, 0 );
 		assertEquals( 3, controller.getFeedback().size() );

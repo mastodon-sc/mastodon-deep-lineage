@@ -147,14 +147,13 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 		controller.setInputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
 		controller.setComputeParams(
 				SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses );
+		controller.setVisualisationParams( showDendrogram, tagSetChoice );
 
 		paramFeedback = "<html><body width=" + WIDTH_INPUT + "cm>";
 		if ( controller.isValidParams() )
 			paramFeedback += "<font color=green>Parameters are valid.";
 		else
-		{
 			paramFeedback += "<font color=red>" + String.join( "<p>", controller.getFeedback() );
-		}
 		paramFeedback += "</font></body></html>";
 	}
 
@@ -167,7 +166,7 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 			String feedback;
 			try
 			{
-				controller.createTagSet( showDendrogram, tagSetChoice );
+				controller.createTagSet();
 				feedback = "Classified lineage trees.<p>";
 				feedback += "Tag set created.";
 			}

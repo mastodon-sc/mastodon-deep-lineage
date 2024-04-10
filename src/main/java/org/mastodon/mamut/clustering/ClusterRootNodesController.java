@@ -88,6 +88,10 @@ public class ClusterRootNodesController
 
 	private int minCellDivisions;
 
+	private boolean showDendrogram;
+
+	private String tagSetName;
+
 	private Classification< BranchSpotTree > classification;
 
 	private boolean running = false;
@@ -111,7 +115,7 @@ public class ClusterRootNodesController
 	/**
 	 * Create a new tag set based on the current settings of the controller.
 	 */
-	public void createTagSet( final boolean showDendrogram, final String tagSetName )
+	public void createTagSet()
 	{
 		if ( running )
 			return;
@@ -122,7 +126,7 @@ public class ClusterRootNodesController
 		try
 		{
 			running = true;
-			runClassification( showDendrogram, tagSetName );
+			runClassification();
 		}
 		finally
 		{
@@ -131,7 +135,7 @@ public class ClusterRootNodesController
 		}
 	}
 
-	private void runClassification( final boolean showDendrogram, final String tagSetName )
+	private void runClassification()
 	{
 		TagSetStructure.TagSet tagSet = null;
 		if ( tagSetName != null && !tagSetName.isEmpty() )
@@ -295,6 +299,12 @@ public class ClusterRootNodesController
 		this.similarityMeasure = similarityMeasure;
 		this.clusteringMethod = clusteringMethod;
 		this.numberOfClasses = numberOfClasses;
+	}
+
+	public void setVisualisationParams( final boolean showDendrogram, final String tagSetName )
+	{
+		this.showDendrogram = showDendrogram;
+		this.tagSetName = tagSetName;
 	}
 
 	public List< String > getFeedback()
