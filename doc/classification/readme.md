@@ -7,60 +7,74 @@
 * The cost function applied for the tree edit distance uses the attribute branch spot duration, which is computed as a
   difference of time points between to subsequent divisions reflecting the start and the end of a spot's lifetime.
 * Thus, the linage classification operates on Mastodon's branch graph.
-* The Zhang unordered edit distance allows the following edit operations:
+* The Zhang unordered edit distance allows the following edit operations. The edit operations are defined in a way that
+  they satisfy the constraints elaborated in section 3.1 ("Constrained Edit Distance Mappings") of the paper:
 
 ```
   Note: The prefix T may represent a node or a complete subtree. Nodes without this prefix are just nodes.
-  
+ 
   1. Change label
+ 
         A         A'
-       / \  ->   / \
+       / \  -->  / \
       TB TC     TB TC
-  
-  
-  2a: Remove subtree (opposite of 2b)
-         A         A
-        / \   ->   |
-       TB TC       TB
-  
-  2b: Add new subtree (opposite of 2a)
-  
+ 
+ 
+  2a: Delete subtree (opposite of 2b)
+ 
+        A         A
+       / \   -->  |
+      TB TC       TB
+ 
+  2b: Insert subtree (opposite of 2a)
+ 
         A          A
-        |    ->   / \
+        |    -->  / \
         TB       TB TC
-  
-  
-  3a: Remove subtree but keep one child (opposite of 3b)
-  
-         A          A
-        / \   ->   / \
-       B  TC      TD TC
-      / \
-     TD TE        (remove B and TE, keep TD)
-  
-  3b: Convert existing subtree into child of a newly inserted subtree (opposite of 3a)
-         A             A
-        / \    ->     / \
-       TB TC         D  TC
-                    / \
-                   TB TE       (insert D and TE, keep TB)
-  
-  
-  4a: Remove subtree (and siblings) but keep all children (opposite of 4b)
-         A               A
-        / \             / \
-       B  TC   ->      TD TE
-      / \
-     TD TE            (Subtree B and it's sibling TC are removed, but the children
-                       of B namely TD and TE are kept)
-  
-  4b: Convert existing subtrees into children of a newly inserted subtree (opposite of 4a)
-         A               A
-        / \             / \
-       TB TC   ->      D  TE
-                      / \
-                     TB TC       (Subtree D and it's sibling TE are newly inserted,
-                                  TB and TC are kept as children of D)
+ 
+ 
+  3a: Delete one child of a node and delete the node itself (opposite of 3b)
+ 
+        A             A
+       / \   -->     / \
+      B  TC         TD TC
+     / \
+    TD TE        (delete TE and B, TD becomes child of A)
+ 
+  3b: Insert a node and insert one child at that node (opposite of 3a)
+        A            A
+       / \     -->  / \
+      TB TC         D  TC
+                   / \
+                  TB TE       (insert D and TE, TB becomes child of D)
+ 
+ 
+  4a: Delete node and delete its sibling subtree (opposite of 4b)
+        A               A
+       / \             / \
+      B  TC   -->     TD TE
+     / \
+    TD TE            (Node B and its sibling subtree TC are deleted and the children
+                      of B, namely TD and TE, become the children of A)
+ 
+  4b: Insert node and insert a sibling subtree (opposite of 4a)
+        A               A
+       / \             / \
+      TB TC   -->     D  TE
+                     / \
+                    TB TC       (Node D and its sibling TE are inserted,
+                                 TB and TC become the children of D)
+```
+
+As an example, the following case explicitly does not fulfill the constraints mentioned in the paper:
+
+```
+ Delete a node without deleting one of its children
+          A            A
+         / \   -->   / | \
+        B  TC      TD TE TC
+       / \
+      TD TE        (delete B, TD and TE become children of A and TC remains)
 ```
 
 * A basic example of the tree edit distance:
