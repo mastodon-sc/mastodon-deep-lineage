@@ -164,22 +164,22 @@ class DendrogramPanelTest
 	@Test
 	void testExport() throws IOException
 	{
-		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
 		int width = 600;
 		int height = 600;
-		Image image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-		Graphics graphics = image.getGraphics();
-		dendrogramPanel.setSize( width, height );
-		dendrogramPanel.paint( graphics );
+		int screenResolution = 96;
+		int outputWidth = width * DendrogramPanel.PRINT_RESOLUTION / screenResolution;
+		int outputHeight = height * DendrogramPanel.PRINT_RESOLUTION / screenResolution;
+
 		File tempFilePng = File.createTempFile( "dendrogram", ".png" );
 		tempFilePng.deleteOnExit();
 		File tempFileSvg = File.createTempFile( "dendrogram", ".svg" );
 		tempFileSvg.deleteOnExit();
-		int screenResolution = 96;
-		int outputWidth = width * DendrogramPanel.PRINT_RESOLUTION / screenResolution;
-		int outputHeight = height * DendrogramPanel.PRINT_RESOLUTION / screenResolution;
+
+		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
+		dendrogramPanel.setSize( width, height );
 		dendrogramPanel.exportPng( tempFilePng, screenResolution );
 		dendrogramPanel.exportSvg( tempFileSvg );
+
 		Image readPng = ImageIO.read( tempFilePng );
 		assertEquals( outputWidth, readPng.getWidth( null ) );
 		assertEquals( outputHeight, readPng.getHeight( null ) );
