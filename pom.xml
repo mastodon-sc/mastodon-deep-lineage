@@ -115,6 +115,12 @@
             <artifactId>jgrapht-io</artifactId>
         </dependency>
 
+        <!-- export of dendrogram to svg -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreesvg</artifactId>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

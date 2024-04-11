@@ -31,6 +31,8 @@ package org.mastodon.mamut.clustering.ui;
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.visualization.ClusterComponent;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.jfree.graphics2d.svg.SVGUtils;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
@@ -59,6 +61,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.ObjIntConsumer;
 
 /**
  * Class for painting dendrograms derived from a {@link Classification} object.<br>
@@ -117,6 +120,10 @@ public class DendrogramPanel< T > extends JPanel
 
 	static final int PRINT_RESOLUTION = 600;
 
+	private static final String PNG_EXTENSION = "png";
+
+	private static final String SVG_EXTENSION = "svg";
+
 	/**
 	 * Creates an empty {@link DendrogramPanel}.
 	 */
@@ -135,6 +142,7 @@ public class DendrogramPanel< T > extends JPanel
 		super();
 		this.classification = classification;
 		setComponentPopupMenu( new PopupMenu() );
+		setBackground( Color.WHITE );
 		if ( classification == null )
 		{
 			this.component = null;
@@ -229,7 +237,7 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
-	void export( final File file, final String formatName, int screenResolution )
+	void exportPng( final File file, int screenResolution )
 	{
 		double scale = PRINT_RESOLUTION / ( double ) screenResolution;
 		BufferedImage image =
@@ -239,11 +247,25 @@ public class DendrogramPanel< T > extends JPanel
 		paint( g );
 		try
 		{
-			ImageIO.write( image, formatName, file );
+			ImageIO.write( image, PNG_EXTENSION, file );
 		}
-		catch ( IOException ex )
+		catch ( IOException e )
 		{
-			logger.error( "Could not save dendrogram image to File: {}. Message: {}", file.getAbsolutePath(), ex.getMessage() );
+			logger.error( "Could not save dendrogram to File: {}. Message: {}", file.getAbsolutePath(), e.getMessage() );
+		}
+	}
+
+	void exportSvg( final File file )
+	{
+		SVGGraphics2D g2 = new SVGGraphics2D( getWidth(), getHeight() );
+		paint( g2 );
+		try
+		{
+			SVGUtils.writeToSVG( file, g2.getSVGElement() );
+		}
+		catch ( IOException e )
+		{
+			logger.error( "Could not save dendrogram to File: {}. Message: {}", file.getAbsolutePath(), e.getMessage() );
 		}
 	}
 
@@ -274,29 +296,37 @@ public class DendrogramPanel< T > extends JPanel
 	{
 		private PopupMenu()
 		{
-			JMenuItem item = new JMenuItem( "Export dendrogram as image" );
-			item.addActionListener( actionEvent -> chooseFileAndExport() );
-			add( item );
+			String exportText = "Export dendrogram as ";
+			JMenuItem pngItem = new JMenuItem( exportText + PNG_EXTENSION.toUpperCase() );
+			pngItem.addActionListener( actionEvent -> chooseFileAndExport( PNG_EXTENSION, DendrogramPanel.this::exportPng ) );
+			add( pngItem );
+			JMenuItem svgItem = new JMenuItem( exportText + SVG_EXTENSION.toUpperCase() );
+			svgItem.addActionListener( actionEvent -> chooseFileAndExport( SVG_EXTENSION, ( file, resolution ) -> exportSvg( file ) ) );
+			add( svgItem );
 		}
 
-		private void chooseFileAndExport()
+		private void chooseFileAndExport( final String extension, final ObjIntConsumer< File > exportFunction )
 		{
-			String imageFormatName = "png";
-			File chosenFile = FileChooser.chooseFile( DendrogramPanel.this, "dendrogram." + imageFormatName,
-					new ExtensionFileFilter( imageFormatName ), "Save dendrogram image", FileChooser.DialogType.SAVE );
+			File chosenFile = FileChooser.chooseFile( DendrogramPanel.this, "dendrogram." + extension,
+					new ExtensionFileFilter( extension ), "Save dendrogram to " + extension, FileChooser.DialogType.SAVE );
 			if ( chosenFile != null )
 			{
 				int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
-				export( chosenFile, imageFormatName, screenResolution );
-				try
-				{
-					Desktop.getDesktop().open( chosenFile );
-				}
-				catch ( IOException ex )
-				{
-					logger.error( "Could not open dendrogram image file: {}. Message: {}", chosenFile.getAbsolutePath(),
-							ex.getMessage() );
-				}
+				exportFunction.accept( chosenFile, screenResolution );
+				openFile( chosenFile );
+			}
+		}
+
+		private void openFile( final File chosenFile )
+		{
+			try
+			{
+				Desktop.getDesktop().open( chosenFile );
+			}
+			catch ( IOException e )
+			{
+				logger.error( "Could not open dendrogram image file: {}. Message: {}", chosenFile.getAbsolutePath(),
+						e.getMessage() );
 			}
 		}
 	}
