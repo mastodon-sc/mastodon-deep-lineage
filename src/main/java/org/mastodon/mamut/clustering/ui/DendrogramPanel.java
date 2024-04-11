@@ -31,20 +31,37 @@ package org.mastodon.mamut.clustering.ui;
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.visualization.ClusterComponent;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.jfree.graphics2d.svg.SVGUtils;
 import org.mastodon.mamut.clustering.util.Classification;
+import org.mastodon.ui.util.ExtensionFileFilter;
+import org.mastodon.ui.util.FileChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.ObjIntConsumer;
 
 /**
  * Class for painting dendrograms derived from a {@link Classification} object.<br>
@@ -62,6 +79,8 @@ public class DendrogramPanel< T > extends JPanel
 {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final Classification< T > classification;
 
@@ -99,15 +118,18 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final String NO_DATA_AVAILABLE = "No cluster data available.";
 
+	static final int PRINT_RESOLUTION = 600;
+
+	private static final String PNG_EXTENSION = "png";
+
+	private static final String SVG_EXTENSION = "svg";
+
 	/**
 	 * Creates an empty {@link DendrogramPanel}.
 	 */
 	public DendrogramPanel()
 	{
-		super();
-		this.classification = null;
-		this.component = null;
-		this.modelMetrics = null;
+		this( null );
 	}
 
 	/**
@@ -119,6 +141,14 @@ public class DendrogramPanel< T > extends JPanel
 	{
 		super();
 		this.classification = classification;
+		setComponentPopupMenu( new PopupMenu() );
+		setBackground( Color.WHITE );
+		if ( classification == null )
+		{
+			this.component = null;
+			this.modelMetrics = null;
+			return;
+		}
 		this.component = createComponent( classification.getRootCluster() );
 		this.modelMetrics = createModelMetrics( this.component );
 	}
@@ -207,6 +237,38 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
+	void exportPng( final File file, int screenResolution )
+	{
+		double scale = PRINT_RESOLUTION / ( double ) screenResolution;
+		BufferedImage image =
+				new BufferedImage( ( int ) ( getWidth() * scale ), ( int ) ( getHeight() * scale ), BufferedImage.TYPE_INT_RGB );
+		Graphics2D g = image.createGraphics();
+		g.setTransform( AffineTransform.getScaleInstance( scale, scale ) );
+		paint( g );
+		try
+		{
+			ImageIO.write( image, PNG_EXTENSION, file );
+		}
+		catch ( IOException e )
+		{
+			logger.error( "Could not save dendrogram to File: {}. Message: {}", file.getAbsolutePath(), e.getMessage() );
+		}
+	}
+
+	void exportSvg( final File file )
+	{
+		SVGGraphics2D g2 = new SVGGraphics2D( getWidth(), getHeight() );
+		paint( g2 );
+		try
+		{
+			SVGUtils.writeToSVG( file, g2.getSVGElement() );
+		}
+		catch ( IOException e )
+		{
+			logger.error( "Could not save dendrogram to File: {}. Message: {}", file.getAbsolutePath(), e.getMessage() );
+		}
+	}
+
 	private CustomizedClusterComponent createComponent( final Cluster cluster )
 	{
 		return new CustomizedClusterComponent( cluster, classification.getObjectClassifications() );
@@ -222,14 +284,51 @@ public class DendrogramPanel< T > extends JPanel
 
 	private ModelMetrics createModelMetrics( final ClusterComponent component )
 	{
-		if ( component == null )
-			return null;
 		double minX = component.getRectMinX();
 		double maxX = component.getRectMaxX();
 		double minY = component.getRectMinY();
 		double maxY = component.getRectMaxY();
 
 		return new ModelMetrics( minX, minY, maxX - minX, maxY - minY );
+	}
+
+	private final class PopupMenu extends JPopupMenu
+	{
+		private PopupMenu()
+		{
+			String exportText = "Export dendrogram as ";
+			JMenuItem pngItem = new JMenuItem( exportText + PNG_EXTENSION.toUpperCase() );
+			pngItem.addActionListener( actionEvent -> chooseFileAndExport( PNG_EXTENSION, DendrogramPanel.this::exportPng ) );
+			add( pngItem );
+			JMenuItem svgItem = new JMenuItem( exportText + SVG_EXTENSION.toUpperCase() );
+			svgItem.addActionListener( actionEvent -> chooseFileAndExport( SVG_EXTENSION, ( file, resolution ) -> exportSvg( file ) ) );
+			add( svgItem );
+		}
+
+		private void chooseFileAndExport( final String extension, final ObjIntConsumer< File > exportFunction )
+		{
+			File chosenFile = FileChooser.chooseFile( DendrogramPanel.this, "dendrogram." + extension,
+					new ExtensionFileFilter( extension ), "Save dendrogram to " + extension, FileChooser.DialogType.SAVE );
+			if ( chosenFile != null )
+			{
+				int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
+				exportFunction.accept( chosenFile, screenResolution );
+				openFile( chosenFile );
+			}
+		}
+
+		private void openFile( final File chosenFile )
+		{
+			try
+			{
+				Desktop.getDesktop().open( chosenFile );
+			}
+			catch ( IOException e )
+			{
+				logger.error( "Could not open dendrogram image file: {}. Message: {}", chosenFile.getAbsolutePath(),
+						e.getMessage() );
+			}
+		}
 	}
 
 	private static class ModelMetrics
@@ -286,11 +385,21 @@ public class DendrogramPanel< T > extends JPanel
 			xDisplayOrigin = BORDER_LEFT;
 			yDisplayOrigin = BORDER_TOP + axisHeight;
 
-			xConversionFactor = widthDisplay / modelMetrics.wModel;
-			yConversionFactor = heightDisplay / modelMetrics.hModel;
+			if ( modelMetrics == null )
+			{
+				xConversionFactor = 1;
+				yConversionFactor = 1;
+				xOffset = 0;
+				yOffset = 0;
+			}
+			else
+			{
+				xConversionFactor = widthDisplay / modelMetrics.wModel;
+				yConversionFactor = heightDisplay / modelMetrics.hModel;
 
-			xOffset = ( int ) ( xDisplayOrigin - modelMetrics.xModelOrigin * xConversionFactor );
-			yOffset = ( int ) ( yDisplayOrigin - modelMetrics.yModelOrigin * yConversionFactor );
+				xOffset = ( int ) ( xDisplayOrigin - modelMetrics.xModelOrigin * xConversionFactor );
+				yOffset = ( int ) ( yDisplayOrigin - modelMetrics.yModelOrigin * yConversionFactor );
+			}
 		}
 	}
 

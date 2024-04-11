@@ -64,6 +64,8 @@ public class Classification< T >
 
 	private final double median;
 
+	private final int objectCount;
+
 	/**
 	 * Creates a new {@link Classification} object.
 	 * @param classifiedObjects a {@link List} of {@link Pair} objects, where each pair contains:
@@ -81,15 +83,20 @@ public class Classification< T >
 	{
 		this.objectClassifications = new HashSet<>();
 		List< Integer > glasbeyColors = ClusterUtils.getGlasbeyColors( classifiedObjects.size() );
+		int count = 0;
 		for ( int i = 0; i < classifiedObjects.size(); i++ )
 		{
 			Pair< Set< T >, Cluster > clusterClassPair = classifiedObjects.get( i );
 			this.objectClassifications.add(
 					new ObjectClassification<>( glasbeyColors.get( i ), clusterClassPair.getRight(), clusterClassPair.getLeft() ) );
+			Set< T > objects = clusterClassPair.getLeft();
+			if ( objects != null )
+				count += clusterClassPair.getLeft().size();
 		}
 		this.rootCluster = rootCluster;
 		this.cutoff = cutoff;
 		this.median = median;
+		this.objectCount = count;
 	}
 
 	/**
@@ -133,6 +140,15 @@ public class Classification< T >
 	public double getMedian()
 	{
 		return median;
+	}
+
+	/**
+	 * Returns the number of objects that are classified.
+	 * @return the number of objects
+	 */
+	public int getObjectCount()
+	{
+		return objectCount;
 	}
 
 	Set< Set< T > > getClassifiedObjects()

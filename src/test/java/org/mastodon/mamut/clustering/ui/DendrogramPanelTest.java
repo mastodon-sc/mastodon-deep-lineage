@@ -39,6 +39,7 @@ import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
 import org.mockito.Mockito;
 
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -47,13 +48,17 @@ import java.awt.Image;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DendrogramPanelTest
 {
@@ -139,11 +144,49 @@ class DendrogramPanelTest
 	}
 
 	@Test
+	void testPaintNoData()
+	{
+		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( null );
+		int width = 600;
+		int height = 600;
+		Image image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+		Graphics graphics = image.getGraphics();
+		assertDoesNotThrow( () -> dendrogramPanel.paint( graphics ) );
+	}
+
+	@Test
 	void testGetVerticalLine()
 	{
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
 		Line2D line = dendrogramPanel.getVerticalLine( 25d, dendrogramPanel.new DisplayMetrics( 507, 426, graphics ) );
 		assertEquals( 312d, line.getX1(), 0.01 );
+	}
+
+	@Test
+	void testExport() throws IOException
+	{
+		int width = 600;
+		int height = 600;
+		int screenResolution = 96;
+		int outputWidth = width * DendrogramPanel.PRINT_RESOLUTION / screenResolution;
+		int outputHeight = height * DendrogramPanel.PRINT_RESOLUTION / screenResolution;
+
+		File tempFilePng = File.createTempFile( "dendrogram", ".png" );
+		tempFilePng.deleteOnExit();
+
+		File tempFileSvg = File.createTempFile( "dendrogram", ".svg" );
+		tempFileSvg.deleteOnExit();
+
+		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
+		dendrogramPanel.setSize( width, height );
+		dendrogramPanel.exportPng( tempFilePng, screenResolution );
+		dendrogramPanel.exportSvg( tempFileSvg );
+
+		Image readPng = ImageIO.read( tempFilePng );
+		assertEquals( outputWidth, readPng.getWidth( null ) );
+		assertEquals( outputHeight, readPng.getHeight( null ) );
+		assertTrue( tempFileSvg.exists() );
+		assertTrue( tempFileSvg.length() > 0 );
 	}
 
 	private void adaptClusterValues( Cluster cluster )
