@@ -90,8 +90,6 @@ public class ClusterRootNodesController
 
 	private boolean showDendrogram;
 
-	private String tagSetName;
-
 	private Classification< BranchSpotTree > classification;
 
 	private boolean running = false;
@@ -137,19 +135,7 @@ public class ClusterRootNodesController
 
 	private void runClassification()
 	{
-		TagSetStructure.TagSet tagSet = null;
-		if ( tagSetName != null && !tagSetName.isEmpty() )
-		{
-			try
-			{
-				tagSet = TagSetUtils.findTagSet( model, tagSetName );
-			}
-			catch ( NoSuchElementException ignored )
-			{
-				// tag set does not exist
-			}
-		}
-		List< BranchSpotTree > roots = getRoots( tagSet );
+		List< BranchSpotTree > roots = getRoots();
 		classification = classifyLineageTrees( roots );
 		List< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
 		applyClassification( classification, tagsAndColors );
@@ -173,7 +159,6 @@ public class ClusterRootNodesController
 
 	private void showDendrogram()
 	{
-
 		String header = "<html><body>Dendrogram of hierarchical clustering of lineages<br>" + getParameters() + "</body></html>";
 		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, header );
 		dendrogramView.show();
@@ -239,11 +224,6 @@ public class ClusterRootNodesController
 
 	private List< BranchSpotTree > getRoots()
 	{
-		return getRoots( null );
-	}
-
-	private List< BranchSpotTree > getRoots( final TagSetStructure.TagSet tagSet )
-	{
 		if ( !synchronizer.isUptodate() )
 			model.getBranchGraph().graphRebuilt();
 
@@ -301,10 +281,9 @@ public class ClusterRootNodesController
 		this.numberOfClasses = numberOfClasses;
 	}
 
-	public void setVisualisationParams( final boolean showDendrogram, final String tagSetName )
+	public void setVisualisationParams( final boolean showDendrogram )
 	{
 		this.showDendrogram = showDendrogram;
-		this.tagSetName = tagSetName;
 	}
 
 	public List< String > getFeedback()

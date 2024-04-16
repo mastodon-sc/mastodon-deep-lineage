@@ -33,11 +33,8 @@ import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.HasName;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
-import org.mastodon.mamut.clustering.util.ClusterUtils;
-import org.mastodon.model.tag.TagSetModel;
 import org.scijava.ItemVisibility;
 import org.scijava.command.InteractiveCommand;
-import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.Button;
@@ -52,7 +49,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Plugin( type = InteractiveCommand.class, visible = false, label = "Classification of Lineage Trees", initializer = "init" )
-public class ClusterRootNodesView extends InteractiveCommand implements TagSetModel.TagSetModelListener
+public class ClusterRootNodesView extends InteractiveCommand
 {
 
 	private static final int WIDTH = 15;
@@ -112,9 +109,6 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 	@Parameter(label = "Show dendrogram of clustering", callback = "update")
 	private boolean showDendrogram = true;
 
-	@Parameter( label = "Dendrogram leave tag set", description = "Specify the tag set that will be used to label the leaves of the resulting dendrogram. Choose 'None', if no tag set should be used.", persist = false, initializer = "initTagSetChoices" )
-	private String tagSetChoice;
-
 	@SuppressWarnings("unused")
 	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false, label = " ")
 	private String paramFeedback;
@@ -126,12 +120,6 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 	@SuppressWarnings("unused")
 	@Parameter( label = "Classify lineage trees", callback = "createTagSet" )
 	private Button createTagSet;
-
-	@SuppressWarnings( "unused" )
-	private void init()
-	{
-		controller.getModel().getTagSetModel().listeners().add( this );
-	}
 
 	/**
 	 * This method is executed whenever a parameter changes
@@ -148,7 +136,7 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 		controller.setInputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
 		controller.setComputeParams(
 				SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses );
-		controller.setVisualisationParams( showDendrogram, tagSetChoice );
+		controller.setVisualisationParams( showDendrogram );
 
 		paramFeedback = "<html><body width=" + WIDTH_INPUT + "cm>";
 		if ( controller.isValidParams() )
@@ -204,20 +192,5 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 	static List< String > enumNamesAsList( final HasName[] values )
 	{
 		return Arrays.stream( values ).map( HasName::getName ).collect( Collectors.toList() );
-	}
-
-	@SuppressWarnings( "unused" )
-	private void initTagSetChoices()
-	{
-		List< String > choices = new ArrayList<>( Collections.singletonList( "None" ) );
-		choices.addAll( ClusterUtils.getTagSetNames( controller.getModel() ) );
-		MutableModuleItem< String > tagSetInput = getInfo().getMutableInput( "tagSetChoice", String.class );
-		tagSetInput.setChoices( choices );
-	}
-
-	@Override
-	public void tagSetStructureChanged()
-	{
-		initTagSetChoices();
 	}
 }
