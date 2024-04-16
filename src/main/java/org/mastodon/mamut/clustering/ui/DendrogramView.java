@@ -30,6 +30,7 @@ package org.mastodon.mamut.clustering.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.mastodon.mamut.clustering.util.Classification;
+import org.mastodon.mamut.model.Model;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -47,17 +48,20 @@ import java.awt.Dimension;
  */
 public class DendrogramView< T >
 {
-
-	private final Classification< T > classification;
-
 	private final String headline;
+
+	private final Model model;
 
 	private final JFrame frame;
 
 	public DendrogramView( final Classification< T > classification, final String headline )
 	{
-		this.classification = classification;
-		this.headline = headline;
+		this( classification, headline, null );
+	}
+
+	public DendrogramView( final Classification< T > classification, final String headline, final Model model )
+	{
+		this.model = model;
 
 		frame = new JFrame( "Hierarchical clustering of lineage trees" );
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );

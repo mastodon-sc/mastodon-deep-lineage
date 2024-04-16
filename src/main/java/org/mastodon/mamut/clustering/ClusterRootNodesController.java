@@ -159,7 +159,7 @@ public class ClusterRootNodesController
 	private void showDendrogram()
 	{
 		String header = "<html><body>Dendrogram of hierarchical clustering of lineages<br>" + getParameters() + "</body></html>";
-		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, header );
+		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, header, model );
 		dendrogramView.show();
 	}
 
