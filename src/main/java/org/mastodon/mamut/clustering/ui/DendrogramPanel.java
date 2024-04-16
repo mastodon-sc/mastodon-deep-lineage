@@ -124,6 +124,9 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final String SVG_EXTENSION = "svg";
 
+	private boolean showThreshold = false;
+
+	private boolean showMedian = false;
 
 	/**
 	 * Creates a {@link DendrogramPanel} for the given {@link Classification} object.
@@ -167,8 +170,10 @@ public class DendrogramPanel< T > extends JPanel
 				Axis axis = new Axis( metrics );
 				axis.paint( g2 );
 			}
-			paintCutoffLine( g2, metrics );
-			paintMedianLine( g2, metrics );
+			if ( showThreshold )
+				paintCutoffLine( g2, metrics );
+			if ( showMedian )
+				paintMedianLine( g2, metrics );
 		}
 		else
 		{
@@ -191,9 +196,8 @@ public class DendrogramPanel< T > extends JPanel
 		paintLineLegend( g2, "Median of tree similarities", 2, MEDIAN_LINE_STROKE );
 	}
 
-	private void paintVerticalLine(
-			final Graphics2D g2, final Stroke stroke, final double xModelValue, final DisplayMetrics displayMetrics
-	)
+	private void paintVerticalLine( final Graphics2D g2, final Stroke stroke, final double xModelValue,
+			final DisplayMetrics displayMetrics )
 	{
 		if ( Double.isNaN( xModelValue ) )
 			return;
@@ -273,6 +277,18 @@ public class DendrogramPanel< T > extends JPanel
 		int yDendrogramEnd = getHeight() - BORDER_BOTTOM;
 		int lineX = getDisplayXCoordinate( xModelValue, displayMetrics );
 		return new Line2D.Float( lineX, yDendrogramOrigin, lineX, yDendrogramEnd );
+	}
+
+	void toggleShowThreshold()
+	{
+		showThreshold = !showThreshold;
+		repaint();
+	}
+
+	void toggleShowMedian()
+	{
+		showMedian = !showMedian;
+		repaint();
 	}
 
 	private ModelMetrics createModelMetrics( final ClusterComponent component )
