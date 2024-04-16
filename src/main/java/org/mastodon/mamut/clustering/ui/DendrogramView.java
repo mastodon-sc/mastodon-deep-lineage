@@ -87,12 +87,19 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 
 		frame = new JFrame( "Hierarchical clustering of lineage trees" );
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
-		frame.setSize( 1000, 700 );
+		int minHeight = 50;
+		int initialDendrogramHeight = classification == null ? minHeight
+				: ( classification.getObjectCount() ) * getDefaultFontHeight() + DendrogramPanel.DENDROGRAM_VERTICAL_OFFSET;
+		initialDendrogramHeight += 200;
+		initialDendrogramHeight = Math.min( initialDendrogramHeight, 1000 );
+		frame.setSize( 1000, initialDendrogramHeight );
 		frame.setLayout( new MigLayout( "insets 10, fill" ) );
 		frame.add( canvas, "grow" );
 
 		headlineLabel = new JLabel( headline );
 		dendrogramPanel = new DendrogramPanel<>( classification );
+		int minDendrogramHeight = classification == null ? minHeight
+				: ( classification.getObjectCount() ) * getDefaultFontSize() + DendrogramPanel.DENDROGRAM_VERTICAL_OFFSET;
 		dendrogramPanel.setPreferredSize( new Dimension( -1, minDendrogramHeight ) );
 
 		initCanvas();
@@ -154,6 +161,11 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 	}
 
 	private static int getDefaultFontSize()
+	{
+		return new JLabel().getFontMetrics( new JLabel().getFont() ).getFont().getSize();
+	}
+
+	private static int getDefaultFontHeight()
 	{
 		return new JLabel().getFontMetrics( new JLabel().getFont() ).getHeight();
 	}

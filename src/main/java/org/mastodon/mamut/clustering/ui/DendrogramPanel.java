@@ -119,6 +119,8 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final int SCALE_TICK_LABEL_PADDING = 4;
 
+	public static final int DENDROGRAM_VERTICAL_OFFSET = BORDER_TOP + SCALE_PADDING + SCALE_TICK_LABEL_PADDING + SCALE_TICK_LENGTH;
+
 	private static final String NO_DATA_AVAILABLE = "No classification data available.";
 
 	static final int PRINT_RESOLUTION = 600;
