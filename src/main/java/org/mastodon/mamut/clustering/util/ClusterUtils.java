@@ -454,8 +454,10 @@ public class ClusterUtils
 	 */
 	public static String getTagLabel( final Model model, final BranchSpot branchSpot, final TagSetStructure.TagSet tagSet )
 	{
+		if ( model == null || branchSpot == null || tagSet == null )
+			return null;
 		Spot first = LineageTreeUtils.getFirstSpot( model, branchSpot );
-		TagSetStructure.Tag tag = tagSet == null ? null : TagSetUtils.getBranchTag( model, tagSet, first );
+		TagSetStructure.Tag tag = TagSetUtils.getBranchTag( model, tagSet, first );
 		return tag == null ? null : tag.label();
 	}
 }
