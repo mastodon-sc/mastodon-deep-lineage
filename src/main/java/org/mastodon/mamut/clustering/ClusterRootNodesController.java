@@ -35,7 +35,6 @@ import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.clustering.ui.DendrogramView;
-import org.mastodon.mamut.clustering.ui.BranchSpotTreeWithExtraLabel;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
 import org.mastodon.mamut.model.Link;
@@ -249,9 +248,7 @@ public class ClusterRootNodesController
 			BranchSpot rootBranchSpot = model.getBranchGraph().getBranchVertex( root, model.getBranchGraph().vertexRef() );
 			try
 			{
-				BranchSpotTree tempTree = new BranchSpotTree( rootBranchSpot, cropEndTime );
-				String tagValue = ClusterUtils.getTagLabel( model, rootBranchSpot, tagSet );
-				BranchSpotTree tree = tagValue == null ? tempTree : new BranchSpotTreeWithExtraLabel( tempTree, tagValue );
+				BranchSpotTree tree = new BranchSpotTree( rootBranchSpot, cropEndTime, model );
 				int minTreeSize = 2 * minCellDivisions + 1;
 				if ( TreeUtils.size( tree ) < minTreeSize )
 					continue;
