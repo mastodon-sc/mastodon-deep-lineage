@@ -124,13 +124,6 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final String SVG_EXTENSION = "svg";
 
-	/**
-	 * Creates an empty {@link DendrogramPanel}.
-	 */
-	public DendrogramPanel()
-	{
-		this( null );
-	}
 
 	/**
 	 * Creates a {@link DendrogramPanel} for the given {@link Classification} object.
