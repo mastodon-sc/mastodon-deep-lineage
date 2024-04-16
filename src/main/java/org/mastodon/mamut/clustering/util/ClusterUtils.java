@@ -53,6 +53,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -216,27 +217,27 @@ public class ClusterUtils
 		}
 
 		List< Pair< Set< T >, Cluster > > classesAndClusters = convertClustersToClasses( resultClusters, objectMapping );
-		resetClusterNames( algorithmResult, objectMapping );
+		Map< Cluster, T > clusterNodesToObjects = getClusterToObjectsMap( algorithmResult, objectMapping );
 		log( classesAndClusters );
 		double[] upperTriangle = ClusterUtils.getUpperTriangle( distances );
 		double median = upperTriangle.length == 0 ? Double.NaN : Util.median( upperTriangle );
-		return new Classification<>( classesAndClusters, algorithmResult, threshold, median );
+		return new Classification<>( classesAndClusters, algorithmResult, threshold, median, clusterNodesToObjects );
 	}
 
-	private static void resetClusterNames( final Cluster cluster, final Map< String, ? > objectMapping )
+	private static < T > Map< Cluster, T > getClusterToObjectsMap( final Cluster cluster, final Map< String, T > objectMapping )
 	{
+		Map< Cluster, T > clusterToObjects = new HashMap<>();
 		if ( cluster.isLeaf() )
 		{
 			if ( objectMapping.containsKey( cluster.getName() ) )
-				cluster.setName( objectMapping.get( cluster.getName() ).toString() );
+				clusterToObjects.put( cluster, objectMapping.get( cluster.getName() ) );
 		}
 		else
 		{
 			for ( Cluster child : cluster.getChildren() )
-			{
-				resetClusterNames( child, objectMapping );
-			}
+				clusterToObjects.putAll( getClusterToObjectsMap( child, objectMapping ) );
 		}
+		return clusterToObjects;
 	}
 
 	/**
