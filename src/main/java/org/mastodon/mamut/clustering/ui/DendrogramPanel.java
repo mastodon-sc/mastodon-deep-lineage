@@ -34,6 +34,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 import org.mastodon.mamut.clustering.util.Classification;
+import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
+import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
 import org.slf4j.Logger;
@@ -60,6 +62,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
 
@@ -288,6 +291,29 @@ public class DendrogramPanel< T > extends JPanel
 	void toggleShowMedian()
 	{
 		showMedian = !showMedian;
+		repaint();
+	}
+
+	void setLeaveLabeling( final boolean showRootLabels, final boolean showTagLabels, final TagSetStructure.TagSet tagSet )
+	{
+		if ( classification == null )
+			return;
+		Map< Cluster, T > clusterNodesToObjects = classification.getClusterNodesToObjects();
+		if ( clusterNodesToObjects == null )
+			return;
+		for ( Map.Entry< Cluster, T > entry : clusterNodesToObjects.entrySet() )
+		{
+			Cluster cluster = entry.getKey();
+			if ( !cluster.isLeaf() )
+				continue;
+			T object = entry.getValue();
+			if ( object instanceof BranchSpotTree )
+			{
+				BranchSpotTree branchSpotTree = ( BranchSpotTree ) object;
+				branchSpotTree.updateLabeling( showRootLabels, showTagLabels, tagSet );
+			}
+		}
+		classification.updateClusterNames();
 		repaint();
 	}
 
