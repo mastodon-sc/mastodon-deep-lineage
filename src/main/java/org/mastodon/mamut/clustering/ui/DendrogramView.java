@@ -33,6 +33,7 @@ import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.model.Model;
 
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -56,6 +57,10 @@ public class DendrogramView< T >
 	private final JFrame frame;
 
 	private final JPanel canvas = new JPanel( new MigLayout( "fill" ) );
+
+	private final JCheckBox showThresholdCheckBox = new JCheckBox( "Show classification threshold" );
+
+	private final JCheckBox showMedianCheckBox = new JCheckBox( "Show median of tree similarities" );
 
 	private final DendrogramPanel< T > dendrogramPanel;
 
@@ -97,11 +102,25 @@ public class DendrogramView< T >
 	void initCanvas()
 	{
 		initLayout();
+		initBehavior();
+	}
+
+	private void initBehavior()
+	{
+		showThresholdCheckBox.addActionListener( ignore -> dendrogramPanel.toggleShowThreshold() );
+		showMedianCheckBox.addActionListener( ignore -> dendrogramPanel.toggleShowMedian() );
+
+		showThresholdCheckBox.setSelected( true );
+		dendrogramPanel.toggleShowThreshold();
+		showMedianCheckBox.setSelected( true );
+		dendrogramPanel.toggleShowMedian();
 	}
 
 	private void initLayout()
 	{
 		canvas.add( headlineLabel, "wrap, align center" );
+		canvas.add( showThresholdCheckBox, "split 2" );
+		canvas.add( showMedianCheckBox, "wrap" );
 		dendrogramPanel.setBackground( Color.WHITE );
 		JScrollPane scrollPane = new JScrollPane( dendrogramPanel );
 		canvas.add( scrollPane, "grow, push" );
