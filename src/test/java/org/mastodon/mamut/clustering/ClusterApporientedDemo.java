@@ -82,27 +82,27 @@ public class ClusterApporientedDemo
 		JPanel averagedFixedPanel = new DendrogramView<>(
 				new Classification<>( Collections.emptyList(), averageFixed, 20d, median ),
 				"Average Linkage (Fixed Values)"
-		).getPanel();
+		).getCanvas();
 		JPanel singleFixedPanel = new DendrogramView<>(
 				new Classification<>( Collections.emptyList(), singleFixed, 20d, median ),
 				"Single Linkage (Fixed Values)"
-		).getPanel();
+		).getCanvas();
 		JPanel completeFixedPanel = new DendrogramView<>(
 				new Classification<>( Collections.emptyList(), completeFixed, 20d, median ),
 				"Complete Linkage (Fixed Values)"
-		).getPanel();
+		).getCanvas();
 		JPanel averagedRandomPanel = new DendrogramView<>(
 				new Classification<>( Collections.emptyList(), averageRandom, 5d, median ),
 				"Average Linkage (Random Values)"
-		).getPanel();
+		).getCanvas();
 		JPanel singleRandomPanel = new DendrogramView<>(
 				new Classification<>( Collections.emptyList(), singleRandom, 5d, median ),
 				"Single Linkage (Random Values)"
-		).getPanel();
+		).getCanvas();
 		JPanel completeRandomPanel = new DendrogramView<>(
 				new Classification<>( Collections.emptyList(), completeRandom, 5d, median ),
 				"Complete Linkage (Random Values)"
-		).getPanel();
+		).getCanvas();
 
 		frame.setLayout( new MigLayout( "insets 10, wrap 3, fill" ) );
 

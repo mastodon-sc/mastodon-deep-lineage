@@ -36,12 +36,13 @@ import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class DendrogramViewTest
 {
 	@Test
-	void testGetPanel()
+	void testInitCanvas()
 	{
 		Cluster cluster = new Cluster( "test" );
 		Classification< BranchSpotTree > classification =
@@ -49,8 +50,8 @@ class DendrogramViewTest
 		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, "test" );
 		DendrogramView< BranchSpotTree > dendrogramViewNull = new DendrogramView<>( null, "test" );
 		assertNotNull( dendrogramView );
-		assertNotNull( dendrogramView.getPanel() );
+		assertDoesNotThrow( dendrogramView::initCanvas );
 		assertNotNull( dendrogramViewNull );
-		assertNotNull( dendrogramViewNull.getPanel() );
+		assertDoesNotThrow( dendrogramView::initCanvas );
 	}
 }

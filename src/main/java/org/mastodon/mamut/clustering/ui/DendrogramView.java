@@ -48,11 +48,16 @@ import java.awt.Dimension;
  */
 public class DendrogramView< T >
 {
-	private final String headline;
+
+	private final JLabel headlineLabel;
 
 	private final Model model;
 
 	private final JFrame frame;
+
+	private final JPanel canvas = new JPanel( new MigLayout( "fill" ) );
+
+	private final DendrogramPanel< T > dendrogramPanel;
 
 	public DendrogramView( final Classification< T > classification, final String headline )
 	{
@@ -67,7 +72,13 @@ public class DendrogramView< T >
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
 		frame.setSize( 1000, 700 );
 		frame.setLayout( new MigLayout( "insets 10, fill" ) );
-		frame.add( getPanel(), "grow" );
+		frame.add( canvas, "grow" );
+
+		headlineLabel = new JLabel( headline );
+		dendrogramPanel = new DendrogramPanel<>( classification );
+		dendrogramPanel.setPreferredSize( new Dimension( -1, minDendrogramHeight ) );
+
+		initCanvas();
 	}
 
 	/**
@@ -78,29 +89,23 @@ public class DendrogramView< T >
 		frame.setVisible( true );
 	}
 
-	public JPanel getPanel()
+	public JPanel getCanvas()
 	{
-		JPanel panel = new JPanel( new MigLayout( "fill" ) );
-		JLabel label = new JLabel( headline );
+		return canvas;
+	}
 
-		DendrogramPanel< T > dendrogramPanel;
-		if ( classification == null )
-			dendrogramPanel = new DendrogramPanel<>(); // NB: empty dendrogram
-		else
-		{
-			dendrogramPanel = new DendrogramPanel<>( classification );
-			dendrogramPanel.setBackground( Color.WHITE );
-			int minHeight = ( classification.getObjectCount() - 1 ) * getDefaultFontSize();
-			dendrogramPanel.setPreferredSize( new Dimension( -1, minHeight ) );
-		}
+	void initCanvas()
+	{
+		initLayout();
+	}
 
-		panel.add( label, "wrap, align center" );
+	private void initLayout()
+	{
+		canvas.add( headlineLabel, "wrap, align center" );
+		dendrogramPanel.setBackground( Color.WHITE );
 		JScrollPane scrollPane = new JScrollPane( dendrogramPanel );
-		panel.add( scrollPane, "grow, push" );
-
-		panel.setBorder( BorderFactory.createEtchedBorder() );
-
-		return panel;
+		canvas.add( scrollPane, "grow, push" );
+		canvas.setBorder( BorderFactory.createEtchedBorder() );
 	}
 
 	private static int getDefaultFontSize()
