@@ -31,9 +31,12 @@ package org.mastodon.mamut.clustering.ui;
 import net.miginfocom.swing.MigLayout;
 import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.model.tag.TagSetModel;
+import org.mastodon.model.tag.TagSetStructure;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -41,13 +44,16 @@ import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class that represents a UI view of a dendrogram.<br>
  * It encapsulates a {@link Classification} object and a headline that can describe the classification, e.g. the parameters that were used for it.
  * @param <T> the type of the objects that are classified
  */
-public class DendrogramView< T >
+public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 {
 
 	private final JLabel headlineLabel;
@@ -61,6 +67,12 @@ public class DendrogramView< T >
 	private final JCheckBox showThresholdCheckBox = new JCheckBox( "Show classification threshold" );
 
 	private final JCheckBox showMedianCheckBox = new JCheckBox( "Show median of tree similarities" );
+
+	private final JCheckBox showRootLabelsCheckBox = new JCheckBox( "Show root labels" );
+
+	private final JCheckBox showTagLabelsCheckBox = new JCheckBox( "Show tag labels" );
+
+	private final JComboBox< TagSetElement > tagSetComboBox = new JComboBox<>();
 
 	private final DendrogramPanel< T > dendrogramPanel;
 
@@ -84,6 +96,8 @@ public class DendrogramView< T >
 		dendrogramPanel.setPreferredSize( new Dimension( -1, minDendrogramHeight ) );
 
 		initCanvas();
+		if ( null != model )
+			this.model.getTagSetModel().listeners().add( this );
 	}
 
 	/**
@@ -103,17 +117,26 @@ public class DendrogramView< T >
 	{
 		initLayout();
 		initBehavior();
+		updateTagSetOptions();
 	}
 
 	private void initBehavior()
 	{
 		showThresholdCheckBox.addActionListener( ignore -> dendrogramPanel.toggleShowThreshold() );
 		showMedianCheckBox.addActionListener( ignore -> dendrogramPanel.toggleShowMedian() );
+		ActionListener labelListener = ignore -> dendrogramPanel.setLeaveLabeling( showRootLabelsCheckBox.isSelected(),
+				showTagLabelsCheckBox.isSelected(),
+				tagSetComboBox.getSelectedItem() == null ? null : ( ( TagSetElement ) tagSetComboBox.getSelectedItem() ).tagSet );
+		showRootLabelsCheckBox.addActionListener( labelListener );
+		showTagLabelsCheckBox.addActionListener( labelListener );
+		tagSetComboBox.addActionListener( labelListener );
 
 		showThresholdCheckBox.setSelected( true );
 		dendrogramPanel.toggleShowThreshold();
 		showMedianCheckBox.setSelected( true );
 		dendrogramPanel.toggleShowMedian();
+		showRootLabelsCheckBox.setSelected( true );
+		dendrogramPanel.setLeaveLabeling( true, false, null );
 	}
 
 	private void initLayout()
@@ -121,6 +144,9 @@ public class DendrogramView< T >
 		canvas.add( headlineLabel, "wrap, align center" );
 		canvas.add( showThresholdCheckBox, "split 2" );
 		canvas.add( showMedianCheckBox, "wrap" );
+		canvas.add( showRootLabelsCheckBox, "split 3" );
+		canvas.add( showTagLabelsCheckBox );
+		canvas.add( tagSetComboBox, "wrap" );
 		dendrogramPanel.setBackground( Color.WHITE );
 		JScrollPane scrollPane = new JScrollPane( dendrogramPanel );
 		canvas.add( scrollPane, "grow, push" );
@@ -130,5 +156,43 @@ public class DendrogramView< T >
 	private static int getDefaultFontSize()
 	{
 		return new JLabel().getFontMetrics( new JLabel().getFont() ).getHeight();
+	}
+
+	@Override
+	public void tagSetStructureChanged()
+	{
+		updateTagSetOptions();
+	}
+
+	private void updateTagSetOptions()
+	{
+		if ( null == model )
+			return;
+		TagSetElement tagSetElement = ( TagSetElement ) tagSetComboBox.getSelectedItem();
+		tagSetComboBox.removeAllItems();
+		List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
+		List< TagSetElement > choices = new ArrayList<>();
+		tagSets.forEach( tagSet -> choices.add( new TagSetElement( tagSet ) ) );
+		choices.forEach( tagSetComboBox::addItem );
+		if ( null != tagSetElement )
+			for ( TagSetElement element : choices )
+				if ( element.tagSet.equals( tagSetElement.tagSet ) )
+					tagSetComboBox.setSelectedItem( element );
+	}
+
+	private static class TagSetElement
+	{
+		private final TagSetStructure.TagSet tagSet;
+
+		public TagSetElement( final TagSetStructure.TagSet tagSet )
+		{
+			this.tagSet = tagSet;
+		}
+
+		@Override
+		public String toString()
+		{
+			return tagSet.getName();
+		}
 	}
 }

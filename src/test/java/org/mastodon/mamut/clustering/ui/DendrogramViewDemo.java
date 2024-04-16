@@ -8,6 +8,8 @@ public class DendrogramViewDemo
 	public static void main( final String[] args )
 	{
 		Model model = new Model();
+		model.getTagSetModel().getTagSetStructure().createTagSet( "TagSet1" );
+		model.getTagSetModel().getTagSetStructure().createTagSet( "TagSet2" );
 		final DendrogramView< String > view =
 				new DendrogramView<>( ClusterData.createSampleClassification3(), "Classification of lineages", model );
 		view.show();
