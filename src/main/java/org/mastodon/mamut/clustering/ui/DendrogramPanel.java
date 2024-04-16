@@ -116,7 +116,7 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final int SCALE_TICK_LABEL_PADDING = 4;
 
-	private static final String NO_DATA_AVAILABLE = "No cluster data available.";
+	private static final String NO_DATA_AVAILABLE = "No classification data available.";
 
 	static final int PRINT_RESOLUTION = 600;
 
