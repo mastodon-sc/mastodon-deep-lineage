@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -494,13 +495,76 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return best;
 	}
 
-	private NodeMapping< T > minCostMaxFlow( final Tree< T > forest1, final Tree< T > forest2 )
+	private NodeMapping< T > minCostMaxFlow( final Tree< T > forestA, final Tree< T > forestB )
+	{
+		Collection< Tree< T > > childrenForestA = forestA.getChildren();
+		Collection< Tree< T > > childrenForestB = forestB.getChildren();
+
+		List< NodeMapping< T > > childMappings;
+		boolean isBinaryTreeComparison = childrenForestA.size() == 2 && childrenForestB.size() == 2;
+		if ( isBinaryTreeComparison )
+			childMappings = minCostMaxFlowBinary( childrenForestA, childrenForestB );
+		else
+			childMappings = minCostMaxFlowNonBinary( childrenForestA, childrenForestB );
+
+		return NodeMappings.compose( childMappings );
+	}
+
+	/**
+	 * Returns the best mapping for binary trees.
+	 * <br>
+	 * For the case of two binary trees / forests, the flow network can be simplified by removing the "empty" nodes.
+	 * <br>
+	 * The remaining flow network can be visualized as follows (capacities annotated with 1):
+	 * <pre>
+	 *                   1
+	 *                A1 --- B1
+	 *               /\      /\
+	 *             1/ 1\    /1 \1
+	 *             /    \  /    \
+	 *     source  \     \/      \    sink
+	 *              \    /\      /
+	 *              1\  /  \    /1
+	 *                \/    \  /
+	 *               A2 --- B2
+	 *                   1
+	 * </pre>
+	 * For this simplified network, the "parallel" and "cross" costs can be calculated directly by summing the costs of the corresponding edges.
+	 * <br>
+	 * The best mapping is then determined by comparing the "parallel" and "cross" costs.
+	 * @param childrenForestA The children of the first forest.
+	 * @param childrenForestB The children of the second forest.
+	 * @return The best mapping for binary trees.
+	 */
+	private List< NodeMapping< T > > minCostMaxFlowBinary( final Collection< Tree< T > > childrenForestA,
+			final Collection< Tree< T > > childrenForestB )
+	{
+		final Iterator< Tree< T > > forestAIterator = childrenForestA.iterator();
+		Tree< T > forestAChild1 = forestAIterator.next();
+		Tree< T > forestAChild2 = forestAIterator.next();
+
+		final Iterator< Tree< T > > forestBIterator = childrenForestB.iterator();
+		Tree< T > forestBChild1 = forestBIterator.next();
+		Tree< T > forestBChild2 = forestBIterator.next();
+
+		NodeMapping< T > mappingA1B1 = treeMapping( forestAChild1, forestBChild1 );
+		NodeMapping< T > mappingA2B2 = treeMapping( forestAChild2, forestBChild2 );
+		NodeMapping< T > mappingA1B2 = treeMapping( forestAChild1, forestBChild2 );
+		NodeMapping< T > mappingA2B1 = treeMapping( forestAChild2, forestBChild1 );
+
+		double parallelCosts = mappingA1B1.getCost() + mappingA2B2.getCost();
+		double crossCosts = mappingA1B2.getCost() + mappingA2B1.getCost();
+
+		if ( parallelCosts <= crossCosts )
+			return Arrays.asList( mappingA1B1, mappingA2B2 );
+		else
+			return Arrays.asList( mappingA1B2, mappingA2B1 );
+	}
+
+	private List< NodeMapping< T > > minCostMaxFlowNonBinary( final Collection< Tree< T > > childrenForest1,
+			final Collection< Tree< T > > childrenForest2 )
 	{
 		// Construction of graph for max flow min cost algorithm
-
-		Collection< Tree< T > > childrenForest1 = forest1.getChildren();
-		Collection< Tree< T > > childrenForest2 = forest2.getChildren();
-
 		String source = "source";
 		String sink = "sink";
 		String emptyTree1 = "empty1";
@@ -510,7 +574,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		network.solveMaxFlowMinCost( source, sink );
 
-		ArrayList< NodeMapping< T > > childMappings = new ArrayList<>();
+		List< NodeMapping< T > > childMappings = new ArrayList<>();
 
 		for ( Tree< T > child1 : childrenForest1 )
 			if ( isFlowEqualToOne( network.getFlow( child1, emptyTree2 ) ) )
@@ -524,8 +588,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			for ( Tree< T > child2 : childrenForest2 )
 				if ( isFlowEqualToOne( network.getFlow( child1, child2 ) ) )
 					childMappings.add( treeMapping( child1, child2 ) );
-
-		return NodeMappings.compose( childMappings );
+		return childMappings;
 	}
 
 	private FlowNetwork buildFlowNetwork(
