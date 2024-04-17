@@ -28,13 +28,17 @@
  */
 package org.mastodon.mamut.treesimilarity;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.DenseSimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ZhangUnorderedTreeEditDistanceTest
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final static BiFunction< Double, Double, Double > defaultCosts = TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION;
 
@@ -305,5 +310,17 @@ class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > tree2aba = DenseSimpleTreeExamples.tree2aba();
 		Tree< Double > tree1bab = DenseSimpleTreeExamples.tree1bab();
 		assertEquals( 39_214d, ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, defaultCosts ), 0d );
+	}
+
+	public static void main( String[] args )
+	{
+		// NB: This exists in addition to testDenseTreeExample(), because time measurement does not work in the test.
+		Tree< Double > tree2aba = DenseSimpleTreeExamples.tree2aba();
+		Tree< Double > tree1bab = DenseSimpleTreeExamples.tree1bab();
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		double costs = ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, defaultCosts );
+		stopWatch.stop();
+		logger.debug( "Costs: {}, time: {}ms", costs, stopWatch.getTime() );
 	}
 }
