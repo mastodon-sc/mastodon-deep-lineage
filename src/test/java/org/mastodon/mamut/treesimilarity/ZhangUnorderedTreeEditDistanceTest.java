@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.treesimilarity;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTreeExamples;
@@ -328,5 +329,17 @@ class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > tree2aba = DenseSimpleTreeExamples.tree2aba();
 		Tree< Double > tree1bab = DenseSimpleTreeExamples.tree1bab();
 		assertEquals( 39_214d, ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, defaultCosts ), 0d );
+	}
+
+	public static void main( String[] args )
+	{
+		// NB: This exists in addition to testDenseTreeExample(), because time measurement does not work in the test.
+		Tree< Double > tree2aba = DenseSimpleTreeExamples.tree2aba();
+		Tree< Double > tree1bab = DenseSimpleTreeExamples.tree1bab();
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		double costs = ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, defaultCosts );
+		stopWatch.stop();
+		System.out.println( "Costs: " + costs + ", time: " + stopWatch.getTime() + "ms" );
 	}
 }
