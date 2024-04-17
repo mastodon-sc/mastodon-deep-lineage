@@ -34,6 +34,7 @@ import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
 import net.imglib2.parallel.Parallelization;
 import net.imglib2.util.Util;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.model.Model;
@@ -98,6 +99,8 @@ public class ClusterUtils
 		int numTasks = pairs.size();
 		int outputRate = ( int ) Math.pow( 10, Math.floor( Math.log10( numTasks ) ) );
 		AtomicInteger counter = new AtomicInteger( 0 );
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
 		Parallelization.getTaskExecutor().forEach( pairs, pair -> {
 			int i = pair.getLeft();
 			int j = pair.getRight();
@@ -109,6 +112,8 @@ public class ClusterUtils
 			if ( finishedTasks % outputRate == 0 )
 				logger.debug( "Computed {} of {} distances ({}%).", finishedTasks, numTasks, ( finishedTasks * 100 ) / numTasks );
 		} );
+		stopWatch.stop();
+		logger.debug( "Computed all distances in {} s.", stopWatch.getTime() / 1000d );
 
 		return distances;
 	}
