@@ -33,6 +33,7 @@ import org.mastodon.mamut.clustering.util.Classification;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure;
+import org.scijava.prefs.PrefService;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -56,9 +57,21 @@ import java.util.List;
 public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 {
 
+	private static final String SHOW_THRESHOLD = "showThreshold";
+
+	private static final String SHOW_MEDIAN = "showMedian";
+
+	private static final String SHOW_ROOT_LABELS = "showRootLabels";
+
+	private static final String SHOW_TAG_LABELS = "showTagLabels";
+
+	private static final String TAG_SET_NAME = "tagSetName";
+
 	private final JLabel headlineLabel;
 
 	private final Model model;
+
+	private final PrefService prefs;
 
 	private final JFrame frame;
 
@@ -78,12 +91,13 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 
 	public DendrogramView( final Classification< T > classification, final String headline )
 	{
-		this( classification, headline, null );
+		this( classification, headline, null, null );
 	}
 
-	public DendrogramView( final Classification< T > classification, final String headline, final Model model )
+	public DendrogramView( final Classification< T > classification, final String headline, final Model model, final PrefService prefs )
 	{
 		this.model = model;
+		this.prefs = prefs;
 
 		frame = new JFrame( "Hierarchical clustering of lineage trees" );
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
@@ -123,27 +137,9 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 	void initCanvas()
 	{
 		initLayout();
-		initBehavior();
 		updateTagSetOptions();
-	}
-
-	private void initBehavior()
-	{
-		showThresholdCheckBox.addActionListener( ignore -> dendrogramPanel.toggleShowThreshold() );
-		showMedianCheckBox.addActionListener( ignore -> dendrogramPanel.toggleShowMedian() );
-		ActionListener labelListener = ignore -> dendrogramPanel.setLeaveLabeling( showRootLabelsCheckBox.isSelected(),
-				showTagLabelsCheckBox.isSelected(),
-				tagSetComboBox.getSelectedItem() == null ? null : ( ( TagSetElement ) tagSetComboBox.getSelectedItem() ).tagSet );
-		showRootLabelsCheckBox.addActionListener( labelListener );
-		showTagLabelsCheckBox.addActionListener( labelListener );
-		tagSetComboBox.addActionListener( labelListener );
-
-		showThresholdCheckBox.setSelected( true );
-		dendrogramPanel.toggleShowThreshold();
-		showMedianCheckBox.setSelected( true );
-		dendrogramPanel.toggleShowMedian();
-		showRootLabelsCheckBox.setSelected( true );
-		dendrogramPanel.setLeaveLabeling( true, false, null );
+		initSettings();
+		initBehavior();
 	}
 
 	private void initLayout()
@@ -158,6 +154,65 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 		JScrollPane scrollPane = new JScrollPane( dendrogramPanel );
 		canvas.add( scrollPane, "grow, push" );
 		canvas.setBorder( BorderFactory.createEtchedBorder() );
+	}
+
+	private void initSettings()
+	{
+		boolean showThresholdDefault = true;
+		boolean showMedianDefault = true;
+		boolean showRootLabelsDefault = true;
+		boolean showTagLabelsDefault = false;
+		boolean showThreshold =
+				prefs == null ? showThresholdDefault : prefs.getBoolean( DendrogramView.class, SHOW_THRESHOLD, showThresholdDefault );
+		boolean showMedian = prefs == null ? showMedianDefault : prefs.getBoolean( DendrogramView.class, SHOW_MEDIAN, showMedianDefault );
+		boolean showRootLabels =
+				prefs == null ? showRootLabelsDefault : prefs.getBoolean( DendrogramView.class, SHOW_ROOT_LABELS, showRootLabelsDefault );
+		boolean showTagLabels =
+				prefs == null ? showTagLabelsDefault : prefs.getBoolean( DendrogramView.class, SHOW_TAG_LABELS, showTagLabelsDefault );
+		showThresholdCheckBox.setSelected( showThreshold );
+		showMedianCheckBox.setSelected( showMedian );
+		showRootLabelsCheckBox.setSelected( showRootLabels );
+		showTagLabelsCheckBox.setSelected( showTagLabels );
+		dendrogramPanel.showThreshold( showThreshold );
+		dendrogramPanel.showMedian( showMedian );
+		dendrogramPanel.setLeaveLabeling( showRootLabels, showTagLabels,
+				tagSetComboBox.getSelectedItem() == null ? null : ( ( TagSetElement ) tagSetComboBox.getSelectedItem() ).tagSet );
+	}
+
+	private void initBehavior()
+	{
+		showThresholdCheckBox.addActionListener( ignore -> showThreshold( showThresholdCheckBox.isSelected() ) );
+		showMedianCheckBox.addActionListener( ignore -> showMedian( showMedianCheckBox.isSelected() ) );
+		ActionListener labelListener = ignore -> setLeaveLabeling( showRootLabelsCheckBox.isSelected(), showTagLabelsCheckBox.isSelected(),
+				tagSetComboBox.getSelectedItem() == null ? null : ( ( TagSetElement ) tagSetComboBox.getSelectedItem() ).tagSet );
+		showRootLabelsCheckBox.addActionListener( labelListener );
+		showTagLabelsCheckBox.addActionListener( labelListener );
+		tagSetComboBox.addActionListener( labelListener );
+	}
+
+	private void showThreshold( final boolean showThreshold )
+	{
+		if ( prefs != null )
+			prefs.put( DendrogramView.class, SHOW_THRESHOLD, showThreshold );
+		dendrogramPanel.showThreshold( showThreshold );
+	}
+
+	private void showMedian( final boolean showMedian )
+	{
+		if ( prefs != null )
+			prefs.put( DendrogramView.class, SHOW_MEDIAN, showMedian );
+		dendrogramPanel.showMedian( showMedian );
+	}
+
+	private void setLeaveLabeling( final boolean showRootLabels, final boolean showTagLabels, final TagSetStructure.TagSet tagSet )
+	{
+		if ( prefs != null )
+		{
+			prefs.put( DendrogramView.class, SHOW_ROOT_LABELS, showRootLabels );
+			prefs.put( DendrogramView.class, SHOW_TAG_LABELS, showTagLabels );
+			prefs.put( DendrogramView.class, TAG_SET_NAME, tagSet == null ? "" : tagSet.getName() );
+		}
+		dendrogramPanel.setLeaveLabeling( showRootLabels, showTagLabels, tagSet );
 	}
 
 	private static int getDefaultFontSize()
@@ -180,15 +235,25 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 	{
 		if ( null == model )
 			return;
-		TagSetElement tagSetElement = ( TagSetElement ) tagSetComboBox.getSelectedItem();
+		TagSetElement selectedTagSetElement = ( TagSetElement ) tagSetComboBox.getSelectedItem();
 		tagSetComboBox.removeAllItems();
 		List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
 		List< TagSetElement > choices = new ArrayList<>();
 		tagSets.forEach( tagSet -> choices.add( new TagSetElement( tagSet ) ) );
 		choices.forEach( tagSetComboBox::addItem );
-		if ( null != tagSetElement )
+		if ( selectedTagSetElement == null )
+		{
+			String tagSetName = prefs == null ? null : prefs.get( DendrogramView.class, TAG_SET_NAME, null );
+			for ( int i = 0; i < tagSetComboBox.getItemCount(); i++ )
+			{
+				final TagSetElement element = tagSetComboBox.getItemAt( i );
+				if ( element.tagSet.getName().equals( tagSetName ) )
+					selectedTagSetElement = element;
+			}
+		}
+		if ( selectedTagSetElement != null )
 			for ( TagSetElement element : choices )
-				if ( element.tagSet.equals( tagSetElement.tagSet ) )
+				if ( element.tagSet.equals( selectedTagSetElement.tagSet ) )
 					tagSetComboBox.setSelectedItem( element );
 	}
 

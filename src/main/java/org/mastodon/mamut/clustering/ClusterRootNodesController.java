@@ -48,6 +48,7 @@ import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
 import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.TagSetUtils;
+import org.scijava.prefs.PrefService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +71,8 @@ public class ClusterRootNodesController
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final Model model;
+
+	private final PrefService prefs;
 
 	private final BranchGraphSynchronizer synchronizer;
 
@@ -100,8 +103,20 @@ public class ClusterRootNodesController
 	 */
 	public ClusterRootNodesController( final Model model, final BranchGraphSynchronizer synchronizer )
 	{
+		this( model, synchronizer, null );
+	}
+
+	/**
+	 * Create a new controller for clustering root nodes of lineage trees.
+	 * @param model the model
+	 * @param synchronizer the branch graph synchronizer
+	 * @param prefs the preference service
+	 */
+	public ClusterRootNodesController( final Model model, final BranchGraphSynchronizer synchronizer, final PrefService prefs )
+	{
 		this.model = model;
 		this.synchronizer = synchronizer;
+		this.prefs = prefs;
 	}
 
 	public Model getModel()
@@ -159,7 +174,7 @@ public class ClusterRootNodesController
 	private void showDendrogram()
 	{
 		String header = "<html><body>Dendrogram of hierarchical clustering of lineages<br>" + getParameters() + "</body></html>";
-		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, header, model );
+		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, header, model, prefs );
 		dendrogramView.show();
 	}
 

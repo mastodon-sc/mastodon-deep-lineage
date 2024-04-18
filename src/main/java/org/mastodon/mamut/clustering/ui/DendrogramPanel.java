@@ -284,15 +284,15 @@ public class DendrogramPanel< T > extends JPanel
 		return new Line2D.Float( lineX, yDendrogramOrigin, lineX, yDendrogramEnd );
 	}
 
-	void toggleShowThreshold()
+	void showThreshold( final boolean showThreshold )
 	{
-		showThreshold = !showThreshold;
+		this.showThreshold = showThreshold;
 		repaint();
 	}
 
-	void toggleShowMedian()
+	void showMedian( final boolean showMedian )
 	{
-		showMedian = !showMedian;
+		this.showMedian = showMedian;
 		repaint();
 	}
 
