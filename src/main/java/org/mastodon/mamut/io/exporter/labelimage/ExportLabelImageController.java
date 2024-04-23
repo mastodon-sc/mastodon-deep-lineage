@@ -32,19 +32,12 @@ import bdv.util.AbstractSource;
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
 import ij.ImagePlus;
-import io.scif.codec.CompressionType;
-import io.scif.config.SCIFIOConfig;
-import io.scif.img.ImgSaver;
 import mpicbg.spim.data.sequence.TimePoint;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.ImgPlus;
-import net.imagej.axis.Axes;
-import net.imagej.axis.CalibratedAxis;
-import net.imagej.axis.DefaultLinearAxis;
 import net.imglib2.cache.img.DiskCachedCellImg;
 import net.imglib2.cache.img.DiskCachedCellImgFactory;
 import net.imglib2.cache.img.DiskCachedCellImgOptions;
-import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
@@ -165,8 +158,8 @@ public class ExportLabelImageController
 		lock.unlock();
 		logger.debug( "Export finished." );
 
-		ImgPlus< IntType > imgplus = createImgPlus( img );
-		saveImgPlus( file, imgplus );
+		ImgPlus< IntType > imgplus = ExportUtils.createImgPlusFromImg( img, voxelDimensions );
+		ExportUtils.saveImgPlusToFile( file, imgplus, context );
 		logger.info( "Done saving label image to file." );
 		if ( showResult )
 			showImgPlus( imgplus );
@@ -251,30 +244,10 @@ public class ExportLabelImageController
 		}
 	}
 
-	private ImgPlus< IntType > createImgPlus( final Img< IntType > img )
-	{
-		final CalibratedAxis[] axes = { new DefaultLinearAxis( Axes.X, voxelDimensions.dimension( 0 ) ),
-				new DefaultLinearAxis( Axes.Y, voxelDimensions.dimension( 1 ) ),
-				new DefaultLinearAxis( Axes.Z, voxelDimensions.dimension( 2 ) ), new DefaultLinearAxis( Axes.TIME ) };
-		logger.debug( "voxelDimensions size: {}", voxelDimensions.numDimensions() );
-		for ( int i = 0; i < voxelDimensions.numDimensions(); i++ )
-			logger.debug( "voxelDimensions: {}:{}", i, voxelDimensions.dimension( i ) );
-		return new ImgPlus<>( img, "Result", axes );
-	}
-
 	private static void showImgPlus( ImgPlus< IntType > imgplus )
 	{
 		ImagePlus result = ImageJFunctions.wrap( imgplus, "Label image representing ellipsoids" );
 		result.show();
-	}
-
-	private void saveImgPlus( File file, ImgPlus< IntType > imgplus )
-	{
-		SCIFIOConfig config = new SCIFIOConfig();
-		config.writerSetCompression( CompressionType.LZW );
-		config.writerSetFailIfOverwriting( false );
-		ImgSaver saver = new ImgSaver( context );
-		saver.saveImg( file.getAbsolutePath(), imgplus, config );
 	}
 
 	private static FeatureProjection< Spot > getTrackIDFeatureProjection( final Context context, final Model model )
