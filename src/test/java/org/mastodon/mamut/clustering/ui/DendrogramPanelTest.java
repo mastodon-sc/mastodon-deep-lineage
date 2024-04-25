@@ -98,6 +98,9 @@ class DendrogramPanelTest
 	void testDendrogramPanel()
 	{
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
+		dendrogramPanel.showMedian( true );
+		dendrogramPanel.showThreshold( true );
+		dendrogramPanel.setLeaveLabeling( true, true, null );
 		assertNotNull( dendrogramPanel );
 	}
 
