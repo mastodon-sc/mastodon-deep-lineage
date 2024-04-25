@@ -32,8 +32,13 @@ import com.apporiented.algorithm.clustering.Cluster;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.clustering.util.Classification;
+import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
+import org.mastodon.util.TagSetUtils;
+import org.scijava.Context;
+import org.scijava.prefs.PrefService;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -53,5 +58,26 @@ class DendrogramViewTest
 		assertDoesNotThrow( dendrogramView::initCanvas );
 		assertNotNull( dendrogramViewNull );
 		assertDoesNotThrow( dendrogramView::initCanvas );
+	}
+
+	@Test
+	void testTagSetStructureChanged()
+	{
+		Cluster cluster = new Cluster( "test" );
+		Classification< BranchSpotTree > classification =
+				new Classification<>( Collections.singletonList( Pair.of( null, cluster ) ), new Cluster( null ), 0d, 0d );
+		Model model = new Model();
+		final String tagSetName = "tagSet";
+		final String tagName1 = "tag1";
+		final String tagName2 = "tag2";
+		try (Context context = new Context())
+		{
+			PrefService prefService = context.getService( PrefService.class );
+			DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, "test", model, prefService );
+			assertNotNull( prefService );
+			assertNotNull( dendrogramView );
+			assertDoesNotThrow( () -> TagSetUtils.addNewTagSetToModel( model,
+					tagSetName, Arrays.asList( Pair.of( tagName1, 0x01020304 ), Pair.of( tagName2, 0x05060708 ) ) ) );
+		}
 	}
 }
