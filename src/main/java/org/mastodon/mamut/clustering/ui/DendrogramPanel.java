@@ -416,8 +416,8 @@ public class DendrogramPanel< T > extends JPanel
 					axisHeight = getAxisHeight( g2 );
 			}
 
-			widthDisplay = componentWidth - BORDER_LEFT - BORDER_RIGHT - nameOffset;
-			heightDisplay = componentHeight - BORDER_BOTTOM - BORDER_TOP - axisHeight;
+			widthDisplay = classification == null ? componentWidth : componentWidth - BORDER_LEFT - BORDER_RIGHT - nameOffset;
+			heightDisplay = classification == null ? componentHeight : componentHeight - BORDER_BOTTOM - BORDER_TOP - axisHeight;
 
 			xDisplayOrigin = BORDER_LEFT;
 			yDisplayOrigin = BORDER_TOP + axisHeight;
