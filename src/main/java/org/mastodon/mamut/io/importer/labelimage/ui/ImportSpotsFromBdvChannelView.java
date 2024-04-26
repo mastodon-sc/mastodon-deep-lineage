@@ -29,6 +29,7 @@
 package org.mastodon.mamut.io.importer.labelimage.ui;
 
 import bdv.viewer.SourceAndConverter;
+import net.imglib2.util.Cast;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
 import org.scijava.ItemVisibility;
@@ -85,7 +86,7 @@ public class ImportSpotsFromBdvChannelView extends DynamicCommand
 				.filter( source -> source.getSpimSource().getName().equals( imgSourceChoice ) ).findFirst();
 		if ( !sourceAndConverter.isPresent() )
 			return;
-		LabelImageUtils.importSpotsFromBdvChannel( projectModel, sourceAndConverter.get().getSpimSource(), scaleFactor,
+		LabelImageUtils.importSpotsFromBdvChannel( projectModel, Cast.unchecked( sourceAndConverter.get().getSpimSource() ), scaleFactor,
 				linkSpotsWithSameLabels );
 	}
 }

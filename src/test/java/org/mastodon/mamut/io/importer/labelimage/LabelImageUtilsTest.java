@@ -50,6 +50,7 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Cast;
@@ -110,29 +111,29 @@ class LabelImageUtilsTest
 	}
 
 	@Test
-	void testCreateSpotFromLabelImageEmpty()
+	< T extends RealType< T > & NativeType< T > > void testCreateSpotFromLabelImageEmpty()
 	{
 		RandomAccessibleIntervalSource< FloatType > img =
 				new RandomAccessibleIntervalSource<>( createImageCubeCorners( 0 ), new FloatType(), new AffineTransform3D(),
 						"Segmentation" );
 
-		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
+		IntFunction< RandomAccessibleInterval< T > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
 		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
 		assertEquals( 0, model.getGraph().vertices().size() );
 	}
 
 	@Test
-	void testCreateSpotFromNonLabelImage()
+	< T extends RealType< T > & NativeType< T > > void testCreateSpotFromNonLabelImage()
 	{
 		AbstractSource< FloatType > img = createNonLabelImage();
 
-		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
+		IntFunction< RandomAccessibleInterval< T > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
 		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
 		assertEquals( 0, model.getGraph().vertices().size() );
 	}
 
 	@Test
-	void testCreateSpotFromWrongVoxelDimensions()
+	< T extends RealType< T > & NativeType< T > > void testCreateSpotFromWrongVoxelDimensions()
 	{
 
 		RandomAccessibleIntervalSource< FloatType > img =
@@ -144,7 +145,7 @@ class LabelImageUtilsTest
 		Map< Integer, ? extends BasicViewSetup > setups =
 				Collections.singletonMap( 0, new BasicViewSetup( 0, "setup 0", new FinalDimensions( 10, 10, 10 ), wrongDimensions ) );
 		AbstractSequenceDescription< ?, ?, ? > faultySequenceDescription = new SequenceDescriptionMinimal( timePoints, setups, null, null );
-		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
+		IntFunction< RandomAccessibleInterval< T > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
 		assertThrows( IllegalArgumentException.class,
 				() -> LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, faultySequenceDescription, null ) );
 
@@ -159,7 +160,8 @@ class LabelImageUtilsTest
 			int pixelValue = 1;
 			Img< FloatType > img = createImageCubeCorners( pixelValue );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
-			LabelImageUtils.importSpotsFromBdvChannel( projectModel, projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource(),
+			LabelImageUtils.importSpotsFromBdvChannel( projectModel,
+					Cast.unchecked( projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource() ),
 					1, false );
 
 			Iterator< Spot > iter = model.getGraph().vertices().iterator();

@@ -29,6 +29,8 @@
 package org.mastodon.mamut.io.importer.labelimage.ui;
 
 import net.imagej.ImgPlus;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
 import org.scijava.ItemIO;
@@ -40,7 +42,7 @@ import org.scijava.plugin.Plugin;
 import java.util.Arrays;
 
 @Plugin( type = Command.class, label = "Import spots from ImageJ image" )
-public class ImportSpotsFromImgPlusView< T > extends ContextCommand
+public class ImportSpotsFromImgPlusView< T extends RealType< T > & NativeType< T > > extends ContextCommand
 {
 
 	private static final int WIDTH = 15;

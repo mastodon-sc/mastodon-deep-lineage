@@ -36,6 +36,7 @@ import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.ImgPlus;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Cast;
 import net.imglib2.util.Pair;
@@ -83,7 +84,8 @@ public class LabelImageUtils
 	 * @param sequenceDescription the sequence description of the image data. Contains the voxel dimensions and the time points.
 	 * @param statusService the status service to report progress to.
 	 */
-	static void createSpotsFromLabelImage( final IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider,
+	public static < T extends RealType< T > & NativeType< T > > void createSpotsFromLabelImage(
+			final IntFunction< RandomAccessibleInterval< T > > frameProvider,
 			final Model model, final double scaleFactor, final boolean linkSpotsWithSameLabels,
 			final AbstractSequenceDescription< ?, ?, ? > sequenceDescription,
 			final StatusService statusService )
@@ -102,7 +104,7 @@ public class LabelImageUtils
 			{
 				TimePoint frame = frames.get( i );
 				int frameId = frame.getId();
-				final RandomAccessibleInterval< RealType< ? > > rai = frameProvider.apply( frameId );
+				final RandomAccessibleInterval< T > rai = frameProvider.apply( frameId );
 				count += createSpotsForFrame( graph, rai, frameId, voxelDimensions, scaleFactor );
 				if ( statusService != null )
 					statusService.showProgress( i + 1, numTimepoints );
@@ -128,8 +130,8 @@ public class LabelImageUtils
 	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @return the number of spots created.
 	 */
-	private static int createSpotsForFrame( final ModelGraph graph, final RandomAccessibleInterval< RealType< ? > > frame,
-			final int frameId, final VoxelDimensions voxelDimensions, final double scaleFactor )
+	private static < T extends RealType< T > & NativeType< T > > int createSpotsForFrame( final ModelGraph graph,
+			final RandomAccessibleInterval< T > frame, final int frameId, final VoxelDimensions voxelDimensions, final double scaleFactor )
 	{
 		logger.debug( "Computing mean, covariance of all labels at frame {}", frameId );
 		logger.debug( "Dimensions of frame: {}, {}, {}", frame.dimension( 0 ), frame.dimension( 1 ), frame.dimension( 2 ) );
@@ -159,11 +161,12 @@ public class LabelImageUtils
 	 * @return A pair of values (min, max) that represent the minimum and maximum pixel values in the image
 	 * @author Noam Dori
 	 */
-	private static Pair< Integer, Integer > getPixelValueInterval( final RandomAccessibleInterval< RealType< ? > > frame )
+	private static < T extends RealType< T > & NativeType< T > > Pair< Integer, Integer >
+			getPixelValueInterval( final RandomAccessibleInterval< T > frame )
 	{
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
-		Cursor< RealType< ? > > cursor = Views.iterable( frame ).cursor();
+		Cursor< T > cursor = Views.iterable( frame ).cursor();
 		while ( cursor.hasNext() )
 		{
 			int val = ( int ) cursor.next().getRealDouble();
@@ -223,12 +226,13 @@ public class LabelImageUtils
 	 * @param minimumLabelValue the minimum value of the pixels in the image.
 	 * @param numLabels the number of labels in the frame.
 	 */
-	private static Label[] extractLabelsFromFrame( final RandomAccessibleInterval< RealType< ? > > frame, int minimumLabelValue,
+	private static < T extends RealType< T > & NativeType< T > > Label[] extractLabelsFromFrame(
+			final RandomAccessibleInterval< T > frame, int minimumLabelValue,
 			int numLabels )
 	{
 		Label[] labels = new Label[ numLabels ];
 		// read all pixels of the picture to sum everything up
-		Cursor< RealType< ? > > cursor = Views.iterable( frame ).cursor();
+		Cursor< T > cursor = Views.iterable( frame ).cursor();
 		int[] pixel = new int[ cursor.numDimensions() ];
 		while ( cursor.hasNext() )
 		{
@@ -308,7 +312,8 @@ public class LabelImageUtils
 	 * @param linkSpotsWithSameLabels whether to link spots with the same labels.
 	 * @throws IllegalArgumentException if the dimensions of the given image do not match the dimensions of the big data viewer image contained in the project model.
 	 */
-	public static void importSpotsFromImgPlus( final ProjectModel projectModel, final ImgPlus< ? > imgPlus, final double scaleFactor,
+	public static < T extends RealType< T > & NativeType< T > > void importSpotsFromImgPlus( final ProjectModel projectModel,
+			final ImgPlus< T > imgPlus, final double scaleFactor,
 			final boolean linkSpotsWithSameLabels )
 	{
 		logger.debug( "ImageJ image: {}", imgPlus.getName() );
@@ -316,7 +321,7 @@ public class LabelImageUtils
 		if ( !dimensionsMatch( sharedBdvData, imgPlus ) )
 			throw new IllegalArgumentException( "The dimensions of the ImageJ image " + imgPlus.getName()
 					+ " do not match the dimensions of the big data viewer image." );
-		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
+		IntFunction< RandomAccessibleInterval< T > > frameProvider =
 				frameId -> Cast.unchecked( Views.hyperSlice( imgPlus.getImg(), 3, frameId ) );
 		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), scaleFactor, linkSpotsWithSameLabels,
 				sharedBdvData.getSpimData().getSequenceDescription(),
@@ -331,10 +336,11 @@ public class LabelImageUtils
 	 * @param linkSpotsWithSameLabels whether to link spots with the same labels.
 	 * @throws IllegalArgumentException if the label channel index is out of bounds, i.e. if it is greater than the number of channels in the big data viewer source contained in the project model.
 	 */
-	public static void importSpotsFromBdvChannel( final ProjectModel projectModel, final Source< ? > source, final double scaleFactor,
+	public static < T extends RealType< T > & NativeType< T > > void importSpotsFromBdvChannel( final ProjectModel projectModel,
+			final Source< T > source, final double scaleFactor,
 			final boolean linkSpotsWithSameLabels )
 	{
-		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
+		IntFunction< RandomAccessibleInterval< T > > frameProvider =
 				frameId -> Cast.unchecked( source.getSource( frameId, 0 ) );
 		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), scaleFactor, linkSpotsWithSameLabels,
 				projectModel.getSharedBdvData().getSpimData().getSequenceDescription(),
