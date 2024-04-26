@@ -121,6 +121,13 @@
             <artifactId>jfreesvg</artifactId>
         </dependency>
 
+        <!-- Java Deep Learning (JDLL) dependencies for StarDist3D based detection -->
+        <dependency>
+            <groupId>io.bioimage</groupId>
+            <artifactId>dl-modelrunner</artifactId>
+            <version>0.5.8-SNAPSHOT</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
