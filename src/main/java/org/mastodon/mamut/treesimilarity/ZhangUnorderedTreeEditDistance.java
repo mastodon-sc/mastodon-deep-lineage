@@ -126,7 +126,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private final Map< Tree< T >, TreeDetails > deleteCosts;
 
-	private final Map< Pair< Tree< T >, Tree< T > >, NodeMapping< T > > treeDistances;
+	private final Map< Pair< Tree< T >, Tree< T > >, NodeMapping< T > > treeMappings;
 
 	private final Map< Pair< Tree< T >, Tree< T > >, NodeMapping< T > > forestDistances;
 
@@ -261,7 +261,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		insertCosts = new EditCosts<>( tree2, costFunction ).costs;
 		deleteCosts = new EditCosts<>( tree1, costFunction ).costs;
 
-		treeDistances = new HashMap<>();
+		treeMappings = new HashMap<>();
 		forestDistances = new HashMap<>();
 	}
 
@@ -287,7 +287,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double compute( final Tree< T > tree1, final Tree< T > tree2 )
 	{
-		treeDistances.clear();
+		treeMappings.clear();
 		forestDistances.clear();
 		double distance = treeMapping( tree1, tree2 ).getCost();
 
@@ -300,7 +300,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	{
 		if ( !logger.isTraceEnabled() )
 			return;
-		logDistances( "tree", treeDistances );
+		logDistances( "tree", treeMappings );
 		logDistances( "forest", forestDistances );
 
 		logger.trace( "tree deletion costs (tree1):" );
@@ -344,11 +344,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private NodeMapping< T > treeMapping( Tree< T > tree1, Tree< T > tree2 )
 	{
 		Pair< Tree< T >, Tree< T > > pair = Pair.of( tree1, tree2 );
-		NodeMapping< T > operation = treeDistances.get( pair );
+		NodeMapping< T > operation = treeMappings.get( pair );
 		if ( operation == null )
 		{
 			operation = computeTreeMapping( tree1, tree2 );
-			treeDistances.put( pair, operation );
+			treeMappings.put( pair, operation );
 		}
 		return operation;
 	}
