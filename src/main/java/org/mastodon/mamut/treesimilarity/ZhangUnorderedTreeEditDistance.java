@@ -28,6 +28,8 @@
  */
 package org.mastodon.mamut.treesimilarity;
 
+import org.apache.commons.collections.BidiMap;
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
 import org.mastodon.mamut.treesimilarity.util.FlowNetwork;
@@ -49,6 +51,7 @@ import java.util.StringJoiner;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 /**
  * Implementation of "A Constrained Edit Distance Between Unordered Labeled Trees", Kaizhong Zhang, Algorithmica (1996) 15:205-222<br>
@@ -133,6 +136,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private final List< Tree< T > > subtrees2;
 
 	private final double[][] costMatrix;
+
+	private final BidiMap treeToIndex1;
+
+	private final BidiMap treeToIndex2;
 
 	/**
 	 * Simple default cost function that returns the absolute value of the difference between two costs,
@@ -246,8 +253,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 		subtrees1 = TreeUtils.listOfSubtrees( tree1 );
 		subtrees2 = TreeUtils.listOfSubtrees( tree2 );
 
-		subtrees1.forEach( tree -> tree.setId( subtrees1.indexOf( tree ) ) );
-		subtrees2.forEach( tree -> tree.setId( subtrees2.indexOf( tree ) ) );
+		treeToIndex1 = new DualHashBidiMap();
+		treeToIndex2 = new DualHashBidiMap();
+		subtrees1.forEach( tree -> treeToIndex1.put( tree, subtrees1.indexOf( tree ) ) );
+		subtrees2.forEach( tree -> treeToIndex2.put( tree, subtrees2.indexOf( tree ) ) );
 
 		costMatrix = new double[ subtrees1.size() ][ subtrees2.size() ];
 		for ( Tree< T > subtree1 : subtrees1 )
@@ -255,15 +264,25 @@ public class ZhangUnorderedTreeEditDistance< T >
 			for ( Tree< T > subtree2 : subtrees2 )
 			{
 				double distance = costFunction.apply( subtree1.getAttribute(), subtree2.getAttribute() );
-				costMatrix[ subtree1.getId() ][ subtree2.getId() ] = distance;
+				costMatrix[ getTreeIndex1( subtree1 ) ][ getTreeIndex2( subtree2 ) ] = distance;
 			}
 		}
 
-		insertCosts = new EditCosts<>( tree2, costFunction, subtrees2.size() ).costs;
-		deleteCosts = new EditCosts<>( tree1, costFunction, subtrees1.size() ).costs;
+		insertCosts = new EditCosts<>( tree2, costFunction, subtrees2.size(), this::getTreeIndex2 ).costs;
+		deleteCosts = new EditCosts<>( tree1, costFunction, subtrees1.size(), this::getTreeIndex1 ).costs;
 
 		treeMappings = new NodeMapping[ subtrees1.size() ][ subtrees2.size() ];
 		forestMappings = new NodeMapping[ subtrees1.size() ][ subtrees2.size() ];
+	}
+
+	private int getTreeIndex1( Tree< T > tree1 )
+	{
+		return ( Integer ) treeToIndex1.get( tree1 );
+	}
+
+	private int getTreeIndex2( Tree< T > tree2 )
+	{
+		return ( Integer ) treeToIndex2.get( tree2 );
 	}
 
 	private static Double defaultCostFunction( Double o1, Double o2 )
@@ -304,19 +323,19 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		logger.trace( "tree deletion costs (tree1):" );
 		for ( Tree< T > subtree : subtrees1 )
-			logger.trace( "tree deletion[{}] = {}", subtree, deleteCosts[ subtree.getId() ].treeCost );
+			logger.trace( "tree deletion[{}] = {}", subtree, deleteCosts[ getTreeIndex1( subtree ) ].treeCost );
 
 		logger.trace( "forest deletion costs (tree1):" );
 		for ( Tree< T > subtree : subtrees1 )
-			logger.trace( "forest deletion[{}] = {}", subtree, deleteCosts[ subtree.getId() ].forestCost );
+			logger.trace( "forest deletion[{}] = {}", subtree, deleteCosts[ getTreeIndex1( subtree ) ].forestCost );
 
 		logger.trace( "tree insertion costs (tree2):" );
 		for ( Tree< T > subtree : subtrees2 )
-			logger.trace( "tree insertion[{}] = {}", subtree, insertCosts[ subtree.getId() ].treeCost );
+			logger.trace( "tree insertion[{}] = {}", subtree, insertCosts[ getTreeIndex2( subtree ) ].treeCost );
 
 		logger.trace( "forest insertion costs (tree2):" );
 		for ( Tree< T > subtree : subtrees2 )
-			logger.trace( "forest insertion[{}] = {}", subtree, insertCosts[ subtree.getId() ].forestCost );
+			logger.trace( "forest insertion[{}] = {}", subtree, insertCosts[ getTreeIndex2( subtree ) ].forestCost );
 	}
 
 	private void logDistances( String prefix, NodeMapping< T >[][] nodeMappings )
@@ -329,7 +348,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			StringJoiner stringJoiner = new StringJoiner( ", ", "[", "]" );
 			for ( Tree< T > t2 : subtrees2 )
 			{
-				NodeMapping< T > editOperation = nodeMappings[ t1.getId() ][ t2.getId() ];
+				NodeMapping< T > editOperation = nodeMappings[ getTreeIndex1( t1 ) ][ getTreeIndex2( t2 ) ];
 				stringJoiner.add( editOperation == null ? "-" : Double.toString( editOperation.getCost() ) );
 			}
 			logger.trace( "{} distance[{}] = {}", prefix, t1, stringJoiner );
@@ -342,18 +361,18 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private NodeMapping< T > treeMapping( Tree< T > tree1, Tree< T > tree2 )
 	{
-		NodeMapping< T > operation = treeMappings[ tree1.getId() ][ tree2.getId() ];
+		NodeMapping< T > operation = treeMappings[ getTreeIndex1( tree1 ) ][ getTreeIndex2( tree2 ) ];
 		if ( operation == null )
 		{
 			operation = computeTreeMapping( tree1, tree2 );
-			treeMappings[ tree1.getId() ][ tree2.getId() ] = operation;
+			treeMappings[ getTreeIndex1( tree1 ) ][ getTreeIndex2( tree2 ) ] = operation;
 		}
 		return operation;
 	}
 
 	private NodeMapping< T > computeTreeMapping( Tree< T > tree1, Tree< T > tree2 )
 	{
-		double cost = costMatrix[ tree1.getId() ][ tree2.getId() ];
+		double cost = costMatrix[ getTreeIndex1( tree1 ) ][ getTreeIndex2( tree2 ) ];
 		NodeMapping< T > attributeMapping = NodeMappings.singleton( cost, tree1, tree2 );
 		if ( tree1.isLeaf() && tree2.isLeaf() )
 			return attributeMapping;
@@ -381,11 +400,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private NodeMapping< T > forestMapping( final Tree< T > forest1, final Tree< T > forest2 )
 	{
-		NodeMapping< T > operation = forestMappings[ forest1.getId() ][ forest2.getId() ];
+		NodeMapping< T > operation = forestMappings[ getTreeIndex1( forest1 ) ][ getTreeIndex2( forest2 ) ];
 		if ( operation == null )
 		{
 			operation = computeForestMapping( forest1, forest2 );
-			forestMappings[ forest1.getId() ][ forest2.getId() ] = operation;
+			forestMappings[ getTreeIndex1( forest1 ) ][ getTreeIndex2( forest2 ) ] = operation;
 		}
 		return operation;
 	}
@@ -399,10 +418,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 			throw new IllegalArgumentException( "The given trees are both leaves and thus they are both not forests." );
 
 		if ( forest1IsLeaf )
-			return NodeMappings.empty( insertCosts[ forest2.getId() ].forestCost );
+			return NodeMappings.empty( insertCosts[ getTreeIndex2( forest2 ) ].forestCost );
 
 		if ( forest2IsLeaf )
-			return NodeMappings.empty( deleteCosts[ forest1.getId() ].forestCost );
+			return NodeMappings.empty( deleteCosts[ getTreeIndex1( forest1 ) ].forestCost );
 
 		NodeMapping< T > forestInsertCosts = forestInsertMapping( forest1, forest2 );
 		NodeMapping< T > forestDeleteCosts = forestDeleteMapping( forest1, forest2 );
@@ -418,10 +437,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private NodeMapping< T > insertOperationMapping( Tree< T > tree1, Tree< T > tree2 )
 	{
-		double insertCostTree2 = insertCosts[ tree2.getId() ].treeCost;
+		double insertCostTree2 = insertCosts[ getTreeIndex2( tree2 ) ].treeCost;
 		return findBestMapping( tree2.getChildren(), child ->
 		{
-			NodeMapping< T > insertMapping = NodeMappings.empty( insertCostTree2 - insertCosts[ child.getId() ].treeCost );
+			NodeMapping< T > insertMapping = NodeMappings.empty( insertCostTree2 - insertCosts[ getTreeIndex2( child ) ].treeCost );
 			NodeMapping< T > childMapping = treeMapping( tree1, child );
 			return NodeMappings.compose( insertMapping, childMapping );
 		} );
@@ -435,10 +454,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private NodeMapping< T > deleteOperationMapping( Tree< T > tree1, Tree< T > tree2 )
 	{
-		double deleteCostTree1 = deleteCosts[ tree1.getId() ].treeCost;
+		double deleteCostTree1 = deleteCosts[ getTreeIndex1( tree1 ) ].treeCost;
 		return findBestMapping( tree1.getChildren(), child ->
 		{
-			NodeMapping< T > deleteMapping = NodeMappings.empty( deleteCostTree1 - deleteCosts[ child.getId() ].treeCost );
+			NodeMapping< T > deleteMapping = NodeMappings.empty( deleteCostTree1 - deleteCosts[ getTreeIndex1( child ) ].treeCost );
 			NodeMapping< T > childMapping = treeMapping( child, tree2 );
 			return NodeMappings.compose( deleteMapping, childMapping );
 		} );
@@ -451,10 +470,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private NodeMapping< T > forestInsertMapping( Tree< T > forest1, Tree< T > forest2 )
 	{
 		// NB: this method should not be called on leaves.
-		double insertCostForest2 = insertCosts[ forest2.getId() ].forestCost;
+		double insertCostForest2 = insertCosts[ getTreeIndex2( forest2 ) ].forestCost;
 		return findBestMapping( forest2.getChildren(), child ->
 		{
-			NodeMapping< T > insertMapping = NodeMappings.empty( insertCostForest2 - insertCosts[ child.getId() ].forestCost );
+			NodeMapping< T > insertMapping = NodeMappings.empty( insertCostForest2 - insertCosts[ getTreeIndex2( child ) ].forestCost );
 			NodeMapping< T > childMapping = forestMapping( forest1, child );
 			return NodeMappings.compose( insertMapping, childMapping );
 		} );
@@ -467,10 +486,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private NodeMapping< T > forestDeleteMapping( Tree< T > forest1, Tree< T > forest2 )
 	{
 		// NB: this method should not be called on leaves.
-		double deleteCostForest1 = deleteCosts[ forest1.getId() ].forestCost;
+		double deleteCostForest1 = deleteCosts[ getTreeIndex1( forest1 ) ].forestCost;
 		return findBestMapping( forest1.getChildren(), child ->
 		{
-			NodeMapping< T > deleteMapping = NodeMappings.empty( deleteCostForest1 - deleteCosts[ child.getId() ].forestCost );
+			NodeMapping< T > deleteMapping = NodeMappings.empty( deleteCostForest1 - deleteCosts[ getTreeIndex1( child ) ].forestCost );
 			NodeMapping< T > childMapping = forestMapping( child, forest2 );
 			return NodeMappings.compose( deleteMapping, childMapping );
 		} );
@@ -576,11 +595,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		for ( Tree< T > child1 : childrenForest1 )
 			if ( isFlowEqualToOne( network.getFlow( child1, emptyTree2 ) ) )
-				childMappings.add( NodeMappings.empty( deleteCosts[ child1.getId() ].treeCost ) );
+				childMappings.add( NodeMappings.empty( deleteCosts[ getTreeIndex1( child1 ) ].treeCost ) );
 
 		for ( Tree< T > child2 : childrenForest2 )
 			if ( isFlowEqualToOne( network.getFlow( emptyTree1, child2 ) ) )
-				childMappings.add( NodeMappings.empty( insertCosts[ child2.getId() ].treeCost ) );
+				childMappings.add( NodeMappings.empty( insertCosts[ getTreeIndex2( child2 ) ].treeCost ) );
 
 		for ( Tree< T > child1 : childrenForest1 )
 			for ( Tree< T > child2 : childrenForest2 )
@@ -608,7 +627,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		for ( Tree< T > child1 : childrenForest1 )
 		{
 			network.addEdge( source, child1, 1, 0 );
-			network.addEdge( child1, emptyTree2, 1, deleteCosts[ child1.getId() ].treeCost );
+			network.addEdge( child1, emptyTree2, 1, deleteCosts[ getTreeIndex1( child1 ) ].treeCost );
 			for ( Tree< T > child2 : childrenForest2 )
 				network.addEdge( child1, child2, 1, treeMapping( child1, child2 ).getCost() );
 		}
@@ -616,7 +635,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		for ( Tree< T > child2 : childrenForest2 )
 		{
 			network.addEdge( child2, sink, 1, 0 );
-			network.addEdge( emptyTree1, child2, 1, insertCosts[ child2.getId() ].treeCost );
+			network.addEdge( emptyTree1, child2, 1, insertCosts[ getTreeIndex2( child2 ) ].treeCost );
 		}
 		return network;
 	}
@@ -650,6 +669,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		private final TreeDetails[] costs;
 
+		private final ToIntFunction< Tree< T > > treeToIndexFunction;
+
 		/**
 		 * Compute the costs of deleting or inserting a tree or a forest.
 		 * <br>
@@ -675,10 +696,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 		 * @param tree the tree or forest to compute the change costs for
 		 * @param costFunction costFunction
 		 */
-		private EditCosts( final Tree< T > tree, final BiFunction< T, T, Double > costFunction, final int size )
+		private EditCosts( final Tree< T > tree, final BiFunction< T, T, Double > costFunction, final int size,
+				final ToIntFunction< Tree< T > > treeToIndexFunction
+		)
 		{
 			this.costFunction = costFunction;
 			this.costs = new TreeDetails[ size ];
+			this.treeToIndexFunction = treeToIndexFunction;
 			computeChangeCosts( tree );
 		}
 
@@ -690,11 +714,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 				for ( Tree< T > child : tree.getChildren() )
 				{
 					computeChangeCosts( child );
-					cost += costs[ child.getId() ].treeCost;
+					cost += costs[ treeToIndexFunction.applyAsInt( child ) ].treeCost;
 				}
 			}
 			TreeDetails treeDetails = new TreeDetails( cost + costFunction.apply( tree.getAttribute(), null ), cost );
-			costs[ tree.getId() ] = treeDetails;
+			costs[ treeToIndexFunction.applyAsInt( tree ) ] = treeDetails;
 		}
 	}
 
@@ -710,5 +734,4 @@ public class ZhangUnorderedTreeEditDistance< T >
 			this.forestCost = forestCost;
 		}
 	}
-
 }
