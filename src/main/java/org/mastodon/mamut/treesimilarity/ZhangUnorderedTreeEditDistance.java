@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.treesimilarity;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
 import org.mastodon.mamut.treesimilarity.util.FlowNetwork;
@@ -43,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -136,9 +134,9 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private final TreeDetails[] deleteCosts;
 
-	private final Map< Pair< Tree< T >, Tree< T > >, NodeMapping< T > > treeMappings;
+	private final NodeMapping< T >[][] treeMappings;
 
-	private final Map< Pair< Tree< T >, Tree< T > >, NodeMapping< T > > forestMappings;
+	private final NodeMapping< T >[][] forestMappings;
 
 	private final List< Tree< T > > subtrees1;
 
@@ -201,6 +199,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return distance;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	private ZhangUnorderedTreeEditDistance( final Tree< T > tree1, final Tree< T > tree2,
 			final BiFunction< T, T, Double > costFunction )
 	{
@@ -224,8 +223,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 		insertCosts = new EditCosts<>( tree2, costFunction, subtrees2.size() ).costs;
 		deleteCosts = new EditCosts<>( tree1, costFunction, subtrees1.size() ).costs;
 
-		treeMappings = new HashMap<>();
-		forestMappings = new HashMap<>();
+		treeMappings = new NodeMapping[ subtrees1.size() ][ subtrees2.size() ];
+		forestMappings = new NodeMapping[ subtrees1.size() ][ subtrees2.size() ];
 	}
 
 	/**
@@ -269,7 +268,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			logger.trace( "forest insertion[{}] = {}", subtree, insertCosts[ subtree.getId() ].forestCost );
 	}
 
-	private void logDistances( String prefix, Map< Pair< Tree< T >, Tree< T > >, NodeMapping< T > > distances )
+	private void logDistances( String prefix, NodeMapping< T >[][] nodeMappings )
 	{
 		if ( !logger.isTraceEnabled() )
 			return;
@@ -279,7 +278,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			StringJoiner stringJoiner = new StringJoiner( ", ", "[", "]" );
 			for ( Tree< T > t2 : subtrees2 )
 			{
-				NodeMapping< T > editOperation = distances.get( Pair.of( t1, t2 ) );
+				NodeMapping< T > editOperation = nodeMappings[ t1.getId() ][ t2.getId() ];
 				stringJoiner.add( editOperation == null ? "-" : Double.toString( editOperation.getCost() ) );
 			}
 			logger.trace( "{} distance[{}] = {}", prefix, t1, stringJoiner );
@@ -292,12 +291,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private NodeMapping< T > treeMapping( Tree< T > tree1, Tree< T > tree2 )
 	{
-		Pair< Tree< T >, Tree< T > > pair = Pair.of( tree1, tree2 );
-		NodeMapping< T > operation = treeMappings.get( pair );
+		NodeMapping< T > operation = treeMappings[ tree1.getId() ][ tree2.getId() ];
 		if ( operation == null )
 		{
 			operation = computeTreeMapping( tree1, tree2 );
-			treeMappings.put( pair, operation );
+			treeMappings[ tree1.getId() ][ tree2.getId() ] = operation;
 		}
 		return operation;
 	}
@@ -332,12 +330,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private NodeMapping< T > forestMapping( final Tree< T > forest1, final Tree< T > forest2 )
 	{
-		Pair< Tree< T >, Tree< T > > pair = Pair.of( forest1, forest2 );
-		NodeMapping< T > operation = forestMappings.get( pair );
+		NodeMapping< T > operation = forestMappings[ forest1.getId() ][ forest2.getId() ];
 		if ( operation == null )
 		{
 			operation = computeForestMapping( forest1, forest2 );
-			forestMappings.put( pair, operation );
+			forestMappings[ forest1.getId() ][ forest2.getId() ] = operation;
 		}
 		return operation;
 	}
