@@ -59,16 +59,4 @@ public interface Tree< T >
 	{
 		return getChildren().isEmpty();
 	}
-
-	/**
-	 * Gets the id of this {@link Tree}.
-	 * @return the id.
-	 */
-	int getId();
-
-	/**
-	 * Sets the id of this {@link Tree}.
-	 * @param id the id.
-	 */
-	void setId( int id );
 }
