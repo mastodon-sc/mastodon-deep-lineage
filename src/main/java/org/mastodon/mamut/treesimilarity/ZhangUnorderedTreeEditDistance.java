@@ -144,7 +144,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private final List< Tree< T > > subtrees2;
 
-	private final Map< Pair< Tree< T >, Tree< T > >, Double > attributeDistances;
+	private final double[][] attributeDistanceMatrix;
 
 	/**
 	 * Calculates the absolute Zhang edit distance between two labeled unordered trees.
@@ -208,13 +208,16 @@ public class ZhangUnorderedTreeEditDistance< T >
 		subtrees1 = TreeUtils.listOfSubtrees( tree1 );
 		subtrees2 = TreeUtils.listOfSubtrees( tree2 );
 
-		attributeDistances = new HashMap<>();
+		subtrees1.forEach( tree -> tree.setId( subtrees1.indexOf( tree ) ) );
+		subtrees2.forEach( tree -> tree.setId( subtrees2.indexOf( tree ) ) );
+
+		attributeDistanceMatrix = new double[ subtrees1.size() ][ subtrees2.size() ];
 		for ( Tree< T > subtree1 : subtrees1 )
 		{
 			for ( Tree< T > subtree2 : subtrees2 )
 			{
-				attributeDistances.put( Pair.of( subtree1, subtree2 ),
-						costFunction.apply( subtree1.getAttribute(), subtree2.getAttribute() ) );
+				double distance = costFunction.apply( subtree1.getAttribute(), subtree2.getAttribute() );
+				attributeDistanceMatrix[ subtree1.getId() ][ subtree2.getId() ] = distance;
 			}
 		}
 
@@ -303,7 +306,8 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private NodeMapping< T > computeTreeMapping( Tree< T > tree1, Tree< T > tree2 )
 	{
-		NodeMapping< T > attributeMapping = NodeMappings.singleton( attributeDistances.get( Pair.of( tree1, tree2 ) ), tree1, tree2 );
+		double cost = attributeDistanceMatrix[ tree1.getId() ][ tree2.getId() ];
+		NodeMapping< T > attributeMapping = NodeMappings.singleton( cost, tree1, tree2 );
 		if ( tree1.isLeaf() && tree2.isLeaf() )
 			return attributeMapping;
 
