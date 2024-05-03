@@ -44,8 +44,6 @@ import java.util.function.Supplier;
  */
 public class BranchSpotTree implements Tree< Double >
 {
-	private int id;
-
 	private final BranchSpot branchSpot;
 
 	private final int endTimepoint;
@@ -156,17 +154,5 @@ public class BranchSpotTree implements Tree< Double >
 			else
 				return "";
 		}
-	}
-
-	@Override
-	public int getId()
-	{
-		return id;
-	}
-
-	@Override
-	public void setId( int id )
-	{
-		this.id = id;
 	}
 }

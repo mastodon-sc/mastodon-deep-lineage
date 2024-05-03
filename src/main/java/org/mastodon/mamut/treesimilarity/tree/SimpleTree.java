@@ -38,8 +38,6 @@ import java.util.Collection;
  */
 public class SimpleTree< T > implements Tree< T >
 {
-	private int id;
-
 	private final Collection< Tree< T > > children;
 
 	private final T attribute;
@@ -90,17 +88,5 @@ public class SimpleTree< T > implements Tree< T >
 	public String toString()
 	{
 		return getClass().getSimpleName() + "@" + hashCode();
-	}
-
-	@Override
-	public int getId()
-	{
-		return id;
-	}
-
-	@Override
-	public void setId( int id )
-	{
-		this.id = id;
 	}
 }
