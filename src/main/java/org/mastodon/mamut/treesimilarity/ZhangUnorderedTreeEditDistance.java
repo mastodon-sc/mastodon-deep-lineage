@@ -290,8 +290,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 */
 	private double compute( final Tree< T > tree1, final Tree< T > tree2 )
 	{
-		treeMappings.clear();
-		forestMappings.clear();
 		double distance = treeMapping( tree1, tree2 ).getCost();
 
 		log();
