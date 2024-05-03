@@ -39,6 +39,8 @@ import java.util.Collection;
  */
 public class BranchSpotTree implements Tree< Double >
 {
+	private int id;
+
 	private final BranchSpot branchSpot;
 
 	private final int endTimepoint;
@@ -50,6 +52,7 @@ public class BranchSpotTree implements Tree< Double >
 		this.branchSpot = branchSpotTree.branchSpot;
 		this.endTimepoint = branchSpotTree.endTimepoint;
 		this.children = branchSpotTree.children;
+		this.id = branchSpotTree.id;
 	}
 
 	/**
@@ -100,5 +103,17 @@ public class BranchSpotTree implements Tree< Double >
 	public String toString()
 	{
 		return branchSpot.getFirstLabel();
+	}
+
+	@Override
+	public int getId()
+	{
+		return id;
+	}
+
+	@Override
+	public void setId( int id )
+	{
+		this.id = id;
 	}
 }
