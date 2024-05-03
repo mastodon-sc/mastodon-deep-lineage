@@ -40,11 +40,9 @@ import org.mastodon.mamut.treesimilarity.tree.Tree;
  * Used to represent a mapping between the nodes of two {@link Tree trees}
  * together with the associated costs / edit distance.
  *
- * @param <T> Attribute type for the trees.
- *
  * @see NodeMappings
  */
-public interface NodeMapping< T >
+public interface NodeMapping
 {
 
 	/**
@@ -57,15 +55,15 @@ public interface NodeMapping< T >
 	 * {@link #asMap()} method. It is not meant to be used directly,
 	 * use {@link #asMap()} instead.
 	 */
-	void writeToMap( Map< Tree< T >, Tree< T > > map );
+	void writeToMap( Map< Tree, Tree > map );
 
 	/**
 	 * @return The mapping as a {@link Map} from nodes of the first tree to
 	 * 	   nodes of the second tree.
 	 */
-	default Map< Tree< T >, Tree< T > > asMap()
+	default Map< Tree, Tree > asMap()
 	{
-		final Map< Tree< T >, Tree< T > > map = new HashMap<>();
+		final Map< Tree, Tree > map = new HashMap<>();
 		writeToMap( map );
 		return map;
 	}

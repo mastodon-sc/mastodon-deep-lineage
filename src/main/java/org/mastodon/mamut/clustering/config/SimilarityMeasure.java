@@ -43,10 +43,10 @@ public enum SimilarityMeasure
 
 	private final String name;
 
-	private final TriFunction< Tree< Double >, Tree< Double >, ToDoubleBiFunction< Double, Double >, Double > distanceFunction;
+	private final TriFunction< Tree, Tree, ToDoubleBiFunction< Tree, Tree >, Double > distanceFunction;
 
 	SimilarityMeasure( String name,
-			TriFunction< Tree< Double >, Tree< Double >, ToDoubleBiFunction< Double, Double >, Double > distanceFunction )
+			TriFunction< Tree, Tree, ToDoubleBiFunction< Tree, Tree >, Double > distanceFunction )
 	{
 		this.name = name;
 		this.distanceFunction = distanceFunction;
@@ -61,7 +61,7 @@ public enum SimilarityMeasure
 		throw new NoSuchElementException();
 	}
 
-	public double compute( Tree< Double > tree1, Tree< Double > tree2, ToDoubleBiFunction< Double, Double > costFunction )
+	public double compute( Tree tree1, Tree tree2, ToDoubleBiFunction< Tree, Tree > costFunction )
 	{
 		return distanceFunction.apply( tree1, tree2, costFunction );
 	}

@@ -45,13 +45,13 @@ public class TreeUtils
 	 *
 	 * @return The list of subtrees.
 	 */
-	public static < T > List< Tree< T > > listOfSubtrees( final Tree< T > tree )
+	public static List< Tree > listOfSubtrees( final Tree tree )
 	{
 		if ( tree == null )
 			return Collections.emptyList();
-		List< Tree< T > > list = new ArrayList<>();
+		List< Tree > list = new ArrayList<>();
 		list.add( tree );
-		for ( Tree< T > child : tree.getChildren() )
+		for ( Tree child : tree.getChildren() )
 			list.addAll( listOfSubtrees( child ) );
 		return list;
 	}
@@ -60,7 +60,7 @@ public class TreeUtils
 	 * Gets the number of descendant subtrees of this {@link Tree}, including itself.
 	 * @return the number
 	 */
-	public static < T > int size( final Tree< T > tree )
+	public static int size( final Tree tree )
 	{
 		if ( tree == null )
 			return 0;
@@ -71,19 +71,18 @@ public class TreeUtils
 	 * Creates a String of the given tree as a Java code snippet that can be used to create the tree.
 	 * @param tree The tree to print.
 	 * @return the code snippet
-	 * @param <T> the type of the tree
 	 */
-	public static < T > String printTree( final Tree< T > tree )
+	public static String printTree( final Tree tree )
 	{
 		return printTree( tree, true, String.valueOf( 0 ), new StringBuilder() );
 	}
 
-	private static < T > String printTree( final Tree< T > tree, boolean isRoot, final String suffix, final StringBuilder output )
+	private static String printTree( final Tree tree, boolean isRoot, final String suffix, final StringBuilder output )
 	{
 		String treeName = "node" + suffix;
 		String className = SimpleTree.class.getSimpleName();
 		if ( isRoot )
-			output.append( className ).append( "< Double > " ).append( treeName ).append( " = new " ).append( className ).append( "<>( " )
+			output.append( className ).append( " " ).append( treeName ).append( " = new " ).append( className ).append( "<>( " )
 					.append( tree.getAttribute() )
 					.append( " );" ).append( System.lineSeparator() );
 		AtomicInteger childIndex = new AtomicInteger( 0 );
@@ -92,7 +91,7 @@ public class TreeUtils
 			String childName = "node" + childSuffix;
 			String print = "addNode( " + child.getAttribute() + ", " + treeName + " );";
 			if ( !child.isLeaf() )
-				print = className + "< Double > " + childName + " = " + print;
+				print = className + " " + childName + " = " + print;
 			output.append( print ).append( System.lineSeparator() );
 			printTree( child, false, childSuffix, output );
 		} );

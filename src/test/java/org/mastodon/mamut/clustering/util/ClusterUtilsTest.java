@@ -168,9 +168,9 @@ class ClusterUtilsTest
 	@Test
 	void testGetDistanceMatrix()
 	{
-		Tree< Double > tree1 = SimpleTreeExamples.tree1();
-		Tree< Double > tree2 = SimpleTreeExamples.tree2();
-		Tree< Double > tree3 = SimpleTreeExamples.tree3();
+		Tree tree1 = SimpleTreeExamples.tree1();
+		Tree tree2 = SimpleTreeExamples.tree2();
+		Tree tree3 = SimpleTreeExamples.tree3();
 
 		double t1t2 = 20d;
 		double t1t3 = 100d;

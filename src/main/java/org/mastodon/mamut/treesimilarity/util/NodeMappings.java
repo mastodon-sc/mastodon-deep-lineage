@@ -48,27 +48,25 @@ public class NodeMappings
 
 	/**
 	 * @param cost the cost of the empty mapping.
-	 * @param <T> The type of the tree nodes.
 	 * @return An empty {@link NodeMapping} with the specified cost.
 	 * (Please note that the costs for an empty mapping are almost never
 	 * zero!)
 	 */
-	public static < T > NodeMapping< T > empty( double cost )
+	public static NodeMapping empty( double cost )
 	{
-		return new EmptyNodeMapping<>( cost );
+		return new EmptyNodeMapping( cost );
 	}
 
 	/**
 	 * @param cost the cost of the singleton mapping.
 	 * @param tree1 the first tree.
 	 * @param tree2 the second tree.
-	 * @param <T> The type of the tree nodes.
 	 * @return A {@link NodeMapping} that represents a singleton Map from
 	 * tree1 to tree2 with the specified cost.
 	 */
-	public static < T > NodeMapping< T > singleton( double cost, Tree< T > tree1, Tree< T > tree2 )
+	public static NodeMapping singleton( double cost, Tree tree1, Tree tree2 )
 	{
-		return new SingletonNodeMapping<>( tree1, tree2, cost );
+		return new SingletonNodeMapping( tree1, tree2, cost );
 	}
 
 	/**
@@ -77,7 +75,7 @@ public class NodeMappings
 	 * the composed mapping is the sum of the costs of the children.
 	 */
 	@SafeVarargs
-	public static < T > NodeMapping< T > compose( NodeMapping< T >... children )
+	public static NodeMapping compose( NodeMapping... children )
 	{
 		return compose( Arrays.asList( children ) );
 	}
@@ -87,15 +85,15 @@ public class NodeMappings
 	 * contains all the map entries of the given {@code children}. The costs of
 	 * the composed mapping is the sum of the costs of the children.
 	 */
-	public static < T > NodeMapping< T > compose( List< NodeMapping< T > > children )
+	public static NodeMapping compose( List< NodeMapping > children )
 	{
 		double composedCost = 0;
-		for ( NodeMapping< T > child : children )
+		for ( NodeMapping child : children )
 			composedCost += child.getCost();
-		return new ComposedNodeMapping<>( children, composedCost );
+		return new ComposedNodeMapping( children, composedCost );
 	}
 
-	private abstract static class AbstractNodeMapping< T > implements NodeMapping< T >
+	private abstract static class AbstractNodeMapping implements NodeMapping
 	{
 		private final double cost;
 
@@ -111,7 +109,7 @@ public class NodeMappings
 		}
 	}
 
-	private static class EmptyNodeMapping< T > extends AbstractNodeMapping< T >
+	private static class EmptyNodeMapping extends AbstractNodeMapping
 	{
 		private EmptyNodeMapping( double cost )
 		{
@@ -119,19 +117,19 @@ public class NodeMappings
 		}
 
 		@Override
-		public void writeToMap( Map< Tree< T >, Tree< T > > map )
+		public void writeToMap( Map< Tree, Tree > map )
 		{
 			// do nothing
 		}
 	}
 
-	private static class SingletonNodeMapping< T > extends AbstractNodeMapping< T >
+	private static class SingletonNodeMapping extends AbstractNodeMapping
 	{
-		private final Tree< T > tree1;
+		private final Tree tree1;
 
-		private final Tree< T > tree2;
+		private final Tree tree2;
 
-		private SingletonNodeMapping( Tree< T > tree1, Tree< T > tree2, double cost )
+		private SingletonNodeMapping( Tree tree1, Tree tree2, double cost )
 		{
 			super( cost );
 			this.tree1 = tree1;
@@ -139,24 +137,24 @@ public class NodeMappings
 		}
 
 		@Override
-		public void writeToMap( Map< Tree< T >, Tree< T > > map )
+		public void writeToMap( Map< Tree, Tree > map )
 		{
 			map.put( tree1, tree2 );
 		}
 	}
 
-	private static class ComposedNodeMapping< T > extends AbstractNodeMapping< T >
+	private static class ComposedNodeMapping extends AbstractNodeMapping
 	{
-		private final List< NodeMapping< T > > children;
+		private final List< NodeMapping > children;
 
-		private ComposedNodeMapping( List< NodeMapping< T > > children, double cost )
+		private ComposedNodeMapping( List< NodeMapping > children, double cost )
 		{
 			super( cost );
 			this.children = children;
 		}
 
 		@Override
-		public void writeToMap( Map< Tree< T >, Tree< T > > map )
+		public void writeToMap( Map< Tree, Tree > map )
 		{
 			children.forEach( child -> child.writeToMap( map ) );
 		}

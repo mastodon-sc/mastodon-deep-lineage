@@ -41,9 +41,9 @@ class TreeTest
 	void testIsLeaf()
 	{
 		assertTrue( SimpleTreeExamples.emptyTree().isLeaf() );
-		Tree< Double > tree1 = SimpleTreeExamples.tree1();
+		Tree tree1 = SimpleTreeExamples.tree1();
 		assertFalse( tree1.isLeaf() );
-		Iterator< Tree< Double > > iterator = tree1.getChildren().iterator();
+		Iterator< Tree > iterator = tree1.getChildren().iterator();
 		assertTrue( iterator.next().isLeaf() );
 		assertTrue( iterator.next().isLeaf() );
 	}

@@ -80,7 +80,7 @@ public class ClusterUtils
 	 * @param similarityMeasure the similarity measure to be used
 	 * @return a symmetric quadratic distance matrix
 	 */
-	public static double[][] getDistanceMatrix( List< Tree< Double > > trees, SimilarityMeasure similarityMeasure )
+	public static double[][] getDistanceMatrix( List< Tree > trees, SimilarityMeasure similarityMeasure )
 	{
 		int size = trees.size();
 		double[][] distances = new double[ size ][ size ];

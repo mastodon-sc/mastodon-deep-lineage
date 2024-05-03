@@ -42,10 +42,10 @@ class TreeUtilsTest
 	@Test
 	void testListOfSubtrees()
 	{
-		Tree< Double > emptyTree = SimpleTreeExamples.emptyTree();
+		Tree emptyTree = SimpleTreeExamples.emptyTree();
 
-		Tree< Double > tree1 = SimpleTreeExamples.tree1();
-		List< Tree< Double > > subtrees1 = new ArrayList<>();
+		Tree tree1 = SimpleTreeExamples.tree1();
+		List< Tree > subtrees1 = new ArrayList<>();
 		subtrees1.add( tree1 );
 		subtrees1.addAll( tree1.getChildren() );
 
@@ -71,11 +71,11 @@ class TreeUtilsTest
 	void testPrintTree()
 	{
 		String className = SimpleTree.class.getSimpleName();
-		String expected = className + "< Double > node0 = new " + className + "<>( 3.0 );" + System.lineSeparator()
-				+ className + "< Double > node00 = addNode( 8.0, node0 );" + System.lineSeparator()
+		String expected = className + " node0 = new " + className + "<>( 3.0 );" + System.lineSeparator()
+				+ className + " node00 = addNode( 8.0, node0 );" + System.lineSeparator()
 				+ "addNode( 4.0, node00 );" + System.lineSeparator()
 				+ "addNode( 4.0, node00 );" + System.lineSeparator()
-				+ className + "< Double > node01 = addNode( 8.0, node0 );" + System.lineSeparator()
+				+ className + " node01 = addNode( 8.0, node0 );" + System.lineSeparator()
 				+ "addNode( 1.0, node01 );" + System.lineSeparator()
 				+ "addNode( 2.0, node01 );" + System.lineSeparator()
 				+ "return node0;";

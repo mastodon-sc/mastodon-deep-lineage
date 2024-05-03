@@ -42,12 +42,12 @@ class SimpleTreeTest
 	@Test
 	void testGetChildren()
 	{
-		SimpleTree< Number > tree = new SimpleTree<>( 0 );
-		SimpleTree< Number > child1 = new SimpleTree<>( 1 );
-		SimpleTree< Number > child2 = new SimpleTree<>( 2 );
+		SimpleTree tree = new SimpleTree( 0 );
+		SimpleTree child1 = new SimpleTree( 1 );
+		SimpleTree child2 = new SimpleTree( 2 );
 		tree.addChild( child1 );
 		tree.addChild( child2 );
-		List< SimpleTree< Number > > expected = new ArrayList<>( Arrays.asList( child1, child2 ) );
+		List< SimpleTree > expected = new ArrayList( Arrays.asList( child1, child2 ) );
 		assertEquals( expected, tree.getChildren() );
 	}
 
@@ -55,15 +55,15 @@ class SimpleTreeTest
 	void testGetAttribute()
 	{
 		int attribute = 1;
-		SimpleTree< Number > tree = new SimpleTree<>( attribute );
+		SimpleTree tree = new SimpleTree( attribute );
 		assertEquals( attribute, tree.getAttribute() );
 	}
 
 	@Test
 	void testAddSubtree()
 	{
-		SimpleTree< Number > tree = new SimpleTree<>( 0 );
-		SimpleTree< Number > child1 = new SimpleTree<>( 1 );
+		SimpleTree tree = new SimpleTree( 0 );
+		SimpleTree child1 = new SimpleTree( 1 );
 		tree.addChild( child1 );
 		assertEquals( child1, tree.getChildren().iterator().next() );
 	}
@@ -71,7 +71,7 @@ class SimpleTreeTest
 	@Test
 	void testTestToString()
 	{
-		SimpleTree< Number > tree = new SimpleTree<>( 0 );
+		SimpleTree tree = new SimpleTree( 0 );
 		assertEquals( "SimpleTree@" + tree.hashCode(), tree.toString() );
 	}
 }

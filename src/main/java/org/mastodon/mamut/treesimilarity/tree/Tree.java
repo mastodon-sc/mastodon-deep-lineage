@@ -32,24 +32,22 @@ import java.util.Collection;
 
 /**
  * A tree data structure.
- *
- * @param <T> the type of the attribute of the tree nodes.
  */
-public interface Tree< T >
+public interface Tree
 {
 	/**
 	 * Get the children of this {@link Tree}.
 	 *
 	 * @return The list of child {@link Tree} objects.
 	 */
-	Collection< Tree< T > > getChildren();
+	Collection< Tree > getChildren();
 
 	/**
 	 * Get the attribute of this {@link Tree}.
 	 *
 	 * @return the attribute.
 	 */
-	T getAttribute();
+	double getAttribute();
 
 	/**
 	 * Returns {@code true}, if this {@link Tree} is a leaf, i.e. has no children.

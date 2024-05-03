@@ -50,11 +50,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class NodeMappingTest
 {
 
-	private static final ToDoubleBiFunction< Double, Double > DEFAULT_COSTS = ( o1, o2 ) -> {
+	private static final ToDoubleBiFunction< Tree, Tree > DEFAULT_COSTS = ( o1, o2 ) -> {
 		if ( o2 == null )
-			return o1;
+			return o1.getAttribute();
 		else
-			return Math.abs( o1 - o2 );
+			return Math.abs( o1.getAttribute() - o2.getAttribute() );
 	};
 
 	@Test
@@ -130,19 +130,19 @@ class NodeMappingTest
 	@Test
 	void testLeaves()
 	{
-		testNodeMapping( new SimpleTree<>( 10d ), null, 10, "" );
-		testNodeMapping( new SimpleTree<>( 10d ), new SimpleTree<>( 20d ), 10, "10->20" );
+		testNodeMapping( new SimpleTree( 10d ), null, 10, "" );
+		testNodeMapping( new SimpleTree( 10d ), new SimpleTree( 20d ), 10, "10->20" );
 	}
 
-	private void testNodeMapping( Tree< Double > tree1, Tree< Double > tree2, double expectedCosts, String expectedMapping )
+	private void testNodeMapping( Tree tree1, Tree tree2, double expectedCosts, String expectedMapping )
 	{
 		testNodeMappingForward( tree1, tree2, expectedCosts, expectedMapping );
 		testNodeMappingForward( tree2, tree1, expectedCosts, revertExpectedMapping( expectedMapping ) );
 	}
 
-	private void testNodeMappingForward( Tree< Double > tree1, Tree< Double > tree2, double expectedCosts, String expectedMapping )
+	private void testNodeMappingForward( Tree tree1, Tree tree2, double expectedCosts, String expectedMapping )
 	{
-		Map< Tree< Double >, Tree< Double > > mapping = ZhangUnorderedTreeEditDistance.nodeMapping( tree1, tree2, DEFAULT_COSTS );
+		Map< Tree, Tree > mapping = ZhangUnorderedTreeEditDistance.nodeMapping( tree1, tree2, DEFAULT_COSTS );
 		assertEquals( expectedMapping, asString( mapping ) );
 		assertEquals( expectedCosts, computeCosts( tree1, tree2, mapping ), 0.0 );
 	}
@@ -158,23 +158,23 @@ class NodeMappingTest
 		} ).sorted().collect( Collectors.joining( ", " ) );
 	}
 
-	private double computeCosts( Tree< Double > tree1, Tree< Double > tree2, Map< Tree< Double >, Tree< Double > > mapping )
+	private double computeCosts( Tree tree1, Tree tree2, Map< Tree, Tree > mapping )
 	{
-		Set< Tree< Double > > keys = mapping.keySet();
-		Set< Tree< Double > > values = new HashSet<>( mapping.values() );
+		Set< Tree > keys = mapping.keySet();
+		Set< Tree > values = new HashSet<>( mapping.values() );
 		double costs = 0;
-		for ( Tree< Double > subtree : TreeUtils.listOfSubtrees( tree1 ) )
+		for ( Tree subtree : TreeUtils.listOfSubtrees( tree1 ) )
 			if ( !keys.contains( subtree ) )
-				costs += DEFAULT_COSTS.applyAsDouble( subtree.getAttribute(), null );
-		for ( Tree< Double > subtree : TreeUtils.listOfSubtrees( tree2 ) )
+				costs += DEFAULT_COSTS.applyAsDouble( subtree, null );
+		for ( Tree subtree : TreeUtils.listOfSubtrees( tree2 ) )
 			if ( !values.contains( subtree ) )
-				costs += DEFAULT_COSTS.applyAsDouble( subtree.getAttribute(), null );
-		for ( Map.Entry< Tree< Double >, Tree< Double > > entry : mapping.entrySet() )
-			costs += DEFAULT_COSTS.applyAsDouble( entry.getKey().getAttribute(), entry.getValue().getAttribute() );
+				costs += DEFAULT_COSTS.applyAsDouble( subtree, null );
+		for ( Map.Entry< Tree, Tree > entry : mapping.entrySet() )
+			costs += DEFAULT_COSTS.applyAsDouble( entry.getKey(), entry.getValue() );
 		return costs;
 	}
 
-	private String asString( Map< Tree< Double >, Tree< Double > > mapping )
+	private String asString( Map< Tree, Tree > mapping )
 	{
 		ArrayList< String > strings = new ArrayList<>();
 		mapping.forEach( ( key, value ) -> strings.add( Math.round( key.getAttribute() ) + "->" + Math.round( value.getAttribute() ) ) );

@@ -44,14 +44,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ZhangUnorderedTreeEditDistanceTest
 {
 
-	private final static ToDoubleBiFunction< Double, Double > defaultCosts = ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION;
+	private final static ToDoubleBiFunction< Tree, Tree > defaultCosts = ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION;
 
 	@SuppressWarnings("all")
 	@Test
 	void testExceptions()
 	{
-		Tree< Double > simpleTree1 = SimpleTreeExamples.tree1();
-		Tree< Double > simpleTree2 = SimpleTreeExamples.tree2();
+		Tree simpleTree1 = SimpleTreeExamples.tree1();
+		Tree simpleTree2 = SimpleTreeExamples.tree2();
 		assertThrows( IllegalArgumentException.class, () -> ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleTree2, null ) );
 	}
 
@@ -64,25 +64,25 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	void testDistance()
 	{
-		Tree< Double > simpleTree1 = SimpleTreeExamples.tree1();
-		Tree< Double > simpleTree2 = SimpleTreeExamples.tree2();
-		Tree< Double > simpleTree3 = SimpleTreeExamples.tree3();
-		Tree< Double > simpleTree4 = SimpleTreeExamples.tree4();
-		Tree< Double > simpleTree5 = SimpleTreeExamples.tree5();
-		Tree< Double > simpleTree6 = SimpleTreeExamples.tree6();
-		Tree< Double > simpleTree7 = SimpleTreeExamples.tree7();
-		Tree< Double > simpleTree8 = SimpleTreeExamples.tree8();
-		Tree< Double > simpleTree9 = SimpleTreeExamples.tree9();
+		Tree simpleTree1 = SimpleTreeExamples.tree1();
+		Tree simpleTree2 = SimpleTreeExamples.tree2();
+		Tree simpleTree3 = SimpleTreeExamples.tree3();
+		Tree simpleTree4 = SimpleTreeExamples.tree4();
+		Tree simpleTree5 = SimpleTreeExamples.tree5();
+		Tree simpleTree6 = SimpleTreeExamples.tree6();
+		Tree simpleTree7 = SimpleTreeExamples.tree7();
+		Tree simpleTree8 = SimpleTreeExamples.tree8();
+		Tree simpleTree9 = SimpleTreeExamples.tree9();
 
-		Tree< Double > branchSpotTree1 = BranchSpotTreeExamples.tree1();
-		Tree< Double > branchSpotTree2 = BranchSpotTreeExamples.tree2();
-		Tree< Double > branchSpotTree3 = BranchSpotTreeExamples.tree3();
-		Tree< Double > branchSpotTree4 = BranchSpotTreeExamples.tree4();
-		Tree< Double > branchSpotTree5 = BranchSpotTreeExamples.tree5();
-		Tree< Double > branchSpotTree6 = BranchSpotTreeExamples.tree6();
-		Tree< Double > branchSpotTree7 = BranchSpotTreeExamples.tree7();
-		Tree< Double > branchSpotTree8 = BranchSpotTreeExamples.tree8();
-		Tree< Double > branchSpotTree9 = BranchSpotTreeExamples.tree9();
+		Tree branchSpotTree1 = BranchSpotTreeExamples.tree1();
+		Tree branchSpotTree2 = BranchSpotTreeExamples.tree2();
+		Tree branchSpotTree3 = BranchSpotTreeExamples.tree3();
+		Tree branchSpotTree4 = BranchSpotTreeExamples.tree4();
+		Tree branchSpotTree5 = BranchSpotTreeExamples.tree5();
+		Tree branchSpotTree6 = BranchSpotTreeExamples.tree6();
+		Tree branchSpotTree7 = BranchSpotTreeExamples.tree7();
+		Tree branchSpotTree8 = BranchSpotTreeExamples.tree8();
+		Tree branchSpotTree9 = BranchSpotTreeExamples.tree9();
 
 		// 20, because: 2 nodes with a difference of 10 each need to be changed
 		assertEquals( 20d, ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleTree2, defaultCosts ), 0d );
@@ -124,17 +124,17 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	void testDistanceEmptyTrees()
 	{
-		Tree< Double > simpleEmptyTree = SimpleTreeExamples.emptyTree();
-		Tree< Double > simpleTree1 = SimpleTreeExamples.tree1();
-		Tree< Double > simpleTree2 = SimpleTreeExamples.tree2();
-		Tree< Double > simpleTree3 = SimpleTreeExamples.tree3();
-		Tree< Double > simpleTree4 = SimpleTreeExamples.tree4();
+		Tree simpleEmptyTree = SimpleTreeExamples.emptyTree();
+		Tree simpleTree1 = SimpleTreeExamples.tree1();
+		Tree simpleTree2 = SimpleTreeExamples.tree2();
+		Tree simpleTree3 = SimpleTreeExamples.tree3();
+		Tree simpleTree4 = SimpleTreeExamples.tree4();
 
-		Tree< Double > branchSpotEmptyTree = BranchSpotTreeExamples.emptyTree();
-		Tree< Double > branchSpotTree1 = BranchSpotTreeExamples.tree1();
-		Tree< Double > branchSpotTree2 = BranchSpotTreeExamples.tree2();
-		Tree< Double > branchSpotTree3 = BranchSpotTreeExamples.tree3();
-		Tree< Double > branchSpotTree4 = BranchSpotTreeExamples.tree4();
+		Tree branchSpotEmptyTree = BranchSpotTreeExamples.emptyTree();
+		Tree branchSpotTree1 = BranchSpotTreeExamples.tree1();
+		Tree branchSpotTree2 = BranchSpotTreeExamples.tree2();
+		Tree branchSpotTree3 = BranchSpotTreeExamples.tree3();
+		Tree branchSpotTree4 = BranchSpotTreeExamples.tree4();
 
 
 		// 60, because: 3 nodes with a total weight of 60 are added to the empty tree
@@ -162,25 +162,25 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	void testDistanceTopologicalCostFunction()
 	{
-		Tree< Double > simpleTree1 = SimpleTreeExamples.tree1();
-		Tree< Double > simpleTree2 = SimpleTreeExamples.tree2();
-		Tree< Double > simpleTree3 = SimpleTreeExamples.tree3();
-		Tree< Double > simpleTree4 = SimpleTreeExamples.tree4();
-		Tree< Double > simpleTree5 = SimpleTreeExamples.tree5();
-		Tree< Double > simpleTree6 = SimpleTreeExamples.tree6();
-		Tree< Double > simpleTree7 = SimpleTreeExamples.tree7();
+		Tree simpleTree1 = SimpleTreeExamples.tree1();
+		Tree simpleTree2 = SimpleTreeExamples.tree2();
+		Tree simpleTree3 = SimpleTreeExamples.tree3();
+		Tree simpleTree4 = SimpleTreeExamples.tree4();
+		Tree simpleTree5 = SimpleTreeExamples.tree5();
+		Tree simpleTree6 = SimpleTreeExamples.tree6();
+		Tree simpleTree7 = SimpleTreeExamples.tree7();
 
-		Tree< Double > branchSpotTree1 = BranchSpotTreeExamples.tree1();
-		Tree< Double > branchSpotTree2 = BranchSpotTreeExamples.tree2();
-		Tree< Double > branchSpotTree3 = BranchSpotTreeExamples.tree3();
-		Tree< Double > branchSpotTree4 = BranchSpotTreeExamples.tree4();
-		Tree< Double > branchSpotTree5 = BranchSpotTreeExamples.tree5();
-		Tree< Double > branchSpotTree6 = BranchSpotTreeExamples.tree6();
-		Tree< Double > branchSpotTree7 = BranchSpotTreeExamples.tree7();
+		Tree branchSpotTree1 = BranchSpotTreeExamples.tree1();
+		Tree branchSpotTree2 = BranchSpotTreeExamples.tree2();
+		Tree branchSpotTree3 = BranchSpotTreeExamples.tree3();
+		Tree branchSpotTree4 = BranchSpotTreeExamples.tree4();
+		Tree branchSpotTree5 = BranchSpotTreeExamples.tree5();
+		Tree branchSpotTree6 = BranchSpotTreeExamples.tree6();
+		Tree branchSpotTree7 = BranchSpotTreeExamples.tree7();
 
 
 		// 0, because: the trees are topologically identical
-		ToDoubleBiFunction< Double, Double > costFunction = ( a, b ) -> ( a == null ) == ( b == null ) ? 0d : 1d;
+		ToDoubleBiFunction< Tree, Tree > costFunction = ( a, b ) -> ( a == null ) == ( b == null ) ? 0d : 1d;
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleTree2, costFunction ), 0d );
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( simpleTree2, simpleTree1, costFunction ), 0d );
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( branchSpotTree1, branchSpotTree2, costFunction ), 0d );
@@ -212,8 +212,8 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	void testRemoveSubtreeKeepOneChild()
 	{
-		Tree< Double > tree10 = SimpleTreeExamples.tree10();
-		Tree< Double > tree11 = SimpleTreeExamples.tree11();
+		Tree tree10 = SimpleTreeExamples.tree10();
+		Tree tree11 = SimpleTreeExamples.tree11();
 		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( tree10, tree11, defaultCosts ), 0d );
 		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( tree11, tree10, defaultCosts ), 0d );
 	}
@@ -226,8 +226,8 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	void testRemoveSubtreeKeepAllChildren()
 	{
-		Tree< Double > tree12 = SimpleTreeExamples.tree12();
-		Tree< Double > tree13 = SimpleTreeExamples.tree13();
+		Tree tree12 = SimpleTreeExamples.tree12();
+		Tree tree13 = SimpleTreeExamples.tree13();
 		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( tree12, tree13, defaultCosts ), 0d );
 		assertEquals( 2, ZhangUnorderedTreeEditDistance.distance( tree13, tree12, defaultCosts ), 0d );
 	}
@@ -235,8 +235,8 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	void testNonBinaryTrees()
 	{
-		Tree< Double > tree14 = SimpleTreeExamples.tree14();
-		Tree< Double > tree15 = SimpleTreeExamples.nonBinaryTree();
+		Tree tree14 = SimpleTreeExamples.tree14();
+		Tree tree15 = SimpleTreeExamples.nonBinaryTree();
 		assertEquals( 1_000_003, ZhangUnorderedTreeEditDistance.distance( tree14, tree15, defaultCosts ), 0d );
 		assertEquals( 1_000_003, ZhangUnorderedTreeEditDistance.distance( tree15, tree14, defaultCosts ), 0d );
 	}
@@ -254,13 +254,13 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	void testTrickyExample()
 	{
-		Tree< Double > tree15 = SimpleTreeExamples.tree15();
-		Tree< Double > tree16 = SimpleTreeExamples.tree16();
+		Tree tree15 = SimpleTreeExamples.tree15();
+		Tree tree16 = SimpleTreeExamples.tree16();
 		assertEquals( 203, ZhangUnorderedTreeEditDistance.distance( tree15, tree16, defaultCosts ), 0d );
 		assertEquals( 203, ZhangUnorderedTreeEditDistance.distance( tree16, tree15, defaultCosts ), 0d );
 
 		// This is the optimal edit path: (delete the nodes with attribute 100 and 1), (insert the nodes with attribute 2 and 100)
-		Tree< Double > tree17 = SimpleTreeExamples.tree17();
+		Tree tree17 = SimpleTreeExamples.tree17();
 		assertEquals( 101, ZhangUnorderedTreeEditDistance.distance( tree15, tree17, defaultCosts ), 0d );
 		assertEquals( 101, ZhangUnorderedTreeEditDistance.distance( tree17, tree15, defaultCosts ), 0d );
 		assertEquals( 102, ZhangUnorderedTreeEditDistance.distance( tree17, tree16, defaultCosts ), 0d );
@@ -270,8 +270,8 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	void testRecursiveRemoveNodes()
 	{
-		Tree< Double > tree18 = SimpleTreeExamples.tree18();
-		Tree< Double > tree19 = SimpleTreeExamples.tree19();
+		Tree tree18 = SimpleTreeExamples.tree18();
+		Tree tree19 = SimpleTreeExamples.tree19();
 		// The edit path is to remove the nodes with weights: 1, 2, 3, 4, 5, 6 (cost 21 = 1 + 2 + 3 + 4 + 5 + 6)
 		assertEquals( 21, ZhangUnorderedTreeEditDistance.distance( tree18, tree19, defaultCosts ), 0d );
 	}
@@ -279,9 +279,9 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	void testNormalizedDistance()
 	{
-		Tree< Double > emptyTree = SimpleTreeExamples.emptyTree();
-		Tree< Double > tree1 = SimpleTreeExamples.tree1();
-		Tree< Double > tree2 = SimpleTreeExamples.tree2();
+		Tree emptyTree = SimpleTreeExamples.emptyTree();
+		Tree tree1 = SimpleTreeExamples.tree1();
+		Tree tree2 = SimpleTreeExamples.tree2();
 		assertEquals( 0d, ZhangUnorderedTreeEditDistance.normalizedDistance( null, null, defaultCosts ), 0d );
 		assertEquals( 0d, ZhangUnorderedTreeEditDistance.normalizedDistance( emptyTree, emptyTree, defaultCosts ), 0d );
 		assertEquals( 20d / 120d, ZhangUnorderedTreeEditDistance.normalizedDistance( tree1, tree2, defaultCosts ), 0d );
@@ -290,9 +290,9 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	void testAverageDistance()
 	{
-		Tree< Double > emptyTree = SimpleTreeExamples.emptyTree();
-		Tree< Double > tree1 = SimpleTreeExamples.tree1();
-		Tree< Double > tree2 = SimpleTreeExamples.tree2();
+		Tree emptyTree = SimpleTreeExamples.emptyTree();
+		Tree tree1 = SimpleTreeExamples.tree1();
+		Tree tree2 = SimpleTreeExamples.tree2();
 		assertEquals( 0d, ZhangUnorderedTreeEditDistance.averageDistance( null, null, defaultCosts ), 0d );
 		assertEquals( 0d, ZhangUnorderedTreeEditDistance.averageDistance( emptyTree, emptyTree, defaultCosts ), 0d );
 		assertEquals( 20d / 6d, ZhangUnorderedTreeEditDistance.averageDistance( tree1, tree2, defaultCosts ), 0d );
@@ -301,24 +301,24 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Test
 	void testDistanceBug()
 	{
-		Tree< Double > tree20 = SimpleTreeExamples.tree20();
-		Tree< Double > tree21 = SimpleTreeExamples.tree21();
+		Tree tree20 = SimpleTreeExamples.tree20();
+		Tree tree21 = SimpleTreeExamples.tree21();
 		assertEquals( 170d, ZhangUnorderedTreeEditDistance.distance( tree20, tree21, defaultCosts ), 0d );
 	}
 
 	@Test
 	void testChangeLabelOperation()
 	{
-		Tree< Double > tree22 = SimpleTreeExamples.tree22();
-		Tree< Double > tree23 = SimpleTreeExamples.tree23();
+		Tree tree22 = SimpleTreeExamples.tree22();
+		Tree tree23 = SimpleTreeExamples.tree23();
 		assertEquals( 20d, ZhangUnorderedTreeEditDistance.distance( tree22, tree23, defaultCosts ), 0d );
 	}
 
 	@Test
 	void testComplexExample()
 	{
-		Tree< Double > tree1a111 = SimpleTreeExamples.tree1a111();
-		Tree< Double > tree2c2 = SimpleTreeExamples.tree2c2();
+		Tree tree1a111 = SimpleTreeExamples.tree1a111();
+		Tree tree2c2 = SimpleTreeExamples.tree2c2();
 		assertEquals( 1_654d, ZhangUnorderedTreeEditDistance.distance( tree1a111, tree2c2, defaultCosts ), 0d );
 	}
 
@@ -326,16 +326,16 @@ class ZhangUnorderedTreeEditDistanceTest
 	@Disabled( "This test is ignored because it takes too long to run." )
 	void testDenseTreeExample()
 	{
-		Tree< Double > tree2aba = DenseSimpleTreeExamples.tree2aba();
-		Tree< Double > tree1bab = DenseSimpleTreeExamples.tree1bab();
+		Tree tree2aba = DenseSimpleTreeExamples.tree2aba();
+		Tree tree1bab = DenseSimpleTreeExamples.tree1bab();
 		assertEquals( 39_214d, ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, defaultCosts ), 0d );
 	}
 
 	public static void main( String[] args )
 	{
 		// NB: This exists in addition to testDenseTreeExample(), because time measurement does not work in the test.
-		Tree< Double > tree2aba = DenseSimpleTreeExamples.tree2aba();
-		Tree< Double > tree1bab = DenseSimpleTreeExamples.tree1bab();
+		Tree tree2aba = DenseSimpleTreeExamples.tree2aba();
+		Tree tree1bab = DenseSimpleTreeExamples.tree1bab();
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		double costs = ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, defaultCosts );

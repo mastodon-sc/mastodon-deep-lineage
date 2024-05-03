@@ -37,13 +37,13 @@ import java.util.Collection;
 /**
  * A tree data structure representing a branch spot and its children.
  */
-public class BranchSpotTree implements Tree< Double >
+public class BranchSpotTree implements Tree
 {
 	private final BranchSpot branchSpot;
 
 	private final int endTimepoint;
 
-	private final Collection< Tree< Double > > children;
+	private final Collection< Tree > children;
 
 	protected BranchSpotTree( final BranchSpotTree branchSpotTree )
 	{
@@ -79,13 +79,13 @@ public class BranchSpotTree implements Tree< Double >
 	}
 
 	@Override
-	public Collection< Tree< Double > > getChildren()
+	public Collection< Tree > getChildren()
 	{
 		return children;
 	}
 
 	@Override
-	public Double getAttribute()
+	public double getAttribute()
 	{
 		int lastTimePoint = Math.min( branchSpot.getTimepoint(), this.endTimepoint );
 		return ( double ) lastTimePoint - branchSpot.getFirstTimePoint();

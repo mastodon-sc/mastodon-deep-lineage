@@ -58,15 +58,15 @@ class BranchSpotTreeTest
 	@Test
 	void testIsLeaf()
 	{
-		Tree< Double > tree1 = BranchSpotTreeExamples.tree1();
+		Tree tree1 = BranchSpotTreeExamples.tree1();
 		assertFalse( tree1.isLeaf() );
-		Iterator< Tree< Double > > iterator1 = tree1.getChildren().iterator();
+		Iterator< Tree > iterator1 = tree1.getChildren().iterator();
 		assertTrue( iterator1.next().isLeaf() );
 		assertTrue( iterator1.next().isLeaf() );
 
-		Tree< Double > tree2 = BranchSpotTreeExamples.tree2();
+		Tree tree2 = BranchSpotTreeExamples.tree2();
 		assertFalse( tree2.isLeaf() );
-		Iterator< Tree< Double > > iterator2 = tree1.getChildren().iterator();
+		Iterator< Tree > iterator2 = tree1.getChildren().iterator();
 		assertTrue( iterator2.next().isLeaf() );
 		assertTrue( iterator2.next().isLeaf() );
 	}

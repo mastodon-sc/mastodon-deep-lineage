@@ -30,9 +30,9 @@ package org.mastodon.mamut.treesimilarity.tree;
 
 public class SimpleTreeExamples
 {
-	public static Tree< Double > emptyTree()
+	public static Tree emptyTree()
 	{
-		return new SimpleTree<>( 0d );
+		return new SimpleTree( 0d );
 	}
 
 	/**
@@ -43,9 +43,9 @@ public class SimpleTreeExamples
 	 *                  node2(node_weight=10)    node3(node_weight=30)
 	 * </pre>
 	 */
-	public static Tree< Double > tree1()
+	public static Tree tree1()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 20d );
+		SimpleTree node1 = new SimpleTree( 20d );
 
 		addNode( 10d, node1 );
 		addNode( 30d, node1 );
@@ -61,9 +61,9 @@ public class SimpleTreeExamples
 	 *                    node2(node_weight=10)    node3(node_weight=20)
 	 * </pre>
 	 */
-	public static Tree< Double > tree2()
+	public static Tree tree2()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 30d );
+		SimpleTree node1 = new SimpleTree( 30d );
 
 		addNode( 10d, node1 );
 		addNode( 20d, node1 );
@@ -82,11 +82,11 @@ public class SimpleTreeExamples
 	 *        node4(node_weight=1)     node5(node_weight=100)
 	 * </pre>
 	 */
-	public static Tree< Double > tree3()
+	public static Tree tree3()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 1d );
+		SimpleTree node1 = new SimpleTree( 1d );
 
-		SimpleTree< Double > node2 = addNode( 1d, node1 );
+		SimpleTree node2 = addNode( 1d, node1 );
 		addNode( 1d, node1 );
 
 		addNode( 1d, node2 );
@@ -106,11 +106,11 @@ public class SimpleTreeExamples
 	 *      node4(node_weight=1)     node5(node_weight=1)
 	 * </pre>
 	 */
-	public static Tree< Double > tree4()
+	public static Tree tree4()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 1d );
+		SimpleTree node1 = new SimpleTree( 1d );
 
-		SimpleTree< Double > node2 = addNode( 100d, node1 );
+		SimpleTree node2 = addNode( 100d, node1 );
 		addNode( 1d, node1 );
 
 		addNode( 1d, node2 );
@@ -127,9 +127,9 @@ public class SimpleTreeExamples
 	 *           node2(node_weight=203)     node3(node_weight=203)
 	 * </pre>
 	 */
-	public static Tree< Double > tree5()
+	public static Tree tree5()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 13d );
+		SimpleTree node1 = new SimpleTree( 13d );
 
 		addNode( 203d, node1 );
 		addNode( 203d, node1 );
@@ -145,9 +145,9 @@ public class SimpleTreeExamples
 	 *           node2(node_weight=227)     node3(node_weight=227)
 	 * </pre>
 	 */
-	public static Tree< Double > tree6()
+	public static Tree tree6()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 12d );
+		SimpleTree node1 = new SimpleTree( 12d );
 
 		addNode( 227d, node1 );
 		addNode( 227d, node1 );
@@ -165,12 +165,12 @@ public class SimpleTreeExamples
 	 *                          node4(node_weight=10)    node5(node_weight=10)
 	 * </pre>
 	 */
-	public static Tree< Double > tree7()
+	public static Tree tree7()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 12d );
+		SimpleTree node1 = new SimpleTree( 12d );
 
 		addNode( 227d, node1 );
-		SimpleTree< Double > node3 = addNode( 227d, node1 );
+		SimpleTree node3 = addNode( 227d, node1 );
 
 		addNode( 10d, node3 );
 		addNode( 10d, node3 );
@@ -187,12 +187,12 @@ public class SimpleTreeExamples
 	 *   5       4       1       2
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree8()
+	public static SimpleTree tree8()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 3d );
+		SimpleTree node1 = new SimpleTree( 3d );
 
-		SimpleTree< Double > node2 = addNode( 8d, node1 );
-		SimpleTree< Double > node3 = addNode( 8d, node1 );
+		SimpleTree node2 = addNode( 8d, node1 );
+		SimpleTree node3 = addNode( 8d, node1 );
 
 		addNode( 5d, node2 );
 		addNode( 4d, node2 );
@@ -212,12 +212,12 @@ public class SimpleTreeExamples
 	 *   4       4       1       2
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree9()
+	public static SimpleTree tree9()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 3d );
+		SimpleTree node1 = new SimpleTree( 3d );
 
-		SimpleTree< Double > node2 = addNode( 8d, node1 );
-		SimpleTree< Double > node3 = addNode( 8d, node1 );
+		SimpleTree node2 = addNode( 8d, node1 );
+		SimpleTree node3 = addNode( 8d, node1 );
 
 		addNode( 4d, node2 );
 		addNode( 4d, node2 );
@@ -235,9 +235,9 @@ public class SimpleTreeExamples
 	 *       1              10
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree10()
+	public static SimpleTree tree10()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 1d );
+		SimpleTree node1 = new SimpleTree( 1d );
 
 		addNode( 1d, node1 );
 		addNode( 10d, node1 );
@@ -250,9 +250,9 @@ public class SimpleTreeExamples
 	 *       ─ 10 ─
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree11()
+	public static SimpleTree tree11()
 	{
-		return new SimpleTree<>( 10d );
+		return new SimpleTree( 10d );
 	}
 
 	/**
@@ -264,11 +264,11 @@ public class SimpleTreeExamples
 	 *    100    200
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree12()
+	public static SimpleTree tree12()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 1000d );
+		SimpleTree node1 = new SimpleTree( 1000d );
 
-		SimpleTree< Double > node2 = addNode( 1d, node1 );
+		SimpleTree node2 = addNode( 1d, node1 );
 		addNode( 1d, node1 );
 
 		addNode( 100d, node2 );
@@ -284,9 +284,9 @@ public class SimpleTreeExamples
 	 *      100                200
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree13()
+	public static SimpleTree tree13()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 1_000d );
+		SimpleTree node1 = new SimpleTree( 1_000d );
 
 		addNode( 100d, node1 );
 		addNode( 200d, node1 );
@@ -301,9 +301,9 @@ public class SimpleTreeExamples
 	 *       2                 4
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree14()
+	public static SimpleTree tree14()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 10_000d );
+		SimpleTree node1 = new SimpleTree( 10_000d );
 
 		addNode( 2d, node1 );
 		addNode( 4d, node1 );
@@ -318,9 +318,9 @@ public class SimpleTreeExamples
 	 *       3                5             1_000_000
 	 * </pre>
 	 */
-	public static SimpleTree< Double > nonBinaryTree()
+	public static SimpleTree nonBinaryTree()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 10_001d );
+		SimpleTree node1 = new SimpleTree( 10_001d );
 
 		addNode( 3d, node1 );
 		addNode( 5d, node1 );
@@ -338,12 +338,12 @@ public class SimpleTreeExamples
 	 *                       200   300
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree15()
+	public static SimpleTree tree15()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 1_000d );
+		SimpleTree node1 = new SimpleTree( 1_000d );
 		addNode( 100d, node1 );
 
-		SimpleTree< Double > node2 = addNode( 1d, node1 );
+		SimpleTree node2 = addNode( 1d, node1 );
 		addNode( 200d, node2 );
 		addNode( 300d, node2 );
 
@@ -359,10 +359,10 @@ public class SimpleTreeExamples
 	 *    100    200
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree16()
+	public static SimpleTree tree16()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 1_000d );
-		SimpleTree< Double > node2 = addNode( 2d, node1 );
+		SimpleTree node1 = new SimpleTree( 1_000d );
+		SimpleTree node2 = addNode( 2d, node1 );
 
 		addNode( 100d, node2 );
 		addNode( 200d, node2 );
@@ -378,9 +378,9 @@ public class SimpleTreeExamples
 	 *      200             300
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree17()
+	public static SimpleTree tree17()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 1_000d );
+		SimpleTree node1 = new SimpleTree( 1_000d );
 
 		addNode( 200d, node1 );
 		addNode( 300d, node1 );
@@ -395,9 +395,9 @@ public class SimpleTreeExamples
 	 *      200            300
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree18()
+	public static SimpleTree tree18()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 100d );
+		SimpleTree node1 = new SimpleTree( 100d );
 
 		addNode( 200d, node1 );
 		addNode( 300d, node1 );
@@ -418,17 +418,17 @@ public class SimpleTreeExamples
 	 *        200  300
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree19()
+	public static SimpleTree tree19()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 100d );
+		SimpleTree node1 = new SimpleTree( 100d );
 
-		SimpleTree< Double > node2 = addNode( 1d, node1 );
+		SimpleTree node2 = addNode( 1d, node1 );
 		addNode( 2d, node1 );
 
-		SimpleTree< Double > node3 = addNode( 3d, node2 );
+		SimpleTree node3 = addNode( 3d, node2 );
 		addNode( 4d, node2 );
 
-		SimpleTree< Double > node4 = addNode( 5d, node3 );
+		SimpleTree node4 = addNode( 5d, node3 );
 		addNode( 6d, node3 );
 
 		addNode( 200d, node4 );
@@ -446,14 +446,14 @@ public class SimpleTreeExamples
 	 *                   200           80
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree20()
+	public static SimpleTree tree20()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 50d );
+		SimpleTree node1 = new SimpleTree( 50d );
 
-		SimpleTree< Double > node2 = addNode( 40d, node1 );
-		SimpleTree< Double > node3 = addNode( 20d, node1 );
-		SimpleTree< Double > node4 = addNode( 200d, node3 );
-		SimpleTree< Double > node5 = addNode( 80d, node3 );
+		SimpleTree node2 = addNode( 40d, node1 );
+		SimpleTree node3 = addNode( 20d, node1 );
+		SimpleTree node4 = addNode( 200d, node3 );
+		SimpleTree node5 = addNode( 80d, node3 );
 
 		return node1;
 	}
@@ -467,14 +467,14 @@ public class SimpleTreeExamples
 	 *                    30      80
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree21()
+	public static SimpleTree tree21()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 50d );
+		SimpleTree node1 = new SimpleTree( 50d );
 
-		SimpleTree< Double > node2 = addNode( 40d, node1 );
-		SimpleTree< Double > node3 = addNode( 20d, node1 );
-		SimpleTree< Double > node4 = addNode( 30d, node3 );
-		SimpleTree< Double > node5 = addNode( 80d, node3 );
+		SimpleTree node2 = addNode( 40d, node1 );
+		SimpleTree node3 = addNode( 20d, node1 );
+		SimpleTree node4 = addNode( 30d, node3 );
+		SimpleTree node5 = addNode( 80d, node3 );
 
 		return node1;
 	}
@@ -488,14 +488,14 @@ public class SimpleTreeExamples
 	 *                    80      100
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree22()
+	public static SimpleTree tree22()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 60d );
+		SimpleTree node1 = new SimpleTree( 60d );
 
-		SimpleTree< Double > node2 = addNode( 50d, node1 );
-		SimpleTree< Double > node3 = addNode( 40d, node1 );
-		SimpleTree< Double > node4 = addNode( 80d, node3 );
-		SimpleTree< Double > node5 = addNode( 100d, node3 );
+		SimpleTree node2 = addNode( 50d, node1 );
+		SimpleTree node3 = addNode( 40d, node1 );
+		SimpleTree node4 = addNode( 80d, node3 );
+		SimpleTree node5 = addNode( 100d, node3 );
 
 		return node1;
 	}
@@ -509,29 +509,29 @@ public class SimpleTreeExamples
 	 *   80      100
 	 * </pre>
 	 */
-	public static SimpleTree< Double > tree23()
+	public static SimpleTree tree23()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 60d );
+		SimpleTree node1 = new SimpleTree( 60d );
 
-		SimpleTree< Double > node2 = addNode( 50d, node1 );
-		SimpleTree< Double > node3 = addNode( 40d, node1 );
-		SimpleTree< Double > node4 = addNode( 80d, node2 );
-		SimpleTree< Double > node5 = addNode( 100d, node2 );
+		SimpleTree node2 = addNode( 50d, node1 );
+		SimpleTree node3 = addNode( 40d, node1 );
+		SimpleTree node4 = addNode( 80d, node2 );
+		SimpleTree node5 = addNode( 100d, node2 );
 
 		return node1;
 	}
 
-	public static SimpleTree< Double > tree1a111()
+	public static SimpleTree tree1a111()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 72d );
+		SimpleTree node1 = new SimpleTree( 72d );
 
 		addNode( 349d, node1 );
-		SimpleTree< Double > node3 = addNode( 61d, node1 );
+		SimpleTree node3 = addNode( 61d, node1 );
 		addNode( 287d, node3 );
-		SimpleTree< Double > node5 = addNode( 115d, node3 );
-		SimpleTree< Double > node6 = addNode( 79d, node5 );
+		SimpleTree node5 = addNode( 115d, node3 );
+		SimpleTree node6 = addNode( 79d, node5 );
 		addNode( 171d, node5 );
-		SimpleTree< Double > node8 = addNode( 90d, node6 );
+		SimpleTree node8 = addNode( 90d, node6 );
 		addNode( 91d, node6 );
 		addNode( 0d, node8 );
 		addNode( 0d, node8 );
@@ -539,25 +539,25 @@ public class SimpleTreeExamples
 		return node1;
 	}
 
-	public static SimpleTree< Double > tree2c2()
+	public static SimpleTree tree2c2()
 	{
-		SimpleTree< Double > node1 = new SimpleTree<>( 34d );
+		SimpleTree node1 = new SimpleTree( 34d );
 
-		SimpleTree< Double > node2 = addNode( 55d, node1 );
-		SimpleTree< Double > node3 = addNode( 118d, node1 );
-		SimpleTree< Double > node4 = addNode( 51d, node2 );
-		SimpleTree< Double > node5 = addNode( 159d, node2 );
+		SimpleTree node2 = addNode( 55d, node1 );
+		SimpleTree node3 = addNode( 118d, node1 );
+		SimpleTree node4 = addNode( 51d, node2 );
+		SimpleTree node5 = addNode( 159d, node2 );
 		addNode( 268d, node3 );
 		addNode( 268d, node3 );
-		SimpleTree< Double > node8 = addNode( 49d, node4 );
+		SimpleTree node8 = addNode( 49d, node4 );
 		addNode( 279d, node4 );
 		addNode( 171d, node5 );
 		addNode( 171d, node5 );
 		addNode( 229d, node8 );
-		SimpleTree< Double > node13 = addNode( 46d, node8 );
-		SimpleTree< Double > node14 = addNode( 50d, node13 );
-		SimpleTree< Double > node15 = addNode( 140d, node13 );
-		SimpleTree< Double > node16 = addNode( 56d, node14 );
+		SimpleTree node13 = addNode( 46d, node8 );
+		SimpleTree node14 = addNode( 50d, node13 );
+		SimpleTree node15 = addNode( 140d, node13 );
+		SimpleTree node16 = addNode( 56d, node14 );
 		addNode( 131d, node14 );
 		addNode( 41d, node15 );
 		addNode( 41d, node15 );
@@ -567,9 +567,9 @@ public class SimpleTreeExamples
 		return node1;
 	}
 
-	private static SimpleTree< Double > addNode( double attribute, SimpleTree< Double > parentTree )
+	private static SimpleTree addNode( double attribute, SimpleTree parentTree )
 	{
-		SimpleTree< Double > node = new SimpleTree<>( attribute );
+		SimpleTree node = new SimpleTree( attribute );
 		parentTree.addChild( node );
 		return node;
 	}

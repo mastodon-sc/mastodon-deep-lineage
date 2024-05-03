@@ -33,21 +33,19 @@ import java.util.Collection;
 
 /**
  * A simple tree data structure.
- *
- * @param <T> the type of the attribute of the tree nodes.
  */
-public class SimpleTree< T > implements Tree< T >
+public class SimpleTree implements Tree
 {
-	private final Collection< Tree< T > > children;
+	private final Collection< Tree > children;
 
-	private final T attribute;
+	private final double attribute;
 
 	/**
 	 * Create a new tree with the given attribute.
 	 *
 	 * @param attribute the attribute of the tree.
 	 */
-	public SimpleTree( final T attribute )
+	public SimpleTree( final double attribute )
 	{
 		children = new ArrayList<>();
 		this.attribute = attribute;
@@ -59,7 +57,7 @@ public class SimpleTree< T > implements Tree< T >
 	 * @return The list of child Tree objects.
 	 */
 	@Override
-	public Collection< Tree< T > > getChildren()
+	public Collection< Tree > getChildren()
 	{
 		return children;
 	}
@@ -70,7 +68,7 @@ public class SimpleTree< T > implements Tree< T >
 	 * @return The map of attributes.
 	 */
 	@Override
-	public T getAttribute()
+	public double getAttribute()
 	{
 		return attribute;
 	}
@@ -79,7 +77,7 @@ public class SimpleTree< T > implements Tree< T >
 	 * Add the given tree as a child of the main tree
 	 * @param subtree the tree to add as a child
 	 */
-	public void addChild( final SimpleTree< T > subtree )
+	public void addChild( final SimpleTree subtree )
 	{
 		this.children.add( subtree );
 	}
