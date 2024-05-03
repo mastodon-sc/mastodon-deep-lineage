@@ -351,6 +351,10 @@ class ZhangUnorderedTreeEditDistanceTest
 		assertEquals( 0.0158d, distance, 0.0001d );
 	}
 
+	/**
+	 * There is an equivalent test in the GuignardLab/LineageTree repository:
+	 * @see <a href="https://github.com/GuignardLab/LineageTree/blob/master/test/test_uted.py#L68">https://github.com/GuignardLab/LineageTree/blob/master/test/test_uted.py#L68</a>
+	 */
 	@Test
 	void testGuignardExample2()
 	{
