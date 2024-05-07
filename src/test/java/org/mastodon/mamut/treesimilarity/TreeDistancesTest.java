@@ -5,14 +5,14 @@ import org.mastodon.mamut.treesimilarity.tree.SimpleTree;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
-import java.util.function.BiFunction;
+import java.util.function.ToDoubleBiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TreeDistancesTest
 {
 
-	private final static BiFunction< Double, Double, Double > defaultCosts = TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION;
+	private final static ToDoubleBiFunction< Double, Double > defaultCosts = TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION;
 
 	@Test
 	void testNormalizedDistance()

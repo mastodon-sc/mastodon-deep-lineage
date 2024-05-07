@@ -4,8 +4,7 @@ import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
 
 import javax.annotation.Nullable;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
+import java.util.function.ToDoubleBiFunction;
 
 /**
  * Utility class for calculating distances between trees.
@@ -24,14 +23,14 @@ public class TreeDistances
 	 *
 	 * @see <a href="https://gitlab.inria.fr/mosaic/treex/-/blob/master/test/test_analysis/test_zhang_labeled_trees.py?ref_type=heads#L99">treex library</a>
 	 */
-	public static final BinaryOperator< Double > LOCAL_ABSOLUTE_COST_FUNCTION = TreeDistances::localAbsoluteCostFunction;
+	public static final ToDoubleBiFunction< Double, Double > LOCAL_ABSOLUTE_COST_FUNCTION = TreeDistances::localAbsoluteCostFunction;
 
 	/**
 	 * Cost function as used in Guignard et al. 2020. It returns the normalized absolute difference between two attributes or 1 if one attribute is {@code null}.
 	 *
 	 * @see <a href="https://www.science.org/doi/suppl/10.1126/science.aar5663/suppl_file/aar5663_guignard_sm.pdf">Guignard et al. (2020) Page 38-39</a>
 	 */
-	public static final BinaryOperator< Double > LOCAL_NORMALIZED_COST_FUNCTION = TreeDistances::localNormalizedCostFunction;
+	public static final ToDoubleBiFunction< Double, Double > LOCAL_NORMALIZED_COST_FUNCTION = TreeDistances::localNormalizedCostFunction;
 
 	/**
 	 * Calculates the normalized Zhang edit distance between two labeled unordered trees.
@@ -46,7 +45,7 @@ public class TreeDistances
 	 * @return The normalized Zhang edit distance between tree1 and tree2.
 	 */
 	public static < T > double normalizedDistance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
-			final BiFunction< T, T, Double > costFunction )
+			final ToDoubleBiFunction< T, T > costFunction )
 	{
 		double denominator = ZhangUnorderedTreeEditDistance.distance( tree1, null, costFunction )
 				+ ZhangUnorderedTreeEditDistance.distance( null, tree2, costFunction );
@@ -69,7 +68,7 @@ public class TreeDistances
 	 * @return The average Zhang edit distance between tree1 and tree2.
 	 */
 	public static < T > double averageDistance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
-			final BiFunction< T, T, Double > costFunction )
+			final ToDoubleBiFunction< T, T > costFunction )
 	{
 		double denominator = ( double ) TreeUtils.size( tree1 ) + ( double ) TreeUtils.size( tree2 );
 		// NB: avoid division by zero. Two empty trees are considered equal.

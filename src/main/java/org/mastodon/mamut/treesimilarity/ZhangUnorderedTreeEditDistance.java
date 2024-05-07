@@ -47,8 +47,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToIntFunction;
 
 /**
@@ -161,7 +161,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * @return The absolute Zhang edit distance between tree1 and tree2.
 	 */
 	public static < T > double distance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
-			final BiFunction< T, T, Double > costFunction )
+			final ToDoubleBiFunction< T, T > costFunction )
 	{
 		if ( costFunction == null )
 			throw new IllegalArgumentException( "The cost function is expected to be non-null, but it is null." );
@@ -188,7 +188,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 *
 	 * @return The mapping between nodes.
 	 */
-	public static < T > Map< Tree< T >, Tree< T > > nodeMapping( Tree< T > tree1, Tree< T > tree2, BiFunction< T, T, Double > costFunction )
+	public static < T > Map< Tree< T >, Tree< T > > nodeMapping( Tree< T > tree1, Tree< T > tree2, ToDoubleBiFunction< T, T > costFunction )
 	{
 		if ( tree1 == null || tree2 == null )
 			return Collections.emptyMap();
@@ -197,17 +197,17 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return mapping.asMap();
 	}
 
-	private static < T > double distanceTreeToNull( Tree< T > tree2, BiFunction< T, T, Double > costFunction )
+	private static < T > double distanceTreeToNull( Tree< T > tree2, ToDoubleBiFunction< T, T > costFunction )
 	{
 		double distance = 0;
 		for ( Tree< T > subtree : TreeUtils.listOfSubtrees( tree2 ) )
-			distance += costFunction.apply( null, subtree.getAttribute() );
+			distance += costFunction.applyAsDouble( null, subtree.getAttribute() );
 		return distance;
 	}
 
 	@SuppressWarnings( "unchecked" )
 	private ZhangUnorderedTreeEditDistance( final Tree< T > tree1, final Tree< T > tree2,
-			final BiFunction< T, T, Double > costFunction )
+			final ToDoubleBiFunction< T, T > costFunction )
 	{
 
 		subtrees1 = TreeUtils.listOfSubtrees( tree1 );
@@ -223,7 +223,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		{
 			for ( Tree< T > subtree2 : subtrees2 )
 			{
-				double distance = costFunction.apply( subtree1.getAttribute(), subtree2.getAttribute() );
+				double distance = costFunction.applyAsDouble( subtree1.getAttribute(), subtree2.getAttribute() );
 				costMatrix[ getTreeIndex1( subtree1 ) ][ getTreeIndex2( subtree2 ) ] = distance;
 			}
 		}
@@ -613,7 +613,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 	private static class EditCosts< T >
 	{
-		private final BiFunction< T, T, Double > costFunction;
+		private final ToDoubleBiFunction< T, T > costFunction;
 
 		private final TreeDetails[] costs;
 
@@ -644,7 +644,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		 * @param tree the tree or forest to compute the change costs for
 		 * @param costFunction costFunction
 		 */
-		private EditCosts( final Tree< T > tree, final BiFunction< T, T, Double > costFunction, final int size,
+		private EditCosts( final Tree< T > tree, final ToDoubleBiFunction< T, T > costFunction, final int size,
 				final ToIntFunction< Tree< T > > treeToIndexFunction
 		)
 		{
@@ -665,7 +665,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 					cost += costs[ treeToIndexFunction.applyAsInt( child ) ].treeCost;
 				}
 			}
-			TreeDetails treeDetails = new TreeDetails( cost + costFunction.apply( tree.getAttribute(), null ), cost );
+			TreeDetails treeDetails = new TreeDetails( cost + costFunction.applyAsDouble( tree.getAttribute(), null ), cost );
 			costs[ treeToIndexFunction.applyAsInt( tree ) ] = treeDetails;
 		}
 	}
