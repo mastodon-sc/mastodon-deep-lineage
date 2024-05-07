@@ -36,7 +36,7 @@ import org.mastodon.mamut.treesimilarity.tree.DenseSimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
-import java.util.function.BiFunction;
+import java.util.function.ToDoubleBiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ZhangUnorderedTreeEditDistanceTest
 {
 
-	private final static BiFunction< Double, Double, Double > defaultCosts = ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION;
+	private final static ToDoubleBiFunction< Double, Double > defaultCosts = ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION;
 
 	@SuppressWarnings("all")
 	@Test
@@ -180,7 +180,7 @@ class ZhangUnorderedTreeEditDistanceTest
 
 
 		// 0, because: the trees are topologically identical
-		BiFunction< Double, Double, Double > costFunction = ( a, b ) -> ( a == null ) == ( b == null ) ? 0d : 1d;
+		ToDoubleBiFunction< Double, Double > costFunction = ( a, b ) -> ( a == null ) == ( b == null ) ? 0d : 1d;
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleTree2, costFunction ), 0d );
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( simpleTree2, simpleTree1, costFunction ), 0d );
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( branchSpotTree1, branchSpotTree2, costFunction ), 0d );
