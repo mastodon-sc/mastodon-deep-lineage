@@ -33,6 +33,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -66,6 +67,8 @@ public class Classification< T >
 
 	private final int objectCount;
 
+	private final Map< Cluster, T > clusterNodesToObjects;
+
 	/**
 	 * Creates a new {@link Classification} object.
 	 * @param classifiedObjects a {@link List} of {@link Pair} objects, where each pair contains:
@@ -79,6 +82,24 @@ public class Classification< T >
 	 */
 	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, final Cluster rootCluster, final double cutoff,
 			final double median )
+	{
+		this( classifiedObjects, rootCluster, cutoff, median, null );
+	}
+
+	/**
+	 * Creates a new {@link Classification} object.
+	 * @param classifiedObjects a {@link List} of {@link Pair} objects, where each pair contains:
+	 * 						<ul>
+	 * 						    <li>a {@link Set} of objects, which are classified into the same class</li>
+	 * 						    <li>a {@link Cluster} object, which represents the classified objects in the dendrogram</li>
+	 * 						</ul>
+	 * @param rootCluster the root {@link Cluster} object, from which the results of the algorithm can be accessed
+	 * @param cutoff the cutoff value of classification, i.e. where the dendrogram is cut
+	 * @param median the median of the upper triangle values of the distance matrix that this classification represents
+	 * @param clusterNodesToObjects a mapping between the cluster objects represented by the {@code rootCluster} and its descendants and the classified objects they represent
+	 */
+	public Classification( final List< Pair< Set< T >, Cluster > > classifiedObjects, final Cluster rootCluster, final double cutoff,
+			final double median, final Map< Cluster, T > clusterNodesToObjects )
 
 	{
 		this.objectClassifications = new HashSet<>();
@@ -89,14 +110,16 @@ public class Classification< T >
 			Pair< Set< T >, Cluster > clusterClassPair = classifiedObjects.get( i );
 			this.objectClassifications.add(
 					new ObjectClassification<>( glasbeyColors.get( i ), clusterClassPair.getRight(), clusterClassPair.getLeft() ) );
-			Set< T > objects = clusterClassPair.getLeft();
-			if ( objects != null )
+			Set< T > classObject = clusterClassPair.getLeft();
+			if ( classObject != null )
 				count += clusterClassPair.getLeft().size();
 		}
 		this.rootCluster = rootCluster;
 		this.cutoff = cutoff;
 		this.median = median;
 		this.objectCount = count;
+		this.clusterNodesToObjects = clusterNodesToObjects;
+		updateClusterNames();
 	}
 
 	/**
@@ -154,6 +177,28 @@ public class Classification< T >
 	Set< Set< T > > getClassifiedObjects()
 	{
 		return objectClassifications.stream().map( ObjectClassification::getObjects ).collect( Collectors.toSet() );
+	}
+
+	/**
+	 * Gets a mapping between the nodes of the dendrogram that represents this classification the represented classified objects
+	 * @return the mapping
+	 */
+	public Map< Cluster, T > getClusterNodesToObjects()
+	{
+		return clusterNodesToObjects;
+	}
+
+	/**
+	 * Updates the names of the leaf clusters within this classification to the string representation of the classified objects.
+	 */
+	public void updateClusterNames()
+	{
+		if ( clusterNodesToObjects == null )
+			return;
+		clusterNodesToObjects.forEach( ( cluster, object ) -> {
+			if ( cluster.isLeaf() )
+				cluster.setName( object.toString() );
+		} );
 	}
 
 	/**

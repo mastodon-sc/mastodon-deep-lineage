@@ -29,13 +29,17 @@
 package org.mastodon.mamut.clustering;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.mastodon.mamut.clustering.util.AverageLinkageUPGMAStrategy;
+import org.mastodon.mamut.clustering.util.Classification;
+import org.mastodon.mamut.clustering.util.ClusterUtils;
+
 
 public class ClusterData
 {
 
 	private final static String[] names1 = new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
 
-	private final static double[][] fixedDistances1 = new double[][] {
+	private final static double[][] distances1 = new double[][] {
 			{ 0, 51, 81, 35, 9, 95, 37, 19, 48, 21 },
 			{ 51, 0, 51, 21, 51, 55, 26, 17, 95, 75 },
 			{ 81, 51, 0, 9, 59, 66, 29, 73, 39, 3 },
@@ -48,11 +52,11 @@ public class ClusterData
 			{ 21, 75, 3, 11, 84, 82, 80, 29, 94, 0 }
 	};
 
-	public final static Pair< String[], double[][] > example1 = Pair.of( names1, fixedDistances1 );
+	public final static Pair< String[], double[][] > example1 = Pair.of( names1, distances1 );
 
 	private final static String[] names2 = new String[] { "A", "B", "C", "D", "E" };
 
-	private final static double[][] fixedDistances2 = new double[][] {
+	private final static double[][] distances2 = new double[][] {
 			{ 0, 1, 1, 2, 2 },
 			{ 1, 0, 0, 3, 3 },
 			{ 1, 0, 0, 3, 3 },
@@ -60,6 +64,21 @@ public class ClusterData
 			{ 2, 3, 3, 0, 0 },
 	};
 
-	public final static Pair< String[], double[][] > example2 = Pair.of( names2, fixedDistances2 );
+	public final static Pair< String[], double[][] > example2 = Pair.of( names2, distances2 );
 
+	public final static double[][] distances3 = new double[][] {
+			{ 0, 1, 9, 7, 11, 14 },
+			{ 1, 0, 4, 3, 8, 10 },
+			{ 9, 4, 0, 9, 2, 8 },
+			{ 7, 3, 9, 0, 6, 13 },
+			{ 11, 8, 2, 6, 0, 10 },
+			{ 14, 10, 8, 13, 10, 0 }
+	};
+
+	public final static String[] names3 = new String[] { "O1", "O2", "O3", "O4", "O5", "O6" };
+
+	public static Classification< String > createSampleClassification3()
+	{
+		return ClusterUtils.getClassificationByClassCount( names3, distances3, new AverageLinkageUPGMAStrategy(), 2 );
+	}
 }

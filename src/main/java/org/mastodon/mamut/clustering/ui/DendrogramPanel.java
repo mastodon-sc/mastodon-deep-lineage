@@ -34,6 +34,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 import org.mastodon.mamut.clustering.util.Classification;
+import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
+import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
 import org.slf4j.Logger;
@@ -60,6 +62,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
 
@@ -116,7 +119,9 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final int SCALE_TICK_LABEL_PADDING = 4;
 
-	private static final String NO_DATA_AVAILABLE = "No cluster data available.";
+	public static final int DENDROGRAM_VERTICAL_OFFSET = BORDER_TOP + SCALE_PADDING + SCALE_TICK_LABEL_PADDING + SCALE_TICK_LENGTH;
+
+	private static final String NO_DATA_AVAILABLE = "No classification data available.";
 
 	static final int PRINT_RESOLUTION = 600;
 
@@ -124,13 +129,9 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final String SVG_EXTENSION = "svg";
 
-	/**
-	 * Creates an empty {@link DendrogramPanel}.
-	 */
-	public DendrogramPanel()
-	{
-		this( null );
-	}
+	private boolean showThreshold = false;
+
+	private boolean showMedian = false;
 
 	/**
 	 * Creates a {@link DendrogramPanel} for the given {@link Classification} object.
@@ -174,8 +175,10 @@ public class DendrogramPanel< T > extends JPanel
 				Axis axis = new Axis( metrics );
 				axis.paint( g2 );
 			}
-			paintCutoffLine( g2, metrics );
-			paintMedianLine( g2, metrics );
+			if ( showThreshold )
+				paintCutoffLine( g2, metrics );
+			if ( showMedian )
+				paintMedianLine( g2, metrics );
 		}
 		else
 		{
@@ -198,9 +201,8 @@ public class DendrogramPanel< T > extends JPanel
 		paintLineLegend( g2, "Median of tree similarities", 2, MEDIAN_LINE_STROKE );
 	}
 
-	private void paintVerticalLine(
-			final Graphics2D g2, final Stroke stroke, final double xModelValue, final DisplayMetrics displayMetrics
-	)
+	private void paintVerticalLine( final Graphics2D g2, final Stroke stroke, final double xModelValue,
+			final DisplayMetrics displayMetrics )
 	{
 		if ( Double.isNaN( xModelValue ) )
 			return;
@@ -280,6 +282,41 @@ public class DendrogramPanel< T > extends JPanel
 		int yDendrogramEnd = getHeight() - BORDER_BOTTOM;
 		int lineX = getDisplayXCoordinate( xModelValue, displayMetrics );
 		return new Line2D.Float( lineX, yDendrogramOrigin, lineX, yDendrogramEnd );
+	}
+
+	void showThreshold( final boolean showThreshold )
+	{
+		this.showThreshold = showThreshold;
+		repaint();
+	}
+
+	void showMedian( final boolean showMedian )
+	{
+		this.showMedian = showMedian;
+		repaint();
+	}
+
+	void setLeaveLabeling( final boolean showRootLabels, final boolean showTagLabels, final TagSetStructure.TagSet tagSet )
+	{
+		if ( classification == null )
+			return;
+		Map< Cluster, T > clusterNodesToObjects = classification.getClusterNodesToObjects();
+		if ( clusterNodesToObjects == null )
+			return;
+		for ( Map.Entry< Cluster, T > entry : clusterNodesToObjects.entrySet() )
+		{
+			Cluster cluster = entry.getKey();
+			if ( !cluster.isLeaf() )
+				continue;
+			T object = entry.getValue();
+			if ( object instanceof BranchSpotTree )
+			{
+				BranchSpotTree branchSpotTree = ( BranchSpotTree ) object;
+				branchSpotTree.updateLabeling( showRootLabels, showTagLabels, tagSet );
+			}
+		}
+		classification.updateClusterNames();
+		repaint();
 	}
 
 	private ModelMetrics createModelMetrics( final ClusterComponent component )
@@ -379,8 +416,8 @@ public class DendrogramPanel< T > extends JPanel
 					axisHeight = getAxisHeight( g2 );
 			}
 
-			widthDisplay = componentWidth - BORDER_LEFT - BORDER_RIGHT - nameOffset;
-			heightDisplay = componentHeight - BORDER_BOTTOM - BORDER_TOP - axisHeight;
+			widthDisplay = classification == null ? componentWidth : componentWidth - BORDER_LEFT - BORDER_RIGHT - nameOffset;
+			heightDisplay = classification == null ? componentHeight : componentHeight - BORDER_BOTTOM - BORDER_TOP - axisHeight;
 
 			xDisplayOrigin = BORDER_LEFT;
 			yDisplayOrigin = BORDER_TOP + axisHeight;

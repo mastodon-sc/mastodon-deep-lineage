@@ -28,12 +28,16 @@
  */
 package org.mastodon.mamut.treesimilarity.tree;
 
+import org.mastodon.mamut.clustering.util.ClusterUtils;
+import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.model.tag.TagSetStructure;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 /**
  * A tree data structure representing a branch spot and its children.
@@ -46,11 +50,11 @@ public class BranchSpotTree implements Tree< Double >
 
 	private final Collection< Tree< Double > > children;
 
-	protected BranchSpotTree( final BranchSpotTree branchSpotTree )
+	private final LabelSupplier labelSupplier;
+
+	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
 	{
-		this.branchSpot = branchSpotTree.branchSpot;
-		this.endTimepoint = branchSpotTree.endTimepoint;
-		this.children = branchSpotTree.children;
+		this( branchSpot, endTimepoint, null );
 	}
 
 	/**
@@ -59,7 +63,7 @@ public class BranchSpotTree implements Tree< Double >
 	 * @param branchSpot the branchSpot of the tree.
 	 * @param endTimepoint the end time point of the tree, i.e. the time point at which the tree is cut off.
 	 */
-	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
+	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint, final Model model )
 	{
 		if ( branchSpot == null )
 			throw new IllegalArgumentException( "The given branchSpot is null." );
@@ -69,13 +73,14 @@ public class BranchSpotTree implements Tree< Double >
 		this.branchSpot = branchSpot;
 		this.endTimepoint = endTimepoint;
 		this.children = new ArrayList<>();
+		this.labelSupplier = new LabelSupplier( model );
 		for ( BranchLink branchLink : branchSpot.outgoingEdges() )
 		{
 			BranchSpot child = branchLink.getTarget();
 			if ( branchSpot.equals( child ) )
 				continue;
 			if ( child.getFirstTimePoint() <= this.endTimepoint )
-				this.children.add( new BranchSpotTree( child, this.endTimepoint ) );
+				this.children.add( new BranchSpotTree( child, this.endTimepoint, model ) );
 		}
 	}
 
@@ -96,9 +101,58 @@ public class BranchSpotTree implements Tree< Double >
 		return branchSpot;
 	}
 
+	public void updateLabeling( final boolean includeName, final boolean includeTag, final TagSetStructure.TagSet tagSet )
+	{
+		labelSupplier.setParams( includeName, includeTag, tagSet );
+	}
+
 	@Override
 	public String toString()
 	{
-		return branchSpot.getFirstLabel();
+		return labelSupplier.get();
+	}
+
+	public class LabelSupplier implements Supplier< String >
+	{
+		private boolean includeName = true;
+
+		private boolean includeTag = true;
+
+		private TagSetStructure.TagSet tagSet;
+
+		private final Model model;
+
+		public LabelSupplier( final Model model )
+		{
+			this.model = model;
+		}
+
+		public void setParams( final boolean includeName, final boolean includeTag, final TagSetStructure.TagSet tagSet )
+		{
+			this.includeName = includeName;
+			this.includeTag = includeTag;
+			this.tagSet = tagSet;
+		}
+
+		@Override
+		public String get()
+		{
+			String tagLabel = ClusterUtils.getTagLabel( model, branchSpot, tagSet );
+			if ( tagLabel == null )
+				tagLabel = "";
+			if ( includeName && includeTag )
+			{
+				if ( tagLabel.isEmpty() )
+					return branchSpot.getFirstLabel();
+				else
+					return branchSpot.getFirstLabel() + " " + tagLabel;
+			}
+			else if ( includeName )
+				return branchSpot.getFirstLabel();
+			else if ( includeTag )
+				return tagLabel;
+			else
+				return "";
+		}
 	}
 }

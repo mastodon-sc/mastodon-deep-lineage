@@ -55,6 +55,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ClusterUtilsTest
@@ -496,5 +497,8 @@ class ClusterUtilsTest
 		TagSetStructure.Tag tag = tagSet.getTags().get( 0 );
 		TagSetUtils.tagBranch( exampleGraph2.getModel(), tagSet, tag, exampleGraph2.spot5 );
 		assertEquals( tag.label(), ClusterUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, tagSet ) );
+		assertNull( ClusterUtils.getTagLabel( null, exampleGraph2.branchSpotD, tagSet ) );
+		assertNull( ClusterUtils.getTagLabel( exampleGraph2.getModel(), null, tagSet ) );
+		assertNull( ClusterUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, null ) );
 	}
 }

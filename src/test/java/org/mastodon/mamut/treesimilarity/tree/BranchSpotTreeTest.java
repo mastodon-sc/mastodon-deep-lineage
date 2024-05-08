@@ -28,9 +28,13 @@
  */
 package org.mastodon.mamut.treesimilarity.tree;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
+import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.util.TagSetUtils;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -101,5 +105,44 @@ class BranchSpotTreeTest
 		// NB: 2 is not a timepoint of branchSpotB, it only starts at 4.
 		assertThrows( IllegalArgumentException.class, () -> new BranchSpotTree( example.branchSpotB, 2 ) );
 		assertThrows( IllegalArgumentException.class, () -> new BranchSpotTree( null, 0 ) );
+	}
+
+	@Test
+	void testUpdateLabeling()
+	{
+		ExampleGraph2 example = new ExampleGraph2();
+		BranchSpotTree tree = new BranchSpotTree( example.branchSpotB, 20, example.getModel() );
+		final String tagSetName = "tagSet";
+		final String tagName1 = "tag1";
+		final String tagName2 = "tag2";
+		TagSetUtils.addNewTagSetToModel( example.getModel(),
+				tagSetName, Arrays.asList( Pair.of( tagName1, 0x01020304 ), Pair.of( tagName2, 0x05060708 ) ) );
+		TagSetStructure.TagSet tagSet = TagSetUtils.findTagSet( example.getModel(), tagSetName );
+		TagSetStructure.Tag tag1 = TagSetUtils.findTag( tagSet, tagName1 );
+		TagSetUtils.tagBranch( example.getModel(), tagSet, tag1, example.spot3 );
+
+		tree.updateLabeling( false, false, null );
+		assertEquals( "", tree.toString() );
+
+		tree.updateLabeling( false, false, tagSet );
+		assertEquals( "", tree.toString() );
+
+		tree.updateLabeling( true, false, null );
+		assertEquals( example.spot3.getLabel(), tree.toString() );
+
+		tree.updateLabeling( true, false, tagSet );
+		assertEquals( example.spot3.getLabel(), tree.toString() );
+
+		tree.updateLabeling( false, true, null );
+		assertEquals( "", tree.toString() );
+
+		tree.updateLabeling( false, true, tagSet );
+		assertEquals( tagName1, tree.toString() );
+
+		tree.updateLabeling( true, true, null );
+		assertEquals( example.spot3.getLabel(), tree.toString() );
+
+		tree.updateLabeling( true, true, tagSet );
+		assertEquals( example.spot3.getLabel() + " " + tagName1, tree.toString() );
 	}
 }

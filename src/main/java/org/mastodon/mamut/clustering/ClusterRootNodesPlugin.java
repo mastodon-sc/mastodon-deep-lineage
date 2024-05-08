@@ -35,6 +35,7 @@ import org.mastodon.mamut.plugin.MamutPlugin;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.prefs.PrefService;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
@@ -88,7 +89,8 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 	private void clusterRootNodes()
 	{
 		ClusterRootNodesController controller =
-				new ClusterRootNodesController( projectModel.getModel(), projectModel.getBranchGraphSync() );
+				new ClusterRootNodesController( projectModel.getModel(), projectModel.getBranchGraphSync(),
+						commandService.getContext().getService( PrefService.class ) );
 		commandService.run( ClusterRootNodesView.class, true, "controller", controller );
 	}
 }

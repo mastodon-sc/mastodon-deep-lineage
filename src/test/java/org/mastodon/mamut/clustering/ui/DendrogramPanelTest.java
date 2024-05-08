@@ -139,6 +139,9 @@ class DendrogramPanelTest
 		Graphics graphics = image.getGraphics();
 		Color defaultColor = Color.WHITE;
 		graphics.setColor( defaultColor );
+		dendrogramPanel.showMedian( true );
+		dendrogramPanel.showThreshold( true );
+		dendrogramPanel.setLeaveLabeling( true, true, null );
 		dendrogramPanel.paint( graphics );
 		assertEquals( DendrogramPanel.CLUSTER_LINE_COLOR, graphics.getColor() );
 	}

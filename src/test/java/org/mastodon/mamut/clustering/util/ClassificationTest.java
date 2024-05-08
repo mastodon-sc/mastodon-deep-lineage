@@ -28,8 +28,11 @@
  */
 package org.mastodon.mamut.clustering.util;
 
+import com.apporiented.algorithm.clustering.Cluster;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.clustering.ClusterData;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -41,5 +44,15 @@ class ClassificationTest
 		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.example1.getKey(),
 				ClusterData.example1.getValue(), new AverageLinkageUPGMAStrategy(), 3 );
 		assertEquals( 51, classification.getMedian(), 0d );
+	}
+
+	@Test
+	void testUpdateClusterNames()
+	{
+		Classification< String > classification = ClusterUtils.getClassificationByClassCount( ClusterData.example1.getKey(),
+				ClusterData.example1.getValue(), new AverageLinkageUPGMAStrategy(), 3 );
+		classification.updateClusterNames();
+		Map< Cluster, String > clusterNodesToObjects = classification.getClusterNodesToObjects();
+		assertEquals( "A", clusterNodesToObjects.entrySet().iterator().next().getValue() );
 	}
 }
