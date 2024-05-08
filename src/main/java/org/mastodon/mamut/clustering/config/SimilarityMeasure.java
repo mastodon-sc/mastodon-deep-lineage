@@ -39,19 +39,13 @@ import java.util.function.BinaryOperator;
 public enum SimilarityMeasure implements HasName
 {
 	NORMALIZED_DIFFERENCE( "Normalized Zhang Tree Distance", ZhangUnorderedTreeEditDistance::normalizedDistance,
-			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION
-	),
+			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION ),
 	AVERAGE_DIFFERENCE_PER_CELL_LIFE_CYCLE( "Per Branch Zhang Tree Distance", ZhangUnorderedTreeEditDistance::averageDistance,
-			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION
-	),
+			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION ),
 	ABSOLUTE_DIFFERENCE( "Zhang Tree Distance", ZhangUnorderedTreeEditDistance::distance,
-			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION
-	),
-	GUIGNARD_DIFFERENCE( "Guignard et al. 2020 Tree Distance",
-			( tree1, tree2, costFunction1 ) -> ZhangUnorderedTreeEditDistance.guignardAverageDistance( tree1, tree2, costFunction1,
-					ZhangUnorderedTreeEditDistance.ATTRIBUTE_SUMMARIZER ),
-			ZhangUnorderedTreeEditDistance.GUIGNARD_COST_FUNCTION
-	);
+			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION ),
+	GUIGNARD_DIFFERENCE( "Guignard et al. 2020 Tree Distance", ZhangUnorderedTreeEditDistance::normalizedDistance,
+			ZhangUnorderedTreeEditDistance.GUIGNARD_COST_FUNCTION );
 
 	private final String name;
 

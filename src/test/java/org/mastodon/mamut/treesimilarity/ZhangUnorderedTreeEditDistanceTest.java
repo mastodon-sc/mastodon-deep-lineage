@@ -330,13 +330,12 @@ class ZhangUnorderedTreeEditDistanceTest
 		Tree< Double > treeGuignardT1 = SimpleTreeExamples.treeGuignardT1();
 		Tree< Double > treeGuignardT2 = SimpleTreeExamples.treeGuignardT2();
 		double numerator = 4d; // NB: the publication does not illustrate the optimal set of edit operations
-		double denominator = 9 * 1d + 1 * 2d + 1 * 9d + 7 * 10d; // NB: in the publication is a confirmed mistake, it needs to be 7 * 10d instead of 6 * 10d
+		// double denominator = 9 * 1d + 1 * 2d + 1 * 9d + 7 * 10d; // NB: in the publication is a confirmed mistake, it needs to be 7 * 10d instead of 6 * 10d
+		// A discussion with the authors revealed that the normalization should rather be done by the sum of nodes in both trees than by the sum of attributes
+		int denominator = 18;
 		assertEquals( 22d, ZhangUnorderedTreeEditDistance.distance( treeGuignardT1, treeGuignardT2, defaultCosts ), 0d );
-		assertEquals( numerator / denominator,
-				ZhangUnorderedTreeEditDistance.guignardAverageDistance( treeGuignardT1, treeGuignardT2,
-						ZhangUnorderedTreeEditDistance.GUIGNARD_COST_FUNCTION,
-						ZhangUnorderedTreeEditDistance.ATTRIBUTE_SUMMARIZER ),
-				0.001d );
+		assertEquals( numerator / denominator, ZhangUnorderedTreeEditDistance.normalizedDistance( treeGuignardT1, treeGuignardT2,
+				ZhangUnorderedTreeEditDistance.GUIGNARD_COST_FUNCTION ), 0.001d );
 
 	}
 
@@ -345,26 +344,26 @@ class ZhangUnorderedTreeEditDistanceTest
 	{
 		SimpleTree< Double > tree2a2 = SimpleTreeExamples.tree2a2();
 		SimpleTree< Double > tree2d11 = SimpleTreeExamples.tree2d11();
-		double distance =
-				ZhangUnorderedTreeEditDistance.guignardAverageDistance( tree2a2, tree2d11,
-						ZhangUnorderedTreeEditDistance.GUIGNARD_COST_FUNCTION, ZhangUnorderedTreeEditDistance.ATTRIBUTE_SUMMARIZER );
-		assertEquals( 0.0158d, distance, 0.0001d );
+		double distance = ZhangUnorderedTreeEditDistance.normalizedDistance( tree2a2, tree2d11,
+				ZhangUnorderedTreeEditDistance.GUIGNARD_COST_FUNCTION );
+		assertEquals( 0.6586d, distance, 0.0001d );
 	}
 
 	/**
 	 * There is an equivalent test in the GuignardLab/LineageTree repository:
 	 * @see <a href="https://github.com/GuignardLab/LineageTree/blob/master/test/test_uted.py#L68">https://github.com/GuignardLab/LineageTree/blob/master/test/test_uted.py#L68</a>
+	 * @see <a href="https://www.science.org/doi/10.1126/science.aar5663">Guignard et al. (2020) Fig. 3B</a>
 	 */
 	@Test
 	void testGuignardExample2()
 	{
 		Tree< Double > treePm01a80008 = SimpleTreeExamples.treePm01a80008();
 		Tree< Double > treePm01a80007 = SimpleTreeExamples.treePm01a80007();
-		assertEquals( 0.0033d, // NB: the publication says this should be 0.04d (cf. Fig 3B)
-				ZhangUnorderedTreeEditDistance.guignardAverageDistance( treePm01a80008, treePm01a80007,
-						ZhangUnorderedTreeEditDistance.GUIGNARD_COST_FUNCTION,
-						ZhangUnorderedTreeEditDistance.ATTRIBUTE_SUMMARIZER ),
-				0.0001d );
+		// NB: the publication says this should be 0.04d (cf. Fig 3B)
+		// However, with the normalization described in the publication, the result would be 0.0033
+		// A discussion with the authors revealed that the normalization should rather be done by the sum of nodes in both trees than by the sum of attributes
+		assertEquals( 3.9974005474699665 / 32, ZhangUnorderedTreeEditDistance.normalizedDistance( treePm01a80008, treePm01a80007,
+				ZhangUnorderedTreeEditDistance.GUIGNARD_COST_FUNCTION ), 0.0001d );
 	}
 
 	@Test
