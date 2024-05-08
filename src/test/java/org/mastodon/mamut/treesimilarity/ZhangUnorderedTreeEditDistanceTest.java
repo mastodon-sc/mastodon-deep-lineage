@@ -29,7 +29,6 @@
 package org.mastodon.mamut.treesimilarity;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.DenseSimpleTreeExamples;
@@ -304,7 +303,6 @@ class ZhangUnorderedTreeEditDistanceTest
 	}
 
 	@Test
-	@Disabled( "This test is ignored because it takes too long to run." )
 	void testDenseTreeExample()
 	{
 		Tree< Double > tree2aba = DenseSimpleTreeExamples.tree2aba();
