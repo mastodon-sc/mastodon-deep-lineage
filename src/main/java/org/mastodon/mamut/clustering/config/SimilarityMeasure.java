@@ -43,8 +43,7 @@ public enum SimilarityMeasure implements HasName
 			TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
 	),
 	NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION( "Normalized Zhang Tree Distance (with additional local normalization)",
-			TreeDistances::normalizedDistance,
-			TreeDistances.LOCAL_NORMALIZED_COST_FUNCTION
+			TreeDistances::normalizedDistance, TreeDistances.LOCAL_NORMALIZED_COST_FUNCTION
 	),
 	PER_BRANCH_ZHANG_DISTANCE( "Per Branch Zhang Tree Distance", TreeDistances::averageDistance,
 			TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
@@ -53,8 +52,7 @@ public enum SimilarityMeasure implements HasName
 			TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
 	),
 	ZHANG_DISTANCE_WITH_LOCAL_NORMALIZATION( "Zhang Tree Distance (with additional local normalization)",
-			ZhangUnorderedTreeEditDistance::distance,
-			TreeDistances.LOCAL_NORMALIZED_COST_FUNCTION
+			ZhangUnorderedTreeEditDistance::distance, TreeDistances.LOCAL_NORMALIZED_COST_FUNCTION
 	);
 
 	private final String name;
