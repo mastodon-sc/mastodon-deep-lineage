@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.treesimilarity.tree;
 
+import org.mastodon.mamut.treesimilarity.TreeDistances;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 
 public class DenseSimpleTreeExamples
@@ -4107,7 +4108,7 @@ public class DenseSimpleTreeExamples
 		Tree< Double > tree1bab = DenseSimpleTreeExamples.tree1bab();
 		long start = System.currentTimeMillis();
 		System.out.println(
-				ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION ) );
+				ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION ) );
 		System.out.println( System.currentTimeMillis() - start );
 	}
 }

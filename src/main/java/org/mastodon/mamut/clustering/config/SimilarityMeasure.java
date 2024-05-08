@@ -29,6 +29,7 @@
 package org.mastodon.mamut.clustering.config;
 
 import org.apache.commons.lang3.function.TriFunction;
+import org.mastodon.mamut.treesimilarity.TreeDistances;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
@@ -38,14 +39,19 @@ import java.util.function.BinaryOperator;
 
 public enum SimilarityMeasure implements HasName
 {
-	NORMALIZED_DIFFERENCE( "Normalized Zhang Tree Distance", ZhangUnorderedTreeEditDistance::normalizedDistance,
-			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION ),
-	AVERAGE_DIFFERENCE_PER_CELL_LIFE_CYCLE( "Per Branch Zhang Tree Distance", ZhangUnorderedTreeEditDistance::averageDistance,
-			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION ),
-	ABSOLUTE_DIFFERENCE( "Zhang Tree Distance", ZhangUnorderedTreeEditDistance::distance,
-			ZhangUnorderedTreeEditDistance.TREE_X_COST_FUNCTION ),
-	GUIGNARD_DIFFERENCE( "Guignard et al. 2020 Tree Distance", ZhangUnorderedTreeEditDistance::normalizedDistance,
-			ZhangUnorderedTreeEditDistance.GUIGNARD_COST_FUNCTION );
+	NORMALIZED_ZHANG_DIFFERENCE( "Normalized Zhang Tree Distance", TreeDistances::normalizedDistance,
+			TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
+	),
+	NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION( "Normalized Zhang Tree Distance (with additional local normalization)",
+			TreeDistances::normalizedDistance,
+			TreeDistances.LOCAL_NORMALIZED_COST_FUNCTION
+	),
+	PER_BRANCH_ZHANG_DISTANCE( "Per Branch Zhang Tree Distance", TreeDistances::averageDistance,
+			TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
+	),
+	ZHANG_DISTANCE( "Zhang Tree Distance", ZhangUnorderedTreeEditDistance::distance,
+			TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
+	);
 
 	private final String name;
 

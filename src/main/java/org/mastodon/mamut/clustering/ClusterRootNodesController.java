@@ -74,7 +74,7 @@ public class ClusterRootNodesController
 
 	private final BranchGraphSynchronizer synchronizer;
 
-	private SimilarityMeasure similarityMeasure = SimilarityMeasure.NORMALIZED_DIFFERENCE;
+	private SimilarityMeasure similarityMeasure = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE;
 
 	private ClusteringMethod clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE;
 

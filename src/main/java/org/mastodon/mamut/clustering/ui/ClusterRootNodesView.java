@@ -98,7 +98,7 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 
 	@SuppressWarnings("all")
 	@Parameter( label = "Similarity measure", initializer = "initSimilarityMeasureChoices", callback = "update" )
-	public String similarityMeasure = SimilarityMeasure.NORMALIZED_DIFFERENCE.getName();
+	public String similarityMeasure = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.getName();
 
 	@SuppressWarnings("all")
 	@Parameter( label = "Linkage strategy for hierarchical clustering", initializer = "initClusteringMethodChoices", callback = "update" )
