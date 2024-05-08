@@ -271,13 +271,34 @@ public class BranchSpotFeatureUtils
 	 *     <li>A branch spot that spans from timepoint 3 to timepoint 5 has a duration of 3</li>
 	 *     <li>A branch spot contains only a single spot in a single timepoint has a duration of 1</li>
 	 * </ul>
-	 * .
 	 * @param branchSpot the branch spot
 	 * @return the duration of the branch spot
 	 */
 	public static int branchDuration( final BranchSpot branchSpot )
 	{
-		return branchSpot.getTimepoint() - branchSpot.getFirstTimePoint() + 1;
+		return branchDuration( branchSpot, branchSpot.getTimepoint() );
+	}
+
+	/**
+	 * Returns the duration of the given branch spot cropped to the given timepoint.
+	 * <p>
+	 * The duration of a branch spot is the number of timepoints it spans.
+	 * </p>
+	 * <ul>
+	 *     <li>A branch spot that spans from timepoint 3 to timepoint 5 has a duration of 3</li>
+	 *     <li>A branch spot contains only a single spot in a single timepoint has a duration of 1</li>
+	 * </ul>
+	 * @param branchSpot the branch spot
+	 * @param cropTimepoint the timepoint to crop the branch spot
+	 * @return the duration of the branch spot
+	 */
+	public static int branchDuration( final BranchSpot branchSpot, final int cropTimepoint )
+	{
+		if ( cropTimepoint < branchSpot.getFirstTimePoint() )
+			throw new IllegalArgumentException( "The given endTimepoint " + cropTimepoint
+					+ " is smaller than the first timepoint of the branch spot " + branchSpot.getFirstTimePoint() + "." );
+		return cropTimepoint > branchSpot.getTimepoint() ? branchSpot.getTimepoint() - branchSpot.getFirstTimePoint() + 1
+				: cropTimepoint - branchSpot.getFirstTimePoint() + 1;
 	}
 
 

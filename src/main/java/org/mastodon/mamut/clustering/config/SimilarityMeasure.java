@@ -29,6 +29,7 @@
 package org.mastodon.mamut.clustering.config;
 
 import org.apache.commons.lang3.function.TriFunction;
+import org.mastodon.mamut.treesimilarity.TreeDistances;
 import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
@@ -36,21 +37,39 @@ import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 
-public enum SimilarityMeasure
+public enum SimilarityMeasure implements HasName
 {
-	NORMALIZED_DIFFERENCE( "Normalized Zhang Tree Distance", ZhangUnorderedTreeEditDistance::normalizedDistance ),
-	AVERAGE_DIFFERENCE_PER_CELL_LIFE_CYCLE( "Per Branch Spot Zhang Tree Distance", ZhangUnorderedTreeEditDistance::averageDistance ),
-	ABSOLUTE_DIFFERENCE( "Zhang Tree Distance", ZhangUnorderedTreeEditDistance::distance );
+	NORMALIZED_ZHANG_DIFFERENCE( "Normalized Zhang Tree Distance", TreeDistances::normalizedDistance,
+			TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
+	),
+	NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION( "Normalized Zhang Tree Distance (with additional local normalization)",
+			TreeDistances::normalizedDistance,
+			TreeDistances.LOCAL_NORMALIZED_COST_FUNCTION
+	),
+	PER_BRANCH_ZHANG_DISTANCE( "Per Branch Zhang Tree Distance", TreeDistances::averageDistance,
+			TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
+	),
+	ZHANG_DISTANCE( "Zhang Tree Distance", ZhangUnorderedTreeEditDistance::distance,
+			TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
+	),
+	ZHANG_DISTANCE_WITH_LOCAL_NORMALIZATION( "Zhang Tree Distance (with additional local normalization)",
+			ZhangUnorderedTreeEditDistance::distance,
+			TreeDistances.LOCAL_NORMALIZED_COST_FUNCTION
+	);
 
 	private final String name;
 
 	private final TriFunction< Tree< Double >, Tree< Double >, BiFunction< Double, Double, Double >, Double > distanceFunction;
 
-	SimilarityMeasure( String name,
-			TriFunction< Tree< Double >, Tree< Double >, BiFunction< Double, Double, Double >, Double > distanceFunction )
+	private final BinaryOperator< Double > costFunction;
+
+	SimilarityMeasure( final String name,
+			final TriFunction< Tree< Double >, Tree< Double >, BiFunction< Double, Double, Double >, Double > distanceFunction,
+			final BinaryOperator< Double > costFunction )
 	{
 		this.name = name;
 		this.distanceFunction = distanceFunction;
+		this.costFunction = costFunction;
 	}
 
 	public static SimilarityMeasure getByName(final String name)
@@ -62,7 +81,7 @@ public enum SimilarityMeasure
 		throw new NoSuchElementException();
 	}
 
-	public double compute( Tree< Double > tree1, Tree< Double > tree2, BinaryOperator< Double > costFunction )
+	public double compute( final Tree< Double > tree1, final Tree< Double > tree2 )
 	{
 		return distanceFunction.apply( tree1, tree2, costFunction );
 	}

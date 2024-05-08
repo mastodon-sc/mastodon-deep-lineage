@@ -41,13 +41,13 @@ class SimilarityMeasureTest
 	@Test
 	void testGetName()
 	{
-		assertEquals( "Normalized Zhang Tree Distance", SimilarityMeasure.NORMALIZED_DIFFERENCE.getName() );
+		assertEquals( "Normalized Zhang Tree Distance", SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.getName() );
 	}
 
 	@Test
 	void testGetByName()
 	{
-		assertEquals( SimilarityMeasure.NORMALIZED_DIFFERENCE, SimilarityMeasure.getByName( "Normalized Zhang Tree Distance" ) );
+		assertEquals( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, SimilarityMeasure.getByName( "Normalized Zhang Tree Distance" ) );
 		assertThrows( NoSuchElementException.class, () -> SimilarityMeasure.getByName( "foo" ) );
 	}
 

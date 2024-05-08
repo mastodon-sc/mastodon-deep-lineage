@@ -406,6 +406,7 @@ public class DendrogramPanel< T > extends JPanel
 	/**
 	 * Counts the number of zeros after the decimal point of the given number before the first non-zero digit.<br>
 	 * For numbers greater or equal to 1, 0 is returned.
+	 * If the number is 0, 0 is returned.
 	 * E.g.
 	 * <ul>
 	 *     <li>5.01 -> 0</li>
@@ -419,6 +420,8 @@ public class DendrogramPanel< T > extends JPanel
 	 */
 	static int countZerosAfterDecimalPoint( final double number )
 	{
+		if ( number == 0 )
+			return 0;
 		return ( int ) Math.max( 0, -Math.floor( Math.log10( Math.abs( number ) ) + 1 ) );
 	}
 

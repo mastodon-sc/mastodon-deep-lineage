@@ -1,0 +1,9 @@
+https://latex.codecogs.com/eqneditor/editor.php
+
+cost_{insert} = 1
+\\
+cost_{delete} = 1
+\\
+d := \text{duration of branch}
+\\
+cost_{change} =    \frac{\left | d_a - d_b \right |}{d_a + d_b}

@@ -31,6 +31,7 @@ package org.mastodon.mamut.clustering.ui;
 import org.mastodon.mamut.clustering.ClusterRootNodesController;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
+import org.mastodon.mamut.clustering.config.HasName;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.clustering.util.ClusterUtils;
 import org.mastodon.model.tag.TagSetModel;
@@ -40,10 +41,15 @@ import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.Button;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Plugin( type = InteractiveCommand.class, visible = false, label = "Classification of Lineage Trees", initializer = "init" )
 public class ClusterRootNodesView extends InteractiveCommand implements TagSetModel.TagSetModelListener
@@ -53,6 +59,7 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 
 	private static final int WIDTH_INPUT = 7;
 
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	@SuppressWarnings("unused")
 	@Parameter
@@ -70,7 +77,7 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 			+ "</html>\n";
 
 	@SuppressWarnings("all")
-	@Parameter(label = "Crop criterion", choices = { "Timepoint", "Number of spots" }, callback = "update")
+	@Parameter( label = "Crop criterion", initializer = "initCropCriterionChoices", callback = "update" )
 	private String cropCriterion = CropCriteria.TIMEPOINT.getName();
 
 	@SuppressWarnings("unused")
@@ -90,17 +97,11 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 	private int numberOfCellDivisions;
 
 	@SuppressWarnings("all")
-	@Parameter(
-			label = "Similarity measure", choices = { "Normalized Zhang Tree Distance", "Per Branch Spot Zhang Tree Distance",
-			"Zhang Tree Distance" }, callback = "update"
-	)
-	private String similarityMeasure = SimilarityMeasure.NORMALIZED_DIFFERENCE.getName();
+	@Parameter( label = "Similarity measure", initializer = "initSimilarityMeasureChoices", callback = "update" )
+	public String similarityMeasure = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.getName();
 
 	@SuppressWarnings("all")
-	@Parameter(
-			label = "Linkage strategy for hierarchical clustering", choices = { "Average linkage", "Single Linkage",
-			"Complete Linkage" }, callback = "update"
-	)
+	@Parameter( label = "Linkage strategy for hierarchical clustering", initializer = "initClusteringMethodChoices", callback = "update" )
 	private String clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE.getName();
 
 	@SuppressWarnings("unused")
@@ -164,18 +165,45 @@ public class ClusterRootNodesView extends InteractiveCommand implements TagSetMo
 		if ( controller.isValidParams() )
 		{
 			String feedback;
+			String color;
 			try
 			{
 				controller.createTagSet();
 				feedback = "Classified lineage trees.<p>";
 				feedback += "Tag set created.";
+				color = "green";
 			}
 			catch ( IllegalArgumentException e )
 			{
 				feedback = e.getMessage();
+				color = "red";
+				logger.error( "Error during lineage classification: {}", e.getMessage() );
 			}
-			computeFeedback = "<html><body width=" + WIDTH_INPUT + "cm><font color=\"green\">" + feedback + "</font></body></html>";
+			computeFeedback = "<html><body width=" + WIDTH_INPUT + "cm><font color=\"" + color + "\">" + feedback + "</font></body></html>";
 		}
+	}
+
+	@SuppressWarnings( "unused" )
+	private void initCropCriterionChoices()
+	{
+		getInfo().getMutableInput( "cropCriterion", String.class ).setChoices( enumNamesAsList( CropCriteria.values() ) );
+	}
+
+	@SuppressWarnings( "unused" )
+	private void initSimilarityMeasureChoices()
+	{
+		getInfo().getMutableInput( "similarityMeasure", String.class ).setChoices( enumNamesAsList( SimilarityMeasure.values() ) );
+	}
+
+	@SuppressWarnings( "unused" )
+	private void initClusteringMethodChoices()
+	{
+		getInfo().getMutableInput( "clusteringMethod", String.class ).setChoices( enumNamesAsList( ClusteringMethod.values() ) );
+	}
+
+	static List< String > enumNamesAsList( final HasName[] values )
+	{
+		return Arrays.stream( values ).map( HasName::getName ).collect( Collectors.toList() );
 	}
 
 	@SuppressWarnings( "unused" )

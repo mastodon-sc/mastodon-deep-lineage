@@ -48,13 +48,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
 /**
  * Implementation of "A Constrained Edit Distance Between Unordered Labeled Trees", Kaizhong Zhang, Algorithmica (1996) 15:205-222<br>
  *
- * The Zhang unordered edit distance allows the following edit operations:
+ * The Zhang unordered edit distance allows the following edit operations. The edit operations are defined in a way
+ * that they satisfy the constraints elaborated in section 3.1 ("Constrained Edit Distance Mappings") of the paper:
  *
  * <pre>
  *
@@ -67,50 +67,60 @@ import java.util.function.Function;
  *     TB TC     TB TC
  *
  *
- * 2a: Remove subtree (opposite of 2b)
+ * 2a: Delete subtree (opposite of 2b)
  *
  *       A         A
  *      / \   -&gt;   |
  *     TB TC       TB
  *
- * 2b: Add new subtree (opposite of 2a)
+ * 2b: Insert subtree (opposite of 2a)
  *
  *       A          A
  *       |    -&gt;   / \
  *       TB       TB TC
  *
  *
- * 3a: Remove subtree but keep one child (opposite of 3b)
+ * 3a: Delete one child of a node and delete the node itself (opposite of 3b)
  *
  *       A          A
  *      / \   -&gt;   / \
  *     B  TC      TD TC
  *    / \
- *   TD TE        (remove B and TE, keep TD)
+ *   TD TE        (delete TE and B, TD becomes child of A)
  *
- * 3b: Convert existing subtree into child of a newly inserted subtree (opposite of 3a)
+ * 3b: Insert a node and insert one child at that node (opposite of 3a)
  *       A             A
  *      / \    -&gt;     / \
  *     TB TC         D  TC
  *                  / \
- *                 TB TE       (insert D and TE, keep TB)
+ *                 TB TE       (insert D and TE, TB becomes child of D)
  *
  *
- * 4a: Remove subtree (and siblings) but keep all children (opposite of 4b)
+ * 4a: Delete node and delete its sibling subtree (opposite of 4b)
  *       A               A
  *      / \             / \
  *     B  TC   -&gt;      TD TE
  *    / \
- *   TD TE            (Subtree B and it's sibling TC are removed, but the children
- *                     of B namely TD and TE are kept)
+ *   TD TE            (Node B and its sibling subtree TC are deleted and the children
+ *                     of B, namely TD and TE, become the children of A)
  *
- * 4b: Convert existing subtrees into children of a newly inserted subtree (opposite of 4a)
+ * 4b: Insert node and insert a sibling subtree (opposite of 4a)
  *       A               A
  *      / \             / \
  *     TB TC   -&gt;      D  TE
  *                    / \
- *                   TB TC       (Subtree D and it's sibling TE are newly inserted,
- *                                TB and TC are kept as children of D)
+ *                   TB TC       (Node D and its sibling TE are inserted,
+ *                                TB and TC become the children of D)
+ * </pre>
+ *
+ * As an example, the following case explicitly does not fulfill the constraints mentioned in the paper:
+ * <pre>
+ * Delete a node without deleting one of its children
+ *         A           A
+ *        / \   -&gt;   / | \
+ *       B  TC      TD TE TC
+ *      / \
+ *     TD TE        (delete B, TD and TE become children of A and TC remains)
  * </pre>
  * @param <T> Attribute type of the tree nodes.
  *
@@ -134,12 +144,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private final List< Tree< T > > subtrees2;
 
 	private final Map< Pair< Tree< T >, Tree< T > >, Double > attributeDistances;
-
-	/**
-	 * Simple default cost function that returns the absolute value of the difference between two costs,
-	 * if both costs exist or the cost value of the other, if one value is {@code null}.
-	 */
-	public static final BinaryOperator< Double > DEFAULT_COST_FUNCTION = ZhangUnorderedTreeEditDistance::defaultCostFunction;
 
 	/**
 	 * Calculates the absolute Zhang edit distance between two labeled unordered trees.
@@ -167,50 +171,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		ZhangUnorderedTreeEditDistance< T > zhang = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction );
 		return zhang.compute( tree1, tree2 );
-	}
-
-	/**
-	 * Calculates the normalized Zhang edit distance between two labeled unordered trees.
-	 * <br>
-	 * The normalized distance is defined as the absolute distance divided by the sum of the distances to empty/null trees.
-	 *
-	 * @param tree1 Tree object representing the first tree.
-	 * @param tree2 Tree object representing the second tree.
-	 * @param costFunction mandatory cost function.
-	 * @param <T> Attribute type of the tree nodes.
-	 *
-	 * @return The normalized Zhang edit distance between tree1 and tree2.
-	 */
-	public static < T > double normalizedDistance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
-			final BiFunction< T, T, Double > costFunction )
-	{
-		double denominator = distance( tree1, null, costFunction ) + distance( null, tree2, costFunction );
-		// NB: avoid division by zero. Two empty trees are considered equal. Two trees with zero distance are considered equal.
-		if ( denominator == 0 )
-			return 0;
-		return distance( tree1, tree2, costFunction ) / denominator;
-	}
-
-	/**
-	 * Calculates the normalized Zhang edit distance between two labeled unordered trees.
-	 * <br>
-	 * The average distance is defined as the absolute distance divided by the sum of the sizes (i.e. number of nodes) of the trees.
-	 *
-	 * @param tree1 Tree object representing the first tree.
-	 * @param tree2 Tree object representing the second tree.
-	 * @param costFunction mandatory cost function.
-	 * @param <T> Attribute type of the tree nodes.
-	 *
-	 * @return The average Zhang edit distance between tree1 and tree2.
-	 */
-	public static < T > double averageDistance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
-			final BiFunction< T, T, Double > costFunction )
-	{
-		double denominator = ( double ) TreeUtils.size( tree1 ) + ( double ) TreeUtils.size( tree2 );
-		// NB: avoid division by zero. Two empty trees are considered equal. Two trees with zero distance are considered equal.
-		if ( denominator == 0 )
-			return 0;
-		return distance( tree1, tree2, costFunction ) / denominator;
 	}
 
 	/**
@@ -262,18 +222,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		treeDistances = new HashMap<>();
 		forestDistances = new HashMap<>();
-	}
-
-	private static Double defaultCostFunction( Double o1, Double o2 )
-	{
-		if ( o2 == null )
-			return o1;
-		else if ( o1 == null )
-			return o2;
-		else
-			// TODO: standardize the cost function?
-			// return Math.abs( o1 - o2) / (o1 + o2);
-			return Math.abs( o1 - o2 );
 	}
 
 	/**

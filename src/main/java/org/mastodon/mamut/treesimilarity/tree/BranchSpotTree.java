@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.treesimilarity.tree;
 
+import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 
@@ -87,8 +88,7 @@ public class BranchSpotTree implements Tree< Double >
 	@Override
 	public Double getAttribute()
 	{
-		int lastTimePoint = Math.min( branchSpot.getTimepoint(), this.endTimepoint );
-		return ( double ) lastTimePoint - branchSpot.getFirstTimePoint();
+		return ( double ) BranchSpotFeatureUtils.branchDuration( branchSpot, endTimepoint );
 	}
 
 	public BranchSpot getBranchSpot()

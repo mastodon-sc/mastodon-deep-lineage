@@ -74,7 +74,7 @@ class ClusterRootNodesControllerTest
 		TagSetUtils.addNewTagSetToModel( model, tagSetName, Collections.emptyList() );
 		ClusterRootNodesController controller = new ClusterRootNodesController( model, synchronizer );
 		controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
-		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
+		controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
 		controller.setVisualisationParams( false, tagSetName );
 		controller.createTagSet();
 
@@ -111,7 +111,7 @@ class ClusterRootNodesControllerTest
 		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
 		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel(), synchronizer );
 		controller.setInputParams( CropCriteria.TIMEPOINT, 1, 0, 1 );
-		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
+		controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
 		controller.setVisualisationParams( false, null );
 		assertEquals( 2, controller.getFeedback().size() );
 		assertFalse( controller.isValidParams() );
@@ -119,7 +119,7 @@ class ClusterRootNodesControllerTest
 
 		controller.setInputParams( CropCriteria.NUMBER_OF_SPOTS, 5, 10, 0 );
 		assertEquals( 3, controller.getFeedback().size() );
-		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 2 );
+		controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 2 );
 		controller.setInputParams( CropCriteria.NUMBER_OF_SPOTS, 0, 3, 0 );
 		assertEquals( 1, controller.getFeedback().size() );
 	}
@@ -131,7 +131,7 @@ class ClusterRootNodesControllerTest
 		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
 		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel(), synchronizer );
 		controller.setInputParams( CropCriteria.TIMEPOINT, 1, 10, 1 );
-		controller.setComputeParams( SimilarityMeasure.NORMALIZED_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
+		controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
 
 		assertEquals(
 				"Crop criterion: Timepoint, Crop start: 1, Crop end: 10, Number of classes: 3, Minimum cell divisions: 1, Similarity measure: Normalized Zhang Tree Distance, Clustering method: Average linkage, Resulting lineage trees: 1",

@@ -77,15 +77,15 @@ public class BranchSpotTreeExamples
 		Spot spot1 = modelGraph.addVertex();
 		spot1.init( 0, new double[ 3 ], 0 );
 		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 20, new double[ 3 ], 0 );
+		spot2.init( 19, new double[ 3 ], 0 );
 		Spot spot3 = modelGraph.addVertex();
 		spot3.init( 20, new double[ 3 ], 0 );
 		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 30, new double[ 3 ], 0 );
+		spot4.init( 29, new double[ 3 ], 0 );
 		Spot spot5 = modelGraph.addVertex();
 		spot5.init( 20, new double[ 3 ], 0 );
 		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 50, new double[ 3 ], 0 );
+		spot6.init( 49, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -123,15 +123,15 @@ public class BranchSpotTreeExamples
 		Spot spot1 = modelGraph.addVertex();
 		spot1.init( 0, new double[ 3 ], 0 );
 		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 30, new double[ 3 ], 0 );
+		spot2.init( 29, new double[ 3 ], 0 );
 		Spot spot3 = modelGraph.addVertex();
 		spot3.init( 30, new double[ 3 ], 0 );
 		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 40, new double[ 3 ], 0 );
+		spot4.init( 39, new double[ 3 ], 0 );
 		Spot spot5 = modelGraph.addVertex();
 		spot5.init( 30, new double[ 3 ], 0 );
 		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 50, new double[ 3 ], 0 );
+		spot6.init( 49, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -167,33 +167,21 @@ public class BranchSpotTreeExamples
 
 		Spot spot1 = modelGraph.addVertex();
 		spot1.init( 0, new double[ 3 ], 0 );
-		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 1, new double[ 3 ], 0 );
 		Spot spot3 = modelGraph.addVertex();
 		spot3.init( 1, new double[ 3 ], 0 );
-		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 2, new double[ 3 ], 0 );
 		Spot spot5 = modelGraph.addVertex();
 		spot5.init( 1, new double[ 3 ], 0 );
-		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 2, new double[ 3 ], 0 );
 		Spot spot7 = modelGraph.addVertex();
 		spot7.init( 2, new double[ 3 ], 0 );
-		Spot spot8 = modelGraph.addVertex();
-		spot8.init( 3, new double[ 3 ], 0 );
 		Spot spot9 = modelGraph.addVertex();
 		spot9.init( 2, new double[ 3 ], 0 );
 		Spot spot10 = modelGraph.addVertex();
-		spot10.init( 102, new double[ 3 ], 0 );
+		spot10.init( 101, new double[ 3 ], 0 );
 
-		modelGraph.addEdge( spot1, spot2 );
-		modelGraph.addEdge( spot2, spot3 );
-		modelGraph.addEdge( spot2, spot5 );
-		modelGraph.addEdge( spot3, spot4 );
-		modelGraph.addEdge( spot5, spot6 );
-		modelGraph.addEdge( spot6, spot7 );
-		modelGraph.addEdge( spot6, spot9 );
-		modelGraph.addEdge( spot7, spot8 );
+		modelGraph.addEdge( spot1, spot3 );
+		modelGraph.addEdge( spot1, spot5 );
+		modelGraph.addEdge( spot5, spot7 );
+		modelGraph.addEdge( spot5, spot9 );
 		modelGraph.addEdge( spot9, spot10 );
 
 		modelBranchGraph.graphRebuilt();
@@ -224,34 +212,22 @@ public class BranchSpotTreeExamples
 
 		Spot spot1 = modelGraph.addVertex();
 		spot1.init( 0, new double[ 3 ], 0 );
-		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 1, new double[ 3 ], 0 );
 		Spot spot3 = modelGraph.addVertex();
 		spot3.init( 1, new double[ 3 ], 0 );
-		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 2, new double[ 3 ], 0 );
 		Spot spot5 = modelGraph.addVertex();
 		spot5.init( 1, new double[ 3 ], 0 );
 		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 101, new double[ 3 ], 0 );
+		spot6.init( 100, new double[ 3 ], 0 );
 		Spot spot7 = modelGraph.addVertex();
-		spot7.init( 102, new double[ 3 ], 0 );
-		Spot spot8 = modelGraph.addVertex();
-		spot8.init( 103, new double[ 3 ], 0 );
+		spot7.init( 101, new double[ 3 ], 0 );
 		Spot spot9 = modelGraph.addVertex();
-		spot9.init( 102, new double[ 3 ], 0 );
-		Spot spot10 = modelGraph.addVertex();
-		spot10.init( 103, new double[ 3 ], 0 );
+		spot9.init( 101, new double[ 3 ], 0 );
 
-		modelGraph.addEdge( spot1, spot2 );
-		modelGraph.addEdge( spot2, spot3 );
-		modelGraph.addEdge( spot2, spot5 );
-		modelGraph.addEdge( spot3, spot4 );
+		modelGraph.addEdge( spot1, spot3 );
+		modelGraph.addEdge( spot1, spot5 );
 		modelGraph.addEdge( spot5, spot6 );
 		modelGraph.addEdge( spot6, spot7 );
 		modelGraph.addEdge( spot6, spot9 );
-		modelGraph.addEdge( spot7, spot8 );
-		modelGraph.addEdge( spot9, spot10 );
 
 		modelBranchGraph.graphRebuilt();
 
@@ -279,15 +255,15 @@ public class BranchSpotTreeExamples
 		Spot spot1 = modelGraph.addVertex();
 		spot1.init( 0, new double[ 3 ], 0 );
 		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 13, new double[ 3 ], 0 );
+		spot2.init( 12, new double[ 3 ], 0 );
 		Spot spot3 = modelGraph.addVertex();
 		spot3.init( 13, new double[ 3 ], 0 );
 		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 216, new double[ 3 ], 0 );
+		spot4.init( 215, new double[ 3 ], 0 );
 		Spot spot5 = modelGraph.addVertex();
 		spot5.init( 13, new double[ 3 ], 0 );
 		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 216, new double[ 3 ], 0 );
+		spot6.init( 215, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -321,15 +297,15 @@ public class BranchSpotTreeExamples
 		Spot spot1 = modelGraph.addVertex();
 		spot1.init( 0, new double[ 3 ], 0 );
 		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 12, new double[ 3 ], 0 );
+		spot2.init( 11, new double[ 3 ], 0 );
 		Spot spot3 = modelGraph.addVertex();
 		spot3.init( 12, new double[ 3 ], 0 );
 		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 239, new double[ 3 ], 0 );
+		spot4.init( 238, new double[ 3 ], 0 );
 		Spot spot5 = modelGraph.addVertex();
 		spot5.init( 12, new double[ 3 ], 0 );
 		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 239, new double[ 3 ], 0 );
+		spot6.init( 238, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -365,23 +341,23 @@ public class BranchSpotTreeExamples
 		Spot spot1 = modelGraph.addVertex();
 		spot1.init( 0, new double[ 3 ], 0 );
 		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 12, new double[ 3 ], 0 );
+		spot2.init( 11, new double[ 3 ], 0 );
 		Spot spot3 = modelGraph.addVertex();
 		spot3.init( 12, new double[ 3 ], 0 );
 		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 239, new double[ 3 ], 0 );
+		spot4.init( 238, new double[ 3 ], 0 );
 		Spot spot5 = modelGraph.addVertex();
 		spot5.init( 12, new double[ 3 ], 0 );
 		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 239, new double[ 3 ], 0 );
+		spot6.init( 238, new double[ 3 ], 0 );
 		Spot spot7 = modelGraph.addVertex();
 		spot7.init( 239, new double[ 3 ], 0 );
 		Spot spot8 = modelGraph.addVertex();
-		spot8.init( 249, new double[ 3 ], 0 );
+		spot8.init( 248, new double[ 3 ], 0 );
 		Spot spot9 = modelGraph.addVertex();
 		spot9.init( 239, new double[ 3 ], 0 );
 		Spot spot10 = modelGraph.addVertex();
-		spot10.init( 249, new double[ 3 ], 0 );
+		spot10.init( 248, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -422,32 +398,30 @@ public class BranchSpotTreeExamples
 		Spot spot1 = modelGraph.addVertex();
 		spot1.init( 0, new double[ 3 ], 0 );
 		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 3, new double[ 3 ], 0 );
+		spot2.init( 2, new double[ 3 ], 0 );
 		Spot spot3 = modelGraph.addVertex();
 		spot3.init( 3, new double[ 3 ], 0 );
 		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 11, new double[ 3 ], 0 );
+		spot4.init( 10, new double[ 3 ], 0 );
 		Spot spot5 = modelGraph.addVertex();
 		spot5.init( 3, new double[ 3 ], 0 );
 		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 11, new double[ 3 ], 0 );
+		spot6.init( 10, new double[ 3 ], 0 );
 		Spot spot7 = modelGraph.addVertex();
 		spot7.init( 11, new double[ 3 ], 0 );
 		Spot spot8 = modelGraph.addVertex();
-		spot8.init( 15, new double[ 3 ], 0 );
+		spot8.init( 14, new double[ 3 ], 0 );
 		Spot spot9 = modelGraph.addVertex();
 		spot9.init( 11, new double[ 3 ], 0 );
 		Spot spot10 = modelGraph.addVertex();
-		spot10.init( 15, new double[ 3 ], 0 );
+		spot10.init( 14, new double[ 3 ], 0 );
 
 		Spot spot11 = modelGraph.addVertex();
 		spot11.init( 11, new double[ 3 ], 0 );
-		Spot spot12 = modelGraph.addVertex();
-		spot12.init( 12, new double[ 3 ], 0 );
 		Spot spot13 = modelGraph.addVertex();
 		spot13.init( 11, new double[ 3 ], 0 );
 		Spot spot14 = modelGraph.addVertex();
-		spot14.init( 13, new double[ 3 ], 0 );
+		spot14.init( 12, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -462,7 +436,6 @@ public class BranchSpotTreeExamples
 
 		modelGraph.addEdge( spot4, spot11 );
 		modelGraph.addEdge( spot4, spot13 );
-		modelGraph.addEdge( spot11, spot12 );
 		modelGraph.addEdge( spot13, spot14 );
 
 		modelBranchGraph.graphRebuilt();
@@ -494,32 +467,30 @@ public class BranchSpotTreeExamples
 		Spot spot1 = modelGraph.addVertex();
 		spot1.init( 0, new double[ 3 ], 0 );
 		Spot spot2 = modelGraph.addVertex();
-		spot2.init( 3, new double[ 3 ], 0 );
+		spot2.init( 2, new double[ 3 ], 0 );
 		Spot spot3 = modelGraph.addVertex();
 		spot3.init( 3, new double[ 3 ], 0 );
 		Spot spot4 = modelGraph.addVertex();
-		spot4.init( 11, new double[ 3 ], 0 );
+		spot4.init( 10, new double[ 3 ], 0 );
 		Spot spot5 = modelGraph.addVertex();
 		spot5.init( 3, new double[ 3 ], 0 );
 		Spot spot6 = modelGraph.addVertex();
-		spot6.init( 11, new double[ 3 ], 0 );
+		spot6.init( 10, new double[ 3 ], 0 );
 		Spot spot7 = modelGraph.addVertex();
 		spot7.init( 11, new double[ 3 ], 0 );
 		Spot spot8 = modelGraph.addVertex();
-		spot8.init( 15, new double[ 3 ], 0 );
+		spot8.init( 14, new double[ 3 ], 0 );
 		Spot spot9 = modelGraph.addVertex();
 		spot9.init( 11, new double[ 3 ], 0 );
 		Spot spot10 = modelGraph.addVertex();
-		spot10.init( 16, new double[ 3 ], 0 );
+		spot10.init( 15, new double[ 3 ], 0 );
 
 		Spot spot11 = modelGraph.addVertex();
 		spot11.init( 11, new double[ 3 ], 0 );
-		Spot spot12 = modelGraph.addVertex();
-		spot12.init( 12, new double[ 3 ], 0 );
 		Spot spot13 = modelGraph.addVertex();
 		spot13.init( 11, new double[ 3 ], 0 );
 		Spot spot14 = modelGraph.addVertex();
-		spot14.init( 13, new double[ 3 ], 0 );
+		spot14.init( 12, new double[ 3 ], 0 );
 
 		modelGraph.addEdge( spot1, spot2 );
 		modelGraph.addEdge( spot2, spot3 );
@@ -534,7 +505,6 @@ public class BranchSpotTreeExamples
 
 		modelGraph.addEdge( spot4, spot11 );
 		modelGraph.addEdge( spot4, spot13 );
-		modelGraph.addEdge( spot11, spot12 );
 		modelGraph.addEdge( spot13, spot14 );
 
 		modelBranchGraph.graphRebuilt();

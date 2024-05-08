@@ -40,7 +40,6 @@ import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.model.tag.TagSetStructure;
@@ -57,6 +56,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -80,7 +80,7 @@ public class ClusterUtils
 	 * @param similarityMeasure the similarity measure to be used
 	 * @return a symmetric quadratic distance matrix
 	 */
-	public static double[][] getDistanceMatrix( List< Tree< Double > > trees, SimilarityMeasure similarityMeasure )
+	public static double[][] getDistanceMatrix( final List< Tree< Double > > trees, final SimilarityMeasure similarityMeasure )
 	{
 		int size = trees.size();
 		double[][] distances = new double[ size ][ size ];
@@ -104,8 +104,7 @@ public class ClusterUtils
 		Parallelization.getTaskExecutor().forEach( pairs, pair -> {
 			int i = pair.getLeft();
 			int j = pair.getRight();
-			double distance = similarityMeasure.compute( trees.get( i ), trees.get( j ),
-					ZhangUnorderedTreeEditDistance.DEFAULT_COST_FUNCTION );
+			double distance = similarityMeasure.compute( trees.get( i ), trees.get( j ) );
 			distances[ i ][ j ] = distance;
 			distances[ j ][ i ] = distance; // symmetric
 			int finishedTasks = counter.incrementAndGet();
@@ -116,6 +115,50 @@ public class ClusterUtils
 		logger.debug( "Computed all distances in {} s.", stopWatch.getTime() / 1000d );
 
 		return distances;
+	}
+
+	/**
+	 * Generates a formatted String object that represents the upper right triangle of the given two-dimensional array (similarity matrix).
+	 * @param array the two-dimensional array
+	 * @param columnWidth the width of the columns in the output
+	 * @param digits the number of digits after the decimal point to be printed for values &#60; 1
+	 */
+	public static String dumpSimilarityMatrix( double[][] array, int columnWidth, int digits )
+	{
+		if ( array == null )
+			return "matrix is null.";
+		if ( array.length == 0 || array[ 0 ].length == 0 )
+			return "matrix is empty.";
+		StringBuilder sb = new StringBuilder();
+		int rows = array.length;
+		int cols = array[ 0 ].length;
+		sb.append( "Similarity matrix (" ).append( rows ).append( "x" ).append( cols ).append( "):" ).append( '\n' );
+
+		String templateEmpty = "%" + columnWidth + "s";
+		for ( int i = 0; i < array.length; i++ )
+		{
+			for ( int j = 0; j < array[ i ].length; j++ )
+			{
+				if ( j >= i )
+				{
+					double value = array[ i ][ j ];
+					int printDigits = digits;
+					if ( value == 0 )
+						printDigits = 0;
+					if ( value > 1 && value < 10 )
+						printDigits = 1;
+					if ( value >= 10 )
+						printDigits = 0;
+					String templateValues = "%" + columnWidth + "." + printDigits + "f";
+					sb.append( String.format( Locale.US, templateValues, array[ i ][ j ] ) );
+				}
+				else
+					sb.append( String.format( templateEmpty, "" ) );
+			}
+			if ( i < array.length - 1 )
+				sb.append( '\n' );
+		}
+		return sb.toString();
 	}
 
 	/**

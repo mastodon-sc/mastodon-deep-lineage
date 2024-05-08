@@ -567,6 +567,161 @@ public class SimpleTreeExamples
 		return node1;
 	}
 
+	public static SimpleTree< Double > tree2a2()
+	{
+		SimpleTree< Double > node0 = new SimpleTree<>( 44.0 );
+		SimpleTree< Double > node00 = addNode( 60.0, node0 );
+		SimpleTree< Double > node000 = addNode( 68.0, node00 );
+		addNode( 0.0, node000 );
+		addNode( 0.0, node000 );
+		addNode( 69.0, node00 );
+		addNode( 130.0, node0 );
+		return node0;
+	}
+
+	public static SimpleTree< Double > tree2d11()
+	{
+		SimpleTree< Double > node0 = new SimpleTree<>( 6.0 );
+		SimpleTree< Double > node00 = addNode( 117.0, node0 );
+		addNode( 50.0, node00 );
+		addNode( 50.0, node00 );
+		SimpleTree< Double > node01 = addNode( 23.0, node0 );
+		SimpleTree< Double > node010 = addNode( 25.0, node01 );
+		SimpleTree< Double > node0100 = addNode( 24.0, node010 );
+		SimpleTree< Double > node01000 = addNode( 27.0, node0100 );
+		SimpleTree< Double > node010000 = addNode( 26.0, node01000 );
+		SimpleTree< Double > node0100000 = addNode( 30.0, node010000 );
+		addNode( 7.0, node0100000 );
+		addNode( 7.0, node0100000 );
+		SimpleTree< Double > node0100001 = addNode( 37.0, node010000 );
+		addNode( 0.0, node0100001 );
+		addNode( 0.0, node0100001 );
+		addNode( 65.0, node01000 );
+		SimpleTree< Double > node01001 = addNode( 63.0, node0100 );
+		addNode( 29.0, node01001 );
+		addNode( 29.0, node01001 );
+		addNode( 118.0, node010 );
+		SimpleTree< Double > node011 = addNode( 26.0, node01 );
+		addNode( 117.0, node011 );
+		SimpleTree< Double > node0111 = addNode( 25.0, node011 );
+		SimpleTree< Double > node01110 = addNode( 61.0, node0111 );
+		addNode( 29.0, node01110 );
+		addNode( 29.0, node01110 );
+		SimpleTree< Double > node01111 = addNode( 26.0, node0111 );
+		addNode( 64.0, node01111 );
+		SimpleTree< Double > node011111 = addNode( 26.0, node01111 );
+		addNode( 37.0, node011111 );
+		addNode( 37.0, node011111 );
+		return node0;
+	}
+
+	/**
+	 * a8.0008* of Pm01
+	 *
+	 * @see <a href="https://figshare.com/projects/Phallusiamammillata_embryonic_development/64301">Phallusia mammillata embryonic development data</a>
+	 */
+	public static SimpleTree< Double > treePm01a80008()
+	{
+		SimpleTree< Double > node0 = new SimpleTree<>( 38.0 );
+		SimpleTree< Double > node00 = addNode( 39.0, node0 );
+		SimpleTree< Double > node000 = addNode( 45.0, node00 );
+		addNode( 48.0, node000 );
+		addNode( 48.0, node000 );
+		SimpleTree< Double > node001 = addNode( 50.0, node00 );
+		addNode( 43.0, node001 );
+		addNode( 43.0, node001 );
+		SimpleTree< Double > node01 = addNode( 46.0, node0 );
+		SimpleTree< Double > node010 = addNode( 66.0, node01 );
+		addNode( 20.0, node010 );
+		addNode( 20.0, node010 );
+		SimpleTree< Double > node011 = addNode( 66.0, node01 );
+		addNode( 20.0, node011 );
+		addNode( 20.0, node011 );
+		return node0;
+	}
+
+	/**
+	 * a8.0007* of Pm01
+	 *
+	 * @see <a href="https://figshare.com/projects/Phallusiamammillata_embryonic_development/64301">Phallusia mammillata embryonic development data</a>
+	 */
+	public static SimpleTree< Double > treePm01a80007()
+	{
+		SimpleTree< Double > node0 = new SimpleTree<>( 36.0 );
+		SimpleTree< Double > node00 = addNode( 56.0, node0 );
+		SimpleTree< Double > node000 = addNode( 72.0, node00 );
+		addNode( 6.0, node000 );
+		addNode( 6.0, node000 );
+		SimpleTree< Double > node001 = addNode( 66.0, node00 );
+		addNode( 12.0, node001 );
+		addNode( 12.0, node001 );
+		SimpleTree< Double > node01 = addNode( 36.0, node0 );
+		SimpleTree< Double > node010 = addNode( 49.0, node01 );
+		addNode( 49.0, node010 );
+		addNode( 49.0, node010 );
+		SimpleTree< Double > node011 = addNode( 46.0, node01 );
+		SimpleTree< Double > node0110 = addNode( 50.0, node011 );
+		addNode( 2.0, node0110 );
+		addNode( 2.0, node0110 );
+		addNode( 52.0, node011 );
+		return node0;
+	}
+
+	/**
+	 * <pre>
+	 *       ┌────── 1 ───────┐
+	 *       │                │
+	 *    ┌─ 1 ──┐         ┌─ 9 ──┐
+	 *    │      │         │      │
+	 *    1      1        10   ┌─ 10 ─┐
+	 *                         │      │
+	 *                        10     10
+	 * </pre>
+	 *
+	 * @see <a href="https://www.science.org/doi/suppl/10.1126/science.aar5663/suppl_file/aar5663_guignard_sm.pdf">Guignard et al. (2020) Fig. S23</a>
+	 */
+	public static SimpleTree< Double > treeGuignardT1()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 1d );
+
+		SimpleTree< Double > node2 = addNode( 1d, node1 );
+		SimpleTree< Double > node3 = addNode( 9d, node1 );
+		addNode( 1d, node2 );
+		addNode( 1d, node2 );
+		addNode( 10d, node3 );
+		SimpleTree< Double > node7 = addNode( 10d, node3 );
+		addNode( 10d, node7 );
+		addNode( 10d, node7 );
+		return node1;
+	}
+
+	/**
+	 * <pre>
+	 *       ┌────── 1 ────────┐
+	 *       │                 │
+	 *    ┌─ 1 ──┐         ┌─ 10 ──┐
+	 *    │      │         │       │
+	 * ┌─ 2 ──┐  1        10      10
+	 * │      │
+	 * 1      1
+	 * </pre>
+	 *
+	 * @see <a href="https://www.science.org/doi/suppl/10.1126/science.aar5663/suppl_file/aar5663_guignard_sm.pdf">Guignard et al. (2020) Fig. S23</a>
+	 */
+	public static SimpleTree< Double > treeGuignardT2()
+	{
+		SimpleTree< Double > node1 = new SimpleTree<>( 1d );
+		SimpleTree< Double > node2 = addNode( 1d, node1 );
+		SimpleTree< Double > node3 = addNode( 10d, node1 );
+		SimpleTree< Double > node4 = addNode( 2d, node2 );
+		addNode( 1d, node2 );
+		addNode( 10d, node3 );
+		addNode( 10d, node3 );
+		addNode( 1d, node4 );
+		addNode( 1d, node4 );
+		return node1;
+	}
+
 	private static SimpleTree< Double > addNode( double attribute, SimpleTree< Double > parentTree )
 	{
 		SimpleTree< Double > node = new SimpleTree<>( attribute );
