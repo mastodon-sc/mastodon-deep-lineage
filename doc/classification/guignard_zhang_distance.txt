@@ -1,5 +1,0 @@
-https://latex.codecogs.com/eqneditor/editor.php
-
-d := \text{duration of a branch}
-\\
-\text{Guignard et al. 2020 Zhang Distance} = \frac{\sum cost_{changes} + \sum cost_{inserts} + \sum cost_{deletes} }{\sum d_{tree_a} + \sum d_{tree_b} }
