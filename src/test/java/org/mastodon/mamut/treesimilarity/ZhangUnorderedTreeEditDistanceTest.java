@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.DenseSimpleTreeExamples;
-import org.mastodon.mamut.treesimilarity.tree.SimpleTree;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
