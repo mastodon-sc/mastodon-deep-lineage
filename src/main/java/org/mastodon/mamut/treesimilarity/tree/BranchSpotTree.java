@@ -46,8 +46,6 @@ public class BranchSpotTree implements Tree< Double >
 {
 	private final BranchSpot branchSpot;
 
-	private final int endTimepoint;
-
 	private final Collection< Tree< Double > > children;
 
 	private final LabelSupplier labelSupplier;
@@ -73,7 +71,6 @@ public class BranchSpotTree implements Tree< Double >
 			throw new IllegalArgumentException( "The first timepoint of the given branchSpot " + branchSpot.getFirstTimePoint()
 					+ " is greater than the endTimepoint (" + endTimepoint + ")." );
 		this.branchSpot = branchSpot;
-		this.endTimepoint = endTimepoint;
 		this.children = new ArrayList<>();
 		this.labelSupplier = new LabelSupplier( model );
 		this.attribute = ( double ) BranchSpotFeatureUtils.branchDuration( branchSpot, endTimepoint );
@@ -82,8 +79,8 @@ public class BranchSpotTree implements Tree< Double >
 			BranchSpot child = branchLink.getTarget();
 			if ( branchSpot.equals( child ) )
 				continue;
-			if ( child.getFirstTimePoint() <= this.endTimepoint )
-				this.children.add( new BranchSpotTree( child, this.endTimepoint, model ) );
+			if ( child.getFirstTimePoint() <= endTimepoint )
+				this.children.add( new BranchSpotTree( child, endTimepoint, model ) );
 		}
 	}
 
