@@ -52,6 +52,8 @@ public class BranchSpotTree implements Tree< Double >
 
 	private final LabelSupplier labelSupplier;
 
+	private final Double attribute;
+
 	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
 	{
 		this( branchSpot, endTimepoint, null );
@@ -74,6 +76,7 @@ public class BranchSpotTree implements Tree< Double >
 		this.endTimepoint = endTimepoint;
 		this.children = new ArrayList<>();
 		this.labelSupplier = new LabelSupplier( model );
+		this.attribute = ( double ) BranchSpotFeatureUtils.branchDuration( branchSpot, endTimepoint );
 		for ( BranchLink branchLink : branchSpot.outgoingEdges() )
 		{
 			BranchSpot child = branchLink.getTarget();
@@ -93,7 +96,7 @@ public class BranchSpotTree implements Tree< Double >
 	@Override
 	public Double getAttribute()
 	{
-		return ( double ) BranchSpotFeatureUtils.branchDuration( branchSpot, endTimepoint );
+		return attribute;
 	}
 
 	public BranchSpot getBranchSpot()
