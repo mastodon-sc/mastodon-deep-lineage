@@ -31,6 +31,7 @@ package org.mastodon.mamut.clustering;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.algorithm.traversal.DepthFirstIterator;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
@@ -41,7 +42,6 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
@@ -72,9 +72,9 @@ public class ClusterRootNodesController
 
 	private final Model model;
 
-	private final PrefService prefs;
+	private final ProjectModel projectModel;
 
-	private final BranchGraphSynchronizer synchronizer;
+	private final PrefService prefs;
 
 	private SimilarityMeasure similarityMeasure = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE;
 
@@ -98,30 +98,23 @@ public class ClusterRootNodesController
 
 	/**
 	 * Create a new controller for clustering root nodes of lineage trees.
-	 * @param model the model
-	 * @param synchronizer the branch graph synchronizer
+	 * @param projectModel the project model
 	 */
-	public ClusterRootNodesController( final Model model, final BranchGraphSynchronizer synchronizer )
+	public ClusterRootNodesController( final ProjectModel projectModel )
 	{
-		this( model, synchronizer, null );
+		this( projectModel, null );
 	}
 
 	/**
 	 * Create a new controller for clustering root nodes of lineage trees.
-	 * @param model the model
-	 * @param synchronizer the branch graph synchronizer
+	 * @param projectModel the project model
 	 * @param prefs the preference service
 	 */
-	public ClusterRootNodesController( final Model model, final BranchGraphSynchronizer synchronizer, final PrefService prefs )
+	public ClusterRootNodesController( final ProjectModel projectModel, final PrefService prefs )
 	{
-		this.model = model;
-		this.synchronizer = synchronizer;
+		this.projectModel = projectModel;
+		this.model = projectModel.getModel();
 		this.prefs = prefs;
-	}
-
-	public Model getModel()
-	{
-		return model;
 	}
 
 	/**
@@ -238,7 +231,7 @@ public class ClusterRootNodesController
 
 	private List< BranchSpotTree > getRoots()
 	{
-		if ( !synchronizer.isUptodate() )
+		if ( !projectModel.getBranchGraphSync().isUptodate() )
 			model.getBranchGraph().graphRebuilt();
 
 		int cropStartTime = cropStart;

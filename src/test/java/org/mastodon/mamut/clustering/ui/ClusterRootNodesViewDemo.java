@@ -28,7 +28,9 @@
  */
 package org.mastodon.mamut.clustering.ui;
 
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.clustering.ClusterRootNodesController;
+import org.mastodon.mamut.clustering.DummyProjectModel;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 import org.scijava.Context;
@@ -44,12 +46,7 @@ public class ClusterRootNodesViewDemo
         Context context = new Context();
         UIService ui = context.service( UIService.class );
         CommandService cmd = context.service( CommandService.class );
-
-        final Model model = new Model();
-
-        final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
-
         ui.showUI();
-        cmd.run( ClusterRootNodesView.class, true, "controller", new ClusterRootNodesController( model, synchronizer ) );
+		cmd.run( ClusterRootNodesView.class, true, "controller", new ClusterRootNodesController( DummyProjectModel.createModel() ) );
     }
 }

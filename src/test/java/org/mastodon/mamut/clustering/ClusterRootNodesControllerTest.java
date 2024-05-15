@@ -28,7 +28,16 @@
  */
 package org.mastodon.mamut.clustering;
 
+import ij.ImagePlus;
+import net.imagej.ImgPlus;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.img.display.imagej.ImgToVirtualStack;
+import net.imglib2.type.numeric.real.FloatType;
 import org.junit.jupiter.api.Test;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.CropCriteria;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
@@ -36,15 +45,17 @@ import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.branch.BranchGraphSynchronizer;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.TagSetUtils;
+import org.mastodon.views.bdv.SharedBigDataViewerData;
+import org.scijava.Context;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,57 +70,63 @@ class ClusterRootNodesControllerTest
 	{
 		final Model model = new Model();
 
-		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
+		try (Context context = new Context())
+		{
+			final Img< FloatType > dummyImg = ArrayImgs.floats( 1, 1, 1 );
+			final ImagePlus dummyImagePlus =
+					ImgToVirtualStack.wrap( new ImgPlus<>( dummyImg, "image", new AxisType[] { Axes.X, Axes.Y, Axes.Z } ) );
+			SharedBigDataViewerData dummyBdv = Objects.requireNonNull( SharedBigDataViewerData.fromImagePlus( dummyImagePlus ) );
+			ProjectModel projectModel = ProjectModel.create( context, model, dummyBdv, null );
 
-		final ModelGraph modelGraph = model.getGraph();
+			final ModelGraph modelGraph = model.getGraph();
 
-		addLineageTree1( modelGraph );
-		addLineageTree2( modelGraph );
-		addLineageTree3( modelGraph );
-		addLineageTree4( modelGraph );
-		addLineageTree5( modelGraph );
-		addEmptyTree( modelGraph );
+			addLineageTree1( modelGraph );
+			addLineageTree2( modelGraph );
+			addLineageTree3( modelGraph );
+			addLineageTree4( modelGraph );
+			addLineageTree5( modelGraph );
+			addEmptyTree( modelGraph );
 
-		String tagSetName = "Test Tag Set";
-		TagSetUtils.addNewTagSetToModel( model, tagSetName, Collections.emptyList() );
-		ClusterRootNodesController controller = new ClusterRootNodesController( model, synchronizer );
-		controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
-		controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
-		controller.setVisualisationParams( false );
-		controller.createTagSet();
+			String tagSetName = "Test Tag Set";
+			TagSetUtils.addNewTagSetToModel( model, tagSetName, Collections.emptyList() );
+			ClusterRootNodesController controller = new ClusterRootNodesController( projectModel );
+			controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
+			controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
+			controller.setVisualisationParams( false );
+			controller.createTagSet();
 
-		List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
-		TagSetStructure.TagSet tagSet1 = model.getTagSetModel().getTagSetStructure().getTagSets().get( 1 );
-		List< TagSetStructure.Tag > tags = tagSet1.getTags();
-		TagSetStructure.Tag tag0 = tags.get( 0 );
-		TagSetStructure.Tag tag1 = tags.get( 1 );
-		TagSetStructure.Tag tag2 = tags.get( 2 );
+			List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
+			TagSetStructure.TagSet tagSet1 = model.getTagSetModel().getTagSetStructure().getTagSets().get( 1 );
+			List< TagSetStructure.Tag > tags = tagSet1.getTags();
+			TagSetStructure.Tag tag0 = tags.get( 0 );
+			TagSetStructure.Tag tag1 = tags.get( 1 );
+			TagSetStructure.Tag tag2 = tags.get( 2 );
 
-		Collection< Spot > tag0Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag0 );
-		Collection< Spot > tag1Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag1 );
-		Collection< Spot > tag2Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag2 );
+			Collection< Spot > tag0Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag0 );
+			Collection< Spot > tag1Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag1 );
+			Collection< Spot > tag2Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag2 );
 
-		Set< String > expectedClassNames = new HashSet<>( Arrays.asList( "Class 1", "Class 2", "Class 3" ) );
-		Set< String > actualClassNames = new HashSet<>( Arrays.asList( tag0.label(), tag1.label(), tag2.label() ) );
+			Set< String > expectedClassNames = new HashSet<>( Arrays.asList( "Class 1", "Class 2", "Class 3" ) );
+			Set< String > actualClassNames = new HashSet<>( Arrays.asList( tag0.label(), tag1.label(), tag2.label() ) );
 
-		Set< Integer > expectedClassCounts = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
-		Set< Integer > actualClassCounts = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
+			Set< Integer > expectedClassCounts = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
+			Set< Integer > actualClassCounts = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
 
-		assertEquals( model, controller.getModel() );
-		assertEquals( "Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet1.getName() );
-		assertTrue( controller.isValidParams() );
-		assertEquals( 2, tagSets.size() );
-		assertEquals( 3, tags.size() );
-		assertEquals( expectedClassNames, actualClassNames );
-		assertEquals( expectedClassCounts, actualClassCounts );
+			assertEquals( "Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet1.getName() );
+			assertTrue( controller.isValidParams() );
+			assertEquals( 2, tagSets.size() );
+			assertEquals( 3, tags.size() );
+			assertEquals( expectedClassNames, actualClassNames );
+			assertEquals( expectedClassCounts, actualClassCounts );
+		}
 	}
 
 	@Test
 	void testGetFeedback()
 	{
 		ExampleGraph2 exampleGraph = new ExampleGraph2();
-		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
-		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel(), synchronizer );
+		ProjectModel projectModel = DummyProjectModel.createModel( exampleGraph.getModel() );
+		ClusterRootNodesController controller = new ClusterRootNodesController( projectModel );
 		controller.setInputParams( CropCriteria.TIMEPOINT, 1, 0, 1 );
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
 		controller.setVisualisationParams( false );
@@ -128,8 +145,8 @@ class ClusterRootNodesControllerTest
 	void testGetParameters()
 	{
 		ExampleGraph2 exampleGraph = new ExampleGraph2();
-		final BranchGraphSynchronizer synchronizer = new BranchGraphSynchronizer( null, null );
-		ClusterRootNodesController controller = new ClusterRootNodesController( exampleGraph.getModel(), synchronizer );
+		ProjectModel projectModel = DummyProjectModel.createModel( exampleGraph.getModel() );
+		ClusterRootNodesController controller = new ClusterRootNodesController( projectModel );
 		controller.setInputParams( CropCriteria.TIMEPOINT, 1, 10, 1 );
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
 

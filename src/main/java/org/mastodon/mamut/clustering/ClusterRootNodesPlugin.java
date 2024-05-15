@@ -89,8 +89,7 @@ public class ClusterRootNodesPlugin implements MamutPlugin
 	private void clusterRootNodes()
 	{
 		ClusterRootNodesController controller =
-				new ClusterRootNodesController( projectModel.getModel(), projectModel.getBranchGraphSync(),
-						commandService.getContext().getService( PrefService.class ) );
+				new ClusterRootNodesController( projectModel, commandService.getContext().getService( PrefService.class ) );
 		commandService.run( ClusterRootNodesView.class, true, "controller", controller );
 	}
 }
