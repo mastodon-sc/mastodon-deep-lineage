@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.function.ToDoubleBiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class NodeMappingTest
 {
 
-	private static final BiFunction< Double, Double, Double > DEFAULT_COSTS = ( o1, o2 ) -> {
+	private static final ToDoubleBiFunction< Double, Double > DEFAULT_COSTS = ( o1, o2 ) -> {
 		if ( o2 == null )
 			return o1;
 		else
@@ -163,14 +163,14 @@ class NodeMappingTest
 		Set< Tree< Double > > keys = mapping.keySet();
 		Set< Tree< Double > > values = new HashSet<>( mapping.values() );
 		double costs = 0;
-		for ( Tree< Double > subtree : TreeUtils.listOfSubtrees( tree1 ) )
+		for ( Tree< Double > subtree : TreeUtils.getAllChildren( tree1 ) )
 			if ( !keys.contains( subtree ) )
-				costs += DEFAULT_COSTS.apply( subtree.getAttribute(), null );
-		for ( Tree< Double > subtree : TreeUtils.listOfSubtrees( tree2 ) )
+				costs += DEFAULT_COSTS.applyAsDouble( subtree.getAttribute(), null );
+		for ( Tree< Double > subtree : TreeUtils.getAllChildren( tree2 ) )
 			if ( !values.contains( subtree ) )
-				costs += DEFAULT_COSTS.apply( subtree.getAttribute(), null );
+				costs += DEFAULT_COSTS.applyAsDouble( subtree.getAttribute(), null );
 		for ( Map.Entry< Tree< Double >, Tree< Double > > entry : mapping.entrySet() )
-			costs += DEFAULT_COSTS.apply( entry.getKey().getAttribute(), entry.getValue().getAttribute() );
+			costs += DEFAULT_COSTS.applyAsDouble( entry.getKey().getAttribute(), entry.getValue().getAttribute() );
 		return costs;
 	}
 

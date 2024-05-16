@@ -38,7 +38,6 @@ import java.util.Collection;
  */
 public class SimpleTree< T > implements Tree< T >
 {
-
 	private final Collection< Tree< T > > children;
 
 	private final T attribute;

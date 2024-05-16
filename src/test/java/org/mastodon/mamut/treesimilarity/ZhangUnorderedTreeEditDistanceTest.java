@@ -28,22 +28,26 @@
  */
 package org.mastodon.mamut.treesimilarity;
 
-import org.junit.jupiter.api.Disabled;
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.treesimilarity.tree.BranchSpotTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.DenseSimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.function.BiFunction;
+import java.lang.invoke.MethodHandles;
+import java.util.function.ToDoubleBiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ZhangUnorderedTreeEditDistanceTest
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	private final static BiFunction< Double, Double, Double > defaultCosts = TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION;
+	private final static ToDoubleBiFunction< Double, Double > defaultCosts = TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION;
 
 	@SuppressWarnings("all")
 	@Test
@@ -178,7 +182,7 @@ class ZhangUnorderedTreeEditDistanceTest
 
 
 		// 0, because: the trees are topologically identical
-		BiFunction< Double, Double, Double > costFunction = ( a, b ) -> ( a == null ) == ( b == null ) ? 0d : 1d;
+		ToDoubleBiFunction< Double, Double > costFunction = ( a, b ) -> ( a == null ) == ( b == null ) ? 0d : 1d;
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( simpleTree1, simpleTree2, costFunction ), 0d );
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( simpleTree2, simpleTree1, costFunction ), 0d );
 		assertEquals( 0, ZhangUnorderedTreeEditDistance.distance( branchSpotTree1, branchSpotTree2, costFunction ), 0d );
@@ -299,11 +303,22 @@ class ZhangUnorderedTreeEditDistanceTest
 	}
 
 	@Test
-	@Disabled( "This test is ignored because it takes too long to run." )
 	void testDenseTreeExample()
 	{
 		Tree< Double > tree2aba = DenseSimpleTreeExamples.tree2aba();
 		Tree< Double > tree1bab = DenseSimpleTreeExamples.tree1bab();
 		assertEquals( 39_214d, ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, defaultCosts ), 0d );
+	}
+
+	public static void main( String[] args )
+	{
+		// NB: This exists in addition to testDenseTreeExample(), because time measurement does not work in the test.
+		Tree< Double > tree2aba = DenseSimpleTreeExamples.tree2aba();
+		Tree< Double > tree1bab = DenseSimpleTreeExamples.tree1bab();
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		double costs = ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, defaultCosts );
+		stopWatch.stop();
+		logger.debug( "Costs: {}, time: {}ms", costs, stopWatch.getTime() );
 	}
 }

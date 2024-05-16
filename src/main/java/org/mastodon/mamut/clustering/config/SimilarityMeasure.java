@@ -34,8 +34,7 @@ import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
+import java.util.function.ToDoubleBiFunction;
 
 public enum SimilarityMeasure implements HasName
 {
@@ -57,13 +56,13 @@ public enum SimilarityMeasure implements HasName
 
 	private final String name;
 
-	private final TriFunction< Tree< Double >, Tree< Double >, BiFunction< Double, Double, Double >, Double > distanceFunction;
+	private final TriFunction< Tree< Double >, Tree< Double >, ToDoubleBiFunction< Double, Double >, Double > distanceFunction;
 
-	private final BinaryOperator< Double > costFunction;
+	private final ToDoubleBiFunction< Double, Double > costFunction;
 
 	SimilarityMeasure( final String name,
-			final TriFunction< Tree< Double >, Tree< Double >, BiFunction< Double, Double, Double >, Double > distanceFunction,
-			final BinaryOperator< Double > costFunction )
+			final TriFunction< Tree< Double >, Tree< Double >, ToDoubleBiFunction< Double, Double >, Double > distanceFunction,
+			final ToDoubleBiFunction< Double, Double > costFunction )
 	{
 		this.name = name;
 		this.distanceFunction = distanceFunction;

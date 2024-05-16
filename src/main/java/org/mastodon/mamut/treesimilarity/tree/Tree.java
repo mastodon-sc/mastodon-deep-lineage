@@ -28,21 +28,13 @@
  */
 package org.mastodon.mamut.treesimilarity.tree;
 
-import java.util.Collection;
-
 /**
  * A tree data structure.
  *
  * @param <T> the type of the attribute of the tree nodes.
  */
-public interface Tree< T >
+public interface Tree< T > extends Node< Tree< T > >
 {
-	/**
-	 * Get the children of this {@link Tree}.
-	 *
-	 * @return The list of child {@link Tree} objects.
-	 */
-	Collection< Tree< T > > getChildren();
 
 	/**
 	 * Get the attribute of this {@link Tree}.

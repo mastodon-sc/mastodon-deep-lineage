@@ -29,6 +29,7 @@
 package org.mastodon.mamut.treesimilarity.tree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,22 +42,6 @@ public class TreeUtils
 	}
 
 	/**
-	 * Returns a complete list of all descendant subtrees of the given {@code Tree}, including itself.
-	 *
-	 * @return The list of subtrees.
-	 */
-	public static < T > List< Tree< T > > listOfSubtrees( final Tree< T > tree )
-	{
-		if ( tree == null )
-			return Collections.emptyList();
-		List< Tree< T > > list = new ArrayList<>();
-		list.add( tree );
-		for ( Tree< T > child : tree.getChildren() )
-			list.addAll( listOfSubtrees( child ) );
-		return list;
-	}
-
-	/**
 	 * Gets the number of descendant subtrees of this {@link Tree}, including itself.
 	 * @return the number
 	 */
@@ -64,7 +49,7 @@ public class TreeUtils
 	{
 		if ( tree == null )
 			return 0;
-		return listOfSubtrees( tree ).size();
+		return getAllChildren( tree ).size();
 	}
 
 	/**
@@ -76,8 +61,38 @@ public class TreeUtils
 	public static < T > List< T > getAllAttributes( final Tree< T > tree )
 	{
 		List< T > attributes = new ArrayList<>();
-		listOfSubtrees( tree ).forEach( subtree -> attributes.add( subtree.getAttribute() ) );
+		getAllChildren( tree ).forEach( subtree -> attributes.add( subtree.getAttribute() ) );
 		return attributes;
+	}
+
+	/**
+	 * Recursively collects all children of the given node, including the node itself.
+	 *
+	 * @param node The root node.
+	 * @param <T>  The type of the node.
+	 * @return A list of all children nodes.
+	 */
+	public static < T extends Node< T > > List< T > getAllChildren( T node )
+	{
+		if ( node == null )
+			return Collections.emptyList();
+		List< T > result = new ArrayList<>();
+		result.add( node );
+		getAllChildrenRecursive( node, result );
+		return result;
+	}
+
+	private static < T extends Node< T > > void getAllChildrenRecursive( T node, List< T > result )
+	{
+		Collection< T > children = node.getChildren();
+		if ( children != null )
+		{
+			for ( T child : children )
+			{
+				result.add( child );
+				getAllChildrenRecursive( child, result );
+			}
+		}
 	}
 
 	/**

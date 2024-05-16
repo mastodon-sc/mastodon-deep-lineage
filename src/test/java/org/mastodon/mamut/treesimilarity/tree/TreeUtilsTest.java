@@ -40,7 +40,7 @@ class TreeUtilsTest
 {
 
 	@Test
-	void testListOfSubtrees()
+	void testGetAllChildren()
 	{
 		Tree< Double > emptyTree = SimpleTreeExamples.emptyTree();
 
@@ -49,8 +49,8 @@ class TreeUtilsTest
 		subtrees1.add( tree1 );
 		subtrees1.addAll( tree1.getChildren() );
 
-		assertEquals( Collections.singletonList( emptyTree ), TreeUtils.listOfSubtrees( emptyTree ) );
-		assertEquals( subtrees1, TreeUtils.listOfSubtrees( tree1 ) );
+		assertEquals( Collections.singletonList( emptyTree ), TreeUtils.getAllChildren( emptyTree ) );
+		assertEquals( subtrees1, TreeUtils.getAllChildren( tree1 ) );
 	}
 
 	@Test

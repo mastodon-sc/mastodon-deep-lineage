@@ -89,7 +89,10 @@ public class NodeMappings
 	 */
 	public static < T > NodeMapping< T > compose( List< NodeMapping< T > > children )
 	{
-		return new ComposedNodeMapping<>( children );
+		double composedCost = 0;
+		for ( NodeMapping< T > child : children )
+			composedCost += child.getCost();
+		return new ComposedNodeMapping<>( children, composedCost );
 	}
 
 	private abstract static class AbstractNodeMapping< T > implements NodeMapping< T >
@@ -146,9 +149,9 @@ public class NodeMappings
 	{
 		private final List< NodeMapping< T > > children;
 
-		private ComposedNodeMapping( List< NodeMapping< T > > children )
+		private ComposedNodeMapping( List< NodeMapping< T > > children, double cost )
 		{
-			super( children.stream().mapToDouble( NodeMapping::getCost ).sum() );
+			super( cost );
 			this.children = children;
 		}
 
