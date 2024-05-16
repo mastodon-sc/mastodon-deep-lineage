@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.treesimilarity;
 
+import org.mastodon.mamut.treesimilarity.tree.Node;
 import org.mastodon.mamut.treesimilarity.tree.Tree;
 import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
 import org.mastodon.mamut.treesimilarity.util.FlowNetwork;
@@ -200,7 +201,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 	private static < T > double distanceTreeToNull( Tree< T > tree2, ToDoubleBiFunction< T, T > costFunction )
 	{
 		double distance = 0;
-		for ( Tree< T > subtree : TreeUtils.listOfSubtrees( tree2 ) )
+		for ( Tree< T > subtree : TreeUtils.getAllChildren( tree2 ) )
 			distance += costFunction.applyAsDouble( null, subtree.getAttribute() );
 		return distance;
 	}
@@ -212,8 +213,10 @@ public class ZhangUnorderedTreeEditDistance< T >
 
 		root1 = new CachedTree<>( tree1 );
 		root2 = new CachedTree<>( tree2 );
-		subtrees1 = assignIndices( root1 );
-		subtrees2 = assignIndices( root2 );
+		subtrees1 = TreeUtils.getAllChildren( root1 );
+		subtrees2 = TreeUtils.getAllChildren( root2 );
+		subtrees1.forEach( cachedTree -> cachedTree.index = subtrees1.indexOf( cachedTree ) );
+		subtrees2.forEach( cachedTree -> cachedTree.index = subtrees2.indexOf( cachedTree ) );
 
 		costMatrix = new double[ subtrees1.size() ][ subtrees2.size() ];
 		for ( CachedTree< T > subtree1 : subtrees1 )
@@ -267,21 +270,6 @@ public class ZhangUnorderedTreeEditDistance< T >
 		}
 		tree.treeCost = forestCosts + costFunction.applyAsDouble( tree.attribute, null );
 		tree.forestCost = forestCosts;
-	}
-
-	private List< CachedTree< T > > assignIndices( CachedTree< T > cachedTree )
-	{
-		List< CachedTree< T > > list = new ArrayList<>();
-		assignIndex( list, cachedTree );
-		return list;
-	}
-
-	private void assignIndex( List< CachedTree< T > > list, CachedTree< T > cachedTree )
-	{
-		list.add( cachedTree );
-		cachedTree.index = list.size() - 1;
-		for ( CachedTree< T > child : cachedTree.children )
-			assignIndex( list, child );
 	}
 
 	/**
@@ -648,7 +636,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return c;
 	}
 
-	private static class CachedTree< T >
+	private static class CachedTree< T > implements Node< CachedTree< T > >
 	{
 		private int index;
 
@@ -679,7 +667,7 @@ public class ZhangUnorderedTreeEditDistance< T >
 			return isLeaf;
 		}
 
-		private List< CachedTree< T > > getChildren()
+		public List< CachedTree< T > > getChildren()
 		{
 			return children;
 		}
