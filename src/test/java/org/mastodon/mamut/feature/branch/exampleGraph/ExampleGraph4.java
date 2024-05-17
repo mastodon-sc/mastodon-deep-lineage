@@ -36,7 +36,6 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 
 /**
- * TODO can be removed after mastodon-core beta-30 release
  * Represents a {@link AbstractExampleGraphDeepLineage} with the following {@link ModelGraph} and {@link ModelBranchGraph}:
  *
  * <h1>Model-Graph (i.e. Graph of Spots)</h1>
