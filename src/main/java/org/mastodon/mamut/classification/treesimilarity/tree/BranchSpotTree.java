@@ -31,6 +31,7 @@ package org.mastodon.mamut.classification.treesimilarity.tree;
 import org.mastodon.mamut.classification.util.ClassificationUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.tag.TagSetStructure;
@@ -137,7 +138,9 @@ public class BranchSpotTree implements Tree< Double >
 		@Override
 		public String get()
 		{
-			String tagLabel = ClassificationUtils.getTagLabel( model, branchSpot, tagSet );
+			Spot ref = model.getGraph().vertexRef();
+			String tagLabel = ClassificationUtils.getTagLabel( model, branchSpot, tagSet, ref );
+			model.getGraph().releaseRef( ref );
 			if ( tagLabel == null )
 				tagLabel = "";
 			if ( includeName && includeTag )

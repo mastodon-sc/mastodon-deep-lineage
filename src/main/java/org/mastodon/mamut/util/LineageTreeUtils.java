@@ -338,11 +338,8 @@ public class LineageTreeUtils {
 	 * @return the first {@link Spot}
 	 * TODO can be replaced by TreeUtils.getFirstSpot after Mastodon core release 1.0.0-beta-31
 	 */
-	public static Spot getFirstSpot( final Model model, final BranchSpot branchSpot )
+	public static Spot getFirstSpot( final Model model, final BranchSpot branchSpot, final Spot ref )
 	{
-		Spot ref = model.getGraph().vertexRef();
-		Spot first = model.getBranchGraph().getFirstLinkedVertex( branchSpot, ref );
-		model.getGraph().releaseRef( ref );
-		return first;
+		return model.getBranchGraph().getFirstLinkedVertex( branchSpot, ref );
 	}
 }

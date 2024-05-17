@@ -483,11 +483,11 @@ public class ClassificationUtils
 	 * @return the tag label
 	 * TODO remove after mastodon-core release 1.0.0-beta-31 and replace by TagSetUtils.getTagValue
 	 */
-	public static String getTagLabel( final Model model, final BranchSpot branchSpot, final TagSetStructure.TagSet tagSet )
+	public static String getTagLabel( final Model model, final BranchSpot branchSpot, final TagSetStructure.TagSet tagSet, final Spot ref )
 	{
 		if ( model == null || branchSpot == null || tagSet == null )
 			return null;
-		Spot first = LineageTreeUtils.getFirstSpot( model, branchSpot );
+		Spot first = LineageTreeUtils.getFirstSpot( model, branchSpot, ref );
 		TagSetStructure.Tag tag = TagSetUtils.getBranchTag( model, tagSet, first );
 		return tag == null ? null : tag.label();
 	}

@@ -161,12 +161,16 @@ class LineageTreeUtilsTest
 	void testGetFirstSpot()
 	{
 		ExampleGraph1 exampleGraph1 = new ExampleGraph1();
+		Spot ref = exampleGraph1.getModel().getGraph().vertexRef();
 		assertEquals(
-				exampleGraph1.spot0, LineageTreeUtils.getFirstSpot( exampleGraph1.getModel(), exampleGraph1.branchSpotA ) );
+				exampleGraph1.spot0, LineageTreeUtils.getFirstSpot( exampleGraph1.getModel(), exampleGraph1.branchSpotA, ref ) );
+		exampleGraph1.getModel().getGraph().releaseRef( ref );
 
 		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
+		ref = exampleGraph2.getModel().getGraph().vertexRef();
 		assertEquals(
-				exampleGraph2.spot5, LineageTreeUtils.getFirstSpot( exampleGraph2.getModel(), exampleGraph2.branchSpotD ) );
+				exampleGraph2.spot5, LineageTreeUtils.getFirstSpot( exampleGraph2.getModel(), exampleGraph2.branchSpotD, ref ) );
+		exampleGraph2.getModel().getGraph().releaseRef( ref );
 	}
 
 	private void assertSpotEquals( final Spot expected, final Spot actual )
