@@ -70,7 +70,7 @@ class ExportLabelImageControllerTest
 
 	private int timepoint;
 
-	private final long[] center = new long[] { 50, 50, 50 };
+	private final long[] center = new long[] { 5, 5, 5 };
 
 	@BeforeEach
 	void setUp()
@@ -112,9 +112,9 @@ class ExportLabelImageControllerTest
 			// check that the spot id / branchSpot id / track id is used as value in the center of the spot
 			assertNotNull( imgSpot );
 			assertEquals( 3, imgSpot.dimensionsAsLongArray().length );
-			assertEquals( 100, imgSpot.dimension( 0 ) );
-			assertEquals( 100, imgSpot.dimension( 1 ) );
-			assertEquals( 100, imgSpot.dimension( 2 ) );
+			assertEquals( 10, imgSpot.dimension( 0 ) );
+			assertEquals( 10, imgSpot.dimension( 1 ) );
+			assertEquals( 10, imgSpot.dimension( 2 ) );
 			assertEquals( spot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET, imgSpot.getAt( center ).get() );
 			assertEquals( branchSpot.getInternalPoolIndex() + ExportLabelImageController.LABEL_ID_OFFSET,
 					imgBranchSpot.getAt( center ).get() );
@@ -160,7 +160,8 @@ class ExportLabelImageControllerTest
 
 	private static AbstractSource< IntType > createRandomSource()
 	{
-		Img< IntType > randomImg = RandomImgs.seed( 0 ).nextImage( new IntType() {}, 100, 100, 100 );
+		Img< IntType > randomImg = RandomImgs.seed( 0 ).nextImage( new IntType()
+		{}, 10, 10, 10 );
 		return new RandomAccessibleIntervalSource<>( randomImg, new IntType(), new AffineTransform3D(), "Label Image" );
 	}
 }
