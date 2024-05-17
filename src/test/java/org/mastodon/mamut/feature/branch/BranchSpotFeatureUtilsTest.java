@@ -42,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BranchSpotFeatureUtilsTest
@@ -166,6 +167,12 @@ class BranchSpotFeatureUtilsTest
 		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotC ) );
 		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotD ) );
 		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph2.branchSpotE ) );
+
+		assertEquals( 3, BranchSpotFeatureUtils.branchDuration( graph1.branchSpotA, 1, 3 ) );
+		assertThrows( IllegalArgumentException.class, () -> BranchSpotFeatureUtils.branchDuration( graph1.branchSpotA, 3, 1 ) );
+		assertThrows( IllegalArgumentException.class, () -> BranchSpotFeatureUtils.branchDuration( graph1.branchSpotA, 5, 7 ) );
+		assertThrows( IllegalArgumentException.class, () -> BranchSpotFeatureUtils.branchDuration( graph2.branchSpotD, 3, 4 ) );
+
 	}
 
 	@Test

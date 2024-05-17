@@ -276,11 +276,11 @@ public class BranchSpotFeatureUtils
 	 */
 	public static int branchDuration( final BranchSpot branchSpot )
 	{
-		return branchDuration( branchSpot, branchSpot.getTimepoint() );
+		return branchDuration( branchSpot, branchSpot.getFirstTimePoint(), branchSpot.getTimepoint() );
 	}
 
 	/**
-	 * Returns the duration of the given branch spot cropped to the given timepoint.
+	 * Returns the duration of the given branch spot cropped between the given start and end time points inclusively.
 	 * <p>
 	 * The duration of a branch spot is the number of timepoints it spans.
 	 * </p>
@@ -289,16 +289,24 @@ public class BranchSpotFeatureUtils
 	 *     <li>A branch spot contains only a single spot in a single timepoint has a duration of 1</li>
 	 * </ul>
 	 * @param branchSpot the branch spot
-	 * @param cropTimepoint the timepoint to crop the branch spot
+	 * @param cropStartTimepoint the start time point to crop the branch spot
+	 * @param cropEndTimepoint the end time point to crop the branch spot
 	 * @return the duration of the branch spot
 	 */
-	public static int branchDuration( final BranchSpot branchSpot, final int cropTimepoint )
+	public static int branchDuration( final BranchSpot branchSpot, final int cropStartTimepoint, final int cropEndTimepoint )
 	{
-		if ( cropTimepoint < branchSpot.getFirstTimePoint() )
-			throw new IllegalArgumentException( "The given endTimepoint " + cropTimepoint
+		if ( cropEndTimepoint < branchSpot.getFirstTimePoint() )
+			throw new IllegalArgumentException( "The given endTimepoint " + cropEndTimepoint
 					+ " is smaller than the first timepoint of the branch spot " + branchSpot.getFirstTimePoint() + "." );
-		return cropTimepoint > branchSpot.getTimepoint() ? branchSpot.getTimepoint() - branchSpot.getFirstTimePoint() + 1
-				: cropTimepoint - branchSpot.getFirstTimePoint() + 1;
+		if ( cropStartTimepoint > cropEndTimepoint )
+			throw new IllegalArgumentException( "The given startTimepoint " + cropStartTimepoint
+					+ " is greater than the endTimepoint " + cropEndTimepoint + "." );
+		if ( cropStartTimepoint > branchSpot.getTimepoint() )
+			throw new IllegalArgumentException( "The given startTimepoint " + cropStartTimepoint
+					+ " is greater than the last timepoint of the branch spot " + branchSpot.getTimepoint() + "." );
+		int start = Math.max( cropStartTimepoint, branchSpot.getFirstTimePoint() );
+		int end = Math.min( cropEndTimepoint, branchSpot.getTimepoint() );
+		return end - start + 1;
 	}
 
 

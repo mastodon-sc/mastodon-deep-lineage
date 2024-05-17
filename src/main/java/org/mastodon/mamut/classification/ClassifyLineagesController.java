@@ -256,7 +256,7 @@ public class ClassifyLineagesController
 			BranchSpot rootBranchSpot = model.getBranchGraph().getBranchVertex( root, model.getBranchGraph().vertexRef() );
 			try
 			{
-				BranchSpotTree tree = new BranchSpotTree( rootBranchSpot, cropEndTime, model );
+				BranchSpotTree tree = new BranchSpotTree( rootBranchSpot, cropStartTime, cropEndTime, model );
 				int minTreeSize = 2 * minCellDivisions + 1;
 				if ( TreeUtils.size( tree ) < minTreeSize )
 					continue;

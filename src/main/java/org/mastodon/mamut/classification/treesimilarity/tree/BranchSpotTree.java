@@ -53,9 +53,9 @@ public class BranchSpotTree implements Tree< Double >
 
 	private final Double attribute;
 
-	BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
+	BranchSpotTree( final BranchSpot branchSpot, final int startTimepoint, final int endTimepoint )
 	{
-		this( branchSpot, endTimepoint, null );
+		this( branchSpot, startTimepoint, endTimepoint, null );
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class BranchSpotTree implements Tree< Double >
 	 * @param branchSpot the branchSpot of the tree.
 	 * @param endTimepoint the end time point of the tree, i.e. the time point at which the tree is cut off.
 	 */
-	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint, final Model model )
+	public BranchSpotTree( final BranchSpot branchSpot, final int startTimepoint, final int endTimepoint, final Model model )
 	{
 		if ( branchSpot == null )
 			throw new IllegalArgumentException( "The given branchSpot is null." );
@@ -74,14 +74,14 @@ public class BranchSpotTree implements Tree< Double >
 		this.branchSpot = branchSpot;
 		this.children = new ArrayList<>();
 		this.labelSupplier = new LabelSupplier( model );
-		this.attribute = ( double ) BranchSpotFeatureUtils.branchDuration( branchSpot, endTimepoint );
+		this.attribute = ( double ) BranchSpotFeatureUtils.branchDuration( branchSpot, startTimepoint, endTimepoint );
 		for ( BranchLink branchLink : branchSpot.outgoingEdges() )
 		{
 			BranchSpot child = branchLink.getTarget();
 			if ( branchSpot.equals( child ) )
 				continue;
 			if ( child.getFirstTimePoint() <= endTimepoint )
-				this.children.add( new BranchSpotTree( child, endTimepoint, model ) );
+				this.children.add( new BranchSpotTree( child, startTimepoint, endTimepoint, model ) );
 		}
 	}
 

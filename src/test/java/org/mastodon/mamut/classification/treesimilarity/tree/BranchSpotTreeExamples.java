@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.classification.treesimilarity.tree;
 
-import org.mastodon.mamut.classification.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
@@ -52,7 +51,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 0 );
+		return new BranchSpotTree( branchSpot, 0, 0 );
 	}
 
 	/**
@@ -98,7 +97,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 60 );
+		return new BranchSpotTree( branchSpot, 0, 60 );
 	}
 
 	/**
@@ -144,7 +143,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 60 );
+		return new BranchSpotTree( branchSpot, 0, 60 );
 	}
 
 	/**
@@ -189,7 +188,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 200 );
+		return new BranchSpotTree( branchSpot, 0, 200 );
 	}
 
 	/**
@@ -234,7 +233,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 200 );
+		return new BranchSpotTree( branchSpot, 0, 200 );
 	}
 
 	/**
@@ -276,7 +275,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 300 );
+		return new BranchSpotTree( branchSpot, 0, 300 );
 	}
 
 	/**
@@ -318,7 +317,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 300 );
+		return new BranchSpotTree( branchSpot, 0, 300 );
 	}
 
 	/**
@@ -374,7 +373,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 300 );
+		return new BranchSpotTree( branchSpot, 0, 300 );
 	}
 
 	/**
@@ -443,7 +442,7 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 300 );
+		return new BranchSpotTree( branchSpot, 0, 300 );
 	}
 
 	/**
@@ -512,6 +511,52 @@ public class BranchSpotTreeExamples
 
 		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
 
-		return new BranchSpotTree( branchSpot, 300 );
+		return new BranchSpotTree( branchSpot, 0, 300 );
+	}
+
+	/**
+	 * <pre>
+	 *                           branchSpot1(lifespan=10)
+	 *                                 │
+	 *                                 │
+	 *                    ┌-───────────┴─────────────┐
+	 *                    │                          │
+	 *              branchSpot2(lifespan=10)         │
+	 *                                               │
+	 *                                         branchSpot3(lifespan=20)
+	 * </pre>
+	 */
+	public static BranchSpotTree tree10()
+	{
+		final Model model = new Model();
+
+		final ModelGraph modelGraph = model.getGraph();
+
+		final ModelBranchGraph modelBranchGraph = model.getBranchGraph();
+
+		Spot spot1 = modelGraph.addVertex();
+		spot1.init( 0, new double[ 3 ], 0 );
+		Spot spot2 = modelGraph.addVertex();
+		spot2.init( 19, new double[ 3 ], 0 );
+		Spot spot3 = modelGraph.addVertex();
+		spot3.init( 20, new double[ 3 ], 0 );
+		Spot spot4 = modelGraph.addVertex();
+		spot4.init( 29, new double[ 3 ], 0 );
+		Spot spot5 = modelGraph.addVertex();
+		spot5.init( 20, new double[ 3 ], 0 );
+		Spot spot6 = modelGraph.addVertex();
+		spot6.init( 49, new double[ 3 ], 0 );
+
+		modelGraph.addEdge( spot1, spot2 );
+		modelGraph.addEdge( spot2, spot3 );
+		modelGraph.addEdge( spot2, spot5 );
+		modelGraph.addEdge( spot3, spot4 );
+		modelGraph.addEdge( spot5, spot6 );
+
+		modelBranchGraph.graphRebuilt();
+
+		BranchSpot branchSpot = modelBranchGraph.getBranchVertex( spot1, modelBranchGraph.vertexRef() );
+
+		return new BranchSpotTree( branchSpot, 10, 39 );
 	}
 }
