@@ -33,6 +33,7 @@ import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
 import net.imglib2.parallel.Parallelization;
+import net.imglib2.util.LinAlgHelpers;
 import net.imglib2.util.Util;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
@@ -51,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -116,6 +118,34 @@ public class ClusterUtils
 		logger.debug( "Computed all distances in {} s.", stopWatch.getTime() / 1000d );
 
 		return distances;
+	}
+
+	/**
+	 * Computes a symmetric quadratic distance matrix for the given trees.
+	 * <br>
+	 * The diagonals are set to zero.
+	 * <br>
+	 * The distance matrix is computed by averaging the distances matrices that result from each row of trees.
+	 * Thus, this method should only be used, if the trees in subsequent rows represent similar objects.
+	 * <br>
+	 *
+	 * @param treeMatrix a two-dimensional array of trees
+	 * @param similarityMeasure the similarity measure to be used
+	 * @return a symmetric quadratic distance matrix
+	 */
+	public static double[][] getDistanceMatrix( final Tree< Double >[][] treeMatrix, final SimilarityMeasure similarityMeasure )
+	{
+		if ( treeMatrix.length == 0 )
+			return new double[ 0 ][ 0 ];
+
+		double[][] result = new double[ treeMatrix[ 0 ].length ][ treeMatrix[ 0 ].length ];
+		for ( Tree< Double >[] trees : treeMatrix )
+		{
+			double[][] temp = getDistanceMatrix( Arrays.asList( trees ), similarityMeasure );
+			LinAlgHelpers.add( result, temp, result );
+		}
+		LinAlgHelpers.scale( result, 1d / treeMatrix.length, result );
+		return result;
 	}
 
 	/**
