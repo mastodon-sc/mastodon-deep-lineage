@@ -53,7 +53,7 @@ public class BranchSpotTree implements Tree< Double >
 
 	private final Double attribute;
 
-	public BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
+	BranchSpotTree( final BranchSpot branchSpot, final int endTimepoint )
 	{
 		this( branchSpot, endTimepoint, null );
 	}

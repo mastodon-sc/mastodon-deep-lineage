@@ -92,7 +92,7 @@ class BranchSpotTreeTest
 	void testToString()
 	{
 		ExampleGraph2 example = new ExampleGraph2();
-		BranchSpotTree tree = new BranchSpotTree( example.branchSpotB, 20 );
+		BranchSpotTree tree = new BranchSpotTree( example.branchSpotB, 20, example.getModel() );
 		// Note: spot3 is the first spot of branchSpotB.
 		assertEquals( example.spot3.getLabel(), tree.toString() );
 	}
