@@ -436,7 +436,7 @@ public class ClusterUtils
 	 * Returns the names of all tag sets in the model.
 	 * @param model the model to get the tag-set model from.
 	 * @return the names of all tag sets in the model.
-	 * TODO remove after mastodon-core release 1.0.0-beta-30 and replace by TagSetUtils.getTagSetNames
+	 * TODO remove after mastodon-core release 1.0.0-beta-31 and replace by TagSetUtils.getTagSetNames
 	 */
 	public static List< String > getTagSetNames( final Model model )
 	{
@@ -451,7 +451,7 @@ public class ClusterUtils
 	 * @param branchSpot the branch spot
 	 * @param tagSet the tag set
 	 * @return the tag label
-	 * TODO remove after mastodon-core release 1.0.0-beta-30 and replace by TagSetUtils.getTagValue
+	 * TODO remove after mastodon-core release 1.0.0-beta-31 and replace by TagSetUtils.getTagValue
 	 */
 	public static String getTagLabel( final Model model, final BranchSpot branchSpot, final TagSetStructure.TagSet tagSet )
 	{

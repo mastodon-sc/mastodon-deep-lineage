@@ -336,7 +336,7 @@ public class LineageTreeUtils {
 	 * @param model the {@link Model} to which the {@link BranchSpot} belongs
 	 * @param branchSpot the {@link BranchSpot} to query
 	 * @return the first {@link Spot}
-	 * TODO can be replaced by TreeUtils.getFirstSpot after Mastodon core release 1.0.0-beta-30
+	 * TODO can be replaced by TreeUtils.getFirstSpot after Mastodon core release 1.0.0-beta-31
 	 */
 	public static Spot getFirstSpot( final Model model, final BranchSpot branchSpot )
 	{
