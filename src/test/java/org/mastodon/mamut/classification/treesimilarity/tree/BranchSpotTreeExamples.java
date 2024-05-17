@@ -26,8 +26,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.treesimilarity.tree;
+package org.mastodon.mamut.classification.treesimilarity.tree;
 
+import org.mastodon.mamut.classification.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;

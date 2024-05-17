@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.treesimilarity.util;
+package org.mastodon.mamut.classification.treesimilarity.util;
 
 
 import java.util.ArrayList;
@@ -39,11 +39,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
-import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
-import org.mastodon.mamut.treesimilarity.tree.SimpleTree;
-import org.mastodon.mamut.treesimilarity.tree.SimpleTreeExamples;
-import org.mastodon.mamut.treesimilarity.tree.Tree;
-import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
+import org.mastodon.mamut.classification.treesimilarity.ZhangUnorderedTreeEditDistance;
+import org.mastodon.mamut.classification.treesimilarity.tree.SimpleTree;
+import org.mastodon.mamut.classification.treesimilarity.tree.SimpleTreeExamples;
+import org.mastodon.mamut.classification.treesimilarity.tree.Tree;
+import org.mastodon.mamut.classification.treesimilarity.tree.TreeUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

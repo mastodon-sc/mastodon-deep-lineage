@@ -26,14 +26,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.classification.treesimilarity;
 
-import org.mastodon.mamut.treesimilarity.tree.Node;
-import org.mastodon.mamut.treesimilarity.tree.Tree;
-import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
-import org.mastodon.mamut.treesimilarity.util.FlowNetwork;
-import org.mastodon.mamut.treesimilarity.util.NodeMapping;
-import org.mastodon.mamut.treesimilarity.util.NodeMappings;
+import org.mastodon.mamut.classification.treesimilarity.tree.Node;
+import org.mastodon.mamut.classification.treesimilarity.tree.Tree;
+import org.mastodon.mamut.classification.treesimilarity.tree.TreeUtils;
+import org.mastodon.mamut.classification.treesimilarity.util.NodeMapping;
+import org.mastodon.mamut.classification.treesimilarity.util.FlowNetwork;
+import org.mastodon.mamut.classification.treesimilarity.util.NodeMappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

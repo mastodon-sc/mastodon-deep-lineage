@@ -26,7 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.treesimilarity.tree;
+package org.mastodon.mamut.classification.treesimilarity.tree;
+
+import org.mastodon.mamut.classification.treesimilarity.tree.SimpleTree;
+import org.mastodon.mamut.classification.treesimilarity.tree.Tree;
 
 public class SimpleTreeExamples
 {

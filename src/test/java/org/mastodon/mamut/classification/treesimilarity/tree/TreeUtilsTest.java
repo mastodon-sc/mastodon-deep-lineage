@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.treesimilarity.tree;
+package org.mastodon.mamut.classification.treesimilarity.tree;
 
 import org.junit.jupiter.api.Test;
 

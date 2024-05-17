@@ -26,29 +26,53 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.treesimilarity.tree;
+package org.mastodon.mamut.classification.treesimilarity.tree;
 
-/**
- * A tree data structure.
- *
- * @param <T> the type of the attribute of the tree nodes.
- */
-public interface Tree< T > extends Node< Tree< T > >
+import org.junit.jupiter.api.Test;
+import org.mastodon.mamut.classification.treesimilarity.tree.SimpleTree;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class SimpleTreeTest
 {
 
-	/**
-	 * Get the attribute of this {@link Tree}.
-	 *
-	 * @return the attribute.
-	 */
-	T getAttribute();
-
-	/**
-	 * Returns {@code true}, if this {@link Tree} is a leaf, i.e. has no children.
-	 * @return {@code true} if this {@link Tree} is a leaf, {@code false} otherwise.
-	 */
-	default boolean isLeaf()
+	@Test
+	void testGetChildren()
 	{
-		return getChildren().isEmpty();
+		SimpleTree< Number > tree = new SimpleTree<>( 0 );
+		SimpleTree< Number > child1 = new SimpleTree<>( 1 );
+		SimpleTree< Number > child2 = new SimpleTree<>( 2 );
+		tree.addChild( child1 );
+		tree.addChild( child2 );
+		List< SimpleTree< Number > > expected = new ArrayList<>( Arrays.asList( child1, child2 ) );
+		assertEquals( expected, tree.getChildren() );
+	}
+
+	@Test
+	void testGetAttribute()
+	{
+		int attribute = 1;
+		SimpleTree< Number > tree = new SimpleTree<>( attribute );
+		assertEquals( attribute, tree.getAttribute() );
+	}
+
+	@Test
+	void testAddSubtree()
+	{
+		SimpleTree< Number > tree = new SimpleTree<>( 0 );
+		SimpleTree< Number > child1 = new SimpleTree<>( 1 );
+		tree.addChild( child1 );
+		assertEquals( child1, tree.getChildren().iterator().next() );
+	}
+
+	@Test
+	void testTestToString()
+	{
+		SimpleTree< Number > tree = new SimpleTree<>( 0 );
+		assertEquals( "SimpleTree@" + tree.hashCode(), tree.toString() );
 	}
 }

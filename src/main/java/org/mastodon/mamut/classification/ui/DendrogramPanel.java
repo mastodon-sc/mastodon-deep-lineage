@@ -34,7 +34,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 import org.mastodon.mamut.classification.util.Classification;
-import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
+import org.mastodon.mamut.classification.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;

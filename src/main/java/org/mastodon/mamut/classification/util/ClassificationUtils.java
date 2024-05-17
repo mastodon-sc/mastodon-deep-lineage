@@ -41,7 +41,7 @@ import org.mastodon.mamut.classification.config.SimilarityMeasure;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.mamut.treesimilarity.tree.Tree;
+import org.mastodon.mamut.classification.treesimilarity.tree.Tree;
 import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.ColorUtils;

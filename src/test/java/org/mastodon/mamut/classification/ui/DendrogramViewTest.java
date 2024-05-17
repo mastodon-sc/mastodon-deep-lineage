@@ -33,7 +33,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.classification.util.Classification;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.treesimilarity.tree.BranchSpotTree;
+import org.mastodon.mamut.classification.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.util.TagSetUtils;
 import org.scijava.Context;
 import org.scijava.prefs.PrefService;

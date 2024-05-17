@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.treesimilarity.util;
+package org.mastodon.mamut.classification.treesimilarity.util;
 
 import org.jgrapht.alg.flow.PushRelabelMFImpl;
 import org.jgrapht.alg.flow.mincost.CapacityScalingMinimumCostFlow;

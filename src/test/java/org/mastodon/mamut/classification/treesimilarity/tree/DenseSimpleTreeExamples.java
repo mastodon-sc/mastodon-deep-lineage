@@ -26,10 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.treesimilarity.tree;
+package org.mastodon.mamut.classification.treesimilarity.tree;
 
-import org.mastodon.mamut.treesimilarity.TreeDistances;
-import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
+import org.mastodon.mamut.classification.treesimilarity.TreeDistances;
+import org.mastodon.mamut.classification.treesimilarity.ZhangUnorderedTreeEditDistance;
 
 public class DenseSimpleTreeExamples
 {

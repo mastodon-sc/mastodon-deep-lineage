@@ -26,13 +26,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.treesimilarity.util;
+package org.mastodon.mamut.classification.treesimilarity.util;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
-import org.mastodon.mamut.treesimilarity.tree.Tree;
+import org.mastodon.mamut.classification.treesimilarity.tree.Tree;
+import org.mastodon.mamut.classification.treesimilarity.ZhangUnorderedTreeEditDistance;
 
 /**
  * Helper class for {@link ZhangUnorderedTreeEditDistance}.

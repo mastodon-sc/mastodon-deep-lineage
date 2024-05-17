@@ -26,25 +26,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.treesimilarity.tree;
+package org.mastodon.mamut.classification.treesimilarity.tree;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Iterator;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class TreeTest
+/**
+ * A tree data structure.
+ *
+ * @param <T> the type of the attribute of the tree nodes.
+ */
+public interface Tree< T > extends Node< Tree< T > >
 {
-	@Test
-	void testIsLeaf()
+
+	/**
+	 * Get the attribute of this {@link Tree}.
+	 *
+	 * @return the attribute.
+	 */
+	T getAttribute();
+
+	/**
+	 * Returns {@code true}, if this {@link Tree} is a leaf, i.e. has no children.
+	 * @return {@code true} if this {@link Tree} is a leaf, {@code false} otherwise.
+	 */
+	default boolean isLeaf()
 	{
-		assertTrue( SimpleTreeExamples.emptyTree().isLeaf() );
-		Tree< Double > tree1 = SimpleTreeExamples.tree1();
-		assertFalse( tree1.isLeaf() );
-		Iterator< Tree< Double > > iterator = tree1.getChildren().iterator();
-		assertTrue( iterator.next().isLeaf() );
-		assertTrue( iterator.next().isLeaf() );
+		return getChildren().isEmpty();
 	}
 }

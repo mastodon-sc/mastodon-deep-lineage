@@ -1,7 +1,7 @@
-package org.mastodon.mamut.treesimilarity;
+package org.mastodon.mamut.classification.treesimilarity;
 
-import org.mastodon.mamut.treesimilarity.tree.Tree;
-import org.mastodon.mamut.treesimilarity.tree.TreeUtils;
+import org.mastodon.mamut.classification.treesimilarity.tree.Tree;
+import org.mastodon.mamut.classification.treesimilarity.tree.TreeUtils;
 
 import javax.annotation.Nullable;
 import java.util.function.ToDoubleBiFunction;

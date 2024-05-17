@@ -1,4 +1,4 @@
-package org.mastodon.mamut.treesimilarity.tree;
+package org.mastodon.mamut.classification.treesimilarity.tree;
 
 import java.util.Collection;
 

@@ -26,52 +26,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.treesimilarity.tree;
+package org.mastodon.mamut.classification.treesimilarity.tree;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Iterator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SimpleTreeTest
+class TreeTest
 {
-
 	@Test
-	void testGetChildren()
+	void testIsLeaf()
 	{
-		SimpleTree< Number > tree = new SimpleTree<>( 0 );
-		SimpleTree< Number > child1 = new SimpleTree<>( 1 );
-		SimpleTree< Number > child2 = new SimpleTree<>( 2 );
-		tree.addChild( child1 );
-		tree.addChild( child2 );
-		List< SimpleTree< Number > > expected = new ArrayList<>( Arrays.asList( child1, child2 ) );
-		assertEquals( expected, tree.getChildren() );
-	}
-
-	@Test
-	void testGetAttribute()
-	{
-		int attribute = 1;
-		SimpleTree< Number > tree = new SimpleTree<>( attribute );
-		assertEquals( attribute, tree.getAttribute() );
-	}
-
-	@Test
-	void testAddSubtree()
-	{
-		SimpleTree< Number > tree = new SimpleTree<>( 0 );
-		SimpleTree< Number > child1 = new SimpleTree<>( 1 );
-		tree.addChild( child1 );
-		assertEquals( child1, tree.getChildren().iterator().next() );
-	}
-
-	@Test
-	void testTestToString()
-	{
-		SimpleTree< Number > tree = new SimpleTree<>( 0 );
-		assertEquals( "SimpleTree@" + tree.hashCode(), tree.toString() );
+		assertTrue( SimpleTreeExamples.emptyTree().isLeaf() );
+		Tree< Double > tree1 = SimpleTreeExamples.tree1();
+		assertFalse( tree1.isLeaf() );
+		Iterator< Tree< Double > > iterator = tree1.getChildren().iterator();
+		assertTrue( iterator.next().isLeaf() );
+		assertTrue( iterator.next().isLeaf() );
 	}
 }

@@ -29,9 +29,9 @@
 package org.mastodon.mamut.classification.config;
 
 import org.apache.commons.lang3.function.TriFunction;
-import org.mastodon.mamut.treesimilarity.TreeDistances;
-import org.mastodon.mamut.treesimilarity.ZhangUnorderedTreeEditDistance;
-import org.mastodon.mamut.treesimilarity.tree.Tree;
+import org.mastodon.mamut.classification.treesimilarity.TreeDistances;
+import org.mastodon.mamut.classification.treesimilarity.ZhangUnorderedTreeEditDistance;
+import org.mastodon.mamut.classification.treesimilarity.tree.Tree;
 
 import java.util.NoSuchElementException;
 import java.util.function.ToDoubleBiFunction;
