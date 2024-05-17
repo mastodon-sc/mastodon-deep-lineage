@@ -40,7 +40,7 @@ import net.imglib2.img.display.imagej.ImgToVirtualStack;
 import net.imglib2.type.numeric.real.FloatType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.clustering.util.ClusterUtils;
+import org.mastodon.mamut.classification.util.ClassificationUtils;
 import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.Model;
@@ -205,7 +205,7 @@ public class AstecReader
 			while ( ( line = reader.readNext() ) != null )
 				tags.add( line[ 0 ] );
 			List< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
-			List< Integer > colors = ClusterUtils.getGlasbeyColors( tags.size() );
+			List< Integer > colors = ClassificationUtils.getGlasbeyColors( tags.size() );
 			tags.forEach( tag -> tagsAndColors.add( Pair.of( tag, colors.get( tags.indexOf( tag ) ) ) ) );
 			return TagSetUtils.addNewTagSetToModel( this.model, tagSetName, tagsAndColors );
 		}
