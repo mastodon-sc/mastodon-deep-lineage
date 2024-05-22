@@ -92,7 +92,7 @@ class BranchSpotTreeTest
 	void testToString()
 	{
 		ExampleGraph2 example = new ExampleGraph2();
-		BranchSpotTree tree = new BranchSpotTree( example.branchSpotB, 20, example.getModel() );
+		BranchSpotTree tree = new BranchSpotTree( example.branchSpotB, 0, 20, example.getModel() );
 		// Note: spot3 is the first spot of branchSpotB.
 		assertEquals( example.spot3.getLabel(), tree.toString() );
 	}
@@ -103,15 +103,15 @@ class BranchSpotTreeTest
 	{
 		ExampleGraph2 example = new ExampleGraph2();
 		// NB: 2 is not a timepoint of branchSpotB, it only starts at 4.
-		assertThrows( IllegalArgumentException.class, () -> new BranchSpotTree( example.branchSpotB, 2 ) );
-		assertThrows( IllegalArgumentException.class, () -> new BranchSpotTree( null, 0 ) );
+		assertThrows( IllegalArgumentException.class, () -> new BranchSpotTree( example.branchSpotB, 0, 2 ) );
+		assertThrows( IllegalArgumentException.class, () -> new BranchSpotTree( null, 0, 0 ) );
 	}
 
 	@Test
 	void testUpdateLabeling()
 	{
 		ExampleGraph2 example = new ExampleGraph2();
-		BranchSpotTree tree = new BranchSpotTree( example.branchSpotB, 20, example.getModel() );
+		BranchSpotTree tree = new BranchSpotTree( example.branchSpotB, 0, 20, example.getModel() );
 		final String tagSetName = "tagSet";
 		final String tagName1 = "tag1";
 		final String tagName2 = "tag2";
