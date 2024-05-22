@@ -10,7 +10,7 @@
 
     <groupId>org.mastodon</groupId>
     <artifactId>mastodon-deep-lineage</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.1-SNAPSHOT</version>
 
     <properties>
         <package-name>org.mastodon</package-name>
