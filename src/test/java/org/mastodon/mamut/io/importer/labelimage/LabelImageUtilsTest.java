@@ -233,7 +233,7 @@ class LabelImageUtilsTest
 		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
-			Img< FloatType > twoFramesImage = DemoUtils.generateExampleImage();
+			Img< FloatType > twoFramesImage = DemoUtils.generateExampleTStack();
 			ImgPlus< FloatType > imgPlus = createImgPlus( twoFramesImage, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( twoFramesImage, model, context );
 			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1, true );

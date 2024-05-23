@@ -108,9 +108,9 @@ public class DemoUtils
 	}
 
 	/**
-	 * Returns an example image with a single ellipsoid and black background.
+	 * Returns an example t stack that contains two identical frames where both contain a single ellipsoid and black background.
 	 */
-	public static Img< FloatType > generateExampleImage()
+	public static Img< FloatType > generateExampleTStack()
 	{
 		double[] center = { 40, 80, 50 };
 		double[][] givenCovariance = {

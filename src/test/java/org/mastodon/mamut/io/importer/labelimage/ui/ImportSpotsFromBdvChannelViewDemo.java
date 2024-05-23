@@ -49,13 +49,13 @@ public class ImportSpotsFromBdvChannelViewDemo
 		UIService ui = context.service( UIService.class );
 		CommandService cmd = context.service( CommandService.class );
 
-		Img< FloatType > image = DemoUtils.generateExampleImage();
+		Img< FloatType > tStack = DemoUtils.generateExampleTStack();
 
 		// show ImageJ
 		ui.showUI();
 		// open the image in Mastodon
 		Model model = new Model();
-		ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
+		ProjectModel projectModel = DemoUtils.wrapAsAppModel( tStack, model, context );
 		new MainWindow( projectModel ).setVisible( true );
 		projectModel.getWindowManager().createView( MamutViewBdv.class );
 		// run import spots command
