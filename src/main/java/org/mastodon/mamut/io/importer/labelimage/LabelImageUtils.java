@@ -180,6 +180,9 @@ public class LabelImageUtils
 
 	/**
 	 * Create spots from the labels in the given frame.
+	 * <br>
+	 * Single pixel labels are a special case. They are ignored by this method. If a label has only one pixel, no spot is created.
+	 * <br>
 	 * @param graph the graph to add the spots to.
 	 * @param frameId the frame id the spots should belong to.
 	 * @param labels the labels in the frame.

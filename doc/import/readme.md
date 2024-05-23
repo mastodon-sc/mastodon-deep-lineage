@@ -9,9 +9,11 @@
 * The label image is expected to have the same dimensions as the image data in Mastodon.
 * Labels are processed frame by frame.
 * Multiple blobs with the same id in the same frame are considered to belong to the same spot by this importer. It is
-  advised to use a unique ids for spots in the same frame.
+  advised to use unique ids for spots in the same frame.
 * The resulting spots are ellipsoids with the semi axes computed from the variance covariance matrix of this pixel
   positions of each label.
+* Labels with only one pixel are ignored. This is because the variance covariance matrix is not defined for a single
+  point. If you want to import single pixel spots, you can use the `Import Spots from CSV` plugin.
 * The resulting spots may be linked using the linker plugin in Mastodon (`Plugins > Tracking > Linking...`)
   or [Elephant](https://elephant-track.github.io/#/?id=linking-workflow).
 
