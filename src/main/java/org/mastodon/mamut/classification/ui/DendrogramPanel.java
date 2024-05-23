@@ -253,7 +253,7 @@ public class DendrogramPanel< T > extends JPanel
 		}
 		catch ( IOException e )
 		{
-			logger.error( "Could not save dendrogram to File: {}. Message: {}", file.getAbsolutePath(), e.getMessage() );
+			logger.error( "Could not save dendrogram as PNG to File: {}. Message: {}", file.getAbsolutePath(), e.getMessage() );
 		}
 	}
 
@@ -267,7 +267,7 @@ public class DendrogramPanel< T > extends JPanel
 		}
 		catch ( IOException e )
 		{
-			logger.error( "Could not save dendrogram to File: {}. Message: {}", file.getAbsolutePath(), e.getMessage() );
+			logger.error( "Could not save dendrogram as SVG to File: {}. Message: {}", file.getAbsolutePath(), e.getMessage() );
 		}
 	}
 
