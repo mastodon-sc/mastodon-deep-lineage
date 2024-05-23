@@ -246,6 +246,23 @@ class LabelImageUtilsTest
 	}
 
 	@Test
+	void testImportSpotsFromImgPlusNonSequentialLabels()
+	{
+		LegacyInjector.preinit();
+		try (Context context = new Context())
+		{
+			Img< FloatType > image = DemoUtils.generateNonSequentialLabelImage();
+			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
+			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1, true );
+
+			assertEquals( 2, model.getGraph().vertices().size() );
+			assertEquals( 0, model.getGraph().edges().size() );
+			assertEquals( 2, model.getSpatioTemporalIndex().getSpatialIndex( 0 ).size() );
+		}
+	}
+
+	@Test
 	void testDimensionsMatch()
 	{
 		LegacyInjector.preinit();

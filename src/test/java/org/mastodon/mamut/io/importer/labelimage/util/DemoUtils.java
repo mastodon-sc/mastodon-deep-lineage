@@ -55,6 +55,7 @@ import org.scijava.Context;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -124,6 +125,46 @@ public class DemoUtils
 		Img< FloatType > frame = generateExampleImage( center, givenCovariance, dimensions, background, pixelValue );
 		List< Img< FloatType > > twoIdenticalFrames = Arrays.asList( frame, frame );
 		return ImgView.wrap( Views.stack( twoIdenticalFrames ) );
+	}
+
+	/**
+	 * Returns an image with two ellipsoids having the values 1 and 3. The background is black, i.e. 0.
+	 */
+	public static Img< FloatType > generateNonSequentialLabelImage()
+	{
+		double[] center1 = { 10, 10, 10 };
+		double[][] givenCovariance1 = {
+				{ 400, 20, -10 },
+				{ 20, 200, 30 },
+				{ -10, 30, 100 }
+		};
+		double[] center3 = { 90, 90, 90 };
+		double[][] givenCovariance3 = {
+				{ 400, 20, -10 },
+				{ 20, 200, 30 },
+				{ -10, 30, 100 }
+		};
+		long[] dimensions = { 100, 100, 100 };
+		int background = 0;
+		int pixelValue1 = 1;
+		int pixelValue3 = 3;
+		Img< FloatType > img1 = generateExampleImage( center1, givenCovariance1, dimensions, background, pixelValue1 );
+		Img< FloatType > img3 = generateExampleImage( center3, givenCovariance3, dimensions, background, pixelValue3 );
+
+		// use imglib2 to xor the two images
+		Img< FloatType > xorImage = ArrayImgs.floats( dimensions );
+		LoopBuilder.setImages( img1, img3, xorImage ).forEachPixel( ( p1, p2, x ) -> {
+			if ( p1.get() == 0 && p2.get() == 0 )
+				x.set( 0 );
+			else if ( p1.get() == 0 && p2.get() != 0 )
+				x.set( p2.get() );
+			else if ( p1.get() != 0 && p2.get() == 0 )
+				x.set( p1.get() );
+			else
+				x.set( 4 ); // NB: there is no overlap
+		} );
+		List< Img< FloatType > > singleFrameImage = Collections.singletonList( xorImage );
+		return ImgView.wrap( Views.stack( singleFrameImage ) );
 	}
 
 	/**
