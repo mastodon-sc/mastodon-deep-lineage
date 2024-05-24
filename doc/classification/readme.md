@@ -146,7 +146,10 @@ Tree2
   similar to each other, but dissimilar to the other
   trees. ![Trackscheme](trackscheme.png)
 * The lineage classification dialog. ![Settings](settings.png)
-* The resulting dendrogram. ![Dendrogram](dendrogram.png)
+* The resulting dendrogram.
+  * User can toggle on/off root labes, tags, classification threshold and median of the tree edit distances.
+  * Export options to SVG and PNG accessible via a context menu.
+  * ![Dendrogram](dendrogram.png)
 * The resulting tag set used for coloring the track
   scheme. ![Trackscheme with tags](trackscheme_with_tags.png)
 * The resulting tag set used for coloring the track scheme branch
