@@ -117,8 +117,10 @@ Tree2
     * Number of spots
 * Crop start
 * Crop end
-* Number of classes (minimum 2)
+* Number of classes
+  * Must not be greater than the number of lineage trees
 * Minimum number of divisions
+  * The minimum number of divisions a lineage tree must have to be considered in the classification
 * Similarity measures:
   1. (default) ![normalized_zhang_distance.gif](normalized_zhang_distance.gif)<sup>1,2</sup>
   2. ![per_branch_zhang_distance.gif](per_branch_zhang_distance.gif)<sup>1</sup>
