@@ -133,7 +133,7 @@ public class ClassificationUtils
 	 * @param similarityMeasure the similarity measure to be used
 	 * @return a symmetric quadratic distance matrix
 	 */
-	public static double[][] getDistanceMatrix( final Tree< Double >[][] treeMatrix, final SimilarityMeasure similarityMeasure )
+	public static double[][] getAverageDistanceMatrix( final Tree< Double >[][] treeMatrix, final SimilarityMeasure similarityMeasure )
 	{
 		if ( treeMatrix.length == 0 )
 			return new double[ 0 ][ 0 ];
