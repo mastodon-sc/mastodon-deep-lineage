@@ -207,6 +207,38 @@ class ClassificationUtilsTest
 	}
 
 	@Test
+	@SuppressWarnings( "unchecked" )
+	void testGetAverageDistanceMatrix()
+	{
+		Tree< Double > tree1 = SimpleTreeExamples.tree1();
+		Tree< Double > tree2 = SimpleTreeExamples.tree2();
+		Tree< Double > tree3 = SimpleTreeExamples.tree3();
+
+		Tree< Double >[] trees1 = new Tree[] { tree1, tree2, tree3 };
+		Tree< Double >[] trees2 = new Tree[] { tree1, tree2, tree3 };
+
+		Tree< Double >[][] tree2DArray1 = new Tree[][] { trees1, trees2 };
+
+		double t1t2 = 20d;
+		double t1t3 = 100d;
+		double t2t3 = 104d;
+
+		// trivial case - two identical set of trees
+		double[][] distanceMatrix =
+				ClassificationUtils.getAverageDistanceMatrix( tree2DArray1, SimilarityMeasure.ZHANG_DISTANCE );
+		assertArrayEquals( new double[] { 0, t1t2, t1t3 }, distanceMatrix[ 0 ], 0d );
+		assertArrayEquals( new double[] { t1t2, 0, t2t3 }, distanceMatrix[ 1 ], 0d );
+		assertArrayEquals( new double[] { t1t3, t2t3, 0 }, distanceMatrix[ 2 ], 0d );
+
+		Tree< Double >[][] tree2DArray2 = new Tree[][] { { tree1, tree2, tree3 }, { tree2, tree1, tree3 } };
+		distanceMatrix = ClassificationUtils.getAverageDistanceMatrix( tree2DArray2, SimilarityMeasure.ZHANG_DISTANCE );
+		assertArrayEquals( new double[] { 0, t1t2, ( t1t3 + t2t3 ) / 2d }, distanceMatrix[ 0 ], 0d );
+		assertArrayEquals( new double[] { t1t2, 0, ( t1t3 + t2t3 ) / 2d }, distanceMatrix[ 1 ], 0d );
+		assertArrayEquals( new double[] { ( t1t3 + t2t3 ) / 2d, ( t1t3 + t2t3 ) / 2d, 0 }, distanceMatrix[ 2 ], 0d );
+
+	}
+
+	@Test
 	void testExceptions()
 	{
 		LinkageStrategy linkageStrategy = new AverageLinkageUPGMAStrategy();
