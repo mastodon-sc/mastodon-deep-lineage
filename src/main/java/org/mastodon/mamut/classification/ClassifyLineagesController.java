@@ -171,7 +171,7 @@ public class ClassifyLineagesController
 		dendrogramView.show();
 	}
 
-	private Classification< BranchSpotTree > classifyLineageTrees( List< BranchSpotTree > roots )
+	private Classification< BranchSpotTree > classifyLineageTrees( final List< BranchSpotTree > roots )
 	{
 		logger.debug( "Start computing similarity matrix for {} lineage trees.", roots.size() );
 		double[][] distances = ClassificationUtils.getDistanceMatrix( roots, similarityMeasure );
@@ -202,7 +202,8 @@ public class ClassifyLineagesController
 		return tagsAndColors;
 	}
 
-	private void applyClassification( Classification< BranchSpotTree > classification, List< Pair< String, Integer > > tagsAndColors )
+	private void applyClassification( final Classification< BranchSpotTree > classification,
+			final List< Pair< String, Integer > > tagsAndColors )
 	{
 		Set< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, getTagSetName(), tagsAndColors );
@@ -279,7 +280,8 @@ public class ClassifyLineagesController
 		logger.debug( "Crop criterion {}, start: {}, end: {}", cropCriterion.getName(), this.cropStart, this.cropEnd );
 	}
 
-	public void setComputeParams( SimilarityMeasure similarityMeasure, ClusteringMethod clusteringMethod, int numberOfClasses )
+	public void setComputeParams( final SimilarityMeasure similarityMeasure, final ClusteringMethod clusteringMethod,
+			final int numberOfClasses )
 	{
 		this.similarityMeasure = similarityMeasure;
 		this.clusteringMethod = clusteringMethod;
