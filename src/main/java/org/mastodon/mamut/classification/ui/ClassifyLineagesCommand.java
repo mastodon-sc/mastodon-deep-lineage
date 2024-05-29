@@ -131,11 +131,20 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	@SuppressWarnings("unused")
 	private void update()
 	{
+		updateParams();
+		updateFeedback();
+	}
+
+	private void updateParams()
+	{
 		controller.setInputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
 		controller.setComputeParams(
 				SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses );
 		controller.setVisualisationParams( showDendrogram );
+	}
 
+	private void updateFeedback()
+	{
 		paramFeedback = "<html><body width=" + WIDTH_INPUT + "cm>";
 		if ( controller.isValidParams() )
 			paramFeedback += "<font color=green>Parameters are valid.";
