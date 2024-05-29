@@ -41,6 +41,7 @@ import org.scijava.widget.Button;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
@@ -102,6 +103,10 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	@SuppressWarnings("unused")
 	@Parameter(label = "Feature", choices = "Branch duration", callback = "update")
 	private String branchDuration;
+
+	@SuppressWarnings( "unused" )
+	@Parameter( label = "List of projects", style = "files,extensions:mastodon", persist = false, callback = "update" )
+	private File[] projects = new File[ 0 ];
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Show dendrogram of clustering", callback = "update")
