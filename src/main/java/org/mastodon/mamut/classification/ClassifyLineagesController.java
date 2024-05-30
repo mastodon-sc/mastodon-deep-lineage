@@ -173,16 +173,10 @@ public class ClassifyLineagesController
 
 	private Classification< BranchSpotTree > classifyLineageTrees( final List< BranchSpotTree > roots )
 	{
-		logger.debug( "Start computing similarity matrix for {} lineage trees.", roots.size() );
 		double[][] distances = ClassificationUtils.getDistanceMatrix( roots, similarityMeasure );
-		logger.debug(
-				"Finished computing similarity matrix. Shape: {}x{}={} entries.", distances.length, distances[ 0 ].length,
-				distances.length * distances[ 0 ].length
-		);
 		BranchSpotTree[] rootBranchSpots = roots.toArray( new BranchSpotTree[ 0 ] );
 		Classification< BranchSpotTree > result = ClassificationUtils.getClassificationByClassCount( rootBranchSpots, distances,
-				clusteringMethod.getLinkageStrategy(), numberOfClasses
-		);
+				clusteringMethod.getLinkageStrategy(), numberOfClasses );
 		logger.debug(
 				"Finished hierarchical clustering. Created {} object classifications.", result.getObjectClassifications().size() );
 		return result;

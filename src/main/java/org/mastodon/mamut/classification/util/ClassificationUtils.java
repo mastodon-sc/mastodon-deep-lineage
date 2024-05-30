@@ -85,6 +85,7 @@ public class ClassificationUtils
 	public static < T extends Tree< Double > > double[][] getDistanceMatrix( final List< T > trees,
 			final SimilarityMeasure similarityMeasure )
 	{
+		logger.debug( "Start computing similarity matrix for {} lineage trees.", trees.size() );
 		int size = trees.size();
 		double[][] distances = new double[ size ][ size ];
 		List< Pair< Integer, Integer > > pairs = new ArrayList<>();
@@ -116,6 +117,8 @@ public class ClassificationUtils
 		} );
 		stopWatch.stop();
 		logger.debug( "Computed all distances in {} s.", stopWatch.getTime() / 1000d );
+		logger.debug( "Shape of similarity matrix: {}x{}={} entries.", distances.length, distances[ 0 ].length,
+				distances.length * distances[ 0 ].length );
 
 		return distances;
 	}
