@@ -146,6 +146,7 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 		controller.setComputeParams(
 				SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses );
 		controller.setVisualisationParams( showDendrogram );
+		controller.setExternalProjects( projects );
 	}
 
 	private void updateFeedback()
