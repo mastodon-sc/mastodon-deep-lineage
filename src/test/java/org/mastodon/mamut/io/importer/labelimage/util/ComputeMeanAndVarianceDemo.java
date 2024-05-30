@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.io.importer.labelimage.util;
 
+import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.sequence.DefaultVoxelDimensions;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.patcher.LegacyInjector;
@@ -38,6 +39,7 @@ import net.imglib2.util.Cast;
 import net.imglib2.util.LinAlgHelpers;
 import net.imglib2.util.Pair;
 import net.imglib2.util.StopWatch;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
@@ -93,7 +95,9 @@ public class ComputeMeanAndVarianceDemo
 			System.out.println( "Time to compute mean and covariance online: \n" + stopWatchOnline.nanoTime() / 1e9 + " nano seconds" );
 
 			Model model = new Model();
-			model.getGraph().addVertex().init( 0, onlineMean, onlineCovariance );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
+			SourceAndConverter< ? > sourceAndConverter = projectModel.getSharedBdvData().getSources().get( 0 );
+			LabelImageUtils.importSpotsFromBdvChannel( projectModel, sourceAndConverter.getSpimSource(), 1d, false );
 			DemoUtils.showBdvWindow( DemoUtils.wrapAsAppModel( image, model, context ) );
 		}
 	}
