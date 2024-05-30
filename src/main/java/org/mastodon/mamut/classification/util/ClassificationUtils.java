@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -133,18 +132,20 @@ public class ClassificationUtils
 	 * @param similarityMeasure the similarity measure to be used
 	 * @return a symmetric quadratic distance matrix
 	 */
-	public static double[][] getAverageDistanceMatrix( final Tree< Double >[][] treeMatrix, final SimilarityMeasure similarityMeasure )
+	public static double[][] getAverageDistanceMatrix( final List< List< Tree< Double > > > treeMatrix,
+			final SimilarityMeasure similarityMeasure )
 	{
-		if ( treeMatrix.length == 0 )
+		if ( treeMatrix.isEmpty() )
 			return new double[ 0 ][ 0 ];
 
-		double[][] result = new double[ treeMatrix[ 0 ].length ][ treeMatrix[ 0 ].length ];
-		for ( Tree< Double >[] trees : treeMatrix )
+		int numberOfTrees = treeMatrix.get( 0 ).size();
+		double[][] result = new double[ numberOfTrees ][ numberOfTrees ];
+		for ( List< Tree< Double > > trees : treeMatrix )
 		{
-			double[][] temp = getDistanceMatrix( Arrays.asList( trees ), similarityMeasure );
+			double[][] temp = getDistanceMatrix( trees, similarityMeasure );
 			LinAlgHelpers.add( result, temp, result );
 		}
-		LinAlgHelpers.scale( result, 1d / treeMatrix.length, result );
+		LinAlgHelpers.scale( result, 1d / treeMatrix.size(), result );
 		return result;
 	}
 
