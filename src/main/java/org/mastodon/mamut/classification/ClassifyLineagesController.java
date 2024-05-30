@@ -38,6 +38,7 @@ import org.mastodon.mamut.classification.util.Classification;
 import org.mastodon.mamut.classification.config.CropCriteria;
 import org.mastodon.mamut.classification.ui.DendrogramView;
 import org.mastodon.mamut.classification.util.ClassificationUtils;
+import org.mastodon.mamut.classification.util.ProjectAccessor;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -57,11 +58,14 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 /**
  * Controller class that serves as bridge between the classification algorithm and the user interface.
@@ -147,13 +151,74 @@ public class ClassifyLineagesController
 
 	private void runClassification()
 	{
-		List< BranchSpotTree > roots = getRoots();
-		double[][] distances = ClassificationUtils.getDistanceMatrix( roots, similarityMeasure );
+		Pair< List< BranchSpotTree >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
+		List< BranchSpotTree > roots = rootsAndDistances.getLeft();
+		double[][] distances = rootsAndDistances.getRight();
 		classification = classifyLineageTrees( roots, distances );
 		List< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
 		applyClassification( classification, tagsAndColors );
 		if ( showDendrogram )
 			showDendrogram();
+	}
+
+	private Pair< List< BranchSpotTree >, double[][] > getRootsAndDistanceMatrix()
+	{
+		List< BranchSpotTree > roots = getRoots();
+		if ( externalProjects.isEmpty() )
+		{
+			double[][] distances = ClassificationUtils.getDistanceMatrix( roots, similarityMeasure );
+			return Pair.of( roots, distances );
+		}
+
+		try (ProjectAccessor projectAccessor = new ProjectAccessor( externalProjects, referenceProjectModel.getContext() ))
+		{
+			List< ProjectModel > externalProjectModels = projectAccessor.getProjectModels();
+			List< String > commonRootNames = findCommonRootNames( externalProjectModels );
+			if ( logger.isDebugEnabled() )
+			{
+				logger.info( "Found {} common root names in {} projects.", commonRootNames.size(), externalProjectModels.size() + 1 );
+				String names = commonRootNames.stream().map( Object::toString ).collect( Collectors.joining( "," ) );
+				logger.debug( "Common root names are: {}", names );
+			}
+			List< List< BranchSpotTree > > treeMatrix = new ArrayList<>();
+
+			keepCommonRootsAndSort( roots, commonRootNames );
+			treeMatrix.add( roots );
+			for ( ProjectModel projectModel : externalProjectModels )
+			{
+				List< BranchSpotTree > externalRoots = getRoots( projectModel );
+				keepCommonRootsAndSort( externalRoots, commonRootNames );
+				treeMatrix.add( externalRoots );
+			}
+			return Pair.of( roots, ClassificationUtils.getAverageDistanceMatrix( treeMatrix, similarityMeasure ) );
+		}
+	}
+
+	private List< String > findCommonRootNames( final List< ProjectModel > externalProjectModels )
+	{
+		Set< String > commonRootNames = extractRootNamesFromProjectModel( referenceProjectModel );
+		for ( ProjectModel projectModel : externalProjectModels )
+		{
+			Set< String > rootNames = extractRootNamesFromProjectModel( projectModel );
+			commonRootNames.retainAll( rootNames );
+		}
+		List< String > commonRootNamesList = new ArrayList<>( commonRootNames );
+		commonRootNamesList.sort( String::compareTo );
+		return commonRootNamesList;
+	}
+
+	private Set< String > extractRootNamesFromProjectModel( final ProjectModel projectModel )
+	{
+		List< BranchSpotTree > roots = getRoots( projectModel );
+		Set< String > rootNames = new HashSet<>();
+		roots.forEach( root -> rootNames.add( root.getName() ) );
+		return rootNames;
+	}
+
+	private static void keepCommonRootsAndSort( final List< BranchSpotTree > roots, final List< String > commonRootNames )
+	{
+		roots.removeIf( root -> !commonRootNames.contains( root.getName() ) );
+		roots.sort( Comparator.comparing( BranchSpotTree::getName ) );
 	}
 
 	String getParameters()
