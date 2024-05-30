@@ -82,7 +82,8 @@ public class ClassificationUtils
 	 * @param similarityMeasure the similarity measure to be used
 	 * @return a symmetric quadratic distance matrix
 	 */
-	public static double[][] getDistanceMatrix( final List< Tree< Double > > trees, final SimilarityMeasure similarityMeasure )
+	public static < T extends Tree< Double > > double[][] getDistanceMatrix( final List< T > trees,
+			final SimilarityMeasure similarityMeasure )
 	{
 		int size = trees.size();
 		double[][] distances = new double[ size ][ size ];
@@ -132,7 +133,7 @@ public class ClassificationUtils
 	 * @param similarityMeasure the similarity measure to be used
 	 * @return a symmetric quadratic distance matrix
 	 */
-	public static double[][] getAverageDistanceMatrix( final List< List< Tree< Double > > > treeMatrix,
+	public static < T extends Tree< Double > > double[][] getAverageDistanceMatrix( final List< List< T > > treeMatrix,
 			final SimilarityMeasure similarityMeasure )
 	{
 		if ( treeMatrix.isEmpty() )
@@ -141,7 +142,7 @@ public class ClassificationUtils
 		logger.debug( "Computing average similarity matrix with {} sets of {} trees each.", treeMatrix.size(), treeMatrix.get( 0 ).size() );
 		int numberOfTrees = treeMatrix.get( 0 ).size();
 		double[][] result = new double[ numberOfTrees ][ numberOfTrees ];
-		for ( List< Tree< Double > > trees : treeMatrix )
+		for ( List< T > trees : treeMatrix )
 		{
 			double[][] temp = getDistanceMatrix( trees, similarityMeasure );
 			LinAlgHelpers.add( result, temp, result );
