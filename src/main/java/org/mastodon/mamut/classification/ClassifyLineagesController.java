@@ -226,6 +226,12 @@ public class ClassifyLineagesController
 
 	private List< BranchSpotTree > getRoots()
 	{
+		return getRoots( projectModel );
+	}
+
+	private List< BranchSpotTree > getRoots( final ProjectModel projectModel )
+	{
+		Model model = projectModel.getModel();
 		if ( !projectModel.getBranchGraphSync().isUptodate() )
 			model.getBranchGraph().graphRebuilt();
 
