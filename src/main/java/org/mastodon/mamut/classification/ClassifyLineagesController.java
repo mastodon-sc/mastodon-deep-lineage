@@ -174,7 +174,7 @@ public class ClassifyLineagesController
 	private Classification< BranchSpotTree > classifyLineageTrees( List< BranchSpotTree > roots )
 	{
 		logger.debug( "Start computing similarity matrix for {} lineage trees.", roots.size() );
-		double[][] distances = ClassificationUtils.getDistanceMatrix( new ArrayList<>( roots ), similarityMeasure );
+		double[][] distances = ClassificationUtils.getDistanceMatrix( roots, similarityMeasure );
 		logger.debug(
 				"Finished computing similarity matrix. Shape: {}x{}={} entries.", distances.length, distances[ 0 ].length,
 				distances.length * distances[ 0 ].length
