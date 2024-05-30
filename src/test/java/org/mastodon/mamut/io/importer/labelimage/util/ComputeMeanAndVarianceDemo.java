@@ -59,7 +59,7 @@ public class ComputeMeanAndVarianceDemo
 		LegacyInjector.preinit();
 		try (final Context context = new Context())
 		{
-			double[] center = { 40, 50, 60 };
+			double[] center = { 60, 50, 60 };
 			double[][] givenCovariance = {
 					{ 400, 20, -10 },
 					{ 20, 200, 30 },
