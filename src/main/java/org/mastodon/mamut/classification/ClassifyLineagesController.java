@@ -143,7 +143,8 @@ public class ClassifyLineagesController
 	private void runClassification()
 	{
 		List< BranchSpotTree > roots = getRoots();
-		classification = classifyLineageTrees( roots );
+		double[][] distances = ClassificationUtils.getDistanceMatrix( roots, similarityMeasure );
+		classification = classifyLineageTrees( roots, distances );
 		List< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
 		applyClassification( classification, tagsAndColors );
 		if ( showDendrogram )
@@ -171,9 +172,12 @@ public class ClassifyLineagesController
 		dendrogramView.show();
 	}
 
-	private Classification< BranchSpotTree > classifyLineageTrees( final List< BranchSpotTree > roots )
+	private Classification< BranchSpotTree > classifyLineageTrees( final List< BranchSpotTree > roots, final double[][] distances )
 	{
-		double[][] distances = ClassificationUtils.getDistanceMatrix( roots, similarityMeasure );
+		if ( roots.size() != distances.length )
+			throw new IllegalArgumentException(
+					"Number of roots (" + roots.size() + ") and size of distance matrix (" + distances.length + "x"
+							+ distances[ 0 ].length + ") do not match." );
 		BranchSpotTree[] rootBranchSpots = roots.toArray( new BranchSpotTree[ 0 ] );
 		Classification< BranchSpotTree > result = ClassificationUtils.getClassificationByClassCount( rootBranchSpots, distances,
 				clusteringMethod.getLinkageStrategy(), numberOfClasses );
