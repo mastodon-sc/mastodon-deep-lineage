@@ -113,6 +113,15 @@ public class BranchSpotTree implements Tree< Double >
 		return labelSupplier.get();
 	}
 
+	/**
+	 * Gets the first the label for the branch spot associated with the BranchSpotTree
+	 * @return the first label of the branch spot
+	 */
+	public String getName()
+	{
+		return branchSpot.getFirstLabel();
+	}
+
 	public class LabelSupplier implements Supplier< String >
 	{
 		private boolean includeName = true;
