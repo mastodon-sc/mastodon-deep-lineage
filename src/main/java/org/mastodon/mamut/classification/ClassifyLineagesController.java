@@ -70,9 +70,9 @@ public class ClassifyLineagesController
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	private final Model model;
+	private final Model referenceModel;
 
-	private final ProjectModel projectModel;
+	private final ProjectModel referenceProjectModel;
 
 	private final PrefService prefs;
 
@@ -98,22 +98,22 @@ public class ClassifyLineagesController
 
 	/**
 	 * Create a new controller for classifying lineage trees.
-	 * @param projectModel the project model
+	 * @param referenceProjectModel the reference project model
 	 */
-	public ClassifyLineagesController( final ProjectModel projectModel )
+	public ClassifyLineagesController( final ProjectModel referenceProjectModel )
 	{
-		this( projectModel, null );
+		this( referenceProjectModel, null );
 	}
 
 	/**
 	 * Create a new controller for classifying lineage trees.
-	 * @param projectModel the project model
+	 * @param referenceProjectModel the reference project model
 	 * @param prefs the preference service
 	 */
-	public ClassifyLineagesController( final ProjectModel projectModel, final PrefService prefs )
+	public ClassifyLineagesController( final ProjectModel referenceProjectModel, final PrefService prefs )
 	{
-		this.projectModel = projectModel;
-		this.model = projectModel.getModel();
+		this.referenceProjectModel = referenceProjectModel;
+		this.referenceModel = referenceProjectModel.getModel();
 		this.prefs = prefs;
 	}
 
@@ -126,7 +126,7 @@ public class ClassifyLineagesController
 			return;
 		if ( !isValidParams() )
 			throw new IllegalArgumentException( "Invalid parameters settings." );
-		ReentrantReadWriteLock.WriteLock writeLock = model.getGraph().getLock().writeLock();
+		ReentrantReadWriteLock.WriteLock writeLock = referenceModel.getGraph().getLock().writeLock();
 		writeLock.lock();
 		try
 		{
@@ -167,7 +167,7 @@ public class ClassifyLineagesController
 	private void showDendrogram()
 	{
 		String header = "<html><body>Dendrogram of hierarchical clustering of lineages<br>" + getParameters() + "</body></html>";
-		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, header, model, prefs );
+		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, header, referenceModel, prefs );
 		dendrogramView.show();
 	}
 
@@ -200,7 +200,7 @@ public class ClassifyLineagesController
 			final List< Pair< String, Integer > > tagsAndColors )
 	{
 		Set< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
-		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, getTagSetName(), tagsAndColors );
+		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( referenceModel, getTagSetName(), tagsAndColors );
 		int i = 0;
 		for ( Classification.ObjectClassification< BranchSpotTree > objectClassification : objectClassifications )
 		{
@@ -209,15 +209,16 @@ public class ClassifyLineagesController
 			TagSetStructure.Tag tag = tagSet.getTags().get( i );
 			for ( BranchSpotTree tree : trees )
 			{
-				Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), model.getGraph().vertexRef() );
-				ModelGraph modelGraph = model.getGraph();
+				Spot rootSpot =
+						referenceModel.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), referenceModel.getGraph().vertexRef() );
+				ModelGraph modelGraph = referenceModel.getGraph();
 				DepthFirstIterator< Spot, Link > iterator = new DepthFirstIterator<>( rootSpot, modelGraph );
 				iterator.forEachRemaining( spot -> {
 					if ( spot.getTimepoint() < cropStart )
 						return;
 					if ( spot.getTimepoint() > cropEnd )
 						return;
-					TagSetUtils.tagSpotAndIncomingEdges( model, spot, tagSet, tag );
+					TagSetUtils.tagSpotAndIncomingEdges( referenceModel, spot, tagSet, tag );
 				} );
 			}
 			i++;
@@ -226,7 +227,7 @@ public class ClassifyLineagesController
 
 	private List< BranchSpotTree > getRoots()
 	{
-		return getRoots( projectModel );
+		return getRoots( referenceProjectModel );
 	}
 
 	private List< BranchSpotTree > getRoots( final ProjectModel projectModel )
@@ -315,7 +316,7 @@ public class ClassifyLineagesController
 		{
 			try
 			{
-				LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
+				LineageTreeUtils.getFirstTimepointWithNSpots( referenceModel, cropStart );
 			}
 			catch ( NoSuchElementException e )
 			{
@@ -325,7 +326,7 @@ public class ClassifyLineagesController
 			}
 			try
 			{
-				LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
+				LineageTreeUtils.getFirstTimepointWithNSpots( referenceModel, cropEnd );
 			}
 			catch ( NoSuchElementException e )
 			{
