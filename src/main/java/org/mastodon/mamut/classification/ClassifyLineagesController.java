@@ -52,8 +52,10 @@ import org.scijava.prefs.PrefService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -90,6 +92,8 @@ public class ClassifyLineagesController
 
 	private int minCellDivisions;
 
+	private final List< File > externalProjects;
+
 	private boolean showDendrogram;
 
 	private Classification< BranchSpotTree > classification;
@@ -115,6 +119,7 @@ public class ClassifyLineagesController
 		this.referenceProjectModel = referenceProjectModel;
 		this.referenceModel = referenceProjectModel.getModel();
 		this.prefs = prefs;
+		this.externalProjects = new ArrayList<>();
 	}
 
 	/**
@@ -296,6 +301,14 @@ public class ClassifyLineagesController
 	public void setVisualisationParams( final boolean showDendrogram )
 	{
 		this.showDendrogram = showDendrogram;
+	}
+
+	public void setExternalProjects( final File[] projects )
+	{
+		externalProjects.clear();
+		if ( projects == null )
+			return;
+		externalProjects.addAll( Arrays.asList( projects ) );
 	}
 
 	public List< String > getFeedback()
