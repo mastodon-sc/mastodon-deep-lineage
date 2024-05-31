@@ -17,21 +17,39 @@ public class SmallLabelDemo
 		LegacyInjector.preinit();
 		try (final Context context = new Context())
 		{
-			double[] center1 = { 20, 80, 50 };
+			long[] dimensions = { 100, 100, 100 };
+
+			int[] center1 = { 20, 80, 50 };
 			double radius1 = 0.5d;
 
-			double[] center2 = { 40, 80, 50 };
+			int[] center2 = { 40, 80, 50 };
 			double radius2 = 1d;
 
-			double[] center3 = { 60, 80, 50 };
+			int[] center3 = { 60, 80, 50 };
 			double radius3 = 10d;
-
-			long[] dimensions = { 100, 100, 100 };
 
 			Img< FloatType > image = ArrayImgs.floats( dimensions );
 			SphereRenderer.renderSphere( center1, radius1, 1, image );
 			SphereRenderer.renderSphere( center2, radius2, 2, image );
 			SphereRenderer.renderSphere( center3, radius3, 3, image );
+
+			int[] center4 = { 20, 50, 50 };
+			double radius4 = 0.5d;
+
+			int[] center5 = { 40, 50, 50 };
+			double radius5 = 1d;
+
+			int[] center6 = { 60, 50, 50 };
+			double radius6 = 10d;
+
+			CircleRenderer.renderCircle( center4, radius4, 4, image, CircleRenderer.Plane.XY );
+			CircleRenderer.renderCircle( center5, radius5, 5, image, CircleRenderer.Plane.XY );
+			CircleRenderer.renderCircle( center6, radius6, 6, image, CircleRenderer.Plane.XY );
+
+			int[] start7 = { 80, 45, 50 };
+			int[] end7 = { 80, 55, 50 };
+
+			LineRenderer.renderLine( start7, end7, 7, image );
 
 			Model model = new Model();
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );

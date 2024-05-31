@@ -18,18 +18,18 @@ public class SphereRenderer
 	 * @param pixelValue A float representing the value to set for pixels inside the sphere.
 	 * @param image A RandomAccessibleInterval of FloatType representing the image in which to render the sphere.
 	 */
-	public static void renderSphere( final double[] center, final double radius, final float pixelValue,
+	public static void renderSphere( final int[] center, final double radius, final float pixelValue,
 			final RandomAccessibleInterval< FloatType > image )
 	{
-		double[] coord = new double[ 3 ];
+		int[] coord = new int[ 3 ];
 		LoopBuilder.setImages( Intervals.positions( image ), image ).forEachPixel( ( position, pixel ) -> {
 			position.localize( coord );
-			if ( isPointInsideSphere( coord, center, radius ) )
+			if ( isPointWithinDistance( coord, center, radius ) )
 				pixel.setReal( pixelValue );
 		} );
 	}
 
-	private static boolean isPointInsideSphere( final double[] point, final double[] center, final double radius )
+	public static boolean isPointWithinDistance( final int[] point, final int[] center, final double radius )
 	{
 		// Calculate the square of the distance between the point and the center of the sphere
 		double distanceSquared = Math.pow( point[ 0 ] - center[ 0 ], 2 )
