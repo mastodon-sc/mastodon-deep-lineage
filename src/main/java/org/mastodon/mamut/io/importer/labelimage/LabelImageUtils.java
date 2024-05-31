@@ -68,6 +68,10 @@ public class LabelImageUtils
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
+	private static final double SIGMA = 5d;
+
+	private static final double SINGLE_PIXEL_COVARIANCE = 0.05d;
+
 	private LabelImageUtils()
 	{
 		// prevent from instantiation
@@ -197,11 +201,17 @@ public class LabelImageUtils
 		// combine the sums into mean and covariance matrices, then add the corresponding spot
 		for ( final Label label : labels )
 		{
-			// skip labels that are not present in the image or have only one pixel
-			if ( label == null || label.numPixels < 2 )
+			// skip labels that are not present in the image or do not have at least 1 pixel
+			if ( label == null || label.numPixels < 1 )
 				continue;
 			double[] mean = label.covariances.getMeans();
-			double[][] cov = label.covariances.get();
+			double[][] cov;
+			if ( label.numPixels == 1 )
+				cov = new double[ mean.length ][ mean.length ];
+			else
+				cov = label.covariances.get();
+			for ( int i = 0; i < cov.length; i++ )
+				cov[ i ][ i ] += SINGLE_PIXEL_COVARIANCE;
 			scale( mean, voxelDimensions );
 			scale( cov, scaleFactor, voxelDimensions );
 			try
@@ -345,7 +355,7 @@ public class LabelImageUtils
 	}
 
 	/**
-	 * Scales the covariance matrix the given sigma and the voxel dimensions.
+	 * Scales the covariance matrix using the scale factor and the voxel dimensions.
 	 * @param covariance the covariance matrix to scale.
 	 * @param scaleFactor the factor to scale the covariance matrix with.
 	 * @param voxelDimensions the dimensions of the voxels in the image.
@@ -361,7 +371,8 @@ public class LabelImageUtils
 				throw new IllegalArgumentException( "Covariance matrix has wrong dimension." );
 			for ( int j = i; j < covariance.length; j++ )
 			{
-				covariance[ i ][ j ] *= Math.pow( scaleFactor, 2 ) * 5 * voxelDimensions.dimension( i ) * voxelDimensions.dimension( j );
+				covariance[ i ][ j ] *=
+						Math.pow( scaleFactor, 2 ) * SIGMA * voxelDimensions.dimension( i ) * voxelDimensions.dimension( j );
 				// the covariance matrix is symmetric!
 				if ( i != j )
 					covariance[ j ][ i ] = covariance[ i ][ j ];
