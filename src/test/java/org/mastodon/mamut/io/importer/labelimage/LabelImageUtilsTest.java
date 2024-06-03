@@ -80,7 +80,6 @@ import java.util.function.IntFunction;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -152,13 +151,13 @@ class LabelImageUtilsTest
 	}
 
 	@Test
-	void testImportSpotsFromBdvChannel()
+	void testImportSpotSphere()
 	{
 		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
-			int pixelValue = 1;
-			Img< FloatType > img = createImageCubeCorners( pixelValue );
+			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
+			SphereRenderer.renderSphere( new int[] { 5, 5, 5 }, 5, 1, img );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
 			LabelImageUtils.importSpotsFromBdvChannel( projectModel, projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource(),
 					1, false );
@@ -170,22 +169,130 @@ class LabelImageUtilsTest
 			final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
 			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
 			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
-			double axisA = Math.sqrt( eigenValues[ 0 ] );
-			double axisB = Math.sqrt( eigenValues[ 1 ] );
-			double axisC = Math.sqrt( eigenValues[ 2 ] );
+			double semiAxisA = Math.sqrt( eigenValues[ 0 ] );
+			double semiAxisB = Math.sqrt( eigenValues[ 1 ] );
+			double semiAxisC = Math.sqrt( eigenValues[ 2 ] );
 
 			assertNotNull( spot );
 			assertEquals( 0, spot.getTimepoint() );
-			assertEquals( 2, spot.getDoublePosition( 0 ), 0.01 );
-			assertEquals( 2, spot.getDoublePosition( 1 ), 0.01 );
-			assertEquals( 2, spot.getDoublePosition( 2 ), 0.01 );
+			assertEquals( 5, spot.getDoublePosition( 0 ), 0.01 );
+			assertEquals( 5, spot.getDoublePosition( 1 ), 0.01 );
+			assertEquals( 5, spot.getDoublePosition( 2 ), 0.01 );
 			assertEquals( 0, spot.getInternalPoolIndex() );
-			assertEquals( String.valueOf( pixelValue ), spot.getLabel() );
-			assertEquals( 2.2, axisA, 0.2d );
-			assertEquals( 2.2, axisB, 0.2d );
-			assertEquals( 2.2, axisC, 0.2d );
-			assertEquals( 5d, spot.getBoundingSphereRadiusSquared(), 1d );
-			assertFalse( iter.hasNext() );
+			assertEquals( String.valueOf( 1 ), spot.getLabel() );
+			assertEquals( 5, semiAxisA, 0.05d );
+			assertEquals( 5, semiAxisB, 0.05d );
+			assertEquals( 5, semiAxisC, 0.05d );
+			assertEquals( 25d, spot.getBoundingSphereRadiusSquared(), 1d );
+		}
+	}
+
+	@Test
+	void testImportSpotSinglePixel()
+	{
+		LegacyInjector.preinit();
+		try (Context context = new Context())
+		{
+			Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
+			SphereRenderer.renderSphere( new int[] { 5, 5, 5 }, 0.5, 1, img );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
+			LabelImageUtils.importSpotsFromBdvChannel( projectModel, projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource(),
+					1, false );
+
+			Iterator< Spot > iter = model.getGraph().vertices().iterator();
+			Spot spot = iter.next();
+			double[][] covarianceMatrix = new double[ 3 ][ 3 ];
+			spot.getCovariance( covarianceMatrix );
+			final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
+			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
+			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
+			double semiAxisA = Math.sqrt( eigenValues[ 0 ] );
+			double semiAxisB = Math.sqrt( eigenValues[ 1 ] );
+			double semiAxisC = Math.sqrt( eigenValues[ 2 ] );
+
+			assertNotNull( spot );
+			assertEquals( 0, spot.getTimepoint() );
+			assertEquals( 5, spot.getDoublePosition( 0 ), 0.01 );
+			assertEquals( 5, spot.getDoublePosition( 1 ), 0.01 );
+			assertEquals( 5, spot.getDoublePosition( 2 ), 0.01 );
+			assertEquals( 0, spot.getInternalPoolIndex() );
+			assertEquals( String.valueOf( 1 ), spot.getLabel() );
+			assertEquals( 0.5, semiAxisA, 0.1d );
+			assertEquals( 0.5, semiAxisB, 0.1d );
+			assertEquals( 0.5, semiAxisC, 0.1d );
+			assertEquals( 0.25d, spot.getBoundingSphereRadiusSquared(), 0.1d );
+		}
+	}
+
+	@Test
+	void testImportSpotCircle()
+	{
+		LegacyInjector.preinit();
+		try (Context context = new Context())
+		{
+			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
+			CircleRenderer.renderCircle( new int[] { 5, 5, 5 }, 5, 1, img, CircleRenderer.Plane.XY );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
+			LabelImageUtils.importSpotsFromBdvChannel( projectModel, projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource(),
+					1, false );
+
+			Iterator< Spot > iter = model.getGraph().vertices().iterator();
+			Spot spot = iter.next();
+			double[][] covarianceMatrix = new double[ 3 ][ 3 ];
+			spot.getCovariance( covarianceMatrix );
+			final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
+			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
+			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
+			double semiAxisA = Math.sqrt( eigenValues[ 0 ] );
+			double semiAxisB = Math.sqrt( eigenValues[ 1 ] );
+			double semiAxisC = Math.sqrt( eigenValues[ 2 ] );
+
+			assertNotNull( spot );
+			assertEquals( 0, spot.getTimepoint() );
+			assertEquals( 5, spot.getDoublePosition( 0 ), 0.01 );
+			assertEquals( 5, spot.getDoublePosition( 1 ), 0.01 );
+			assertEquals( 5, spot.getDoublePosition( 2 ), 0.01 );
+			assertEquals( 0, spot.getInternalPoolIndex() );
+			assertEquals( String.valueOf( 1 ), spot.getLabel() );
+			assertEquals( 0.5, semiAxisA, 0.05d );
+			assertEquals( 5, semiAxisB, 1d );
+			assertEquals( 5, semiAxisC, 1d );
+		}
+	}
+
+	@Test
+	void testImportSpotLine()
+	{
+		LegacyInjector.preinit();
+		try (Context context = new Context())
+		{
+			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
+			LineRenderer.renderLine( new int[] { 0, 5, 5 }, new int[] { 10, 5, 5 }, 1, img );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
+			LabelImageUtils.importSpotsFromBdvChannel( projectModel, projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource(),
+					1, false );
+
+			Iterator< Spot > iter = model.getGraph().vertices().iterator();
+			Spot spot = iter.next();
+			double[][] covarianceMatrix = new double[ 3 ][ 3 ];
+			spot.getCovariance( covarianceMatrix );
+			final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
+			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
+			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
+			double semiAxisA = Math.sqrt( eigenValues[ 0 ] );
+			double semiAxisB = Math.sqrt( eigenValues[ 1 ] );
+			double semiAxisC = Math.sqrt( eigenValues[ 2 ] );
+
+			assertNotNull( spot );
+			assertEquals( 0, spot.getTimepoint() );
+			assertEquals( 5, spot.getDoublePosition( 0 ), 0.01d );
+			assertEquals( 5, spot.getDoublePosition( 1 ), 0.01d );
+			assertEquals( 5, spot.getDoublePosition( 2 ), 0.01d );
+			assertEquals( 0, spot.getInternalPoolIndex() );
+			assertEquals( String.valueOf( 1 ), spot.getLabel() );
+			assertEquals( 0.5, semiAxisA, 0.01d );
+			assertEquals( 0.5, semiAxisB, 0.01d );
+			assertEquals( 7.5, semiAxisC, 1d );
 		}
 	}
 
