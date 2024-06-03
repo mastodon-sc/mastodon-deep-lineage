@@ -41,7 +41,6 @@ import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.DefaultLinearAxis;
-import net.imagej.patcher.LegacyInjector;
 import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -135,7 +134,6 @@ class LabelImageUtilsTest
 	@Test
 	void testCreateSpotFromWrongVoxelDimensions()
 	{
-
 		RandomAccessibleIntervalSource< FloatType > img = new RandomAccessibleIntervalSource<>( createImageCubeCorners( 1 ),
 				new FloatType(), new AffineTransform3D(), "Segmentation" );
 
@@ -153,7 +151,6 @@ class LabelImageUtilsTest
 	@Test
 	void testImportSpotSphere()
 	{
-		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
 			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
@@ -190,7 +187,6 @@ class LabelImageUtilsTest
 	@Test
 	void testImportSpotSinglePixel()
 	{
-		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
 			Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
@@ -227,7 +223,6 @@ class LabelImageUtilsTest
 	@Test
 	void testImportSpotCircle()
 	{
-		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
 			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
@@ -263,7 +258,6 @@ class LabelImageUtilsTest
 	@Test
 	void testImportSpotLine()
 	{
-		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
 			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
@@ -299,7 +293,6 @@ class LabelImageUtilsTest
 	@Test
 	void testImportSpotsFromImgPlus()
 	{
-		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
 			double[] center = { 18, 21, 22 };
@@ -338,7 +331,6 @@ class LabelImageUtilsTest
 	@Test
 	void testImportSpotsFromImgPlusAndLinkSameLabels()
 	{
-		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
 			Img< FloatType > twoFramesImage = DemoUtils.generateExampleTStack();
@@ -356,7 +348,6 @@ class LabelImageUtilsTest
 	@Test
 	void testImportSpotsFromImgPlusNonSequentialLabels()
 	{
-		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
 			Img< FloatType > image = DemoUtils.generateNonSequentialLabelImage();
@@ -373,7 +364,6 @@ class LabelImageUtilsTest
 	@Test
 	void testDimensionsMatch()
 	{
-		LegacyInjector.preinit();
 		try (final Context context = new Context())
 		{
 			Img< FloatType > image = ArrayImgs.floats( 10, 10, 10, 2 );
@@ -395,7 +385,6 @@ class LabelImageUtilsTest
 	@Test
 	void testGetSourceNames()
 	{
-		LegacyInjector.preinit();
 		try (final Context context = new Context())
 		{
 			Img< FloatType > image = ArrayImgs.floats( 100, 100, 100, 2 );
