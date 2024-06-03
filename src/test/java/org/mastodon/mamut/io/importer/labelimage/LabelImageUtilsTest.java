@@ -58,7 +58,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.feature.EllipsoidIterable;
+import org.mastodon.mamut.io.importer.labelimage.util.CircleRenderer;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
+import org.mastodon.mamut.io.importer.labelimage.util.LineRenderer;
+import org.mastodon.mamut.io.importer.labelimage.util.SphereRenderer;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
@@ -112,9 +115,8 @@ class LabelImageUtilsTest
 	@Test
 	void testCreateSpotFromLabelImageEmpty()
 	{
-		RandomAccessibleIntervalSource< FloatType > img =
-				new RandomAccessibleIntervalSource<>( createImageCubeCorners( 0 ), new FloatType(), new AffineTransform3D(),
-						"Segmentation" );
+		RandomAccessibleIntervalSource< FloatType > img = new RandomAccessibleIntervalSource<>( createImageCubeCorners( 0 ),
+				new FloatType(), new AffineTransform3D(), "Segmentation" );
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
 		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
@@ -135,9 +137,8 @@ class LabelImageUtilsTest
 	void testCreateSpotFromWrongVoxelDimensions()
 	{
 
-		RandomAccessibleIntervalSource< FloatType > img =
-				new RandomAccessibleIntervalSource<>( createImageCubeCorners( 1 ), new FloatType(), new AffineTransform3D(),
-						"Segmentation" );
+		RandomAccessibleIntervalSource< FloatType > img = new RandomAccessibleIntervalSource<>( createImageCubeCorners( 1 ),
+				new FloatType(), new AffineTransform3D(), "Segmentation" );
 
 		VoxelDimensions wrongDimensions = new FinalVoxelDimensions( "um", 1, 1 );
 		TimePoints timePoints = new TimePoints( Collections.singletonList( new TimePoint( 0 ) ) );
