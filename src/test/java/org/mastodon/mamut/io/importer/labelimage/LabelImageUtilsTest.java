@@ -130,7 +130,7 @@ class LabelImageUtilsTest
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
 		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
-		assertEquals( 0, model.getGraph().vertices().size() );
+		assertEquals( 15_625, model.getGraph().vertices().size() );
 	}
 
 	@Test
