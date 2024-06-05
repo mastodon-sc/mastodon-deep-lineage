@@ -51,9 +51,7 @@ import java.util.stream.Collectors;
 public class ClassifyLineagesCommand extends InteractiveCommand
 {
 
-	private static final int WIDTH = 15;
-
-	private static final int WIDTH_INPUT = 7;
+	private static final float WIDTH = 18.5f;
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
@@ -88,7 +86,7 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	private int numberOfClasses;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Minimum number of cell divisions", min = "0", description = "Only include lineage trees with at least the number of divisions specified here.", callback = "update")
+	@Parameter( label = "<html><body>Minimum number<br>of cell divisions</body></html>", min = "0", description = "Only include lineage trees with at least the number of divisions specified here.", callback = "update" )
 	private int numberOfCellDivisions;
 
 	@SuppressWarnings("all")
@@ -96,7 +94,7 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	public String similarityMeasure = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.getName();
 
 	@SuppressWarnings("all")
-	@Parameter( label = "Linkage strategy for hierarchical clustering", initializer = "initClusteringMethodChoices", callback = "update" )
+	@Parameter( label = "<html><body>Linkage strategy for<br>hierarchical clustering</body></html>", initializer = "initClusteringMethodChoices", callback = "update" )
 	private String clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE.getName();
 
 	@SuppressWarnings("unused")
@@ -104,11 +102,11 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	private String branchDuration;
 
 	@SuppressWarnings( "unused" )
-	@Parameter( label = "List of projects", style = "files,extensions:mastodon", persist = false, callback = "update" )
+	@Parameter( label = "<html><body>List of projects<br>(Drag & Drop supported)</body></html>", style = "files,extensions:mastodon", persist = false, callback = "update", initializer = "initProjectsDefault" )
 	private File[] projects = new File[ 0 ];
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Show dendrogram of clustering", callback = "update")
+	@Parameter( label = "<html><body>Show dendrogram<br>of clustering</body></html>", callback = "update" )
 	private boolean showDendrogram = true;
 
 	@SuppressWarnings("unused")
@@ -150,7 +148,7 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 
 	private void updateFeedback()
 	{
-		paramFeedback = "<html><body width=" + WIDTH_INPUT + "cm>";
+		paramFeedback = "<html><body width=" + WIDTH + "cm>";
 		if ( controller.isValidParams() )
 			paramFeedback += "<font color=green>Parameters are valid.";
 		else
@@ -179,7 +177,7 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 				color = "red";
 				logger.error( "Error during lineage classification: {}", e.getMessage() );
 			}
-			computeFeedback = "<html><body width=" + WIDTH_INPUT + "cm><font color=\"" + color + "\">" + feedback + "</font></body></html>";
+			computeFeedback = "<html><body width=" + WIDTH + "cm><font color=\"" + color + "\">" + feedback + "</font></body></html>";
 		}
 	}
 
