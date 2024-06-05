@@ -138,6 +138,7 @@ public class ClassificationUtils
 		if ( treeMatrix.isEmpty() )
 			return new double[ 0 ][ 0 ];
 
+		logger.debug( "Computing average similarity matrix with {} sets of {} trees each.", treeMatrix.size(), treeMatrix.get( 0 ).size() );
 		int numberOfTrees = treeMatrix.get( 0 ).size();
 		double[][] result = new double[ numberOfTrees ][ numberOfTrees ];
 		for ( List< Tree< Double > > trees : treeMatrix )
