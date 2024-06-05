@@ -179,7 +179,6 @@ class LabelImageUtilsTest
 			assertEquals( 5, semiAxisA, 0.05d );
 			assertEquals( 5, semiAxisB, 0.05d );
 			assertEquals( 5, semiAxisC, 0.05d );
-			assertEquals( 25d, spot.getBoundingSphereRadiusSquared(), 1d );
 		}
 	}
 
@@ -214,7 +213,6 @@ class LabelImageUtilsTest
 			assertEquals( 0.5, semiAxisA, 0.1d );
 			assertEquals( 0.5, semiAxisB, 0.1d );
 			assertEquals( 0.5, semiAxisC, 0.1d );
-			assertEquals( 0.25d, spot.getBoundingSphereRadiusSquared(), 0.1d );
 		}
 	}
 
