@@ -1,14 +1,17 @@
 ## Lineage Tree Classification
 
-* This plugin is capable of grouping similar lineage trees together.
+* This command is capable of grouping similar lineage trees together.
+* The linage classification operates on Mastodon's branch graph.
+* Lineage trees are considered similar, if they share a similar structure and thus represent a similar cell division
+  pattern. The structure of a lineage tree is represented by the tree topology.
+  This tree topology consists of the actual branching pattern and the cell lifetimes,
+  i.e. the time points between two subsequent cell divisions.
 * The similarity of a pair of lineage trees is computed based on the Zhang edit distance for unordered
   trees ([Zhang, K. Algorithmica 15, 205–222, 1996](https://doi.org/10.1007/BF01975866)). This method captures the cost
   of the transformation of one tree into the other.
-* The cost function applied for the tree edit distance uses the attribute branch spot duration, which is computed as a
-  difference of time points between to subsequent divisions reflecting the start and the end of a spot's lifetime.
-* Thus, the linage classification operates on Mastodon's branch graph.
 * The Zhang unordered edit distance allows the following edit operations. The edit operations are defined in a way that
-  they satisfy the constraints elaborated in section 3.1 ("Constrained Edit Distance Mappings") of the paper:
+  they satisfy the constraints elaborated in section 3.1 ("Constrained Edit Distance Mappings") of the
+  paper: [Zhang, K. Algorithmica 15, 205–222, 1996](https://doi.org/10.1007/BF01975866)
 
 ```
   Note: The prefix T may represent a node or a complete subtree. Nodes without this prefix are just nodes.
@@ -98,26 +101,32 @@ Tree2
 ```
 
 * Edit distance of 69, because:
-
     * one node has a difference of 1
     * two nodes have a difference of 24 each
     * two extra nodes are added with a weight of 10 each
     * ![zhang_example.gif](zhang_example.gif)
-* The tree edit distances are computed between all possible combinations of lineage trees leading to a two-dimensional
-  matrix. The values in this matrix are considered to reflect similarities of lineage trees. Low tree edit distances
-  represent a high similarity between a discrete pair of lineage trees.
-* This similarity matrix is then used to perform
-  an [agglomerative hierarchical clustering](https://en.wikipedia.org/wiki/Hierarchical_clustering) into a specifiable
+
+* The similarity measure uses the attribute cell lifetime, which is computed as a difference of time points between to
+  subsequent divisions. There are multiple ways to compute the similarity measure between two lineage trees (cf. below).
+* The similarities are computed between all possible combinations of lineage trees leading to a two-dimensional
+  similarity matrix. The values in this matrix are considered to reflect similarities of lineage trees. Low tree edit
+  distances represent a high similarity between a discrete pair of lineage trees. This matrix is then used to perform
+  an [Agglomerative Hierarchical Clustering](https://en.wikipedia.org/wiki/Hierarchical_clustering) into a specifiable
   number of classes.
+* For the clustering three
+  different [linkage methods](https://en.wikipedia.org/wiki/Hierarchical_clustering#Cluster_Linkage) can be chosen.
 
 ### Parameters
 
 * Crop criterion:
-    * Time point (default)
-    * Number of spots
+  * Number of spots (default)
+  * Time point
 * Crop start
+  * At which number of spots or time point the analysis should start
 * Crop end
+  * At which number of spots or time point the analysis should end
 * Number of classes
+  * The number of classes the lineage trees should be grouped into
   * Must not be greater than the number of lineage trees
 * Minimum number of divisions
   * The minimum number of divisions a lineage tree must have to be considered in the classification
