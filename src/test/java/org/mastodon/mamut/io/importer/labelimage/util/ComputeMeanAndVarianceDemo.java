@@ -29,8 +29,6 @@
 package org.mastodon.mamut.io.importer.labelimage.util;
 
 import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.sequence.DefaultVoxelDimensions;
-import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
@@ -151,10 +149,9 @@ public class ComputeMeanAndVarianceDemo
 						covariance[ i ][ j ] += position[ i ] * position[ j ];
 				counter++;
 			}
-		VoxelDimensions voxelDimensions = new DefaultVoxelDimensions( 3 );
-		LabelImageUtils.scale( covariance, Math.sqrt( 1d / counter ), voxelDimensions );
+		LabelImageUtils.scale( covariance, Math.sqrt( 1d / counter ) );
 		// I don't know why the factor 5 is needed. But it works.
-		LabelImageUtils.scale( covariance, Math.sqrt( 5d ), voxelDimensions );
+		LabelImageUtils.scale( covariance, Math.sqrt( 5d ) );
 		return covariance;
 	}
 }

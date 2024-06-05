@@ -29,7 +29,6 @@
 package org.mastodon.mamut.io.importer.labelimage.util;
 
 import ij.ImagePlus;
-import mpicbg.spim.data.sequence.DefaultVoxelDimensions;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
@@ -191,7 +190,7 @@ public class DemoUtils
 			}
 		double[] means = mean.get();
 		double[][] covariances = cov.get();
-		LabelImageUtils.scale( covariances, sigma, new DefaultVoxelDimensions( 3 ) );
+		LabelImageUtils.scale( covariances, sigma );
 		return new ValuePair<>( means, covariances );
 	}
 }

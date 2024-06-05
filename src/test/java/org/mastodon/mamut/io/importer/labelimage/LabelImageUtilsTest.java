@@ -81,7 +81,6 @@ import java.util.function.IntFunction;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LabelImageUtilsTest
@@ -92,6 +91,8 @@ class LabelImageUtilsTest
 
 	private AbstractSequenceDescription< ?, ?, ? > sequenceDescription;
 
+	private IntFunction< AffineTransform3D > simpleTransformProvider;
+
 	@BeforeEach
 	void setUp()
 	{
@@ -101,14 +102,7 @@ class LabelImageUtilsTest
 		Map< Integer, ? extends BasicViewSetup > setups =
 				Collections.singletonMap( 0, new BasicViewSetup( 0, "setup 0", new FinalDimensions( 10, 10, 10 ), voxelDimensions ) );
 		sequenceDescription = new SequenceDescriptionMinimal( timePoints, setups, null, null );
-	}
-
-	@Test
-	void testScaleExceptions()
-	{
-		VoxelDimensions voxelDimensions = new FinalVoxelDimensions( "um", 1, 1, 1 );
-		assertThrows( IllegalArgumentException.class, () -> LabelImageUtils.scale( new double[ 2 ][ 2 ], 1, voxelDimensions ) );
-		assertThrows( IllegalArgumentException.class, () -> LabelImageUtils.scale( new double[ 3 ][ 2 ], 1, voxelDimensions ) );
+		simpleTransformProvider = frameId -> new AffineTransform3D();
 	}
 
 	@Test
@@ -118,7 +112,7 @@ class LabelImageUtilsTest
 				new FloatType(), new AffineTransform3D(), "Segmentation" );
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
-		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
+		LabelImageUtils.createSpotsFromLabelImage( imgProvider, simpleTransformProvider, model, 1, false, sequenceDescription, null );
 		assertEquals( 0, model.getGraph().vertices().size() );
 	}
 
@@ -128,25 +122,8 @@ class LabelImageUtilsTest
 		AbstractSource< FloatType > img = createNonLabelImage();
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
-		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
+		LabelImageUtils.createSpotsFromLabelImage( imgProvider, simpleTransformProvider, model, 1, false, sequenceDescription, null );
 		assertEquals( 15_625, model.getGraph().vertices().size() );
-	}
-
-	@Test
-	void testCreateSpotFromWrongVoxelDimensions()
-	{
-		RandomAccessibleIntervalSource< FloatType > img = new RandomAccessibleIntervalSource<>( createImageCubeCorners( 1 ),
-				new FloatType(), new AffineTransform3D(), "Segmentation" );
-
-		VoxelDimensions wrongDimensions = new FinalVoxelDimensions( "um", 1, 1 );
-		TimePoints timePoints = new TimePoints( Collections.singletonList( new TimePoint( 0 ) ) );
-		Map< Integer, ? extends BasicViewSetup > setups =
-				Collections.singletonMap( 0, new BasicViewSetup( 0, "setup 0", new FinalDimensions( 10, 10, 10 ), wrongDimensions ) );
-		AbstractSequenceDescription< ?, ?, ? > faultySequenceDescription = new SequenceDescriptionMinimal( timePoints, setups, null, null );
-		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
-		assertThrows( IllegalArgumentException.class,
-				() -> LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, faultySequenceDescription, null ) );
-
 	}
 
 	@Test
