@@ -48,11 +48,10 @@ public class SmallLabelDemo
 			CircleRenderer.renderCircle( center5, radius5, 5, image, CircleRenderer.Plane.XY );
 			CircleRenderer.renderCircle( center6, radius6, 6, image, CircleRenderer.Plane.XY );
 
-			int[] start7 = { 80, 45, 50 };
-			int[] end7 = { 80, 55, 50 };
+			int[] start = { 80, 45, 50 };
+			int[] end = { 80, 55, 50 };
 
-			LineRenderer.renderLine( start7, end7, 7, image );
-
+			LineRenderer.renderLine( start, end, 7, image );
 			SourceAndConverter< ? > sourceAndConverter = projectModel.getSharedBdvData().getSources().get( 0 );
 			LabelImageUtils.importSpotsFromBdvChannel( projectModel, sourceAndConverter.getSpimSource(), 1d, false );
 			DemoUtils.showBdvWindow( projectModel );

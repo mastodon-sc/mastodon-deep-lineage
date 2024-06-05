@@ -52,16 +52,17 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Cast;
+import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.feature.EllipsoidIterable;
 import org.mastodon.mamut.io.importer.labelimage.util.CircleRenderer;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.io.importer.labelimage.util.LineRenderer;
 import org.mastodon.mamut.io.importer.labelimage.util.SphereRenderer;
+import org.mastodon.mamut.io.importer.labelimage.util.SpotRenderer;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
@@ -386,13 +387,10 @@ class LabelImageUtilsTest
 	{
 		long[] dimensions = { 40, 40, 40, 1 };
 		Img< FloatType > image = ArrayImgs.floats( dimensions );
-		AffineTransform3D transform = new AffineTransform3D();
-		AbstractSource< FloatType > frame =
-				new RandomAccessibleIntervalSource<>( Views.hyperSlice( image, 3, 0 ), new FloatType(), transform, "Ellipsoids" );
-
-		final EllipsoidIterable< FloatType > ellipsoidIterable = new EllipsoidIterable<>( frame );
-		ellipsoidIterable.reset( spot );
-		ellipsoidIterable.forEach( pixel -> pixel.set( pixelValue ) );
+		IntervalView< FloatType > frame = Views.hyperSlice( image, 3, 0 );
+		AbstractSource< FloatType > source =
+				new RandomAccessibleIntervalSource<>( frame, new FloatType(), new AffineTransform3D(), "Ellipsoids" );
+		SpotRenderer.renderSpot( spot, pixelValue, source );
 		return image;
 	}
 
