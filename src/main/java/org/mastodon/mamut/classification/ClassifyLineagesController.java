@@ -149,6 +149,11 @@ public class ClassifyLineagesController
 		}
 	}
 
+	public ProjectModel getProjectModel()
+	{
+		return referenceProjectModel;
+	}
+
 	private void runClassification()
 	{
 		Pair< List< BranchSpotTree >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
