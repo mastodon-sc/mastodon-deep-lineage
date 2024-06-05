@@ -71,7 +71,7 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 
 	@SuppressWarnings("all")
 	@Parameter( label = "Crop criterion", initializer = "initCropCriterionChoices", callback = "update" )
-	private String cropCriterion = CropCriteria.TIMEPOINT.getName();
+	private String cropCriterion = CropCriteria.NUMBER_OF_SPOTS.getName();
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Crop start", min = "0", callback = "update")
