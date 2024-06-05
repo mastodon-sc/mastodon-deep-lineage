@@ -33,8 +33,10 @@ import org.mastodon.mamut.classification.config.HasName;
 import org.mastodon.mamut.classification.config.SimilarityMeasure;
 import org.mastodon.mamut.classification.ClassifyLineagesController;
 import org.mastodon.mamut.classification.config.CropCriteria;
+import org.mastodon.mamut.io.project.MamutProject;
 import org.scijava.ItemVisibility;
 import org.scijava.command.InteractiveCommand;
+import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.Button;
@@ -44,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -197,6 +200,17 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	private void initClusteringMethodChoices()
 	{
 		getInfo().getMutableInput( "clusteringMethod", String.class ).setChoices( enumNamesAsList( ClusteringMethod.values() ) );
+	}
+
+	@SuppressWarnings( "unused" )
+	private void initProjectsDefault()
+	{
+		MamutProject project = controller.getProjectModel().getProject();
+		MutableModuleItem< File[] > projectsItem = getInfo().getMutableInput( "projects", File[].class );
+		if ( project != null )
+			projectsItem.setChoices( Collections.singletonList( new File[] { project.getProjectRoot() } ) );
+		else
+			projectsItem.setChoices( Collections.emptyList() );
 	}
 
 	static List< String > enumNamesAsList( final HasName[] values )
