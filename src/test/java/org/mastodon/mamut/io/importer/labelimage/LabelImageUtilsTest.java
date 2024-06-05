@@ -53,6 +53,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Cast;
 import net.imglib2.view.Views;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
@@ -161,22 +162,15 @@ class LabelImageUtilsTest
 
 			Iterator< Spot > iter = model.getGraph().vertices().iterator();
 			Spot spot = iter.next();
-			double[][] covarianceMatrix = new double[ 3 ][ 3 ];
-			spot.getCovariance( covarianceMatrix );
-			final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
-			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
-			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
-			double semiAxisA = Math.sqrt( eigenValues[ 0 ] );
-			double semiAxisB = Math.sqrt( eigenValues[ 1 ] );
-			double semiAxisC = Math.sqrt( eigenValues[ 2 ] );
+			Triple< Double, Double, Double > semiAxes = getSemiAxesOfSpot( spot );
 
 			assertNotNull( spot );
 			assertEquals( 0, spot.getTimepoint() );
 			assertArrayEquals( new double[] { 5, 5, 5 }, spot.positionAsDoubleArray(), 0.01 );
 			assertEquals( String.valueOf( 1 ), spot.getLabel() );
-			assertEquals( 5, semiAxisA, 0.05d );
-			assertEquals( 5, semiAxisB, 0.05d );
-			assertEquals( 5, semiAxisC, 0.05d );
+			assertEquals( 5, semiAxes.getLeft(), 0.05d );
+			assertEquals( 5, semiAxes.getMiddle(), 0.05d );
+			assertEquals( 5, semiAxes.getRight(), 0.05d );
 		}
 	}
 
@@ -193,22 +187,15 @@ class LabelImageUtilsTest
 
 			Iterator< Spot > iter = model.getGraph().vertices().iterator();
 			Spot spot = iter.next();
-			double[][] covarianceMatrix = new double[ 3 ][ 3 ];
-			spot.getCovariance( covarianceMatrix );
-			final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
-			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
-			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
-			double semiAxisA = Math.sqrt( eigenValues[ 0 ] );
-			double semiAxisB = Math.sqrt( eigenValues[ 1 ] );
-			double semiAxisC = Math.sqrt( eigenValues[ 2 ] );
+			Triple< Double, Double, Double > semiAxes = getSemiAxesOfSpot( spot );
 
 			assertNotNull( spot );
 			assertEquals( 0, spot.getTimepoint() );
 			assertArrayEquals( new double[] { 5, 5, 5 }, spot.positionAsDoubleArray(), 0.01 );
 			assertEquals( String.valueOf( 1 ), spot.getLabel() );
-			assertEquals( 0.5, semiAxisA, 0.1d );
-			assertEquals( 0.5, semiAxisB, 0.1d );
-			assertEquals( 0.5, semiAxisC, 0.1d );
+			assertEquals( 0.5, semiAxes.getLeft(), 0.1d );
+			assertEquals( 0.5, semiAxes.getMiddle(), 0.1d );
+			assertEquals( 0.5, semiAxes.getRight(), 0.1d );
 		}
 	}
 
@@ -225,22 +212,15 @@ class LabelImageUtilsTest
 
 			Iterator< Spot > iter = model.getGraph().vertices().iterator();
 			Spot spot = iter.next();
-			double[][] covarianceMatrix = new double[ 3 ][ 3 ];
-			spot.getCovariance( covarianceMatrix );
-			final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
-			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
-			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
-			double semiAxisA = Math.sqrt( eigenValues[ 0 ] );
-			double semiAxisB = Math.sqrt( eigenValues[ 1 ] );
-			double semiAxisC = Math.sqrt( eigenValues[ 2 ] );
+			Triple< Double, Double, Double > semiAxes = getSemiAxesOfSpot( spot );
 
 			assertNotNull( spot );
 			assertEquals( 0, spot.getTimepoint() );
 			assertArrayEquals( new double[] { 5, 5, 5 }, spot.positionAsDoubleArray(), 0.01 );
 			assertEquals( String.valueOf( 1 ), spot.getLabel() );
-			assertEquals( 0.5, semiAxisA, 0.05d );
-			assertEquals( 5, semiAxisB, 1d );
-			assertEquals( 5, semiAxisC, 1d );
+			assertEquals( 0.5, semiAxes.getLeft(), 0.05d );
+			assertEquals( 5, semiAxes.getMiddle(), 1d );
+			assertEquals( 5, semiAxes.getRight(), 1d );
 		}
 	}
 
@@ -257,22 +237,15 @@ class LabelImageUtilsTest
 
 			Iterator< Spot > iter = model.getGraph().vertices().iterator();
 			Spot spot = iter.next();
-			double[][] covarianceMatrix = new double[ 3 ][ 3 ];
-			spot.getCovariance( covarianceMatrix );
-			final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
-			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
-			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
-			double semiAxisA = Math.sqrt( eigenValues[ 0 ] );
-			double semiAxisB = Math.sqrt( eigenValues[ 1 ] );
-			double semiAxisC = Math.sqrt( eigenValues[ 2 ] );
+			Triple< Double, Double, Double > semiAxes = getSemiAxesOfSpot( spot );
 
 			assertNotNull( spot );
 			assertEquals( 0, spot.getTimepoint() );
 			assertArrayEquals( new double[] { 5, 5, 5 }, spot.positionAsDoubleArray(), 0.01 );
 			assertEquals( String.valueOf( 1 ), spot.getLabel() );
-			assertEquals( 0.5, semiAxisA, 0.01d );
-			assertEquals( 0.5, semiAxisB, 0.01d );
-			assertEquals( 7.5, semiAxisC, 1d );
+			assertEquals( 0.5, semiAxes.getLeft(), 0.01d );
+			assertEquals( 0.5, semiAxes.getMiddle(), 0.01d );
+			assertEquals( 7.5, semiAxes.getRight(), 1d );
 		}
 	}
 
@@ -428,6 +401,19 @@ class LabelImageUtilsTest
 		ellipsoidIterable.reset( spot );
 		ellipsoidIterable.forEach( pixel -> pixel.set( pixelValue ) );
 		return image;
+	}
+
+	private static Triple< Double, Double, Double > getSemiAxesOfSpot( final Spot spot )
+	{
+		double[][] covarianceMatrix = new double[ 3 ][ 3 ];
+		spot.getCovariance( covarianceMatrix );
+		final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
+		eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
+		final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
+		double semiAxisA = Math.sqrt( eigenValues[ 0 ] );
+		double semiAxisB = Math.sqrt( eigenValues[ 1 ] );
+		double semiAxisC = Math.sqrt( eigenValues[ 2 ] );
+		return Triple.of( semiAxisA, semiAxisB, semiAxisC );
 	}
 }
 
