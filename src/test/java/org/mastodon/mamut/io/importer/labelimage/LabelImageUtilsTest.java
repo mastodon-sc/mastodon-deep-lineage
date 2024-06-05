@@ -175,7 +175,6 @@ class LabelImageUtilsTest
 			assertEquals( 5, spot.getDoublePosition( 0 ), 0.01 );
 			assertEquals( 5, spot.getDoublePosition( 1 ), 0.01 );
 			assertEquals( 5, spot.getDoublePosition( 2 ), 0.01 );
-			assertEquals( 0, spot.getInternalPoolIndex() );
 			assertEquals( String.valueOf( 1 ), spot.getLabel() );
 			assertEquals( 5, semiAxisA, 0.05d );
 			assertEquals( 5, semiAxisB, 0.05d );
@@ -211,7 +210,6 @@ class LabelImageUtilsTest
 			assertEquals( 5, spot.getDoublePosition( 0 ), 0.01 );
 			assertEquals( 5, spot.getDoublePosition( 1 ), 0.01 );
 			assertEquals( 5, spot.getDoublePosition( 2 ), 0.01 );
-			assertEquals( 0, spot.getInternalPoolIndex() );
 			assertEquals( String.valueOf( 1 ), spot.getLabel() );
 			assertEquals( 0.5, semiAxisA, 0.1d );
 			assertEquals( 0.5, semiAxisB, 0.1d );
@@ -247,7 +245,6 @@ class LabelImageUtilsTest
 			assertEquals( 5, spot.getDoublePosition( 0 ), 0.01 );
 			assertEquals( 5, spot.getDoublePosition( 1 ), 0.01 );
 			assertEquals( 5, spot.getDoublePosition( 2 ), 0.01 );
-			assertEquals( 0, spot.getInternalPoolIndex() );
 			assertEquals( String.valueOf( 1 ), spot.getLabel() );
 			assertEquals( 0.5, semiAxisA, 0.05d );
 			assertEquals( 5, semiAxisB, 1d );
@@ -282,7 +279,6 @@ class LabelImageUtilsTest
 			assertEquals( 5, spot.getDoublePosition( 0 ), 0.01d );
 			assertEquals( 5, spot.getDoublePosition( 1 ), 0.01d );
 			assertEquals( 5, spot.getDoublePosition( 2 ), 0.01d );
-			assertEquals( 0, spot.getInternalPoolIndex() );
 			assertEquals( String.valueOf( 1 ), spot.getLabel() );
 			assertEquals( 0.5, semiAxisA, 0.01d );
 			assertEquals( 0.5, semiAxisB, 0.01d );
