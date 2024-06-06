@@ -64,6 +64,7 @@ import org.mastodon.mamut.io.importer.labelimage.util.LineRenderer;
 import org.mastodon.mamut.io.importer.labelimage.util.SphereRenderer;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.scijava.Context;
 import org.slf4j.Logger;
@@ -81,6 +82,7 @@ import java.util.function.IntFunction;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LabelImageUtilsTest
@@ -242,7 +244,7 @@ class LabelImageUtilsTest
 			Img< FloatType > image = createImageFromSpot( spot, pixelValue );
 			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
-			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1, false );
+			LabelImageUtils.importSpotsFromImgPlus( projectModel, 0, imgPlus, 1, false );
 
 			Iterator< Spot > iterator = model.getGraph().vertices().iterator();
 			iterator.next();
@@ -272,7 +274,7 @@ class LabelImageUtilsTest
 			Img< FloatType > twoFramesImage = DemoUtils.generateExampleTStack();
 			ImgPlus< FloatType > imgPlus = createImgPlus( twoFramesImage, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( twoFramesImage, model, context );
-			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1, true );
+			LabelImageUtils.importSpotsFromImgPlus( projectModel, 0, imgPlus, 1, true );
 
 			assertEquals( 2, model.getGraph().vertices().size() );
 			assertEquals( 1, model.getGraph().edges().size() );
@@ -289,7 +291,7 @@ class LabelImageUtilsTest
 			Img< FloatType > image = DemoUtils.generateNonSequentialLabelImage();
 			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
-			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1, true );
+			LabelImageUtils.importSpotsFromImgPlus( projectModel, 0, imgPlus, 1, true );
 
 			assertEquals( 2, model.getGraph().vertices().size() );
 			assertEquals( 0, model.getGraph().edges().size() );
@@ -323,11 +325,25 @@ class LabelImageUtilsTest
 	{
 		try (final Context context = new Context())
 		{
-			Img< FloatType > image = ArrayImgs.floats( 100, 100, 100, 2 );
+			Img< FloatType > image = ArrayImgs.floats( 10, 10, 10, 2 );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
 			List< String > sourceNames = LabelImageUtils.getSourceNames( projectModel.getSharedBdvData() );
 			assertEquals( 1, sourceNames.size() );
 			assertEquals( "image channel 1", sourceNames.get( 0 ) );
+		}
+	}
+
+	@Test
+	void testGetSourceIndex()
+	{
+		try (final Context context = new Context())
+		{
+			Img< FloatType > image = ArrayImgs.floats( 10, 10, 10, 2 );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
+			SharedBigDataViewerData sharedBdvData = projectModel.getSharedBdvData();
+			int sourceIndex0 = LabelImageUtils.getSourceIndex( "image channel 1", sharedBdvData );
+			assertEquals( 0, sourceIndex0 );
+			assertThrows( IllegalArgumentException.class, () -> LabelImageUtils.getSourceIndex( "unknown", sharedBdvData ) );
 		}
 	}
 

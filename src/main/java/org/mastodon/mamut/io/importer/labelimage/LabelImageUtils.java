@@ -319,12 +319,14 @@ public class LabelImageUtils
 	/**
 	 * Imports spots from the given ImageJ image into the given project model.
 	 * @param projectModel the project model to add the spots to.
+	 * @param sourceIndex the index of the source, to which the segmentation image given in imgPlus corresponds.
 	 * @param imgPlus the image to import the spots from.
 	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @param linkSpotsWithSameLabels whether to link spots with the same labels.
 	 * @throws IllegalArgumentException if the dimensions of the given image do not match the dimensions of the big data viewer image contained in the project model.
 	 */
-	public static void importSpotsFromImgPlus( final ProjectModel projectModel, final ImgPlus< ? > imgPlus, final double scaleFactor,
+	public static void importSpotsFromImgPlus( final ProjectModel projectModel, final int sourceIndex, final ImgPlus< ? > imgPlus,
+			final double scaleFactor,
 			final boolean linkSpotsWithSameLabels )
 	{
 		logger.debug( "ImageJ image: {}", imgPlus.getName() );
@@ -336,8 +338,7 @@ public class LabelImageUtils
 				frameId -> Cast.unchecked( Views.hyperSlice( imgPlus.getImg(), 3, frameId ) );
 		IntFunction< AffineTransform3D > transformProvider = frameId -> {
 			AffineTransform3D transform = new AffineTransform3D();
-			// TODO: let the user specify the channel that equals the label image and thus can be used to get the transform
-			projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource().getSourceTransform( frameId, 0, transform );
+			projectModel.getSharedBdvData().getSources().get( sourceIndex ).getSpimSource().getSourceTransform( frameId, 0, transform );
 			return transform;
 		};
 		createSpotsFromLabelImage( frameProvider, transformProvider, projectModel.getModel(), scaleFactor, linkSpotsWithSameLabels,
@@ -400,6 +401,22 @@ public class LabelImageUtils
 		for ( SourceAndConverter< ? > source : sources )
 			choices.add( source.getSpimSource().getName() );
 		return choices;
+	}
+
+	/**
+		 * Returns the index of the given image source name in the given big data viewer data.
+		 * @param imgSource the image source name to get the id for.
+		 * @param sharedBdvData the big data viewer data to get the source index from.
+		 * @return the source index.
+		 * @throws IllegalArgumentException if the source name was not found in the big data viewer data.
+		 */
+	public static int getSourceIndex( final String imgSource, final SharedBigDataViewerData sharedBdvData )
+	{
+		final List< SourceAndConverter< ? > > sources = sharedBdvData.getSources();
+		for ( int i = 0; i < sources.size(); i++ )
+			if ( sources.get( i ).getSpimSource().getName().equals( imgSource ) )
+				return i;
+		throw new IllegalArgumentException( "The source " + imgSource + " was not found in the big data viewer data." );
 	}
 
 	/**

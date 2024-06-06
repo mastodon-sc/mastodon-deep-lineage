@@ -34,13 +34,14 @@ import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
 import org.scijava.ItemIO;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
-import org.scijava.command.ContextCommand;
+import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import java.util.Arrays;
+import java.util.List;
 
 @Plugin( type = Command.class, label = "Import spots from ImageJ image" )
-public class ImportSpotsFromImgPlusView< T > extends ContextCommand
+public class ImportSpotsFromImgPlusView< T > extends DynamicCommand
 {
 
 	private static final int WIDTH = 15;
@@ -76,6 +77,9 @@ public class ImportSpotsFromImgPlusView< T > extends ContextCommand
 	@Parameter( label = "Link spots having the same labels in consecutive frames", description = "This option assumes that labels from the input images are unique for one tracklet." )
 	boolean linkSpotsWithSameLabels = false;
 
+	@Parameter( label = "Image source that has been used for the external segmentation", initializer = "initImgSourceChoices" )
+	public String imgSourceChoice = "";
+
 	@SuppressWarnings( "unused" )
 	private void validateImageData()
 	{
@@ -96,7 +100,8 @@ public class ImportSpotsFromImgPlusView< T > extends ContextCommand
 	{
 		if ( isCanceled() )
 			return;
-		LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, scaleFactor, linkSpotsWithSameLabels );
+		int sourceIndex = LabelImageUtils.getSourceIndex( imgSourceChoice, projectModel.getSharedBdvData() );
+		LabelImageUtils.importSpotsFromImgPlus( projectModel, sourceIndex, imgPlus, scaleFactor, linkSpotsWithSameLabels );
 	}
 
 	@SuppressWarnings( "unused" )
@@ -112,5 +117,12 @@ public class ImportSpotsFromImgPlusView< T > extends ContextCommand
 		String dimensionMatch = "<font color=" + color + ">The dimensions" + doNot + " match.</font>";
 		documentation = String.format( TEMPLATE, imgPlus.getName(), imgPlusDimensions[ 0 ], imgPlusDimensions[ 1 ], imgPlusDimensions[ 2 ],
 				imgPlusDimensions[ 3 ], bdvDimensions[ 0 ], bdvDimensions[ 1 ], bdvDimensions[ 2 ], bdvDimensions[ 3 ], dimensionMatch );
+	}
+
+	@SuppressWarnings( "unused" )
+	private void initImgSourceChoices()
+	{
+		List< String > choices = LabelImageUtils.getSourceNames( projectModel.getSharedBdvData() );
+		getInfo().getMutableInput( "imgSourceChoice", String.class ).setChoices( choices );
 	}
 }
