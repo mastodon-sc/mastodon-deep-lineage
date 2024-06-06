@@ -11,8 +11,8 @@ authors:
     - family-names: Tinevez
       given-names: Jean-Yves
       orcid: https://orcid.org/0000-0002-0998-4718
-date-released: 2024-05-22
-version: 0.2.0
+date-released: 2024-06-06
+version: 0.2.1
 identifiers:
   - description: All versions of this software
     type: doi
