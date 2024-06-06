@@ -51,6 +51,7 @@
         * ![plugin_import_example_3.png](label_image/imagej/plugin_import_example_3.png)
     * Open Import window in
       Mastodon: `Plugins > Imports > Import spots from label image > Import spots from ImageJ image`
+  * Select the channel in Big Data Viewer containing the image that has been used to create the label image.
     * Click `OK` and the spots are imported into Mastodon.
         * ![plugin_import_example_4.png](label_image/imagej/plugin_import_example_4.png)
 

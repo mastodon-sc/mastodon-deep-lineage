@@ -50,6 +50,7 @@ public class ImportSpotsFromImgPlusView< T > extends DynamicCommand
 			+ "<body width=" + WIDTH + "cm align=left>\n"
 			+ "<h1>Import spots from label image in ImageJ.</h1>\n"
 			+ "<p>This command can import spots from the active image in ImageJ that contains an instance segmentation that has been processed outside Mastodon. The label image is assumed to match the existing big data viewer image in all dimensions (x,y,z and t). The existing labels will be used as spot names.</p>\n"
+			+ "<p>To ensure that potential transformation parameters match, the image source that has been used to generate the external segmentation has to be selected.</p>\n"
 			+ "<p>The ellipsoid scaling factor can be used to increase (>1) or decrease (&lt;1) the size of the resulting ellipsoid. 1 is equivalent of ellipsoids drawn at 2.2σ.</p>\n"
 			+ "<p>The active image in ImageJ is: %s.<br>\n"
 			+ "<p>It has the these dimensions: x=%s, y=%s, z=%s, t=%s.</p>\n"
