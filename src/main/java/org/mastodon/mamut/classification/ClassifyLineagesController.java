@@ -399,28 +399,7 @@ public class ClassifyLineagesController
 			logger.debug( message );
 		}
 		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_SPOTS ) )
-		{
-			try
-			{
-				LineageTreeUtils.getFirstTimepointWithNSpots( referenceModel, cropStart );
-			}
-			catch ( NoSuchElementException e )
-			{
-				String message = e.getMessage();
-				feedback.add( message );
-				logger.debug( message );
-			}
-			try
-			{
-				LineageTreeUtils.getFirstTimepointWithNSpots( referenceModel, cropEnd );
-			}
-			catch ( NoSuchElementException e )
-			{
-				String message = e.getMessage();
-				feedback.add( message );
-				logger.debug( message );
-			}
-		}
+			feedback.addAll( checkNumberOfSpots() );
 		return feedback;
 	}
 
@@ -443,5 +422,41 @@ public class ClassifyLineagesController
 				+ ", min. div: "
 				+ minCellDivisions
 				+ ") ";
+	}
+
+	private List< String > checkNumberOfSpots()
+	{
+		List< String > feedback = new ArrayList<>();
+		Set< ProjectModel > allModels = new HashSet<>( Collections.singletonList( referenceProjectModel ) );
+		try (ProjectAccessor projectAccessor = new ProjectAccessor( externalProjects, referenceProjectModel.getContext() ))
+		{
+			allModels.addAll( projectAccessor.getProjectModels() );
+			for ( ProjectModel projectModel : allModels )
+			{
+				Model model = projectModel.getModel();
+				String projectName = projectModel.getProjectName();
+				try
+				{
+					LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
+				}
+				catch ( NoSuchElementException e )
+				{
+					String message = projectName + ", crop start: " + e.getMessage();
+					feedback.add( message );
+					logger.debug( message );
+				}
+				try
+				{
+					LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
+				}
+				catch ( NoSuchElementException e )
+				{
+					String message = projectName + ", crop end: " + e.getMessage();
+					feedback.add( message );
+					logger.debug( message );
+				}
+			}
+		}
+		return feedback;
 	}
 }
