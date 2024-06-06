@@ -161,7 +161,7 @@ public class ClassifyLineagesController
 		double[][] distances = rootsAndDistances.getRight();
 		classification = classifyLineageTrees( roots, distances );
 		List< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
-		applyClassification( classification, tagsAndColors );
+		applyClassification( classification, tagsAndColors, referenceModel );
 		if ( showDendrogram )
 			showDendrogram();
 	}
@@ -276,10 +276,10 @@ public class ClassifyLineagesController
 	}
 
 	private void applyClassification( final Classification< BranchSpotTree > classification,
-			final List< Pair< String, Integer > > tagsAndColors )
+			final List< Pair< String, Integer > > tagsAndColors, final Model model )
 	{
 		Set< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
-		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( referenceModel, getTagSetName(), tagsAndColors );
+		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, getTagSetName(), tagsAndColors );
 		int i = 0;
 		for ( Classification.ObjectClassification< BranchSpotTree > objectClassification : objectClassifications )
 		{
@@ -288,16 +288,15 @@ public class ClassifyLineagesController
 			TagSetStructure.Tag tag = tagSet.getTags().get( i );
 			for ( BranchSpotTree tree : trees )
 			{
-				Spot rootSpot =
-						referenceModel.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), referenceModel.getGraph().vertexRef() );
-				ModelGraph modelGraph = referenceModel.getGraph();
+				Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), model.getGraph().vertexRef() );
+				ModelGraph modelGraph = model.getGraph();
 				DepthFirstIterator< Spot, Link > iterator = new DepthFirstIterator<>( rootSpot, modelGraph );
 				iterator.forEachRemaining( spot -> {
 					if ( spot.getTimepoint() < cropStart )
 						return;
 					if ( spot.getTimepoint() > cropEnd )
 						return;
-					TagSetUtils.tagSpotAndIncomingEdges( referenceModel, spot, tagSet, tag );
+					TagSetUtils.tagSpotAndIncomingEdges( model, spot, tagSet, tag );
 				} );
 			}
 			i++;
