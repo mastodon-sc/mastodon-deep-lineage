@@ -41,7 +41,6 @@ import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.DefaultLinearAxis;
-import net.imagej.patcher.LegacyInjector;
 import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -53,14 +52,20 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Cast;
+import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.feature.EllipsoidIterable;
+import org.mastodon.mamut.io.importer.labelimage.util.CircleRenderer;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
+import org.mastodon.mamut.io.importer.labelimage.util.LineRenderer;
+import org.mastodon.mamut.io.importer.labelimage.util.SphereRenderer;
+import org.mastodon.mamut.io.importer.labelimage.util.SpotRenderer;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.scijava.Context;
 import org.slf4j.Logger;
@@ -77,7 +82,6 @@ import java.util.function.IntFunction;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -90,6 +94,8 @@ class LabelImageUtilsTest
 
 	private AbstractSequenceDescription< ?, ?, ? > sequenceDescription;
 
+	private IntFunction< AffineTransform3D > simpleTransformProvider;
+
 	@BeforeEach
 	void setUp()
 	{
@@ -99,25 +105,17 @@ class LabelImageUtilsTest
 		Map< Integer, ? extends BasicViewSetup > setups =
 				Collections.singletonMap( 0, new BasicViewSetup( 0, "setup 0", new FinalDimensions( 10, 10, 10 ), voxelDimensions ) );
 		sequenceDescription = new SequenceDescriptionMinimal( timePoints, setups, null, null );
-	}
-
-	@Test
-	void testScaleExceptions()
-	{
-		VoxelDimensions voxelDimensions = new FinalVoxelDimensions( "um", 1, 1, 1 );
-		assertThrows( IllegalArgumentException.class, () -> LabelImageUtils.scale( new double[ 2 ][ 2 ], 1, voxelDimensions ) );
-		assertThrows( IllegalArgumentException.class, () -> LabelImageUtils.scale( new double[ 3 ][ 2 ], 1, voxelDimensions ) );
+		simpleTransformProvider = frameId -> new AffineTransform3D();
 	}
 
 	@Test
 	void testCreateSpotFromLabelImageEmpty()
 	{
-		RandomAccessibleIntervalSource< FloatType > img =
-				new RandomAccessibleIntervalSource<>( createImageCubeCorners( 0 ), new FloatType(), new AffineTransform3D(),
-						"Segmentation" );
+		RandomAccessibleIntervalSource< FloatType > img = new RandomAccessibleIntervalSource<>( createImageCubeCorners( 0 ),
+				new FloatType(), new AffineTransform3D(), "Segmentation" );
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
-		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
+		LabelImageUtils.createSpotsFromLabelImage( imgProvider, simpleTransformProvider, model, 1, false, sequenceDescription, null );
 		assertEquals( 0, model.getGraph().vertices().size() );
 	}
 
@@ -127,71 +125,113 @@ class LabelImageUtilsTest
 		AbstractSource< FloatType > img = createNonLabelImage();
 
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
-		LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, sequenceDescription, null );
-		assertEquals( 0, model.getGraph().vertices().size() );
+		LabelImageUtils.createSpotsFromLabelImage( imgProvider, simpleTransformProvider, model, 1, false, sequenceDescription, null );
+		assertEquals( 15_625, model.getGraph().vertices().size() );
 	}
 
 	@Test
-	void testCreateSpotFromWrongVoxelDimensions()
+	void testImportSpotSphere()
 	{
-
-		RandomAccessibleIntervalSource< FloatType > img =
-				new RandomAccessibleIntervalSource<>( createImageCubeCorners( 1 ), new FloatType(), new AffineTransform3D(),
-						"Segmentation" );
-
-		VoxelDimensions wrongDimensions = new FinalVoxelDimensions( "um", 1, 1 );
-		TimePoints timePoints = new TimePoints( Collections.singletonList( new TimePoint( 0 ) ) );
-		Map< Integer, ? extends BasicViewSetup > setups =
-				Collections.singletonMap( 0, new BasicViewSetup( 0, "setup 0", new FinalDimensions( 10, 10, 10 ), wrongDimensions ) );
-		AbstractSequenceDescription< ?, ?, ? > faultySequenceDescription = new SequenceDescriptionMinimal( timePoints, setups, null, null );
-		IntFunction< RandomAccessibleInterval< RealType< ? > > > imgProvider = frameId -> Cast.unchecked( img.getSource( frameId, 0 ) );
-		assertThrows( IllegalArgumentException.class,
-				() -> LabelImageUtils.createSpotsFromLabelImage( imgProvider, model, 1, false, faultySequenceDescription, null ) );
-
-	}
-
-	@Test
-	void testImportSpotsFromBdvChannel()
-	{
-		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
-			int pixelValue = 1;
-			Img< FloatType > img = createImageCubeCorners( pixelValue );
+			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
+			SphereRenderer.renderSphere( new int[] { 5, 5, 5 }, 5, 1, img );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
 			LabelImageUtils.importSpotsFromBdvChannel( projectModel, projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource(),
 					1, false );
 
 			Iterator< Spot > iter = model.getGraph().vertices().iterator();
 			Spot spot = iter.next();
-			double[][] covarianceMatrix = new double[ 3 ][ 3 ];
-			spot.getCovariance( covarianceMatrix );
-			final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
-			eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
-			final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
-			double axisA = Math.sqrt( eigenValues[ 0 ] );
-			double axisB = Math.sqrt( eigenValues[ 1 ] );
-			double axisC = Math.sqrt( eigenValues[ 2 ] );
+			Triple< Double, Double, Double > semiAxes = getSemiAxesOfSpot( spot );
 
 			assertNotNull( spot );
 			assertEquals( 0, spot.getTimepoint() );
-			assertEquals( 2, spot.getDoublePosition( 0 ), 0.01 );
-			assertEquals( 2, spot.getDoublePosition( 1 ), 0.01 );
-			assertEquals( 2, spot.getDoublePosition( 2 ), 0.01 );
-			assertEquals( 0, spot.getInternalPoolIndex() );
-			assertEquals( String.valueOf( pixelValue ), spot.getLabel() );
-			assertEquals( 2.2, axisA, 0.2d );
-			assertEquals( 2.2, axisB, 0.2d );
-			assertEquals( 2.2, axisC, 0.2d );
-			assertEquals( 5d, spot.getBoundingSphereRadiusSquared(), 1d );
-			assertFalse( iter.hasNext() );
+			assertArrayEquals( new double[] { 5, 5, 5 }, spot.positionAsDoubleArray(), 0.01 );
+			assertEquals( String.valueOf( 1 ), spot.getLabel() );
+			assertEquals( 5, semiAxes.getLeft(), 0.05d );
+			assertEquals( 5, semiAxes.getMiddle(), 0.05d );
+			assertEquals( 5, semiAxes.getRight(), 0.05d );
+		}
+	}
+
+	@Test
+	void testImportSpotSinglePixel()
+	{
+		try (Context context = new Context())
+		{
+			Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
+			SphereRenderer.renderSphere( new int[] { 5, 5, 5 }, 0.5, 1, img );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
+			LabelImageUtils.importSpotsFromBdvChannel( projectModel, projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource(),
+					1, false );
+
+			Iterator< Spot > iter = model.getGraph().vertices().iterator();
+			Spot spot = iter.next();
+			Triple< Double, Double, Double > semiAxes = getSemiAxesOfSpot( spot );
+
+			assertNotNull( spot );
+			assertEquals( 0, spot.getTimepoint() );
+			assertArrayEquals( new double[] { 5, 5, 5 }, spot.positionAsDoubleArray(), 0.01 );
+			assertEquals( String.valueOf( 1 ), spot.getLabel() );
+			assertEquals( 0.5, semiAxes.getLeft(), 0.1d );
+			assertEquals( 0.5, semiAxes.getMiddle(), 0.1d );
+			assertEquals( 0.5, semiAxes.getRight(), 0.1d );
+		}
+	}
+
+	@Test
+	void testImportSpotCircle()
+	{
+		try (Context context = new Context())
+		{
+			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
+			CircleRenderer.renderCircle( new int[] { 5, 5, 5 }, 5, 1, img, CircleRenderer.Plane.XY );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
+			LabelImageUtils.importSpotsFromBdvChannel( projectModel, projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource(),
+					1, false );
+
+			Iterator< Spot > iter = model.getGraph().vertices().iterator();
+			Spot spot = iter.next();
+			Triple< Double, Double, Double > semiAxes = getSemiAxesOfSpot( spot );
+
+			assertNotNull( spot );
+			assertEquals( 0, spot.getTimepoint() );
+			assertArrayEquals( new double[] { 5, 5, 5 }, spot.positionAsDoubleArray(), 0.01 );
+			assertEquals( String.valueOf( 1 ), spot.getLabel() );
+			assertEquals( 0.5, semiAxes.getLeft(), 0.05d );
+			assertEquals( 5, semiAxes.getMiddle(), 1d );
+			assertEquals( 5, semiAxes.getRight(), 1d );
+		}
+	}
+
+	@Test
+	void testImportSpotLine()
+	{
+		try (Context context = new Context())
+		{
+			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
+			LineRenderer.renderLine( new int[] { 0, 5, 5 }, new int[] { 10, 5, 5 }, 1, img );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
+			LabelImageUtils.importSpotsFromBdvChannel( projectModel, projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource(),
+					1, false );
+
+			Iterator< Spot > iter = model.getGraph().vertices().iterator();
+			Spot spot = iter.next();
+			Triple< Double, Double, Double > semiAxes = getSemiAxesOfSpot( spot );
+
+			assertNotNull( spot );
+			assertEquals( 0, spot.getTimepoint() );
+			assertArrayEquals( new double[] { 5, 5, 5 }, spot.positionAsDoubleArray(), 0.01 );
+			assertEquals( String.valueOf( 1 ), spot.getLabel() );
+			assertEquals( 0.5, semiAxes.getLeft(), 0.01d );
+			assertEquals( 0.5, semiAxes.getMiddle(), 0.01d );
+			assertEquals( 7.5, semiAxes.getRight(), 1d );
 		}
 	}
 
 	@Test
 	void testImportSpotsFromImgPlus()
 	{
-		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
 			double[] center = { 18, 21, 22 };
@@ -205,7 +245,7 @@ class LabelImageUtilsTest
 			Img< FloatType > image = createImageFromSpot( spot, pixelValue );
 			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
-			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1, false );
+			LabelImageUtils.importSpotsFromImgPlus( projectModel, 0, imgPlus, 1, false );
 
 			Iterator< Spot > iterator = model.getGraph().vertices().iterator();
 			iterator.next();
@@ -230,13 +270,12 @@ class LabelImageUtilsTest
 	@Test
 	void testImportSpotsFromImgPlusAndLinkSameLabels()
 	{
-		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
 			Img< FloatType > twoFramesImage = DemoUtils.generateExampleTStack();
 			ImgPlus< FloatType > imgPlus = createImgPlus( twoFramesImage, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( twoFramesImage, model, context );
-			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1, true );
+			LabelImageUtils.importSpotsFromImgPlus( projectModel, 0, imgPlus, 1, true );
 
 			assertEquals( 2, model.getGraph().vertices().size() );
 			assertEquals( 1, model.getGraph().edges().size() );
@@ -248,13 +287,12 @@ class LabelImageUtilsTest
 	@Test
 	void testImportSpotsFromImgPlusNonSequentialLabels()
 	{
-		LegacyInjector.preinit();
 		try (Context context = new Context())
 		{
 			Img< FloatType > image = DemoUtils.generateNonSequentialLabelImage();
 			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
-			LabelImageUtils.importSpotsFromImgPlus( projectModel, imgPlus, 1, true );
+			LabelImageUtils.importSpotsFromImgPlus( projectModel, 0, imgPlus, 1, true );
 
 			assertEquals( 2, model.getGraph().vertices().size() );
 			assertEquals( 0, model.getGraph().edges().size() );
@@ -265,7 +303,6 @@ class LabelImageUtilsTest
 	@Test
 	void testDimensionsMatch()
 	{
-		LegacyInjector.preinit();
 		try (final Context context = new Context())
 		{
 			Img< FloatType > image = ArrayImgs.floats( 10, 10, 10, 2 );
@@ -287,14 +324,27 @@ class LabelImageUtilsTest
 	@Test
 	void testGetSourceNames()
 	{
-		LegacyInjector.preinit();
 		try (final Context context = new Context())
 		{
-			Img< FloatType > image = ArrayImgs.floats( 100, 100, 100, 2 );
+			Img< FloatType > image = ArrayImgs.floats( 10, 10, 10, 2 );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
 			List< String > sourceNames = LabelImageUtils.getSourceNames( projectModel.getSharedBdvData() );
 			assertEquals( 1, sourceNames.size() );
 			assertEquals( "image channel 1", sourceNames.get( 0 ) );
+		}
+	}
+
+	@Test
+	void testGetSourceIndex()
+	{
+		try (final Context context = new Context())
+		{
+			Img< FloatType > image = ArrayImgs.floats( 10, 10, 10, 2 );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
+			SharedBigDataViewerData sharedBdvData = projectModel.getSharedBdvData();
+			int sourceIndex0 = LabelImageUtils.getSourceIndex( "image channel 1", sharedBdvData );
+			assertEquals( 0, sourceIndex0 );
+			assertThrows( IllegalArgumentException.class, () -> LabelImageUtils.getSourceIndex( "unknown", sharedBdvData ) );
 		}
 	}
 
@@ -337,14 +387,24 @@ class LabelImageUtilsTest
 	{
 		long[] dimensions = { 40, 40, 40, 1 };
 		Img< FloatType > image = ArrayImgs.floats( dimensions );
-		AffineTransform3D transform = new AffineTransform3D();
-		AbstractSource< FloatType > frame =
-				new RandomAccessibleIntervalSource<>( Views.hyperSlice( image, 3, 0 ), new FloatType(), transform, "Ellipsoids" );
-
-		final EllipsoidIterable< FloatType > ellipsoidIterable = new EllipsoidIterable<>( frame );
-		ellipsoidIterable.reset( spot );
-		ellipsoidIterable.forEach( pixel -> pixel.set( pixelValue ) );
+		IntervalView< FloatType > frame = Views.hyperSlice( image, 3, 0 );
+		AbstractSource< FloatType > source =
+				new RandomAccessibleIntervalSource<>( frame, new FloatType(), new AffineTransform3D(), "Ellipsoids" );
+		SpotRenderer.renderSpot( spot, pixelValue, source );
 		return image;
+	}
+
+	private static Triple< Double, Double, Double > getSemiAxesOfSpot( final Spot spot )
+	{
+		double[][] covarianceMatrix = new double[ 3 ][ 3 ];
+		spot.getCovariance( covarianceMatrix );
+		final JamaEigenvalueDecomposition eigenvalueDecomposition = new JamaEigenvalueDecomposition( 3 );
+		eigenvalueDecomposition.decomposeSymmetric( covarianceMatrix );
+		final double[] eigenValues = eigenvalueDecomposition.getRealEigenvalues();
+		double semiAxisA = Math.sqrt( eigenValues[ 0 ] );
+		double semiAxisB = Math.sqrt( eigenValues[ 1 ] );
+		double semiAxisC = Math.sqrt( eigenValues[ 2 ] );
+		return Triple.of( semiAxisA, semiAxisB, semiAxisC );
 	}
 }
 

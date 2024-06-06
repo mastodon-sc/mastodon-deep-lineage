@@ -32,12 +32,13 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.sequence.TimePoint;
-import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.ImgPlus;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Cast;
+import net.imglib2.util.LinAlgHelpers;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
@@ -68,6 +69,10 @@ public class LabelImageUtils
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
+	private static final double SIGMA = 5d;
+
+	private static final double SINGLE_PIXEL_COVARIANCE = 0.05d;
+
 	private LabelImageUtils()
 	{
 		// prevent from instantiation
@@ -84,14 +89,13 @@ public class LabelImageUtils
 	 * @param statusService the status service to report progress to.
 	 */
 	static void createSpotsFromLabelImage( final IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider,
+			final IntFunction< AffineTransform3D > transformProvider,
 			final Model model, final double scaleFactor, final boolean linkSpotsWithSameLabels,
 			final AbstractSequenceDescription< ?, ?, ? > sequenceDescription,
 			final StatusService statusService )
 	{
 		final ModelGraph graph = model.getGraph();
 		final List< TimePoint > frames = sequenceDescription.getTimePoints().getTimePointsOrdered();
-		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
-		final VoxelDimensions voxelDimensions = sequenceDescription.getViewSetups().get( 0 ).getVoxelSize();
 		ReentrantReadWriteLock lock = graph.getLock();
 		lock.writeLock().lock();
 		int count = 0;
@@ -103,7 +107,8 @@ public class LabelImageUtils
 				TimePoint frame = frames.get( i );
 				int frameId = frame.getId();
 				final RandomAccessibleInterval< RealType< ? > > rai = frameProvider.apply( frameId );
-				count += createSpotsForFrame( graph, rai, frameId, voxelDimensions, scaleFactor );
+				final AffineTransform3D transform = transformProvider.apply( frameId );
+				count += createSpotsForFrame( graph, rai, frameId, transform, scaleFactor );
 				if ( statusService != null )
 					statusService.showProgress( i + 1, numTimepoints );
 			}
@@ -124,12 +129,11 @@ public class LabelImageUtils
 	 * @param graph the graph to add the spots to.
 	 * @param frame the image data to read and process.
 	 * @param frameId the frame id the spots should belong to.
-	 * @param voxelDimensions the dimensions of the voxels in the image.
 	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @return the number of spots created.
 	 */
 	private static int createSpotsForFrame( final ModelGraph graph, final RandomAccessibleInterval< RealType< ? > > frame,
-			final int frameId, final VoxelDimensions voxelDimensions, final double scaleFactor )
+			final int frameId, final AffineTransform3D transform, final double scaleFactor )
 	{
 		logger.debug( "Computing mean, covariance of all labels at frame {}", frameId );
 		logger.debug( "Dimensions of frame: {}, {}, {}", frame.dimension( 0 ), frame.dimension( 1 ), frame.dimension( 2 ) );
@@ -150,7 +154,7 @@ public class LabelImageUtils
 
 		logger.debug( "Found {} label(s) in frame {}. Range: [{}, {}]", numLabels, frameId, minimumLabel, maximumLabel );
 		Label[] labels = extractLabelsFromFrame( frame, minimumLabel, numLabels );
-		return createSpotsFromFrameLabels( graph, frameId, labels, voxelDimensions, scaleFactor );
+		return createSpotsFromFrameLabels( graph, frameId, labels, transform, scaleFactor );
 	}
 
 	/**
@@ -186,34 +190,56 @@ public class LabelImageUtils
 	 * @param graph the graph to add the spots to.
 	 * @param frameId the frame id the spots should belong to.
 	 * @param labels the labels in the frame.
-	 * @param voxelDimensions the dimensions of the voxels in the image.
+	 * @param transform the affine transform to convert from pixel to mastodon coordinates.
 	 * @param scaleFactor the size factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @return the number of spots created.
 	 */
 	private static int createSpotsFromFrameLabels( final ModelGraph graph, final int frameId, final Label[] labels,
-			final VoxelDimensions voxelDimensions, final double scaleFactor )
+			final AffineTransform3D transform, final double scaleFactor )
 	{
 		int count = 0;
 		// combine the sums into mean and covariance matrices, then add the corresponding spot
 		for ( final Label label : labels )
 		{
-			// skip labels that are not present in the image or have only one pixel
-			if ( label == null || label.numPixels < 2 )
+			// skip labels that are not present in the image or do not have at least 1 pixel
+			if ( label == null || label.numPixels < 1 )
 				continue;
 			double[] mean = label.covariances.getMeans();
-			double[][] cov = label.covariances.get();
-			scale( mean, voxelDimensions );
-			scale( cov, scaleFactor, voxelDimensions );
+			double[][] cov;
+			if ( label.numPixels == 1 )
+				cov = new double[ mean.length ][ mean.length ];
+			else
+				cov = label.covariances.get();
+			for ( int i = 0; i < cov.length; i++ )
+				cov[ i ][ i ] += SINGLE_PIXEL_COVARIANCE;
+			// transform ellipsoid center to mastodon coordinate system
+			transform.apply( mean, mean );
+			// scale ellipsoid axes to desired factor
+			scale( cov, scaleFactor );
+
+			// transform ellipsoid axes to mastodon coordinate system
+			double[][] transformMatrix = new double[ 3 ][ 4 ];
+			transform.toMatrix( transformMatrix );
+			double[][] matrix3x3 = {
+					{ transformMatrix[ 0 ][ 0 ], transformMatrix[ 0 ][ 1 ], transformMatrix[ 0 ][ 2 ] },
+					{ transformMatrix[ 1 ][ 0 ], transformMatrix[ 1 ][ 1 ], transformMatrix[ 1 ][ 2 ] },
+					{ transformMatrix[ 2 ][ 0 ], transformMatrix[ 2 ][ 1 ], transformMatrix[ 2 ][ 2 ] }
+			};
+			double[][] temp = new double[ 3 ][ 3 ];
+			double[][] covTransformed = new double[ 3 ][ 3 ];
+			LinAlgHelpers.mult( matrix3x3, cov, temp );
+			LinAlgHelpers.multABT( temp, matrix3x3, covTransformed );
+
 			try
 			{
-				Spot spot = graph.addVertex().init( frameId, mean, cov );
+				Spot spot = graph.addVertex().init( frameId, mean, covTransformed );
 				spot.setLabel( String.valueOf( label.value ) );
 				count++;
 			}
 			catch ( Exception e )
 			{
 				logger.trace( "Could not add vertex to graph. Mean: {}, Covariance: {}", Arrays.toString( mean ),
-						Arrays.deepToString( cov ) );
+						Arrays.deepToString( covTransformed ) );
 			}
 		}
 		logger.debug( "Added {} spot(s) to frame {}", count, frameId );
@@ -246,19 +272,6 @@ public class LabelImageUtils
 			label.addPixel( pixel );
 		}
 		return labels;
-	}
-
-	/**
-	 * Scales the mean vector by the voxel dimensions.
-	 * @param mean the mean vector to scale.
-	 * @param voxelDimensions the dimensions of the voxels in the image.
-	 */
-	private static void scale( final double[] mean, final VoxelDimensions voxelDimensions )
-	{
-		if ( mean.length != voxelDimensions.numDimensions() )
-			throw new IllegalArgumentException( "Mean vector has wrong dimension." );
-		for ( int i = 0; i < mean.length; i++ )
-			mean[ i ] = mean[ i ] * voxelDimensions.dimension( i );
 	}
 
 	/**
@@ -306,12 +319,14 @@ public class LabelImageUtils
 	/**
 	 * Imports spots from the given ImageJ image into the given project model.
 	 * @param projectModel the project model to add the spots to.
+	 * @param sourceIndex the index of the source, to which the segmentation image given in imgPlus corresponds.
 	 * @param imgPlus the image to import the spots from.
 	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @param linkSpotsWithSameLabels whether to link spots with the same labels.
 	 * @throws IllegalArgumentException if the dimensions of the given image do not match the dimensions of the big data viewer image contained in the project model.
 	 */
-	public static void importSpotsFromImgPlus( final ProjectModel projectModel, final ImgPlus< ? > imgPlus, final double scaleFactor,
+	public static void importSpotsFromImgPlus( final ProjectModel projectModel, final int sourceIndex, final ImgPlus< ? > imgPlus,
+			final double scaleFactor,
 			final boolean linkSpotsWithSameLabels )
 	{
 		logger.debug( "ImageJ image: {}", imgPlus.getName() );
@@ -321,7 +336,12 @@ public class LabelImageUtils
 					+ " do not match the dimensions of the big data viewer image." );
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
 				frameId -> Cast.unchecked( Views.hyperSlice( imgPlus.getImg(), 3, frameId ) );
-		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), scaleFactor, linkSpotsWithSameLabels,
+		IntFunction< AffineTransform3D > transformProvider = frameId -> {
+			AffineTransform3D transform = new AffineTransform3D();
+			projectModel.getSharedBdvData().getSources().get( sourceIndex ).getSpimSource().getSourceTransform( frameId, 0, transform );
+			return transform;
+		};
+		createSpotsFromLabelImage( frameProvider, transformProvider, projectModel.getModel(), scaleFactor, linkSpotsWithSameLabels,
 				sharedBdvData.getSpimData().getSequenceDescription(),
 				projectModel.getContext().getService( StatusService.class ) );
 	}
@@ -339,29 +359,29 @@ public class LabelImageUtils
 	{
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
 				frameId -> Cast.unchecked( source.getSource( frameId, 0 ) );
-		createSpotsFromLabelImage( frameProvider, projectModel.getModel(), scaleFactor, linkSpotsWithSameLabels,
+		IntFunction< AffineTransform3D > transformProvider = frameId -> {
+			AffineTransform3D transform = new AffineTransform3D();
+			source.getSourceTransform( frameId, 0, transform );
+			return transform;
+		};
+		createSpotsFromLabelImage( frameProvider, transformProvider, projectModel.getModel(), scaleFactor, linkSpotsWithSameLabels,
 				projectModel.getSharedBdvData().getSpimData().getSequenceDescription(),
 				projectModel.getContext().getService( StatusService.class ) );
 	}
 
 	/**
-	 * Scales the covariance matrix the given sigma and the voxel dimensions.
+	 * Scales the covariance matrix using the scale factor and the voxel dimensions.
 	 * @param covariance the covariance matrix to scale.
 	 * @param scaleFactor the factor to scale the covariance matrix with.
-	 * @param voxelDimensions the dimensions of the voxels in the image.
 	 * @throws IllegalArgumentException if the covariance matrix has not the same dimensions as the given voxelDimensions.
 	 */
-	public static void scale( final double[][] covariance, final double scaleFactor, final VoxelDimensions voxelDimensions )
+	public static void scale( final double[][] covariance, final double scaleFactor )
 	{
-		if ( covariance.length != voxelDimensions.numDimensions() )
-			throw new IllegalArgumentException( "Covariance matrix has wrong dimension." );
 		for ( int i = 0; i < covariance.length; i++ )
 		{
-			if ( covariance[ i ].length != voxelDimensions.numDimensions() )
-				throw new IllegalArgumentException( "Covariance matrix has wrong dimension." );
 			for ( int j = i; j < covariance.length; j++ )
 			{
-				covariance[ i ][ j ] *= Math.pow( scaleFactor, 2 ) * 5 * voxelDimensions.dimension( i ) * voxelDimensions.dimension( j );
+				covariance[ i ][ j ] *= Math.pow( scaleFactor, 2 ) * SIGMA;
 				// the covariance matrix is symmetric!
 				if ( i != j )
 					covariance[ j ][ i ] = covariance[ i ][ j ];
@@ -381,6 +401,22 @@ public class LabelImageUtils
 		for ( SourceAndConverter< ? > source : sources )
 			choices.add( source.getSpimSource().getName() );
 		return choices;
+	}
+
+	/**
+		 * Returns the index of the given image source name in the given big data viewer data.
+		 * @param imgSource the image source name to get the id for.
+		 * @param sharedBdvData the big data viewer data to get the source index from.
+		 * @return the source index.
+		 * @throws IllegalArgumentException if the source name was not found in the big data viewer data.
+		 */
+	public static int getSourceIndex( final String imgSource, final SharedBigDataViewerData sharedBdvData )
+	{
+		final List< SourceAndConverter< ? > > sources = sharedBdvData.getSources();
+		for ( int i = 0; i < sources.size(); i++ )
+			if ( sources.get( i ).getSpimSource().getName().equals( imgSource ) )
+				return i;
+		throw new IllegalArgumentException( "The source " + imgSource + " was not found in the big data viewer data." );
 	}
 
 	/**
