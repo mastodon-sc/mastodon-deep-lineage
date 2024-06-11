@@ -390,7 +390,11 @@ public class ClassifyLineagesController
 			logger.debug( message );
 		}
 
-		int roots = getRoots().size();
+		int roots;
+		try (ProjectAccessor projectAccessor = new ProjectAccessor( externalProjects, referenceProjectModel.getContext() ))
+		{
+			roots = findCommonRootNames( projectAccessor.getProjectModels() ).size();
+		}
 		if ( numberOfClasses > roots )
 		{
 			String message =
