@@ -28,6 +28,12 @@
  */
 package org.mastodon.mamut.io.exporter.labelimage.ui;
 
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.type.numeric.real.FloatType;
+import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
+import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.ui.UIService;
@@ -43,6 +49,9 @@ public class ExportLabelImageViewDemo
 		CommandService cmd = context.service( CommandService.class );
 
 		ui.showUI();
-		cmd.run( ExportLabelImageView.class, true, "projectModel", null );
+		Model model = new Model();
+		Img< FloatType > img = ArrayImgs.floats( 1, 1, 1 );
+		ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
+		cmd.run( ExportLabelImageView.class, true, "projectModel", projectModel );
 	}
 }
