@@ -90,7 +90,8 @@ public class ExportLabelImageView extends DynamicCommand
 	@SuppressWarnings( "unused" )
 	private void initResolutionMinMax()
 	{
-		int mipMapLevels = projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource().getNumMipmapLevels();
+		int mipMapLevels = projectModel.getSharedBdvData().getSources().get( ExportLabelImageController.DEFAULT_SOURCE_ID ).getSpimSource()
+				.getNumMipmapLevels();
 		getInfo().getMutableInput( "resolutionLevel", Integer.class ).setMinimumValue( 0 );
 		getInfo().getMutableInput( "resolutionLevel", Integer.class ).setMaximumValue( mipMapLevels - 1 );
 	}
