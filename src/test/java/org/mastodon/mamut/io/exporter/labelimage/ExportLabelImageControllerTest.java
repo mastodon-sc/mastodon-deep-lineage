@@ -100,9 +100,9 @@ class ExportLabelImageControllerTest
 			File outputSpot = getTempFile( "resultSpot" );
 			File outputBranchSpot = getTempFile( "resultBranchSpot" );
 			File outputTrack = getTempFile( "resultTrack" );
-			exportLabelImageController.saveLabelImageToFile( LabelOptions.SPOT_ID, outputSpot, false, 1 );
-			exportLabelImageController.saveLabelImageToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, false, 1 );
-			exportLabelImageController.saveLabelImageToFile( LabelOptions.TRACK_ID, outputTrack, false, 1 );
+			exportLabelImageController.saveLabelImageToFile( LabelOptions.SPOT_ID, outputSpot, false, 1, 0 );
+			exportLabelImageController.saveLabelImageToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, false, 1, 0 );
+			exportLabelImageController.saveLabelImageToFile( LabelOptions.TRACK_ID, outputTrack, false, 1, 0 );
 
 			ImgOpener imgOpener = new ImgOpener( context );
 			SCIFIOImgPlus< IntType > imgSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputSpot );
@@ -152,9 +152,9 @@ class ExportLabelImageControllerTest
 			file.deleteOnExit();
 			assertThrows(
 					IllegalArgumentException.class,
-					() -> controller.saveLabelImageToFile( LabelOptions.SPOT_ID, null, false, 1 )
+					() -> controller.saveLabelImageToFile( LabelOptions.SPOT_ID, null, false, 1, 0 )
 			);
-			assertThrows( IllegalArgumentException.class, () -> controller.saveLabelImageToFile( null, file, false, 1 ) );
+			assertThrows( IllegalArgumentException.class, () -> controller.saveLabelImageToFile( null, file, false, 1, 0 ) );
 		}
 	}
 

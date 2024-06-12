@@ -129,10 +129,10 @@ public class ExportLabelImageController
 	 * @param file the file to save the image to
 	 * @param showResult whether to show the result in ImageJ
 	 * @param frameRateReduction only use every n-th frame for export. 1 means no reduction.
+	 * @param mipMapLevel the mip map (i.e. resolution) level to use for the export. 0 means highest resolution.
 	 */
 	public void saveLabelImageToFile(
-			final LabelOptions labelOption, final File file, boolean showResult, int frameRateReduction
-	)
+			final LabelOptions labelOption, final File file, boolean showResult, int frameRateReduction, int mipMapLevel )
 	{
 		if ( file == null )
 			throw new IllegalArgumentException( "Cannot write label image to file. Given file is null." );
@@ -140,7 +140,7 @@ public class ExportLabelImageController
 			throw new IllegalArgumentException( "Cannot write label image to file. Given label options are null." );
 
 		logger.info( "Save label image to file. Label options: {}, file: {}", labelOption, file.getAbsolutePath() );
-		long[] spatialDimensions = getDimensionsOfSource();
+		long[] spatialDimensions = getDimensionsOfSource( mipMapLevel );
 		int numTimePoints = timePoints.size();
 		int frames = numTimePoints / frameRateReduction;
 		if ( numTimePoints > frameRateReduction && frameRateReduction > 1 )
@@ -157,7 +157,7 @@ public class ExportLabelImageController
 			if ( sourceFrameId % frameRateReduction != 0 )
 				continue;
 			AffineTransform3D transform = new AffineTransform3D();
-			source.getSourceTransform( sourceFrameId, 0, transform );
+			source.getSourceTransform( sourceFrameId, mipMapLevel, transform );
 			int targetFrameId = sourceFrameId / frameRateReduction;
 			logger.trace( "sourceFrameId: {}, targetFrameId: {}", sourceFrameId, targetFrameId );
 			IntervalView< IntType > frame = Views.hyperSlice( img, 3, targetFrameId );
@@ -206,13 +206,11 @@ public class ExportLabelImageController
 		statusService.showProgress( oneBasedFrameId, frames );
 	}
 
-	private long[] getDimensionsOfSource()
+	private long[] getDimensionsOfSource( final int mipMapLevel )
 	{
 		// NB: Use the dimensions of the first timepoint only without checking if they are equal in other timepoints.
 		int timepoint = 0;
-		// NB: the midmaplevel 0 is supposed to be the highest resolution
-		int midMipmapLevel = 0;
-		long[] dimensions = this.source.getSource( timepoint, midMipmapLevel ).dimensionsAsLongArray();
+		long[] dimensions = this.source.getSource( timepoint, mipMapLevel ).dimensionsAsLongArray();
 		logger.debug( "number of dimensions in source: {}", dimensions.length );
 		Arrays.stream( dimensions ).forEach( value -> logger.debug( "dimension: {}", value ) );
 		return dimensions;

@@ -63,6 +63,10 @@ public class ExportLabelImageView extends DynamicCommand
 	@Parameter(label = "Frame rate reduction", description = "Only export every n-th. 1 means no reduction. Value must be >= 1.", min = "1")
 	private int frameRateReduction = 1;
 
+	@SuppressWarnings( "all" )
+	@Parameter( label = "Resolution level", description = "Spatial resolution level of export. 0 means highest resolution. Value > 0 mean lower resolution.", initializer = "initResolutionMinMax" )
+	private int resolutionLevel = 0;
+
 	@SuppressWarnings("unused")
 	@Parameter(label = "Save to")
 	private File saveTo;
@@ -80,6 +84,14 @@ public class ExportLabelImageView extends DynamicCommand
 	{
 		ExportLabelImageController controller = new ExportLabelImageController( projectModel, getContext() );
 		LabelOptions selectedOption = LabelOptions.getByName( option );
-		controller.saveLabelImageToFile( selectedOption, saveTo, showResult, frameRateReduction );
+		controller.saveLabelImageToFile( selectedOption, saveTo, showResult, frameRateReduction, resolutionLevel );
+	}
+
+	@SuppressWarnings( "unused" )
+	private void initResolutionMinMax()
+	{
+		int mipMapLevels = projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource().getNumMipmapLevels();
+		getInfo().getMutableInput( "resolutionLevel", Integer.class ).setMinimumValue( 0 );
+		getInfo().getMutableInput( "resolutionLevel", Integer.class ).setMaximumValue( mipMapLevels - 1 );
 	}
 }
