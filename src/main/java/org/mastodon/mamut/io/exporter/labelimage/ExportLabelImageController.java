@@ -81,6 +81,8 @@ public class ExportLabelImageController
 
 	public static final int LABEL_ID_OFFSET = 1;
 
+	public static final int DEFAULT_SOURCE_ID = 0;
+
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final Model model;
@@ -102,8 +104,9 @@ public class ExportLabelImageController
 		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
 		this( projectModel.getModel(),
 				projectModel.getSharedBdvData().getSpimData().getSequenceDescription().getTimePoints().getTimePointsOrdered(),
-				Cast.unchecked( projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource() ), context,
-				projectModel.getSharedBdvData().getSpimData().getSequenceDescription().getViewSetups().get( 0 ).getVoxelSize()
+				Cast.unchecked( projectModel.getSharedBdvData().getSources().get( DEFAULT_SOURCE_ID ).getSpimSource() ), context,
+				projectModel.getSharedBdvData().getSpimData().getSequenceDescription().getViewSetups().get( DEFAULT_SOURCE_ID )
+						.getVoxelSize()
 		);
 	}
 
