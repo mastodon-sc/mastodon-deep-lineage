@@ -31,16 +31,16 @@ package org.mastodon.mamut.io.exporter.labelimage.ui;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.exporter.labelimage.ExportLabelImageController;
 import org.mastodon.mamut.io.exporter.labelimage.config.LabelOptions;
-import org.scijava.Context;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
+import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 import java.io.File;
 
 @Plugin(type = Command.class, label = "Run export label image using ellipsoids")
-public class ExportLabelImageView implements Command
+public class ExportLabelImageView extends DynamicCommand
 {
 	private static final int WIDTH = 15;
 
@@ -75,14 +75,10 @@ public class ExportLabelImageView implements Command
 	@Parameter
 	private ProjectModel projectModel;
 
-	@SuppressWarnings("unused")
-	@Parameter
-	private Context context;
-
 	@Override
 	public void run()
 	{
-		ExportLabelImageController controller = new ExportLabelImageController( projectModel, context );
+		ExportLabelImageController controller = new ExportLabelImageController( projectModel, getContext() );
 		LabelOptions selectedOption = LabelOptions.getByName( option );
 		controller.saveLabelImageToFile( selectedOption, saveTo, showResult, frameRateReduction );
 	}
