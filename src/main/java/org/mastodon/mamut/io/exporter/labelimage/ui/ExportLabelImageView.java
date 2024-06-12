@@ -60,7 +60,7 @@ public class ExportLabelImageView extends DynamicCommand
 	private String option = LabelOptions.BRANCH_SPOT_ID.getName();
 
 	@SuppressWarnings("all")
-	@Parameter(label = "Frame rate reduction", description = "Only export every n-th. 1 means no reduction. Value must be >= 1.", min = "1")
+	@Parameter( label = "Frame rate reduction", description = "Only export every n-th frame. 1 means no reduction. Value must be >= 1.", min = "1" )
 	private int frameRateReduction = 1;
 
 	@SuppressWarnings( "all" )
