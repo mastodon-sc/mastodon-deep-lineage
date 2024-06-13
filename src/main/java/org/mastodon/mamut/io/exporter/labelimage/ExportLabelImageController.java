@@ -46,7 +46,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Cast;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -143,7 +143,7 @@ public class ExportLabelImageController
 		int frames = getResultingNumberOfFrames( numTimePoints, frameRateReduction );
 		logger.debug(
 				"number of timepoints: {}, frame rate reduction: {}, resulting frames: {}", numTimePoints, frameRateReduction, frames );
-		DiskCachedCellImg< IntType, ? > img = createCachedImage( spatialDimensions, frames );
+		DiskCachedCellImg< FloatType, ? > img = createCachedImage( spatialDimensions, frames );
 
 		ReentrantReadWriteLock.ReadLock lock = getReadLock( labelOption );
 		lock.lock();
@@ -156,15 +156,16 @@ public class ExportLabelImageController
 			source.getSourceTransform( sourceFrameId, mipMapLevel, transform );
 			int targetFrameId = sourceFrameId / frameRateReduction;
 			logger.trace( "sourceFrameId: {}, targetFrameId: {}", sourceFrameId, targetFrameId );
-			IntervalView< IntType > frame = Views.hyperSlice( img, 3, targetFrameId );
-			AbstractSource< IntType > frameSource = new RandomAccessibleIntervalSource<>( frame, new IntType(), transform, "Ellipsoids" );
-			final EllipsoidIterable< IntType > ellipsoidIterable = new EllipsoidIterable<>( frameSource );
+			IntervalView< FloatType > frame = Views.hyperSlice( img, 3, targetFrameId );
+			AbstractSource< FloatType > frameSource =
+					new RandomAccessibleIntervalSource<>( frame, new FloatType(), transform, "Ellipsoids" );
+			final EllipsoidIterable< FloatType > ellipsoidIterable = new EllipsoidIterable<>( frameSource );
 			processAllSpotsOfFrame( ellipsoidIterable, labelOption, sourceFrameId, targetFrameId, frames );
 		}
 		lock.unlock();
 		logger.debug( "Export finished." );
 
-		ImgPlus< IntType > imgplus = createImgPlus( img );
+		ImgPlus< FloatType > imgplus = createImgPlus( img );
 		saveImgPlus( file, imgplus );
 		logger.info( "Done saving label image to file." );
 		if ( showResult )
@@ -219,9 +220,9 @@ public class ExportLabelImageController
 		return dimensionsWithTime;
 	}
 
-	private static DiskCachedCellImg< IntType, ? > createCachedImage( long[] dimensions, int timepoints )
+	private static DiskCachedCellImg< FloatType, ? > createCachedImage( long[] dimensions, int timepoints )
 	{
-		DiskCachedCellImgFactory< IntType > factory = new DiskCachedCellImgFactory<>( new IntType() );
+		DiskCachedCellImgFactory< FloatType > factory = new DiskCachedCellImgFactory<>( new FloatType() );
 		long[] dimensionsWithTime = addTimeDimension( dimensions, timepoints );
 		int[] cellDimensions = { 50, 50, 50, 1 }; // x, y, z, t
 		final DiskCachedCellImgOptions options = DiskCachedCellImgOptions.options().cellDimensions( cellDimensions );
@@ -248,7 +249,7 @@ public class ExportLabelImageController
 		}
 	}
 
-	private ImgPlus< IntType > createImgPlus( final Img< IntType > img )
+	private ImgPlus< FloatType > createImgPlus( final Img< FloatType > img )
 	{
 		final CalibratedAxis[] axes = { new DefaultLinearAxis( Axes.X, voxelDimensions.dimension( 0 ) ),
 				new DefaultLinearAxis( Axes.Y, voxelDimensions.dimension( 1 ) ),
@@ -259,13 +260,13 @@ public class ExportLabelImageController
 		return new ImgPlus<>( img, "Result", axes );
 	}
 
-	private static void showImgPlus( ImgPlus< IntType > imgplus )
+	private static void showImgPlus( ImgPlus< FloatType > imgplus )
 	{
 		ImagePlus result = ImageJFunctions.wrap( imgplus, "Label image representing ellipsoids" );
 		result.show();
 	}
 
-	private void saveImgPlus( File file, ImgPlus< IntType > imgplus )
+	private void saveImgPlus( File file, ImgPlus< FloatType > imgplus )
 	{
 		ImagePlus imagePlus = ImageJFunctions.wrap( imgplus, "Label image representing ellipsoids" );
 		IJ.saveAsTiff( imagePlus, file.getAbsolutePath() );

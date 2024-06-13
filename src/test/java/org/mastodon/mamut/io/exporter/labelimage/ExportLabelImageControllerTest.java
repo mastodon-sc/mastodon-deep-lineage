@@ -39,6 +39,7 @@ import net.imglib2.img.Img;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.test.RandomImgs;
 import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Cast;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,9 +106,9 @@ class ExportLabelImageControllerTest
 			exportLabelImageController.saveLabelImageToFile( LabelOptions.TRACK_ID, outputTrack, false, 1, 0 );
 
 			ImgOpener imgOpener = new ImgOpener( context );
-			SCIFIOImgPlus< IntType > imgSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputSpot );
-			SCIFIOImgPlus< IntType > imgBranchSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputBranchSpot );
-			SCIFIOImgPlus< IntType > imgTrack = getIntTypeSCIFIOImgPlus( imgOpener, outputTrack );
+			SCIFIOImgPlus< FloatType > imgSpot = getFloatTypeSCIFIOImgPlus( imgOpener, outputSpot );
+			SCIFIOImgPlus< FloatType > imgBranchSpot = getFloatTypeSCIFIOImgPlus( imgOpener, outputBranchSpot );
+			SCIFIOImgPlus< FloatType > imgTrack = getFloatTypeSCIFIOImgPlus( imgOpener, outputTrack );
 
 			// check that the spot id / branchSpot id / track id is used as value in the center of the spot
 			assertNotNull( imgSpot );
@@ -127,7 +128,7 @@ class ExportLabelImageControllerTest
 		}
 	}
 
-	private static SCIFIOImgPlus< IntType > getIntTypeSCIFIOImgPlus( ImgOpener imgOpener, File outputSpot )
+	private static SCIFIOImgPlus< FloatType > getFloatTypeSCIFIOImgPlus( ImgOpener imgOpener, File outputSpot )
 	{
 		List< SCIFIOImgPlus< ? > > imgsSpot = imgOpener.openImgs( outputSpot.getAbsolutePath() );
 		SCIFIOImgPlus< ? > imgSpot = imgsSpot.get( 0 );
