@@ -163,7 +163,7 @@ public class ExportLabelImageController
 			processAllSpotsOfFrame( ellipsoidIterable, labelOption, sourceFrameId, targetFrameId, frames );
 		}
 		lock.unlock();
-		logger.debug( "Export finished." );
+		logger.debug( "Generating labels from ellipsoids finished." );
 
 		ImgPlus< FloatType > imgplus = createImgPlus( img );
 		saveImgPlus( file, imgplus );
