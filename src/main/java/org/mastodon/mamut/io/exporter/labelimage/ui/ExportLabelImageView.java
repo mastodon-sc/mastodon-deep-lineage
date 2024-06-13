@@ -51,7 +51,7 @@ public class ExportLabelImageView extends DynamicCommand
 			+ "<h1>Export label image using ellipsoids</h1>\n"
 			+ "<p>This plugin is capable of saving a label image to a file using the existing ellipsoids in Mastodon.</p>\n"
 			+ "<p>For the labels, the <i>spot ids</i>, <i>branch spot ids</i> or the <i>track ids</i> that correspond to the ellipsoids may be used. Since these Ids are counted zero based in Mastodon, an <b>offset of 1</b> is added to all Ids so that no label clashes with the background of zero.</p>\n"
-			+ "<p>The recommended export format is to '*.tif'-files. However, it should work also for other formats supported by ImageJ.</p>\n"
+			+ "<p>The supported export format is '*.tif'-files.</p>\n"
 			+ "</body>\n"
 			+ "</html>\n";
 

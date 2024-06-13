@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,10 +31,8 @@ package org.mastodon.mamut.io.exporter.labelimage;
 import bdv.util.AbstractSource;
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
+import ij.IJ;
 import ij.ImagePlus;
-import io.scif.codec.CompressionType;
-import io.scif.config.SCIFIOConfig;
-import io.scif.img.ImgSaver;
 import mpicbg.spim.data.sequence.TimePoint;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.ImgPlus;
@@ -269,11 +267,8 @@ public class ExportLabelImageController
 
 	private void saveImgPlus( File file, ImgPlus< IntType > imgplus )
 	{
-		SCIFIOConfig config = new SCIFIOConfig();
-		config.writerSetCompression( CompressionType.LZW );
-		config.writerSetFailIfOverwriting( false );
-		ImgSaver saver = new ImgSaver( context );
-		saver.saveImg( file.getAbsolutePath(), imgplus, config );
+		ImagePlus imagePlus = ImageJFunctions.wrap( imgplus, "Label image representing ellipsoids" );
+		IJ.saveAsTiff( imagePlus, file.getAbsolutePath() );
 	}
 
 	private static FeatureProjection< Spot > getTrackIDFeatureProjection( final Context context, final Model model )
