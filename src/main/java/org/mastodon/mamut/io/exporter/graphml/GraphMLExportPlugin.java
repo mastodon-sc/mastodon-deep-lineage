@@ -32,14 +32,19 @@ import org.apache.commons.io.FilenameUtils;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
+import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.util.LineageTreeUtils;
+import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
+import org.scijava.AbstractContextual;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
@@ -59,13 +64,11 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
 @SuppressWarnings( "unused" )
 @Plugin( type = MamutPlugin.class )
-public class GraphMLExportPlugin implements MamutPlugin
+public class GraphMLExportPlugin extends AbstractContextual implements MamutPlugin
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private ProjectModel projectModel;
-
-	public static final String NOT_MAPPED = "not mapped";
 
 	private static final String EXPORT_BRANCH_GRAPH = "Export all branches to GraphML (one file)";
 
@@ -73,11 +76,11 @@ public class GraphMLExportPlugin implements MamutPlugin
 
 	private static final String EXPORT_LINEAGES = "Export tracks to GraphML (one file per track)";
 
-	private static final String[] EXPORT_BRANCH_GRAPH_KEYS = { NOT_MAPPED };
+	private static final String[] EXPORT_BRANCH_GRAPH_KEYS = { "ctrl G" };
 
-	private static final String[] EXPORT_SELECTED_BRANCH_GRAPH_KEYS = { NOT_MAPPED };
+	private static final String[] EXPORT_SELECTED_BRANCH_GRAPH_KEYS = { "ctrl shift G" };
 
-	private static final String[] EXPORT_LINEAGES_KEYS = { NOT_MAPPED };
+	private static final String[] EXPORT_LINEAGES_KEYS = { "ctrl alt G" };
 
 	private final AbstractNamedAction exportBranchGraph;
 
@@ -200,5 +203,27 @@ public class GraphMLExportPlugin implements MamutPlugin
 				FileChooser.DialogType.SAVE,
 				FileChooser.SelectionMode.DIRECTORIES_ONLY,
 				SAVE_ICON_MEDIUM.getImage() );
+	}
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = CommandDescriptionProvider.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigScopes.MAMUT, KeyConfigContexts.TRACKSCHEME );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( EXPORT_BRANCH_GRAPH, EXPORT_BRANCH_GRAPH_KEYS, "Exports all branches of branch graph to one graphml file." );
+			descriptions.add( EXPORT_SELECTED_BRANCH_GRAPH, EXPORT_SELECTED_BRANCH_GRAPH_KEYS,
+					"Exports selected branches of branch graph to one graphml file." );
+			descriptions.add( EXPORT_LINEAGES, EXPORT_LINEAGES_KEYS,
+					"Export all tracks (i.e. roots and downward lineage) to one GraphML file per track." );
+		}
 	}
 }

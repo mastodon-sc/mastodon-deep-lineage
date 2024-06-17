@@ -29,13 +29,18 @@
 package org.mastodon.mamut.classification;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.classification.ui.ClassifyLineagesCommand;
 import org.mastodon.mamut.plugin.MamutPlugin;
+import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.scijava.AbstractContextual;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.prefs.PrefService;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
@@ -48,11 +53,11 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
 @SuppressWarnings("unused")
 @Plugin( type = MamutPlugin.class )
-public class ClassifyLineagesPlugin implements MamutPlugin
+public class ClassifyLineagesPlugin extends AbstractContextual implements MamutPlugin
 {
 	private static final String CLASSIFY_LINEAGE_TRESS = "Classification of Lineage Trees";
 
-	private static final String[] CLASSIFY_LINEAGE_TRESS_KEYS = { "not mapped" };
+	private static final String[] CLASSIFY_LINEAGE_TRESS_KEYS = { "ctrl shift C" };
 
 	private final AbstractNamedAction classifyLineageTreesAction;
 
@@ -91,5 +96,24 @@ public class ClassifyLineagesPlugin implements MamutPlugin
 		ClassifyLineagesController controller =
 				new ClassifyLineagesController( projectModel, commandService.getContext().getService( PrefService.class ) );
 		commandService.run( ClassifyLineagesCommand.class, true, "controller", controller );
+	}
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = CommandDescriptionProvider.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigScopes.MAMUT, KeyConfigContexts.TRACKSCHEME );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( CLASSIFY_LINEAGE_TRESS, CLASSIFY_LINEAGE_TRESS_KEYS,
+					"Classification of lineage trees based on tree edit distance. May be used to group similar lineage trees together." );
+		}
 	}
 }

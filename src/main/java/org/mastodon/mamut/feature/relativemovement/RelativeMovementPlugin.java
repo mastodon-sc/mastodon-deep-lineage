@@ -29,11 +29,16 @@
 package org.mastodon.mamut.feature.relativemovement;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.plugin.MamutPlugin;
+import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.scijava.AbstractContextual;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
@@ -46,11 +51,11 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
 @SuppressWarnings( "unused" )
 @Plugin( type = MamutPlugin.class )
-public class RelativeMovementPlugin implements MamutPlugin
+public class RelativeMovementPlugin extends AbstractContextual implements MamutPlugin
 {
 	private static final String DESCRIPTION = "Movement of spots relative to nearest neighbors";
 
-	private static final String[] SHORT_CUT = { "not mapped" };
+	private static final String[] SHORT_CUT = { "ctrl alt R" };
 
 	private final AbstractNamedAction action;
 
@@ -88,5 +93,24 @@ public class RelativeMovementPlugin implements MamutPlugin
 	private void showRelativeMovementDialog()
 	{
 		commandService.run( RelativeMovementView.class, true, "model", projectModel.getModel(), "context", projectModel.getContext() );
+	}
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = CommandDescriptionProvider.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigScopes.MAMUT, KeyConfigContexts.TRACKSCHEME, KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TABLE );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( DESCRIPTION, SHORT_CUT,
+					"Computes the relative movement of spots and branches relative to their nearest neighbours." );
+		}
 	}
 }

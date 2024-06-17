@@ -29,12 +29,17 @@
 package org.mastodon.mamut.io.exporter.labelimage;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.io.exporter.labelimage.ui.ExportLabelImageView;
+import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.scijava.AbstractContextual;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
@@ -47,11 +52,11 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
 @SuppressWarnings("unused")
 @Plugin(type = MamutPlugin.class)
-public class ExportLabelImagePlugin implements MamutPlugin
+public class ExportLabelImagePlugin extends AbstractContextual implements MamutPlugin
 {
-	private static final String EXPORT_LABEL_IMAGE_USING = "Export label image using ellipsoids";
+	private static final String EXPORT_LABEL_IMAGE_USING_ELLIPSOIDS = "Export label image using ellipsoids";
 
-	private static final String[] SHORT_CUT = { "not mapped" };
+	private static final String[] SHORT_CUT = { "ctrl shift E" };
 
 	private final AbstractNamedAction action;
 
@@ -65,7 +70,7 @@ public class ExportLabelImagePlugin implements MamutPlugin
 	@SuppressWarnings("unused")
 	public ExportLabelImagePlugin()
 	{
-		action = new RunnableAction( EXPORT_LABEL_IMAGE_USING, this::exportLabelImage );
+		action = new RunnableAction( EXPORT_LABEL_IMAGE_USING_ELLIPSOIDS, this::exportLabelImage );
 	}
 
 	@Override
@@ -78,7 +83,7 @@ public class ExportLabelImagePlugin implements MamutPlugin
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				menu( "Plugins", menu( "Exports", item( EXPORT_LABEL_IMAGE_USING ) ) ) );
+				menu( "Plugins", menu( "Exports", item( EXPORT_LABEL_IMAGE_USING_ELLIPSOIDS ) ) ) );
 	}
 
 	@Override
@@ -90,5 +95,24 @@ public class ExportLabelImagePlugin implements MamutPlugin
 	private void exportLabelImage()
 	{
 		commandService.run( ExportLabelImageView.class, true, "projectModel", projectModel );
+	}
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = CommandDescriptionProvider.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigScopes.MAMUT, KeyConfigContexts.MASTODON );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( EXPORT_LABEL_IMAGE_USING_ELLIPSOIDS, SHORT_CUT,
+					"Export a label image using the ellipsoids as image segmentation." );
+		}
 	}
 }

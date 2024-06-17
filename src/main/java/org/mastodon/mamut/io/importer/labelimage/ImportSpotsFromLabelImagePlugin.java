@@ -29,13 +29,18 @@
 package org.mastodon.mamut.io.importer.labelimage;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.labelimage.ui.ImportSpotsFromImgPlusView;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.io.importer.labelimage.ui.ImportSpotsFromBdvChannelView;
+import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.scijava.AbstractContextual;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
@@ -48,13 +53,15 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
 @SuppressWarnings( "unused" )
 @Plugin( type = MamutPlugin.class )
-public class ImportSpotsFromLabelImagePlugin implements MamutPlugin
+public class ImportSpotsFromLabelImagePlugin extends AbstractContextual implements MamutPlugin
 {
 	private static final String IMPORT_SPOTS_FROM_IMAGEJ = "Import spots from ImageJ image";
 
 	private static final String IMPORT_SPOTS_FROM_BDV_CHANNEL = "Import spots from BDV channel";
 
-	private static final String[] SHORT_CUTS = { "not mapped" };
+	private static final String[] IMPORT_SPOTS_FROM_IMAGEJ_KEYS = { "ctrl shift I" };
+
+	private static final String[] IMPORT_SPOTS_FROM_BDV_CHANNEL_KEYS = { "ctrl alt I" };
 
 	private final AbstractNamedAction imageJImport;
 
@@ -91,8 +98,8 @@ public class ImportSpotsFromLabelImagePlugin implements MamutPlugin
 	@Override
 	public void installGlobalActions( Actions actions )
 	{
-		actions.namedAction( imageJImport, SHORT_CUTS );
-		actions.namedAction( bdvChannelImport, SHORT_CUTS );
+		actions.namedAction( imageJImport, IMPORT_SPOTS_FROM_IMAGEJ_KEYS );
+		actions.namedAction( bdvChannelImport, IMPORT_SPOTS_FROM_BDV_CHANNEL_KEYS );
 	}
 
 	private void importSpotsFromImageJ()
@@ -105,4 +112,24 @@ public class ImportSpotsFromLabelImagePlugin implements MamutPlugin
 		commandService.run( ImportSpotsFromBdvChannelView.class, true, "projectModel", appModel );
 	}
 
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = CommandDescriptionProvider.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigScopes.MAMUT, KeyConfigContexts.MASTODON );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( IMPORT_SPOTS_FROM_IMAGEJ, IMPORT_SPOTS_FROM_IMAGEJ_KEYS,
+					"Import spots from a label image opened in ImageJ." );
+			descriptions.add( IMPORT_SPOTS_FROM_BDV_CHANNEL, IMPORT_SPOTS_FROM_BDV_CHANNEL_KEYS,
+					"Import spots from a channel in BigDataViewer that contains a segmentation to labels." );
+		}
+	}
 }
