@@ -100,8 +100,6 @@ public class ClassifyLineagesController
 
 	private boolean showDendrogram;
 
-	private Classification< BranchSpotTree > classification;
-
 	private boolean running = false;
 
 	/**
@@ -159,11 +157,11 @@ public class ClassifyLineagesController
 		Pair< List< BranchSpotTree >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
 		List< BranchSpotTree > roots = rootsAndDistances.getLeft();
 		double[][] distances = rootsAndDistances.getRight();
-		classification = classifyLineageTrees( roots, distances );
-		List< Pair< String, Integer > > tagsAndColors = createTagsAndColors();
+		Classification< BranchSpotTree > classification = classifyLineageTrees( roots, distances );
+		List< Pair< String, Integer > > tagsAndColors = createTagsAndColors( classification );
 		applyClassification( classification, tagsAndColors, referenceModel );
 		if ( showDendrogram )
-			showDendrogram();
+			showDendrogram( classification );
 	}
 
 	private Pair< List< BranchSpotTree >, double[][] > getRootsAndDistanceMatrix()
@@ -240,7 +238,7 @@ public class ClassifyLineagesController
 		return joiner.toString();
 	}
 
-	private void showDendrogram()
+	private void showDendrogram( final Classification< BranchSpotTree > classification )
 	{
 		String header = "<html><body>Dendrogram of hierarchical clustering of lineages<br>" + getParameters() + "</body></html>";
 		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, header, referenceModel, prefs );
@@ -261,7 +259,7 @@ public class ClassifyLineagesController
 		return result;
 	}
 
-	private List< Pair< String, Integer > > createTagsAndColors()
+	private List< Pair< String, Integer > > createTagsAndColors( final Classification< BranchSpotTree > classification )
 	{
 
 		List< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
