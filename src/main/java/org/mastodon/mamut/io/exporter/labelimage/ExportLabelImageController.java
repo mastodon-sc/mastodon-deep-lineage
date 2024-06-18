@@ -140,7 +140,7 @@ public class ExportLabelImageController
 		logger.info( "Save label image to file. Label options: {}, file: {}", labelOption, file.getAbsolutePath() );
 		long[] spatialDimensions = getDimensionsOfSource( mipMapLevel );
 		int numTimePoints = timePoints.size();
-		int frames = getResultingNumberOfFrames( numTimePoints, frameRateReduction );
+		int frames = divideAndRoundUp( numTimePoints, frameRateReduction );
 		logger.debug(
 				"number of timepoints: {}, frame rate reduction: {}, resulting frames: {}", numTimePoints, frameRateReduction, frames );
 		DiskCachedCellImg< FloatType, ? > img = createCachedImage( spatialDimensions, frames );
@@ -302,17 +302,12 @@ public class ExportLabelImageController
 	 *     <li>timepoints: 20, frame rate reduction: 10 ->  2 frames</li>
 	 * </ul>
 	 *
-	 * @param numTimePoints the number of timepoints
-	 * @param frameRateReduction the frame rate reduction
+	 * @param numerator the number of timepoints
+	 * @param denominator the frame rate reduction
 	 * @return the resulting number of frames
 	 */
-	static int getResultingNumberOfFrames( final int numTimePoints, final int frameRateReduction )
+	static int divideAndRoundUp( int numerator, int denominator )
 	{
-		int frames = numTimePoints / frameRateReduction;
-		if ( numTimePoints > frameRateReduction && numTimePoints % frameRateReduction != 0 && frameRateReduction > 1 )
-			frames++;
-		if ( frames == 0 )
-			frames = 1;
-		return frames;
+		return ( numerator + denominator - 1 ) / denominator;
 	}
 }

@@ -162,12 +162,12 @@ class ExportLabelImageControllerTest
 	@Test
 	void testGetResultingNumberOfFrames()
 	{
-		assertEquals( 1, ExportLabelImageController.getResultingNumberOfFrames( 1, 1 ) );
-		assertEquals( 1, ExportLabelImageController.getResultingNumberOfFrames( 1, 10 ) );
-		assertEquals( 1, ExportLabelImageController.getResultingNumberOfFrames( 10, 10 ) );
-		assertEquals( 10, ExportLabelImageController.getResultingNumberOfFrames( 10, 1 ) );
-		assertEquals( 2, ExportLabelImageController.getResultingNumberOfFrames( 11, 10 ) );
-		assertEquals( 2, ExportLabelImageController.getResultingNumberOfFrames( 20, 10 ) );
+		assertEquals( 1, ExportLabelImageController.divideAndRoundUp( 1, 1 ) );
+		assertEquals( 1, ExportLabelImageController.divideAndRoundUp( 1, 10 ) );
+		assertEquals( 1, ExportLabelImageController.divideAndRoundUp( 10, 10 ) );
+		assertEquals( 10, ExportLabelImageController.divideAndRoundUp( 10, 1 ) );
+		assertEquals( 2, ExportLabelImageController.divideAndRoundUp( 11, 10 ) );
+		assertEquals( 2, ExportLabelImageController.divideAndRoundUp( 20, 10 ) );
 	}
 
 	private static AbstractSource< IntType > createRandomSource()
