@@ -62,8 +62,10 @@ public class ProjectAccessor implements AutoCloseable
 		{
 			try
 			{
+				long start = System.currentTimeMillis();
 				ProjectModel projectModel =
 						ProjectLoader.open( project.getAbsolutePath(), context, false, true );
+				logger.debug( "Loaded project from file: {} in {} ms", project.getAbsolutePath(), System.currentTimeMillis() - start );
 				externalProjectModels.add( projectModel );
 			}
 			catch ( IOException | SpimDataException e )
