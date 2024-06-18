@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,10 +31,8 @@ package org.mastodon.mamut.io.exporter.labelimage;
 import bdv.util.AbstractSource;
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
+import ij.IJ;
 import ij.ImagePlus;
-import io.scif.codec.CompressionType;
-import io.scif.config.SCIFIOConfig;
-import io.scif.img.ImgSaver;
 import mpicbg.spim.data.sequence.TimePoint;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.ImgPlus;
@@ -48,7 +46,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Cast;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -81,6 +79,8 @@ public class ExportLabelImageController
 
 	public static final int LABEL_ID_OFFSET = 1;
 
+	public static final int DEFAULT_SOURCE_ID = 0;
+
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final Model model;
@@ -102,8 +102,9 @@ public class ExportLabelImageController
 		// NB: Use the dimensions of the first source and the first time point only without checking if they are equal in other sources and time points.
 		this( projectModel.getModel(),
 				projectModel.getSharedBdvData().getSpimData().getSequenceDescription().getTimePoints().getTimePointsOrdered(),
-				Cast.unchecked( projectModel.getSharedBdvData().getSources().get( 0 ).getSpimSource() ), context,
-				projectModel.getSharedBdvData().getSpimData().getSequenceDescription().getViewSetups().get( 0 ).getVoxelSize()
+				Cast.unchecked( projectModel.getSharedBdvData().getSources().get( DEFAULT_SOURCE_ID ).getSpimSource() ), context,
+				projectModel.getSharedBdvData().getSpimData().getSequenceDescription().getViewSetups().get( DEFAULT_SOURCE_ID )
+						.getVoxelSize()
 		);
 	}
 
@@ -126,10 +127,10 @@ public class ExportLabelImageController
 	 * @param file the file to save the image to
 	 * @param showResult whether to show the result in ImageJ
 	 * @param frameRateReduction only use every n-th frame for export. 1 means no reduction.
+	 * @param mipMapLevel the mip map (i.e. resolution) level to use for the export. 0 means highest resolution.
 	 */
 	public void saveLabelImageToFile(
-			final LabelOptions labelOption, final File file, boolean showResult, int frameRateReduction
-	)
+			final LabelOptions labelOption, final File file, boolean showResult, int frameRateReduction, int mipMapLevel )
 	{
 		if ( file == null )
 			throw new IllegalArgumentException( "Cannot write label image to file. Given file is null." );
@@ -137,14 +138,12 @@ public class ExportLabelImageController
 			throw new IllegalArgumentException( "Cannot write label image to file. Given label options are null." );
 
 		logger.info( "Save label image to file. Label options: {}, file: {}", labelOption, file.getAbsolutePath() );
-		long[] spatialDimensions = getDimensionsOfSource();
+		long[] spatialDimensions = getDimensionsOfSource( mipMapLevel );
 		int numTimePoints = timePoints.size();
-		int frames = numTimePoints / frameRateReduction;
-		if ( numTimePoints > frameRateReduction && frameRateReduction > 1 )
-			frames++;
+		int frames = divideAndRoundUp( numTimePoints, frameRateReduction );
 		logger.debug(
 				"number of timepoints: {}, frame rate reduction: {}, resulting frames: {}", numTimePoints, frameRateReduction, frames );
-		DiskCachedCellImg< IntType, ? > img = createCachedImage( spatialDimensions, frames );
+		DiskCachedCellImg< FloatType, ? > img = createCachedImage( spatialDimensions, frames );
 
 		ReentrantReadWriteLock.ReadLock lock = getReadLock( labelOption );
 		lock.lock();
@@ -154,18 +153,19 @@ public class ExportLabelImageController
 			if ( sourceFrameId % frameRateReduction != 0 )
 				continue;
 			AffineTransform3D transform = new AffineTransform3D();
-			source.getSourceTransform( sourceFrameId, 0, transform );
+			source.getSourceTransform( sourceFrameId, mipMapLevel, transform );
 			int targetFrameId = sourceFrameId / frameRateReduction;
 			logger.trace( "sourceFrameId: {}, targetFrameId: {}", sourceFrameId, targetFrameId );
-			IntervalView< IntType > frame = Views.hyperSlice( img, 3, targetFrameId );
-			AbstractSource< IntType > frameSource = new RandomAccessibleIntervalSource<>( frame, new IntType(), transform, "Ellipsoids" );
-			final EllipsoidIterable< IntType > ellipsoidIterable = new EllipsoidIterable<>( frameSource );
+			IntervalView< FloatType > frame = Views.hyperSlice( img, 3, targetFrameId );
+			AbstractSource< FloatType > frameSource =
+					new RandomAccessibleIntervalSource<>( frame, new FloatType(), transform, "Ellipsoids" );
+			final EllipsoidIterable< FloatType > ellipsoidIterable = new EllipsoidIterable<>( frameSource );
 			processAllSpotsOfFrame( ellipsoidIterable, labelOption, sourceFrameId, targetFrameId, frames );
 		}
 		lock.unlock();
-		logger.debug( "Export finished." );
+		logger.debug( "Generating labels from ellipsoids finished." );
 
-		ImgPlus< IntType > imgplus = createImgPlus( img );
+		ImgPlus< FloatType > imgplus = createImgPlus( img );
 		saveImgPlus( file, imgplus );
 		logger.info( "Done saving label image to file." );
 		if ( showResult )
@@ -203,13 +203,11 @@ public class ExportLabelImageController
 		statusService.showProgress( oneBasedFrameId, frames );
 	}
 
-	private long[] getDimensionsOfSource()
+	private long[] getDimensionsOfSource( final int mipMapLevel )
 	{
 		// NB: Use the dimensions of the first timepoint only without checking if they are equal in other timepoints.
 		int timepoint = 0;
-		// NB: the midmaplevel 0 is supposed to be the highest resolution
-		int midMipmapLevel = 0;
-		long[] dimensions = this.source.getSource( timepoint, midMipmapLevel ).dimensionsAsLongArray();
+		long[] dimensions = this.source.getSource( timepoint, mipMapLevel ).dimensionsAsLongArray();
 		logger.debug( "number of dimensions in source: {}", dimensions.length );
 		Arrays.stream( dimensions ).forEach( value -> logger.debug( "dimension: {}", value ) );
 		return dimensions;
@@ -222,9 +220,9 @@ public class ExportLabelImageController
 		return dimensionsWithTime;
 	}
 
-	private static DiskCachedCellImg< IntType, ? > createCachedImage( long[] dimensions, int timepoints )
+	private static DiskCachedCellImg< FloatType, ? > createCachedImage( long[] dimensions, int timepoints )
 	{
-		DiskCachedCellImgFactory< IntType > factory = new DiskCachedCellImgFactory<>( new IntType() );
+		DiskCachedCellImgFactory< FloatType > factory = new DiskCachedCellImgFactory<>( new FloatType() );
 		long[] dimensionsWithTime = addTimeDimension( dimensions, timepoints );
 		int[] cellDimensions = { 50, 50, 50, 1 }; // x, y, z, t
 		final DiskCachedCellImgOptions options = DiskCachedCellImgOptions.options().cellDimensions( cellDimensions );
@@ -251,7 +249,7 @@ public class ExportLabelImageController
 		}
 	}
 
-	private ImgPlus< IntType > createImgPlus( final Img< IntType > img )
+	private ImgPlus< FloatType > createImgPlus( final Img< FloatType > img )
 	{
 		final CalibratedAxis[] axes = { new DefaultLinearAxis( Axes.X, voxelDimensions.dimension( 0 ) ),
 				new DefaultLinearAxis( Axes.Y, voxelDimensions.dimension( 1 ) ),
@@ -262,19 +260,16 @@ public class ExportLabelImageController
 		return new ImgPlus<>( img, "Result", axes );
 	}
 
-	private static void showImgPlus( ImgPlus< IntType > imgplus )
+	private static void showImgPlus( ImgPlus< FloatType > imgplus )
 	{
 		ImagePlus result = ImageJFunctions.wrap( imgplus, "Label image representing ellipsoids" );
 		result.show();
 	}
 
-	private void saveImgPlus( File file, ImgPlus< IntType > imgplus )
+	private void saveImgPlus( File file, ImgPlus< FloatType > imgplus )
 	{
-		SCIFIOConfig config = new SCIFIOConfig();
-		config.writerSetCompression( CompressionType.LZW );
-		config.writerSetFailIfOverwriting( false );
-		ImgSaver saver = new ImgSaver( context );
-		saver.saveImg( file.getAbsolutePath(), imgplus, config );
+		ImagePlus imagePlus = ImageJFunctions.wrap( imgplus, "Label image representing ellipsoids" );
+		IJ.saveAsTiff( imagePlus, file.getAbsolutePath() );
 	}
 
 	private static FeatureProjection< Spot > getTrackIDFeatureProjection( final Context context, final Model model )
@@ -291,5 +286,28 @@ public class ExportLabelImageController
 		final MamutFeatureComputerService featureComputerService = MamutFeatureComputerService.newInstance( context );
 		featureComputerService.setModel( model );
 		return featureComputerService;
+	}
+
+	/**
+	 * Calculate the number of frames to use for the export depending on the number of timepoints and the frame rate reduction.
+	 * <br>
+	 * Some examples:
+	 * <br>
+	 * <ul>
+	 *     <li>timepoints: 1,  frame rate reduction:  1 ->  1 frame</li>
+	 *     <li>timepoints: 1,  frame rate reduction: 10 ->  1 frame</li>
+	 *     <li>timepoints: 10, frame rate reduction: 10 ->  1 frame</li>
+	 *     <li>timepoints: 10, frame rate reduction:  1 -> 10 frames</li>
+	 *     <li>timepoints: 11, frame rate reduction: 10 ->  2 frames</li>
+	 *     <li>timepoints: 20, frame rate reduction: 10 ->  2 frames</li>
+	 * </ul>
+	 *
+	 * @param numerator the number of timepoints
+	 * @param denominator the frame rate reduction
+	 * @return the resulting number of frames
+	 */
+	static int divideAndRoundUp( int numerator, int denominator )
+	{
+		return ( numerator + denominator - 1 ) / denominator;
 	}
 }

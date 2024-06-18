@@ -39,6 +39,7 @@ import net.imglib2.img.Img;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.test.RandomImgs;
 import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Cast;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,14 +101,14 @@ class ExportLabelImageControllerTest
 			File outputSpot = getTempFile( "resultSpot" );
 			File outputBranchSpot = getTempFile( "resultBranchSpot" );
 			File outputTrack = getTempFile( "resultTrack" );
-			exportLabelImageController.saveLabelImageToFile( LabelOptions.SPOT_ID, outputSpot, false, 1 );
-			exportLabelImageController.saveLabelImageToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, false, 1 );
-			exportLabelImageController.saveLabelImageToFile( LabelOptions.TRACK_ID, outputTrack, false, 1 );
+			exportLabelImageController.saveLabelImageToFile( LabelOptions.SPOT_ID, outputSpot, false, 1, 0 );
+			exportLabelImageController.saveLabelImageToFile( LabelOptions.BRANCH_SPOT_ID, outputBranchSpot, false, 1, 0 );
+			exportLabelImageController.saveLabelImageToFile( LabelOptions.TRACK_ID, outputTrack, false, 1, 0 );
 
 			ImgOpener imgOpener = new ImgOpener( context );
-			SCIFIOImgPlus< IntType > imgSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputSpot );
-			SCIFIOImgPlus< IntType > imgBranchSpot = getIntTypeSCIFIOImgPlus( imgOpener, outputBranchSpot );
-			SCIFIOImgPlus< IntType > imgTrack = getIntTypeSCIFIOImgPlus( imgOpener, outputTrack );
+			SCIFIOImgPlus< FloatType > imgSpot = getFloatTypeSCIFIOImgPlus( imgOpener, outputSpot );
+			SCIFIOImgPlus< FloatType > imgBranchSpot = getFloatTypeSCIFIOImgPlus( imgOpener, outputBranchSpot );
+			SCIFIOImgPlus< FloatType > imgTrack = getFloatTypeSCIFIOImgPlus( imgOpener, outputTrack );
 
 			// check that the spot id / branchSpot id / track id is used as value in the center of the spot
 			assertNotNull( imgSpot );
@@ -127,7 +128,7 @@ class ExportLabelImageControllerTest
 		}
 	}
 
-	private static SCIFIOImgPlus< IntType > getIntTypeSCIFIOImgPlus( ImgOpener imgOpener, File outputSpot )
+	private static SCIFIOImgPlus< FloatType > getFloatTypeSCIFIOImgPlus( ImgOpener imgOpener, File outputSpot )
 	{
 		List< SCIFIOImgPlus< ? > > imgsSpot = imgOpener.openImgs( outputSpot.getAbsolutePath() );
 		SCIFIOImgPlus< ? > imgSpot = imgsSpot.get( 0 );
@@ -152,10 +153,21 @@ class ExportLabelImageControllerTest
 			file.deleteOnExit();
 			assertThrows(
 					IllegalArgumentException.class,
-					() -> controller.saveLabelImageToFile( LabelOptions.SPOT_ID, null, false, 1 )
+					() -> controller.saveLabelImageToFile( LabelOptions.SPOT_ID, null, false, 1, 0 )
 			);
-			assertThrows( IllegalArgumentException.class, () -> controller.saveLabelImageToFile( null, file, false, 1 ) );
+			assertThrows( IllegalArgumentException.class, () -> controller.saveLabelImageToFile( null, file, false, 1, 0 ) );
 		}
+	}
+
+	@Test
+	void testGetResultingNumberOfFrames()
+	{
+		assertEquals( 1, ExportLabelImageController.divideAndRoundUp( 1, 1 ) );
+		assertEquals( 1, ExportLabelImageController.divideAndRoundUp( 1, 10 ) );
+		assertEquals( 1, ExportLabelImageController.divideAndRoundUp( 10, 10 ) );
+		assertEquals( 10, ExportLabelImageController.divideAndRoundUp( 10, 1 ) );
+		assertEquals( 2, ExportLabelImageController.divideAndRoundUp( 11, 10 ) );
+		assertEquals( 2, ExportLabelImageController.divideAndRoundUp( 20, 10 ) );
 	}
 
 	private static AbstractSource< IntType > createRandomSource()

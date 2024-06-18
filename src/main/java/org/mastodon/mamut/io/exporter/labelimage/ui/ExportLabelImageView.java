@@ -31,16 +31,16 @@ package org.mastodon.mamut.io.exporter.labelimage.ui;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.exporter.labelimage.ExportLabelImageController;
 import org.mastodon.mamut.io.exporter.labelimage.config.LabelOptions;
-import org.scijava.Context;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
+import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 import java.io.File;
 
 @Plugin(type = Command.class, label = "Run export label image using ellipsoids")
-public class ExportLabelImageView implements Command
+public class ExportLabelImageView extends DynamicCommand
 {
 	private static final int WIDTH = 15;
 
@@ -51,7 +51,9 @@ public class ExportLabelImageView implements Command
 			+ "<h1>Export label image using ellipsoids</h1>\n"
 			+ "<p>This plugin is capable of saving a label image to a file using the existing ellipsoids in Mastodon.</p>\n"
 			+ "<p>For the labels, the <i>spot ids</i>, <i>branch spot ids</i> or the <i>track ids</i> that correspond to the ellipsoids may be used. Since these Ids are counted zero based in Mastodon, an <b>offset of 1</b> is added to all Ids so that no label clashes with the background of zero.</p>\n"
-			+ "<p>The recommended export format is to '*.tif'-files. However, it should work also for other formats supported by ImageJ.</p>\n"
+			+ "<p>Ids in the range between 0 and 16.777.216 (24 bit) are supported.</p>\n"
+			+ "<p>The supported export format is '*.tif'-files.</p>\n"
+			+ "<p>.</p>\n"
 			+ "</body>\n"
 			+ "</html>\n";
 
@@ -60,8 +62,12 @@ public class ExportLabelImageView implements Command
 	private String option = LabelOptions.BRANCH_SPOT_ID.getName();
 
 	@SuppressWarnings("all")
-	@Parameter(label = "Frame rate reduction", description = "Only export every n-th. 1 means no reduction. Value must be >= 1.", min = "1")
+	@Parameter( label = "Frame rate reduction", description = "Only export every n-th frame. 1 means no reduction. Value must be >= 1.", min = "1" )
 	private int frameRateReduction = 1;
+
+	@SuppressWarnings( "all" )
+	@Parameter( label = "Resolution level", description = "Spatial resolution level of export. 0 means highest resolution. Value > 0 mean lower resolution.", initializer = "initResolutionMinMax" )
+	private int resolutionLevel = 0;
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Save to")
@@ -75,15 +81,20 @@ public class ExportLabelImageView implements Command
 	@Parameter
 	private ProjectModel projectModel;
 
-	@SuppressWarnings("unused")
-	@Parameter
-	private Context context;
-
 	@Override
 	public void run()
 	{
-		ExportLabelImageController controller = new ExportLabelImageController( projectModel, context );
+		ExportLabelImageController controller = new ExportLabelImageController( projectModel, getContext() );
 		LabelOptions selectedOption = LabelOptions.getByName( option );
-		controller.saveLabelImageToFile( selectedOption, saveTo, showResult, frameRateReduction );
+		controller.saveLabelImageToFile( selectedOption, saveTo, showResult, frameRateReduction, resolutionLevel );
+	}
+
+	@SuppressWarnings( "unused" )
+	private void initResolutionMinMax()
+	{
+		int mipMapLevels = projectModel.getSharedBdvData().getSources().get( ExportLabelImageController.DEFAULT_SOURCE_ID ).getSpimSource()
+				.getNumMipmapLevels();
+		getInfo().getMutableInput( "resolutionLevel", Integer.class ).setMinimumValue( 0 );
+		getInfo().getMutableInput( "resolutionLevel", Integer.class ).setMaximumValue( mipMapLevels - 1 );
 	}
 }
