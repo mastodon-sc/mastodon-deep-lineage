@@ -97,12 +97,8 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	@Parameter( label = "<html><body>Linkage strategy for<br>hierarchical clustering</body></html>", initializer = "initClusteringMethodChoices", callback = "update" )
 	private String clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE.getName();
 
-	@SuppressWarnings("unused")
-	@Parameter(label = "Feature", choices = "Branch duration", callback = "update")
-	private String branchDuration;
-
 	@SuppressWarnings( "unused" )
-	@Parameter( label = "<html><body>List of projects<br>(Drag & Drop supported)</body></html>", style = "files,extensions:mastodon", persist = false, callback = "update" )
+	@Parameter( label = "<html><body>List of projects<br>(Drag & Drop supported)</body></html>", style = "files,extensions:mastodon", callback = "update" )
 	private File[] projects = new File[ 0 ];
 
 	@SuppressWarnings("unused")
