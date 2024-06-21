@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.classification;
 
+import mpicbg.spim.data.SpimDataException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.algorithm.traversal.DepthFirstIterator;
@@ -38,7 +39,6 @@ import org.mastodon.mamut.classification.util.Classification;
 import org.mastodon.mamut.classification.config.CropCriteria;
 import org.mastodon.mamut.classification.ui.DendrogramView;
 import org.mastodon.mamut.classification.util.ClassificationUtils;
-import org.mastodon.mamut.classification.util.ProjectAccessor;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -47,6 +47,8 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.classification.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.classification.treesimilarity.tree.TreeUtils;
 import org.mastodon.mamut.util.LineageTreeUtils;
+import org.mastodon.mamut.util.MastodonProjectService;
+import org.mastodon.mamut.util.ProjectSession;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.TagSetUtils;
 import org.scijava.prefs.PrefService;
@@ -54,13 +56,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -82,6 +87,8 @@ public class ClassifyLineagesController
 
 	private final PrefService prefs;
 
+	private final MastodonProjectService projectService;
+
 	private SimilarityMeasure similarityMeasure = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE;
 
 	private ClusteringMethod clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE;
@@ -96,7 +103,7 @@ public class ClassifyLineagesController
 
 	private int minCellDivisions;
 
-	private final List< File > externalProjects;
+	private final Map< File, ProjectSession > externalProjects;
 
 	private boolean showDendrogram;
 
@@ -108,20 +115,23 @@ public class ClassifyLineagesController
 	 */
 	public ClassifyLineagesController( final ProjectModel referenceProjectModel )
 	{
-		this( referenceProjectModel, null );
+		this( referenceProjectModel, null, null );
 	}
 
 	/**
 	 * Create a new controller for classifying lineage trees.
 	 * @param referenceProjectModel the reference project model
 	 * @param prefs the preference service
+	 * @param projectService the project service
 	 */
-	public ClassifyLineagesController( final ProjectModel referenceProjectModel, final PrefService prefs )
+	public ClassifyLineagesController( final ProjectModel referenceProjectModel, final PrefService prefs,
+			final MastodonProjectService projectService )
 	{
 		this.referenceProjectModel = referenceProjectModel;
 		this.referenceModel = referenceProjectModel.getModel();
 		this.prefs = prefs;
-		this.externalProjects = new ArrayList<>();
+		this.projectService = projectService;
+		this.externalProjects = new HashMap<>();
 	}
 
 	/**
@@ -173,36 +183,26 @@ public class ClassifyLineagesController
 			return Pair.of( roots, distances );
 		}
 
-		try (ProjectAccessor projectAccessor = new ProjectAccessor( externalProjects, referenceProjectModel.getContext() ))
-		{
-			List< ProjectModel > externalProjectModels = projectAccessor.getProjectModels();
-			List< String > commonRootNames = findCommonRootNames( externalProjectModels );
-			if ( logger.isDebugEnabled() )
-			{
-				logger.info( "Found {} common root names in {} projects.", commonRootNames.size(), externalProjectModels.size() + 1 );
-				String names = commonRootNames.stream().map( Object::toString ).collect( Collectors.joining( "," ) );
-				logger.debug( "Common root names are: {}", names );
-			}
-			List< List< BranchSpotTree > > treeMatrix = new ArrayList<>();
+		List< String > commonRootNames = findCommonRootNames();
+		List< List< BranchSpotTree > > treeMatrix = new ArrayList<>();
 
-			keepCommonRootsAndSort( roots, commonRootNames );
-			treeMatrix.add( roots );
-			for ( ProjectModel projectModel : externalProjectModels )
-			{
-				List< BranchSpotTree > externalRoots = getRoots( projectModel );
-				keepCommonRootsAndSort( externalRoots, commonRootNames );
-				treeMatrix.add( externalRoots );
-			}
-			return Pair.of( roots, ClassificationUtils.getAverageDistanceMatrix( treeMatrix, similarityMeasure ) );
+		keepCommonRootsAndSort( roots, commonRootNames );
+		treeMatrix.add( roots );
+		for ( ProjectSession projectSession : externalProjects.values() )
+		{
+			List< BranchSpotTree > externalRoots = getRoots( projectSession.getProjectModel() );
+			keepCommonRootsAndSort( externalRoots, commonRootNames );
+			treeMatrix.add( externalRoots );
 		}
+		return Pair.of( roots, ClassificationUtils.getAverageDistanceMatrix( treeMatrix, similarityMeasure ) );
 	}
 
-	private List< String > findCommonRootNames( final List< ProjectModel > externalProjectModels )
+	private List< String > findCommonRootNames()
 	{
 		Set< String > commonRootNames = extractRootNamesFromProjectModel( referenceProjectModel );
-		for ( ProjectModel projectModel : externalProjectModels )
+		for ( ProjectSession projectSession : externalProjects.values() )
 		{
-			Set< String > rootNames = extractRootNamesFromProjectModel( projectModel );
+			Set< String > rootNames = extractRootNamesFromProjectModel( projectSession.getProjectModel() );
 			commonRootNames.retainAll( rootNames );
 		}
 		List< String > commonRootNamesList = new ArrayList<>( commonRootNames );
@@ -372,10 +372,42 @@ public class ClassifyLineagesController
 
 	public void setExternalProjects( final File[] projects )
 	{
-		externalProjects.clear();
-		if ( projects == null )
+		if ( projects == null || projects.length == 0 )
+		{
+			for ( ProjectSession projectSession : externalProjects.values() )
+				projectSession.close();
+			externalProjects.clear();
 			return;
-		externalProjects.addAll( Arrays.asList( projects ) );
+		}
+
+		List< File > projectsList = Arrays.asList( projects );
+
+		// Remove files from the externalProjects map that are not in the projects array
+		for ( Map.Entry< File, ProjectSession > entry : externalProjects.entrySet() )
+		{
+			File file = entry.getKey();
+			if ( !projectsList.contains( file ) )
+			{
+				ProjectSession projectSession = externalProjects.remove( file );
+				projectSession.close();
+			}
+		}
+
+		// Add files from projects to the map if they are not already present
+		for ( File file : projects )
+		{
+			if ( !externalProjects.containsKey( file ) )
+			{
+				try
+				{
+					externalProjects.put( file, projectService.createSession( file ) );
+				}
+				catch ( SpimDataException | IOException | RuntimeException e )
+				{
+					logger.warn( "Could not read project from file {}. Error: {}", file.getAbsolutePath(), e.getMessage() );
+				}
+			}
+		}
 	}
 
 	public List< String > getFeedback()
@@ -388,11 +420,7 @@ public class ClassifyLineagesController
 			logger.debug( message );
 		}
 
-		int roots;
-		try (ProjectAccessor projectAccessor = new ProjectAccessor( externalProjects, referenceProjectModel.getContext() ))
-		{
-			roots = findCommonRootNames( projectAccessor.getProjectModels() ).size();
-		}
+		int roots = findCommonRootNames().size();
 		if ( numberOfClasses > roots )
 		{
 			String message =
@@ -430,35 +458,39 @@ public class ClassifyLineagesController
 	{
 		List< String > feedback = new ArrayList<>();
 		Set< ProjectModel > allModels = new HashSet<>( Collections.singletonList( referenceProjectModel ) );
-		try (ProjectAccessor projectAccessor = new ProjectAccessor( externalProjects, referenceProjectModel.getContext() ))
+		for ( ProjectSession projectSession : externalProjects.values() )
+			allModels.add( projectSession.getProjectModel() );
+		for ( ProjectModel projectModel : allModels )
 		{
-			allModels.addAll( projectAccessor.getProjectModels() );
-			for ( ProjectModel projectModel : allModels )
+			Model model = projectModel.getModel();
+			String projectName = projectModel.getProjectName();
+			try
 			{
-				Model model = projectModel.getModel();
-				String projectName = projectModel.getProjectName();
-				try
-				{
-					LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
-				}
-				catch ( NoSuchElementException e )
-				{
-					String message = projectName + ", crop start: " + e.getMessage();
-					feedback.add( message );
-					logger.debug( message );
-				}
-				try
-				{
-					LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
-				}
-				catch ( NoSuchElementException e )
-				{
-					String message = projectName + ", crop end: " + e.getMessage();
-					feedback.add( message );
-					logger.debug( message );
-				}
+				LineageTreeUtils.getFirstTimepointWithNSpots( model, cropStart );
+			}
+			catch ( NoSuchElementException e )
+			{
+				String message = projectName + ", crop start: " + e.getMessage();
+				feedback.add( message );
+				logger.debug( message );
+			}
+			try
+			{
+				LineageTreeUtils.getFirstTimepointWithNSpots( model, cropEnd );
+			}
+			catch ( NoSuchElementException e )
+			{
+				String message = projectName + ", crop end: " + e.getMessage();
+				feedback.add( message );
+				logger.debug( message );
 			}
 		}
 		return feedback;
+	}
+
+	public void close()
+	{
+		for ( ProjectSession projectSession : externalProjects.values() )
+			projectSession.close();
 	}
 }
