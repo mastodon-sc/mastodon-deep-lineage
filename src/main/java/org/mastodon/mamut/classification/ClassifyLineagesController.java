@@ -495,7 +495,8 @@ public class ClassifyLineagesController
 
 	private String getTagSetName()
 	{
-		return "Classification"
+		String prefix = externalProjects.isEmpty() ? "" : "Average ";
+		return prefix + "Classification"
 				+ " ("
 				+ cropCriterion.getNameShort()
 				+ ": "
