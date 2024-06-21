@@ -143,10 +143,10 @@ public class ClassifyLineagesController
 	/**
 	 * Create a new tag set based on the current settings of the controller.
 	 */
-	public void createTagSet()
+	public String createTagSet()
 	{
 		if ( running )
-			return;
+			return null;
 		if ( !isValidParams() )
 			throw new IllegalArgumentException( "Invalid parameters settings." );
 		ReentrantReadWriteLock.WriteLock writeLock = referenceModel.getGraph().getLock().writeLock();
@@ -154,7 +154,7 @@ public class ClassifyLineagesController
 		try
 		{
 			running = true;
-			runClassification();
+			return runClassification();
 		}
 		finally
 		{
@@ -168,14 +168,14 @@ public class ClassifyLineagesController
 		return referenceProjectModel;
 	}
 
-	private void runClassification()
+	private String runClassification()
 	{
 		Pair< List< BranchSpotTree >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
 		List< BranchSpotTree > roots = rootsAndDistances.getLeft();
 		double[][] distances = rootsAndDistances.getRight();
 		Classification< BranchSpotTree > classification = classifyLineageTrees( roots, distances );
 		List< Pair< String, Integer > > tagsAndColors = createTagsAndColors( classification );
-		applyClassification( classification, tagsAndColors, referenceModel );
+		String createdTagSetName = applyClassification( classification, tagsAndColors, referenceModel );
 		if ( addTagSetToExternalProjects )
 		{
 			for ( ProjectSession projectSession : externalProjects.values() )
@@ -196,6 +196,7 @@ public class ClassifyLineagesController
 		}
 		if ( showDendrogram )
 			showDendrogram( classification );
+		return createdTagSetName;
 	}
 
 	private Pair< List< BranchSpotTree >, double[][] > getRootsAndDistanceMatrix()
@@ -297,11 +298,12 @@ public class ClassifyLineagesController
 		return tagsAndColors;
 	}
 
-	private void applyClassification( final Classification< BranchSpotTree > classification,
+	private String applyClassification( final Classification< BranchSpotTree > classification,
 			final List< Pair< String, Integer > > tagsAndColors, final Model model )
 	{
+		String tagSetName = getTagSetName();
 		Set< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
-		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, getTagSetName(), tagsAndColors );
+		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, tagSetName, tagsAndColors );
 		int i = 0;
 		for ( Classification.ObjectClassification< BranchSpotTree > objectClassification : objectClassifications )
 		{
@@ -323,6 +325,7 @@ public class ClassifyLineagesController
 			}
 			i++;
 		}
+		return tagSetName;
 	}
 
 	private List< BranchSpotTree > getRoots()
