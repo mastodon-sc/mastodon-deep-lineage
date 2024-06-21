@@ -106,6 +106,8 @@ public class ClassifyLineagesController
 
 	private final Map< File, ProjectSession > externalProjects;
 
+	private final Map< File, String > failingExternalProjects;
+
 	private boolean showDendrogram;
 
 	private boolean addTagSetToExternalProjects;
@@ -135,6 +137,7 @@ public class ClassifyLineagesController
 		this.prefs = prefs;
 		this.projectService = projectService;
 		this.externalProjects = new HashMap<>();
+		this.failingExternalProjects = new HashMap<>();
 	}
 
 	/**
@@ -399,6 +402,7 @@ public class ClassifyLineagesController
 			for ( ProjectSession projectSession : externalProjects.values() )
 				projectSession.close();
 			externalProjects.clear();
+			failingExternalProjects.clear();
 			return;
 		}
 
@@ -415,6 +419,14 @@ public class ClassifyLineagesController
 			}
 		}
 
+		// Remove files from the failingExternalProjects map that are not in the projects array
+		for ( Map.Entry< File, String > entry : failingExternalProjects.entrySet() )
+		{
+			File file = entry.getKey();
+			if ( !projectsList.contains( file ) )
+				failingExternalProjects.remove( file );
+		}
+
 		// Add files from projects to the map if they are not already present
 		for ( File file : projects )
 		{
@@ -423,9 +435,12 @@ public class ClassifyLineagesController
 				try
 				{
 					externalProjects.put( file, projectService.createSession( file ) );
+					failingExternalProjects.remove( file );
 				}
 				catch ( SpimDataException | IOException | RuntimeException e )
 				{
+					failingExternalProjects.put( file,
+							"Could not read project from file " + file.getAbsolutePath() + ".<br>Error: " + e.getMessage() );
 					logger.warn( "Could not read project from file {}. Error: {}", file.getAbsolutePath(), e.getMessage() );
 				}
 			}
@@ -452,6 +467,7 @@ public class ClassifyLineagesController
 		}
 		if ( cropCriterion.equals( CropCriteria.NUMBER_OF_SPOTS ) )
 			feedback.addAll( checkNumberOfSpots() );
+		feedback.addAll( failingExternalProjects.values() );
 		return feedback;
 	}
 
