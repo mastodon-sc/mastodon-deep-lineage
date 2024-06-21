@@ -101,6 +101,10 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	@Parameter( label = "<html><body>List of projects<br>(Drag & Drop supported)</body></html>", style = "files,extensions:mastodon", callback = "update" )
 	private File[] projects = new File[ 0 ];
 
+	@SuppressWarnings( "unused" )
+	@Parameter( label = "<html><body>Add tag sets<br>also to these projects</body></html>", callback = "update" )
+	private boolean addTagSetToExternalProjects = false;
+
 	@SuppressWarnings("unused")
 	@Parameter( label = "<html><body>Show dendrogram<br>of clustering</body></html>", callback = "update" )
 	private boolean showDendrogram = true;
@@ -139,7 +143,7 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 		controller.setComputeParams(
 				SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses );
 		controller.setVisualisationParams( showDendrogram );
-		controller.setExternalProjects( projects );
+		controller.setExternalProjects( projects, addTagSetToExternalProjects );
 	}
 
 	private void updateFeedback()
