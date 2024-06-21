@@ -39,6 +39,7 @@ import org.mastodon.mamut.classification.util.Classification;
 import org.mastodon.mamut.classification.config.CropCriteria;
 import org.mastodon.mamut.classification.ui.DendrogramView;
 import org.mastodon.mamut.classification.util.ClassificationUtils;
+import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -107,6 +108,8 @@ public class ClassifyLineagesController
 
 	private boolean showDendrogram;
 
+	private boolean addTagSetToExternalProjects;
+
 	private boolean running = false;
 
 	/**
@@ -170,6 +173,24 @@ public class ClassifyLineagesController
 		Classification< BranchSpotTree > classification = classifyLineageTrees( roots, distances );
 		List< Pair< String, Integer > > tagsAndColors = createTagsAndColors( classification );
 		applyClassification( classification, tagsAndColors, referenceModel );
+		if ( addTagSetToExternalProjects )
+		{
+			for ( ProjectSession projectSession : externalProjects.values() )
+			{
+				ProjectModel projectModel = projectSession.getProjectModel();
+				File file = projectSession.getFile();
+				applyClassification( classification, tagsAndColors, projectModel.getModel() );
+				try
+				{
+					ProjectSaver.saveProject( file, projectModel );
+				}
+				catch ( IOException e )
+				{
+					logger.warn( "Could not save tag set of project {} to file {}. Message: {}", projectModel.getProjectName(),
+							file.getAbsolutePath(), e.getMessage() );
+				}
+			}
+		}
 		if ( showDendrogram )
 			showDendrogram( classification );
 	}
@@ -370,8 +391,9 @@ public class ClassifyLineagesController
 		this.showDendrogram = showDendrogram;
 	}
 
-	public void setExternalProjects( final File[] projects )
+	public void setExternalProjects( final File[] projects, final boolean addTagSetToExternalProjects )
 	{
+		this.addTagSetToExternalProjects = addTagSetToExternalProjects;
 		if ( projects == null || projects.length == 0 )
 		{
 			for ( ProjectSession projectSession : externalProjects.values() )
