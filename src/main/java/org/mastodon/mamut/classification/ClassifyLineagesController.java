@@ -149,8 +149,6 @@ public class ClassifyLineagesController
 			return null;
 		if ( !isValidParams() )
 			throw new IllegalArgumentException( "Invalid parameters settings." );
-		ReentrantReadWriteLock.WriteLock writeLock = referenceModel.getGraph().getLock().writeLock();
-		writeLock.lock();
 		try
 		{
 			running = true;
@@ -158,7 +156,6 @@ public class ClassifyLineagesController
 		}
 		finally
 		{
-			writeLock.unlock();
 			running = false;
 		}
 	}
@@ -170,32 +167,41 @@ public class ClassifyLineagesController
 
 	private String runClassification()
 	{
-		Pair< List< BranchSpotTree >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
-		List< BranchSpotTree > roots = rootsAndDistances.getLeft();
-		double[][] distances = rootsAndDistances.getRight();
-		Classification< BranchSpotTree > classification = classifyLineageTrees( roots, distances );
-		List< Pair< String, Integer > > tagsAndColors = createTagsAndColors( classification );
-		String createdTagSetName = applyClassification( classification, tagsAndColors, referenceModel );
-		if ( addTagSetToExternalProjects )
+		ReentrantReadWriteLock.ReadLock lock = referenceModel.getGraph().getLock().readLock();
+		lock.lock();
+		String createdTagSetName;
+		try
 		{
-			for ( ProjectSession projectSession : externalProjects.values() )
-			{
-				ProjectModel projectModel = projectSession.getProjectModel();
-				File file = projectSession.getFile();
-				applyClassification( classification, tagsAndColors, projectModel.getModel() );
-				try
+			Pair< List< BranchSpotTree >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
+			List< BranchSpotTree > roots = rootsAndDistances.getLeft();
+			double[][] distances = rootsAndDistances.getRight();
+			Classification< BranchSpotTree > classification = classifyLineageTrees( roots, distances );
+			List< Pair< String, Integer > > tagsAndColors = createTagsAndColors( classification );
+			createdTagSetName = applyClassification( classification, tagsAndColors, referenceModel );
+			if ( addTagSetToExternalProjects )
+				for ( ProjectSession projectSession : externalProjects.values() )
 				{
-					ProjectSaver.saveProject( file, projectModel );
+					ProjectModel projectModel = projectSession.getProjectModel();
+					File file = projectSession.getFile();
+					applyClassification( classification, tagsAndColors, projectModel.getModel() );
+					try
+					{
+						ProjectSaver.saveProject( file, projectModel );
+					}
+					catch ( IOException e )
+					{
+						logger.warn( "Could not save tag set of project {} to file {}. Message: {}", projectModel.getProjectName(),
+								file.getAbsolutePath(), e.getMessage() );
+					}
 				}
-				catch ( IOException e )
-				{
-					logger.warn( "Could not save tag set of project {} to file {}. Message: {}", projectModel.getProjectName(),
-							file.getAbsolutePath(), e.getMessage() );
-				}
-			}
+
+			if ( showDendrogram )
+				showDendrogram( classification );
 		}
-		if ( showDendrogram )
-			showDendrogram( classification );
+		finally
+		{
+			lock.unlock();
+		}
 		return createdTagSetName;
 	}
 
