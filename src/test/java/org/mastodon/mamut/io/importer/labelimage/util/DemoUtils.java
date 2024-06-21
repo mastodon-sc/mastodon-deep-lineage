@@ -47,12 +47,15 @@ import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
 import org.mastodon.mamut.io.importer.labelimage.math.CovarianceMatrix;
 import org.mastodon.mamut.io.importer.labelimage.math.MeansVector;
+import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.views.bdv.MamutViewBdv;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
 
 import javax.annotation.Nonnull;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -69,6 +72,16 @@ public class DemoUtils
 	{
 		final SharedBigDataViewerData sharedBigDataViewerData = asSharedBdvDataXyz( image );
 		return ProjectModel.create( context, model, sharedBigDataViewerData, null );
+	}
+
+	public static ProjectModel wrapAsAppModel( final Img< FloatType > image, final Model model, final Context context, final File file )
+			throws IOException
+	{
+		final SharedBigDataViewerData sharedBigDataViewerData = asSharedBdvDataXyz( image );
+		MamutProject mamutProject = new MamutProject( file );
+		File datasetXmlFile = File.createTempFile( "test", ".xml" );
+		mamutProject.setDatasetXmlFile( datasetXmlFile );
+		return ProjectModel.create( context, model, sharedBigDataViewerData, mamutProject );
 	}
 
 	public static SharedBigDataViewerData asSharedBdvDataXyz( final Img< FloatType > image1 )
