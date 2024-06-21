@@ -34,7 +34,7 @@ import org.mastodon.mamut.classification.config.SimilarityMeasure;
 import org.mastodon.mamut.classification.ClassifyLineagesController;
 import org.mastodon.mamut.classification.config.CropCriteria;
 import org.scijava.ItemVisibility;
-import org.scijava.command.InteractiveCommand;
+import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.Button;
@@ -45,10 +45,11 @@ import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-@Plugin( type = InteractiveCommand.class, visible = false, label = "Classification of Lineage Trees", initializer = "init" )
-public class ClassifyLineagesCommand extends InteractiveCommand
+@Plugin( type = DynamicCommand.class, label = "Classification of Lineage Trees", initializer = "init" )
+public class ClassifyLineagesCommand extends DynamicCommand
 {
 
 	private static final float WIDTH = 18.5f;
@@ -109,6 +110,10 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	@Parameter( label = "<html><body>Show dendrogram<br>of clustering</body></html>", callback = "update" )
 	private boolean showDendrogram = true;
 
+	@SuppressWarnings( "unused" )
+	@Parameter( label = "Check validity of parameters", callback = "update" )
+	private Button checkParameters;
+
 	@SuppressWarnings("unused")
 	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false, label = " ")
 	private String paramFeedback;
@@ -127,7 +132,9 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	@Override
 	public void run()
 	{
-		// NB: not implemented. Update method is called via callback on each parameter change.
+		// NB: This method is called, when the user presses the "OK" button.
+		createTagSet();
+		controller.close();
 	}
 
 	@SuppressWarnings("unused")
@@ -159,25 +166,25 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	@SuppressWarnings("unused")
 	private void createTagSet()
 	{
-		update();
+		updateParams();
 		if ( controller.isValidParams() )
 		{
-			String feedback;
-			String color;
 			try
 			{
-				controller.createTagSet();
-				feedback = "Classified lineage trees.<p>";
-				feedback += "Tag set created.";
-				color = "green";
+				String tagSetName = controller.createTagSet();
+				Notification.showSuccess( "Classification successful", "Classified lineage trees.<p>New tag set created: " + tagSetName );
 			}
 			catch ( IllegalArgumentException e )
 			{
-				feedback = e.getMessage();
-				color = "red";
+				Notification.showError( "Error during lineage classification", e.getMessage() );
 				logger.error( "Error during lineage classification: {}", e.getMessage() );
 			}
-			computeFeedback = "<html><body width=" + WIDTH + "cm><font color=\"" + color + "\">" + feedback + "</font></body></html>";
+		}
+		else
+		{
+			StringJoiner joiner = new StringJoiner( "</li><li>" );
+			controller.getFeedback().forEach( joiner::add );
+			Notification.showWarning( "Invalid parameters", "Please check the parameters.<ul><li>" + joiner + "</li></ul>" );
 		}
 
 	}
