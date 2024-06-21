@@ -238,6 +238,14 @@ public class ClassifyLineagesController
 		}
 		List< String > commonRootNamesList = new ArrayList<>( commonRootNames );
 		commonRootNamesList.sort( String::compareTo );
+
+		if ( logger.isDebugEnabled() )
+		{
+			logger.info( "Found {} common root names in {} projects.", commonRootNames.size(), externalProjects.size() + 1 );
+			String names = commonRootNames.stream().map( Object::toString ).collect( Collectors.joining( "," ) );
+			logger.debug( "Common root names are: {}", names );
+		}
+
 		return commonRootNamesList;
 	}
 
