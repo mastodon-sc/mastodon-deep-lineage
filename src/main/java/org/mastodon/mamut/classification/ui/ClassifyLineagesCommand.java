@@ -155,7 +155,7 @@ public class ClassifyLineagesCommand extends DynamicCommand
 		if ( controller.isValidParams() )
 			paramFeedback += "<font color=green>Parameters are valid.";
 		else
-			paramFeedback += "<font color=red>" + String.join( "<p>", controller.getFeedback() );
+			paramFeedback += "<font color=red><ul><li>" + String.join( "</li><li>", controller.getFeedback() ) + "</li></ul>";
 		paramFeedback += "</font></body></html>";
 	}
 
