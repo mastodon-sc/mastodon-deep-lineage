@@ -122,10 +122,6 @@ public class ClassifyLineagesCommand extends DynamicCommand
 	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false, label = " ")
 	private String computeFeedback;
 
-	@SuppressWarnings("unused")
-	@Parameter( label = "Classify lineage trees", callback = "createTagSet" )
-	private Button createTagSet;
-
 	/**
 	 * This method is executed whenever a parameter changes
 	 */
