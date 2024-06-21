@@ -424,8 +424,16 @@ public class ClassifyLineagesController
 		}
 
 		List< File > projectsList = Arrays.asList( projects );
+		removeProjects( projectsList );
+		cleanUpFailingProjects( projectsList );
+		addProjects( projects );
+	}
 
-		// Remove files from the externalProjects map that are not in the projects array
+	/**
+	 * Remove files from the externalProjects map that are not in the projects list
+	 */
+	private void removeProjects( final List< File > projectsList )
+	{
 		for ( Map.Entry< File, ProjectSession > entry : externalProjects.entrySet() )
 		{
 			File file = entry.getKey();
@@ -435,16 +443,26 @@ public class ClassifyLineagesController
 				projectSession.close();
 			}
 		}
+	}
 
-		// Remove files from the failingExternalProjects map that are not in the projects array
+	/**
+	 * Remove files from the failingExternalProjects map that are not in the projects list
+	 */
+	private void cleanUpFailingProjects( final List< File > projectsList )
+	{
 		for ( Map.Entry< File, String > entry : failingExternalProjects.entrySet() )
 		{
 			File file = entry.getKey();
 			if ( !projectsList.contains( file ) )
 				failingExternalProjects.remove( file );
 		}
+	}
 
-		// Add files from projects to the map if they are not already present
+	/**
+	 * Add files from projects to the map if they are not already present
+	 */
+	private void addProjects( final File[] projects )
+	{
 		for ( File file : projects )
 		{
 			if ( !externalProjects.containsKey( file ) )
