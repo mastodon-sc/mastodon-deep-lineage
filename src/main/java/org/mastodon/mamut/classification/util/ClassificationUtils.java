@@ -117,8 +117,8 @@ public class ClassificationUtils
 		} );
 		stopWatch.stop();
 		logger.debug( "Computed all distances in {} s.", stopWatch.getTime() / 1000d );
-		logger.debug( "Shape of similarity matrix: {}x{}={} entries.", distances.length, distances[ 0 ].length,
-				distances.length * distances[ 0 ].length );
+		logger.debug( "Shape of similarity matrix: {}x{}={} entries.", distances.length, distances.length,
+				distances.length * distances.length );
 
 		return distances;
 	}
