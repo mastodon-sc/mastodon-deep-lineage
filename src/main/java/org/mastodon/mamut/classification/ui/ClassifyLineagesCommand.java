@@ -175,6 +175,13 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 			}
 			computeFeedback = "<html><body width=" + WIDTH + "cm><font color=\"" + color + "\">" + feedback + "</font></body></html>";
 		}
+
+	}
+
+	@Override
+	public void cancel()
+	{
+		controller.close();
 	}
 
 	@SuppressWarnings( "unused" )
