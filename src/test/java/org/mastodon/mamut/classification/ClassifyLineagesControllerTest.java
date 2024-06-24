@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,14 +42,19 @@ import org.mastodon.mamut.classification.config.ClusteringMethod;
 import org.mastodon.mamut.classification.config.CropCriteria;
 import org.mastodon.mamut.classification.config.SimilarityMeasure;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
+import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.util.MastodonProjectService;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.TagSetUtils;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.Context;
+import org.scijava.prefs.PrefService;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -113,6 +118,69 @@ class ClassifyLineagesControllerTest
 			Set< Integer > actualClassCounts = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
 
 			assertEquals( "Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet1.getName() );
+			assertTrue( controller.isValidParams() );
+			assertEquals( 2, tagSets.size() );
+			assertEquals( 3, tags.size() );
+			assertEquals( expectedClassNames, actualClassNames );
+			assertEquals( expectedClassCounts, actualClassCounts );
+		}
+	}
+
+	@Test
+	void testCreateTagSetWithExternalProjects() throws IOException
+	{
+		final Model model = new Model();
+
+		try (Context context = new Context())
+		{
+			final Img< FloatType > dummyImg = ArrayImgs.floats( 1, 1, 1 );
+			final ImagePlus dummyImagePlus =
+					ImgToVirtualStack.wrap( new ImgPlus<>( dummyImg, "image", new AxisType[] { Axes.X, Axes.Y, Axes.Z } ) );
+			SharedBigDataViewerData dummyBdv = Objects.requireNonNull( SharedBigDataViewerData.fromImagePlus( dummyImagePlus ) );
+			ProjectModel projectModel = ProjectModel.create( context, model, dummyBdv, null );
+
+			final ModelGraph modelGraph = model.getGraph();
+
+			addLineageTree1( modelGraph );
+			addLineageTree2( modelGraph );
+			addLineageTree3( modelGraph );
+			addLineageTree4( modelGraph );
+			addLineageTree5( modelGraph );
+			addEmptyTree( modelGraph );
+
+			File file1 = DemoUtils.saveAppModelToTempFile( dummyImg, model );
+			File file2 = DemoUtils.saveAppModelToTempFile( dummyImg, model );
+			File[] files = { file1, file2 };
+
+			String tagSetName = "Test Tag Set";
+			TagSetUtils.addNewTagSetToModel( model, tagSetName, Collections.emptyList() );
+			PrefService prefService = context.getService( PrefService.class );
+			MastodonProjectService projectService = context.getService( MastodonProjectService.class );
+			ClassifyLineagesController controller = new ClassifyLineagesController( projectModel, prefService, projectService );
+			controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
+			controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
+			controller.setVisualisationParams( false );
+			controller.setExternalProjects( files, true );
+			controller.createTagSet();
+
+			List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
+			TagSetStructure.TagSet tagSet1 = model.getTagSetModel().getTagSetStructure().getTagSets().get( 1 );
+			List< TagSetStructure.Tag > tags = tagSet1.getTags();
+			TagSetStructure.Tag tag0 = tags.get( 0 );
+			TagSetStructure.Tag tag1 = tags.get( 1 );
+			TagSetStructure.Tag tag2 = tags.get( 2 );
+
+			Collection< Spot > tag0Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag0 );
+			Collection< Spot > tag1Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag1 );
+			Collection< Spot > tag2Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag2 );
+
+			Set< String > expectedClassNames = new HashSet<>( Arrays.asList( "Class 1", "Class 2", "Class 3" ) );
+			Set< String > actualClassNames = new HashSet<>( Arrays.asList( tag0.label(), tag1.label(), tag2.label() ) );
+
+			Set< Integer > expectedClassCounts = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
+			Set< Integer > actualClassCounts = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
+
+			assertEquals( "Average Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet1.getName() );
 			assertTrue( controller.isValidParams() );
 			assertEquals( 2, tagSets.size() );
 			assertEquals( 3, tags.size() );
