@@ -65,6 +65,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -429,13 +430,16 @@ public class ClassifyLineagesController
 	 */
 	private void removeProjects( final List< File > projectsList )
 	{
-		for ( Map.Entry< File, ProjectSession > entry : externalProjects.entrySet() )
+		Iterator< Map.Entry< File, ProjectSession > > iterator = externalProjects.entrySet().iterator();
+		while ( iterator.hasNext() )
 		{
+			Map.Entry< File, ProjectSession > entry = iterator.next();
 			File file = entry.getKey();
 			if ( !projectsList.contains( file ) )
 			{
-				ProjectSession projectSession = externalProjects.remove( file );
+				ProjectSession projectSession = entry.getValue();
 				projectSession.close();
+				iterator.remove();
 			}
 		}
 	}
