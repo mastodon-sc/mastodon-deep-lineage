@@ -317,7 +317,7 @@ public class ClassifyLineagesController
 		for ( Classification.ObjectClassification< BranchSpotTree > objectClassification : objectClassifications )
 		{
 			Set< BranchSpotTree > trees = objectClassification.getObjects();
-			logger.info( "Class {} has {} trees", i, trees.size() );
+			logger.debug( "Applying tag set for class {}, which has {} trees", i, trees.size() );
 			TagSetStructure.Tag tag = tagSet.getTags().get( i );
 			for ( BranchSpotTree tree : trees )
 			{
