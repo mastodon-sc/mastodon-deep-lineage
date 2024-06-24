@@ -5,8 +5,6 @@ import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.real.FloatType;
 import org.junit.jupiter.api.Test;
-import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.ProjectSaver;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
@@ -23,16 +21,10 @@ class MastodonProjectServiceTest
 	{
 		Model model = new Model();
 		Img< FloatType > image = ArrayImgs.floats( 1, 1, 1 );
-		File mastodonFile1 = File.createTempFile( "test1", ".mastodon" );
-		File mastodonFile2 = File.createTempFile( "test2", ".mastodon" );
+		File mastodonFile1 = DemoUtils.saveAppModelToTempFile( image, model );
+		File mastodonFile2 = DemoUtils.saveAppModelToTempFile( image, model );
 		try (Context context = new Context())
 		{
-			ProjectModel appModel1 = DemoUtils.wrapAsAppModel( image, model, context, mastodonFile1 );
-			ProjectModel appModel2 = DemoUtils.wrapAsAppModel( image, model, context, mastodonFile2 );
-
-			ProjectSaver.saveProject( mastodonFile1, appModel1 );
-			ProjectSaver.saveProject( mastodonFile2, appModel2 );
-
 			MastodonProjectService service = new MastodonProjectService();
 			service.setContext( context );
 			ProjectSession projectSession1 = service.createSession( mastodonFile1 );
@@ -48,6 +40,8 @@ class MastodonProjectServiceTest
 			projectSession3.close();
 			assertEquals( 0, service.openProjectModelsCount() );
 			assertEquals( mastodonFile1, projectSession1.getFile() );
+			assertEquals( mastodonFile1, projectSession2.getFile() );
+			assertEquals( mastodonFile2, projectSession3.getFile() );
 		}
 	}
 }
