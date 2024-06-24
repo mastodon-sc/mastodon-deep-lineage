@@ -160,11 +160,6 @@ public class ClassifyLineagesController
 		}
 	}
 
-	public ProjectModel getProjectModel()
-	{
-		return referenceProjectModel;
-	}
-
 	private String runClassification()
 	{
 		ReentrantReadWriteLock.ReadLock lock = referenceModel.getGraph().getLock().readLock();
