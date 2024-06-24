@@ -190,6 +190,44 @@ class ClassifyLineagesControllerTest
 	}
 
 	@Test
+	void testSetExternalProjects() throws IOException
+	{
+		Model model = new Model();
+		try (Context context = new Context())
+		{
+			final Img< FloatType > dummyImg = ArrayImgs.floats( 1, 1, 1 );
+			final ImagePlus dummyImagePlus =
+					ImgToVirtualStack.wrap( new ImgPlus<>( dummyImg, "image", new AxisType[] { Axes.X, Axes.Y, Axes.Z } ) );
+			SharedBigDataViewerData dummyBdv = Objects.requireNonNull( SharedBigDataViewerData.fromImagePlus( dummyImagePlus ) );
+			ProjectModel projectModel = ProjectModel.create( context, model, dummyBdv, null );
+
+			File file1 = DemoUtils.saveAppModelToTempFile( dummyImg, model );
+			File file2 = DemoUtils.saveAppModelToTempFile( dummyImg, model );
+			File file3 = File.createTempFile( "test", ".mastodon" );
+			File[] files = { file1, file2 };
+
+			PrefService prefService = context.getService( PrefService.class );
+			MastodonProjectService projectService = context.getService( MastodonProjectService.class );
+			ClassifyLineagesController controller = new ClassifyLineagesController( projectModel, prefService, projectService );
+			controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
+			controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 0 );
+			controller.setExternalProjects( files, false );
+			assertEquals( 0, controller.getFeedback().size() );
+			controller.setExternalProjects( null, false );
+			assertEquals( 0, controller.getFeedback().size() );
+			files = new File[] { file1, file3 };
+			controller.setExternalProjects( files, false );
+			assertEquals( 1, controller.getFeedback().size() );
+			File[] files2 = { file1, file2 };
+			controller.setExternalProjects( files2, false );
+			assertEquals( 0, controller.getFeedback().size() );
+			File[] files3 = { file1 };
+			controller.setExternalProjects( files3, false );
+			assertEquals( 0, controller.getFeedback().size() );
+		}
+	}
+
+	@Test
 	void testGetFeedback()
 	{
 		ExampleGraph2 exampleGraph = new ExampleGraph2();
