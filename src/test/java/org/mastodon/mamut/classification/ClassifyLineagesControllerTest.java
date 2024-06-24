@@ -92,7 +92,7 @@ class ClassifyLineagesControllerTest
 			ClassifyLineagesController controller = new ClassifyLineagesController( projectModel );
 			controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
 			controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
-			controller.setVisualisationParams( false );
+			controller.setVisualisationParams( true );
 			controller.createTagSet();
 
 			List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
