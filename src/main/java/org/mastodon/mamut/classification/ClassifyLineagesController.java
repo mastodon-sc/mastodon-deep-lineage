@@ -72,6 +72,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -168,29 +169,38 @@ public class ClassifyLineagesController
 		String createdTagSetName;
 		try
 		{
-			Pair< List< BranchSpotTree >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
-			List< BranchSpotTree > roots = rootsAndDistances.getLeft();
+			Pair< List< List< BranchSpotTree > >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
+			List< List< BranchSpotTree > > roots = rootsAndDistances.getLeft();
 			double[][] distances = rootsAndDistances.getRight();
-			Classification< BranchSpotTree > classification = classifyLineageTrees( roots, distances );
+			Classification< BranchSpotTree > classification = classifyLineageTrees( roots.get( 0 ), distances );
 			List< Pair< String, Integer > > tagsAndColors = createTagsAndColors( classification );
-			createdTagSetName = applyClassification( classification, tagsAndColors, referenceModel );
-			if ( addTagSetToExternalProjects )
-				for ( ProjectSession projectSession : externalProjects.values() )
+			Function< BranchSpotTree, BranchSpot > branchSpotProvider = BranchSpotTree::getBranchSpot;
+			createdTagSetName = applyClassification( classification, tagsAndColors, referenceModel, branchSpotProvider );
+			if ( addTagSetToExternalProjects && roots.size() > 1 )
+			{
+				for ( int i = 1; i < roots.size(); i++ )
 				{
-					ProjectModel projectModel = projectSession.getProjectModel();
-					File file = projectSession.getFile();
-					applyClassification( classification, tagsAndColors, projectModel.getModel() );
-					try
+					classification = classifyLineageTrees( roots.get( i ), distances );
+					for ( ProjectSession projectSession : externalProjects.values() )
 					{
-						ProjectSaver.saveProject( file, projectModel );
-					}
-					catch ( IOException e )
-					{
-						logger.warn( "Could not save tag set of project {} to file {}. Message: {}", projectModel.getProjectName(),
-								file.getAbsolutePath(), e.getMessage() );
+						ProjectModel projectModel = projectSession.getProjectModel();
+						File file = projectSession.getFile();
+						branchSpotProvider = branchSpotTree -> projectModel.getModel().getBranchGraph().vertices().stream()
+								.filter( ( branchSpot -> branchSpot.getLabel().equals( branchSpotTree.getName() ) ) )
+								.findFirst().orElse( null );
+						applyClassification( classification, tagsAndColors, projectModel.getModel(), branchSpotProvider );
+						try
+						{
+							ProjectSaver.saveProject( file, projectModel );
+						}
+						catch ( IOException e )
+						{
+							logger.warn( "Could not save tag set of project {} to file {}. Message: {}", projectModel.getProjectName(),
+									file.getAbsolutePath(), e.getMessage() );
+						}
 					}
 				}
-
+			}
 			if ( showDendrogram )
 				showDendrogram( classification );
 		}
@@ -308,7 +318,8 @@ public class ClassifyLineagesController
 	}
 
 	private String applyClassification( final Classification< BranchSpotTree > classification,
-			final List< Pair< String, Integer > > tagsAndColors, final Model model )
+			final List< Pair< String, Integer > > tagsAndColors, final Model model,
+			final Function< BranchSpotTree, BranchSpot > branchSpotProvider )
 	{
 		String tagSetName = getTagSetName();
 		List< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
@@ -321,13 +332,14 @@ public class ClassifyLineagesController
 			TagSetStructure.Tag tag = tagSet.getTags().get( i );
 			for ( BranchSpotTree tree : trees )
 			{
-				Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( tree.getBranchSpot(), model.getGraph().vertexRef() );
+				BranchSpot rootBranchSpot = branchSpotProvider.apply( tree );
+				Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( rootBranchSpot, model.getGraph().vertexRef() );
 				ModelGraph modelGraph = model.getGraph();
 				DepthFirstIterator< Spot, Link > iterator = new DepthFirstIterator<>( rootSpot, modelGraph );
 				iterator.forEachRemaining( spot -> {
-					if ( spot.getTimepoint() < cropStart )
+					if ( spot.getTimepoint() < tree.getStartTimepoint() )
 						return;
-					if ( spot.getTimepoint() > cropEnd )
+					if ( spot.getTimepoint() > tree.getEndTimepoint() )
 						return;
 					TagSetUtils.tagSpotAndIncomingEdges( model, spot, tagSet, tag );
 				} );
