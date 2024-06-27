@@ -186,7 +186,7 @@ public class ClassifyLineagesController
 						ProjectModel projectModel = projectSession.getProjectModel();
 						File file = projectSession.getFile();
 						branchSpotProvider = branchSpotTree -> projectModel.getModel().getBranchGraph().vertices().stream()
-								.filter( ( branchSpot -> branchSpot.getLabel().equals( branchSpotTree.getName() ) ) )
+								.filter( ( branchSpot -> branchSpot.getFirstLabel().equals( branchSpotTree.getName() ) ) )
 								.findFirst().orElse( null );
 						applyClassification( classification, tagsAndColors, projectModel.getModel(), branchSpotProvider );
 						try
@@ -334,6 +334,8 @@ public class ClassifyLineagesController
 			{
 				BranchSpot rootBranchSpot = branchSpotProvider.apply( tree );
 				Spot rootSpot = model.getBranchGraph().getFirstLinkedVertex( rootBranchSpot, model.getGraph().vertexRef() );
+				if ( rootSpot == null )
+					continue;
 				ModelGraph modelGraph = model.getGraph();
 				DepthFirstIterator< Spot, Link > iterator = new DepthFirstIterator<>( rootSpot, modelGraph );
 				iterator.forEachRemaining( spot -> {
