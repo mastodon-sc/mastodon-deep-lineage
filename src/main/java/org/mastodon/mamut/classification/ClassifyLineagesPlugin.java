@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,6 +33,7 @@ import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.classification.ui.ClassifyLineagesCommand;
 import org.mastodon.mamut.plugin.MamutPlugin;
+import org.mastodon.mamut.util.MastodonProjectService;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.AbstractContextual;
 import org.scijava.command.CommandService;
@@ -93,8 +94,9 @@ public class ClassifyLineagesPlugin extends AbstractContextual implements MamutP
 
 	private void classifyLineageTrees()
 	{
-		ClassifyLineagesController controller =
-				new ClassifyLineagesController( projectModel, commandService.getContext().getService( PrefService.class ) );
+		PrefService prefService = getContext().getService( PrefService.class );
+		MastodonProjectService projectService = getContext().getService( MastodonProjectService.class );
+		ClassifyLineagesController controller = new ClassifyLineagesController( projectModel, prefService, projectService );
 		commandService.run( ClassifyLineagesCommand.class, true, "controller", controller );
 	}
 
