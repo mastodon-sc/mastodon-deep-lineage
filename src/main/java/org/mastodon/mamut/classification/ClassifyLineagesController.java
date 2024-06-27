@@ -201,13 +201,13 @@ public class ClassifyLineagesController
 		return createdTagSetName;
 	}
 
-	private Pair< List< BranchSpotTree >, double[][] > getRootsAndDistanceMatrix()
+	private Pair< List< List< BranchSpotTree > >, double[][] > getRootsAndDistanceMatrix()
 	{
 		List< BranchSpotTree > roots = getRoots();
 		if ( externalProjects.isEmpty() )
 		{
 			double[][] distances = ClassificationUtils.getDistanceMatrix( roots, similarityMeasure );
-			return Pair.of( roots, distances );
+			return Pair.of( Collections.singletonList( roots ), distances );
 		}
 
 		List< String > commonRootNames = findCommonRootNames();
@@ -221,7 +221,7 @@ public class ClassifyLineagesController
 			keepCommonRootsAndSort( externalRoots, commonRootNames );
 			treeMatrix.add( externalRoots );
 		}
-		return Pair.of( roots, ClassificationUtils.getAverageDistanceMatrix( treeMatrix, similarityMeasure ) );
+		return Pair.of( treeMatrix, ClassificationUtils.getAverageDistanceMatrix( treeMatrix, similarityMeasure ) );
 	}
 
 	private List< String > findCommonRootNames()
@@ -298,12 +298,11 @@ public class ClassifyLineagesController
 	{
 
 		List< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
-		Set< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
-		int i = 0;
-		for ( Classification.ObjectClassification< BranchSpotTree > objectClassification : objectClassifications )
+		List< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
+		for ( int i = 0; i < objectClassifications.size(); i++ )
 		{
+			Classification.ObjectClassification< BranchSpotTree > objectClassification = objectClassifications.get( i );
 			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), objectClassification.getColor() ) );
-			i++;
 		}
 		return tagsAndColors;
 	}
@@ -312,11 +311,11 @@ public class ClassifyLineagesController
 			final List< Pair< String, Integer > > tagsAndColors, final Model model )
 	{
 		String tagSetName = getTagSetName();
-		Set< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
+		List< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, tagSetName, tagsAndColors );
-		int i = 0;
-		for ( Classification.ObjectClassification< BranchSpotTree > objectClassification : objectClassifications )
+		for ( int i = 0; i < objectClassifications.size(); i++ )
 		{
+			Classification.ObjectClassification< BranchSpotTree > objectClassification = objectClassifications.get( i );
 			Set< BranchSpotTree > trees = objectClassification.getObjects();
 			logger.debug( "Applying tag set for class {}, which has {} trees", i, trees.size() );
 			TagSetStructure.Tag tag = tagSet.getTags().get( i );
@@ -333,7 +332,6 @@ public class ClassifyLineagesController
 					TagSetUtils.tagSpotAndIncomingEdges( model, spot, tagSet, tag );
 				} );
 			}
-			i++;
 		}
 		return tagSetName;
 	}
