@@ -420,16 +420,7 @@ public class ClassifyLineagesController
 	public void setExternalProjects( final File[] projects, final boolean addTagSetToExternalProjects )
 	{
 		this.addTagSetToExternalProjects = addTagSetToExternalProjects;
-		if ( projects == null || projects.length == 0 )
-		{
-			for ( ProjectSession projectSession : externalProjects.values() )
-				projectSession.close();
-			externalProjects.clear();
-			failingExternalProjects.clear();
-			return;
-		}
-
-		List< File > projectsList = Arrays.asList( projects );
+		List< File > projectsList = projects == null ? Collections.emptyList() : Arrays.asList( projects );
 		removeProjects( projectsList );
 		cleanUpFailingProjects( projectsList );
 		addProjects( projects );
@@ -472,6 +463,8 @@ public class ClassifyLineagesController
 	 */
 	private void addProjects( final File[] projects )
 	{
+		if ( projects == null )
+			return;
 		for ( File file : projects )
 		{
 			if ( !externalProjects.containsKey( file ) )
