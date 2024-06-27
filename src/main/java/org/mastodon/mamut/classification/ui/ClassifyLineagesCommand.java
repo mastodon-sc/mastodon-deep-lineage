@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-@Plugin( type = DynamicCommand.class, label = "Classification of Lineage Trees", initializer = "init" )
+@Plugin( type = DynamicCommand.class, label = "Classification of Lineage Trees" )
 public class ClassifyLineagesCommand extends DynamicCommand
 {
 
