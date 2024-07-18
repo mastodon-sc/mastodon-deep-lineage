@@ -212,7 +212,7 @@
             </activation>
             <build>
                 <plugins>
-                    <!-- Configure the maven-surefire-plugin to use a heap size of 2gb while running tests. -->
+                    <!-- Configure the maven-surefire-plugin to use a heap size of 3gb while running tests. -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
@@ -228,13 +228,13 @@
             <id>coverage</id>
             <build>
                 <plugins>
-                    <!-- Configure the maven-surefire-plugin to use a heap size of 2gb while running tests for jacoco coverage analysis. -->
+                    <!-- Configure the maven-surefire-plugin to use a heap size of 3gb while running tests for jacoco coverage analysis. -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>3.1.0</version>
                         <configuration>
-                            <argLine>@{argLine} -Xmx2g</argLine>
+                            <argLine>@{argLine} -Xmx3g</argLine>
                         </configuration>
                     </plugin>
                     <plugin>
