@@ -68,6 +68,14 @@ public class ClassifyLineagesPlugin extends AbstractContextual implements MamutP
 	@Parameter
 	private CommandService commandService;
 
+	@SuppressWarnings( "unused" )
+	@Parameter
+	private PrefService prefService;
+
+	@SuppressWarnings( "unused" )
+	@Parameter
+	private MastodonProjectService projectService;
+
 	@SuppressWarnings("unused")
 	public ClassifyLineagesPlugin()
 	{
@@ -94,8 +102,6 @@ public class ClassifyLineagesPlugin extends AbstractContextual implements MamutP
 
 	private void classifyLineageTrees()
 	{
-		PrefService prefService = getContext().getService( PrefService.class );
-		MastodonProjectService projectService = getContext().getService( MastodonProjectService.class );
 		ClassifyLineagesController controller = new ClassifyLineagesController( projectModel, prefService, projectService );
 		commandService.run( ClassifyLineagesCommand.class, true, "controller", controller );
 	}
