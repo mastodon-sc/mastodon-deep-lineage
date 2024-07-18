@@ -23,6 +23,8 @@
         <mastodon.group>org.mastodon</mastodon.group>
         <!-- when a pom-scijava exists that references the scijava-common 2.99.1 release, this can be removed again -->
         <scijava-common.version>2.99.1-SNAPSHOT</scijava-common.version>
+        <!-- with pom-scijava >= 38.0.2, this can be removed again -->
+        <scijava-ui-swing.version>1.0.2</scijava-ui-swing.version>
 
         <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
