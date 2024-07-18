@@ -177,30 +177,7 @@ public class ClassifyLineagesController
 			Function< BranchSpotTree, BranchSpot > branchSpotProvider = BranchSpotTree::getBranchSpot;
 			createdTagSetName = applyClassification( classification, tagsAndColors, referenceModel, branchSpotProvider );
 			if ( addTagSetToExternalProjects && roots.size() > 1 )
-			{
-				for ( int i = 1; i < roots.size(); i++ )
-				{
-					classification = classifyLineageTrees( roots.get( i ), distances );
-					for ( ProjectSession projectSession : externalProjects.values() )
-					{
-						ProjectModel projectModel = projectSession.getProjectModel();
-						File file = projectSession.getFile();
-						branchSpotProvider = branchSpotTree -> projectModel.getModel().getBranchGraph().vertices().stream()
-								.filter( ( branchSpot -> branchSpot.getFirstLabel().equals( branchSpotTree.getName() ) ) )
-								.findFirst().orElse( null );
-						applyClassification( classification, tagsAndColors, projectModel.getModel(), branchSpotProvider );
-						try
-						{
-							ProjectSaver.saveProject( file, projectModel );
-						}
-						catch ( IOException e )
-						{
-							logger.warn( "Could not save tag set of project {} to file {}. Message: {}", projectModel.getProjectName(),
-									file.getAbsolutePath(), e.getMessage() );
-						}
-					}
-				}
-			}
+				classification = classifyUsingExternalProjects( roots, classification, distances, tagsAndColors );
 			if ( showDendrogram )
 				showDendrogram( classification );
 		}
@@ -209,6 +186,37 @@ public class ClassifyLineagesController
 			lock.unlock();
 		}
 		return createdTagSetName;
+	}
+
+	private Classification< BranchSpotTree > classifyUsingExternalProjects( final List< List< BranchSpotTree > > roots,
+			final Classification< BranchSpotTree > classification, final double[][] distances,
+			final List< Pair< String, Integer > > tagsAndColors )
+	{
+		Function< BranchSpotTree, BranchSpot > branchSpotProvider;
+		Classification< BranchSpotTree > averageClassification = classification;
+		for ( int i = 1; i < roots.size(); i++ )
+		{
+			averageClassification = classifyLineageTrees( roots.get( i ), distances );
+			for ( ProjectSession projectSession : externalProjects.values() )
+			{
+				ProjectModel projectModel = projectSession.getProjectModel();
+				File file = projectSession.getFile();
+				branchSpotProvider = branchSpotTree -> projectModel.getModel().getBranchGraph().vertices().stream()
+						.filter( ( branchSpot -> branchSpot.getFirstLabel().equals( branchSpotTree.getName() ) ) )
+						.findFirst().orElse( null );
+				applyClassification( classification, tagsAndColors, projectModel.getModel(), branchSpotProvider );
+				try
+				{
+					ProjectSaver.saveProject( file, projectModel );
+				}
+				catch ( IOException e )
+				{
+					logger.warn( "Could not save tag set of project {} to file {}. Message: {}", projectModel.getProjectName(),
+							file.getAbsolutePath(), e.getMessage() );
+				}
+			}
+		}
+		return averageClassification;
 	}
 
 	private Pair< List< List< BranchSpotTree > >, double[][] > getRootsAndDistanceMatrix()
