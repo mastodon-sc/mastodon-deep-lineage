@@ -38,10 +38,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * A class that encapsulates the result of a clustering algorithm.<br>
+ * A class that encapsulates the result of a hierarchical clustering algorithm.<br>
  * It contains:
  *     <ul>
- *         <li>the root {@link Cluster} object, from which the results of the algorithm can be accessed</li>
+ *         <li>the root {@link Cluster} object, from which the results of the algorithm can be accessed. Clusters are hierarchically organized.</li>
  *         <li>a {@link List} of {@link ObjectClassification} objects, where each objects contains:
  *         	  <ul>
  *               <li>a {@link Cluster} object, which represents the classified objects in the dendrogram</li>
