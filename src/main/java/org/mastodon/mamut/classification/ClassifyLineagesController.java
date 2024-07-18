@@ -422,7 +422,7 @@ public class ClassifyLineagesController
 		this.numberOfClasses = numberOfClasses;
 	}
 
-	public void setVisualisationParams( final boolean showDendrogram )
+	public void setShowDendrogram( final boolean showDendrogram )
 	{
 		this.showDendrogram = showDendrogram;
 	}

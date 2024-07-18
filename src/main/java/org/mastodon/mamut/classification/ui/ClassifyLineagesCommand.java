@@ -145,7 +145,7 @@ public class ClassifyLineagesCommand extends DynamicCommand
 		controller.setInputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
 		controller.setComputeParams(
 				SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses );
-		controller.setVisualisationParams( showDendrogram );
+		controller.setShowDendrogram( showDendrogram );
 		controller.setExternalProjects( projects, addTagSetToExternalProjects );
 	}
 

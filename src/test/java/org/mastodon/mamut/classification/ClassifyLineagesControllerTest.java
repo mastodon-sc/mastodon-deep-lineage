@@ -99,7 +99,7 @@ class ClassifyLineagesControllerTest
 			ClassifyLineagesController controller = new ClassifyLineagesController( projectModel );
 			controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
 			controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
-			controller.setVisualisationParams( true );
+			controller.setShowDendrogram( true ); // NB: increase test coverage
 			controller.createTagSet();
 
 			List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
@@ -169,7 +169,7 @@ class ClassifyLineagesControllerTest
 			ClassifyLineagesController controller = new ClassifyLineagesController( projectModel1, prefService, projectService );
 			controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
 			controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
-			controller.setVisualisationParams( false );
+			controller.setShowDendrogram( false );
 			controller.setExternalProjects( files, true );
 			controller.createTagSet();
 
@@ -254,7 +254,7 @@ class ClassifyLineagesControllerTest
 		ClassifyLineagesController controller = new ClassifyLineagesController( projectModel );
 		controller.setInputParams( CropCriteria.TIMEPOINT, 1, 0, 1 );
 		controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
-		controller.setVisualisationParams( false );
+		controller.setShowDendrogram( false );
 		assertEquals( 2, controller.getFeedback().size() );
 		assertFalse( controller.isValidParams() );
 		assertThrows( IllegalArgumentException.class, controller::createTagSet );
