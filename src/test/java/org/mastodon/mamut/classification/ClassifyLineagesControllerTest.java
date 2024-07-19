@@ -116,15 +116,15 @@ class ClassifyLineagesControllerTest
 			Set< String > expectedClassNames = new HashSet<>( Arrays.asList( "Class 1", "Class 2", "Class 3" ) );
 			Set< String > actualClassNames = new HashSet<>( Arrays.asList( tag0.label(), tag1.label(), tag2.label() ) );
 
-			Set< Integer > expectedClassCounts = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
-			Set< Integer > actualClassCounts = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
+			Set< Integer > expectedSpotsPerClass = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
+			Set< Integer > actualSpotsPerClass = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
 
 			assertEquals( "Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet1.getName() );
 			assertTrue( controller.isValidParams() );
 			assertEquals( 2, tagSets.size() );
 			assertEquals( 3, tags.size() );
 			assertEquals( expectedClassNames, actualClassNames );
-			assertEquals( expectedClassCounts, actualClassCounts );
+			assertEquals( expectedSpotsPerClass, actualSpotsPerClass );
 		}
 	}
 
@@ -174,17 +174,17 @@ class ClassifyLineagesControllerTest
 			controller.createTagSet();
 
 			Set< String > expectedClassNames = new HashSet<>( Arrays.asList( "Class 1", "Class 2", "Class 3" ) );
-			Set< Integer > expectedClassCounts = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
+			Set< Integer > expectedSpotsPerClass = new HashSet<>( Arrays.asList( 9, 12, 14 ) );
 
 			assertTrue( controller.isValidParams() );
-			assertClassificationEquals( model1, 1, expectedClassNames, expectedClassCounts );
+			assertClassificationEquals( model1, 1, expectedClassNames, expectedSpotsPerClass );
 			ProjectModel pm2 = ProjectLoader.open( file2.getAbsolutePath(), context, false, true );
-			assertClassificationEquals( pm2.getModel(), 0, expectedClassNames, expectedClassCounts );
+			assertClassificationEquals( pm2.getModel(), 0, expectedClassNames, expectedSpotsPerClass );
 		}
 	}
 
 	private void assertClassificationEquals( Model model, int existingTagSets, Set< String > expectedClassNames,
-			Set< Integer > expectedClassCounts )
+			Set< Integer > expectedSpotsPerClass )
 	{
 		List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
 		int expectedTagSets = existingTagSets + 1;
@@ -199,13 +199,13 @@ class ClassifyLineagesControllerTest
 		Collection< Spot > tag2Spots = model.getTagSetModel().getVertexTags().getTaggedWith( tag2 );
 
 		Set< String > actualClassNames = new HashSet<>( Arrays.asList( tag0.label(), tag1.label(), tag2.label() ) );
-		Set< Integer > actualClassCounts = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
+		Set< Integer > actualSpotsPerClass = new HashSet<>( Arrays.asList( tag0Spots.size(), tag1Spots.size(), tag2Spots.size() ) );
 
 		assertEquals( "Average Classification (time: 0-100, classes: 3, min. div: 1) ", tagSet.getName() );
 		assertEquals( expectedTagSets, tagSets.size() );
 		assertEquals( 3, tags1.size() );
 		assertEquals( expectedClassNames, actualClassNames );
-		assertEquals( expectedClassCounts, actualClassCounts );
+		assertEquals( expectedSpotsPerClass, actualSpotsPerClass );
 	}
 
 	@Test
