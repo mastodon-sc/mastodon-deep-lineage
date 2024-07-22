@@ -39,9 +39,6 @@ class MastodonProjectServiceTest
 			assertEquals( 1, service.activeSessions() );
 			projectSession3.close();
 			assertEquals( 0, service.activeSessions() );
-			assertEquals( mastodonFile1, projectSession1.getFile() );
-			assertEquals( mastodonFile1, projectSession2.getFile() );
-			assertEquals( mastodonFile2, projectSession3.getFile() );
 		}
 	}
 }
