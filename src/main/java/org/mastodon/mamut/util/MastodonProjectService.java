@@ -30,7 +30,7 @@ import java.util.Map;
  * The service will keep track of all project models that have been opened and the sessions that are currently using them.
  * For this purpose, the service provides a method to create a new session for a project file and a method to release a session.
  * <br>
- * When a session is released, the service will close the project model if no other session is using it.
+ * When a session is released, the service will close the project model, if no other session is using it.
  */
 @Plugin( type = Service.class )
 public class MastodonProjectService extends AbstractService
@@ -105,7 +105,11 @@ public class MastodonProjectService extends AbstractService
 		}
 	}
 
-	public int openProjectModelsCount()
+	/**
+	 * Returns the number of active sessions.
+	 * @return the number of active sessions.
+	 */
+	public int activeSessions()
 	{
 		return sessions.size();
 	}
