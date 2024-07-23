@@ -25,7 +25,7 @@ public class ProjectSession implements AutoCloseable
 	 * @param projectModel the project model.
 	 * @param service the service that created this session.
 	 */
-	public ProjectSession( final File file, final ProjectModel projectModel, final MastodonProjectService service )
+	ProjectSession( final File file, final ProjectModel projectModel, final MastodonProjectService service )
 	{
 		this.file = file;
 		this.projectModel = projectModel;
