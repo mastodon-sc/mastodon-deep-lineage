@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -51,12 +52,12 @@ public class ExternalProjects implements AutoCloseable
 	}
 
 	/**
-	 * Gets a mapping of external project files to their project sessions
-	 * @return the mapping
+	 * Gets a list of {@link ProjectSession}
+	 * @return the list
 	 */
-	public Map< File, ProjectSession > getProjects()
+	public List< ProjectSession > getProjectSessions()
 	{
-		return projectSessions;
+		return new ArrayList<>( projectSessions.values() );
 	}
 
 	/**
