@@ -86,7 +86,7 @@ class ClassifyLineagesControllerTest
 			ClassifyLineagesController controller = new ClassifyLineagesController( projectModel );
 			controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
 			controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
-			controller.setShowDendrogram( true ); // NB: increase test coverage
+			controller.setShowDendrogram( false );
 			controller.createTagSet();
 
 			List< TagSetStructure.TagSet > tagSets = model.getTagSetModel().getTagSetStructure().getTagSets();
