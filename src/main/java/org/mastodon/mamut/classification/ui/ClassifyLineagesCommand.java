@@ -98,6 +98,9 @@ public class ClassifyLineagesCommand extends DynamicCommand
 	@Parameter( label = "<html><body>Linkage strategy for<br>hierarchical clustering</body></html>", initializer = "initClusteringMethodChoices", callback = "update" )
 	private String clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE.getName();
 
+	@Parameter( visibility = ItemVisibility.MESSAGE, required = false, persist = false, label = "<html><body>Current project</body></html>", initializer = "initProjectName" )
+	private String currentProjectName;
+
 	@SuppressWarnings( "unused" )
 	@Parameter( label = "<html><body>List of projects<br>(Drag & Drop supported)</body></html>", style = "files,extensions:mastodon", callback = "update" )
 	private File[] projects = new File[ 0 ];
@@ -207,6 +210,12 @@ public class ClassifyLineagesCommand extends DynamicCommand
 	private void initClusteringMethodChoices()
 	{
 		getInfo().getMutableInput( "clusteringMethod", String.class ).setChoices( enumNamesAsList( ClusteringMethod.values() ) );
+	}
+
+	@SuppressWarnings( "unused" )
+	private void initProjectName()
+	{
+		this.currentProjectName = controller.getProjectName();
 	}
 
 	static List< String > enumNamesAsList( final HasName[] values )

@@ -505,4 +505,9 @@ public class ClassifyLineagesController
 	{
 		externalProjects.close();
 	}
+
+	public String getProjectName()
+	{
+		return referenceProjectModel.getProjectName();
+	}
 }
