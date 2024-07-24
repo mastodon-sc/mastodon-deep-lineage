@@ -41,6 +41,7 @@ import org.mastodon.mamut.classification.config.CropCriteria;
 import org.mastodon.mamut.classification.ui.DendrogramView;
 import org.mastodon.mamut.classification.util.ClassificationUtils;
 import org.mastodon.mamut.io.ProjectSaver;
+import org.mastodon.mamut.io.project.MamutProject;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
@@ -419,7 +420,8 @@ public class ClassifyLineagesController
 	public void setExternalProjects( final File[] projects, final boolean addTagSetToExternalProjects )
 	{
 		this.addTagSetToExternalProjects = addTagSetToExternalProjects;
-		externalProjects.setProjects( projects, referenceProjectModel.getProject().getProjectRoot() );
+		MamutProject mamutProject = referenceProjectModel.getProject();
+		externalProjects.setProjects( projects, mamutProject == null ? null : mamutProject.getProjectRoot() );
 	}
 
 	public List< String > getFeedback()
