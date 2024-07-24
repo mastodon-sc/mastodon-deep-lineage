@@ -87,14 +87,15 @@ public class ExternalProjects implements AutoCloseable
 	 * Set the external projects
 	 * @param projects the external projects
 	 */
-	public void setProjects( final File[] projects )
+	public void setProjects( final File[] projects, final File currentProject )
 	{
 		List< File > projectsList = projects == null ? Collections.emptyList() : Arrays.asList( projects );
 		projectsList = projectsList.stream().distinct().collect( Collectors.toList() ); // remove duplicates
+		projectsList.remove( currentProject ); // remove current project
 		removeProjects( projectsList );
 		cleanUpFailingProjects( projectsList );
 		addProjects( projects );
-		logger.debug( "Set {} projects.", projectsList.size() );
+		logger.debug( "Set {} external projects.", projectsList.size() );
 	}
 
 	/**

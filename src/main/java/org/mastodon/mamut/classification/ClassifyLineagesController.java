@@ -419,7 +419,7 @@ public class ClassifyLineagesController
 	public void setExternalProjects( final File[] projects, final boolean addTagSetToExternalProjects )
 	{
 		this.addTagSetToExternalProjects = addTagSetToExternalProjects;
-		externalProjects.setProjects( projects );
+		externalProjects.setProjects( projects, referenceProjectModel.getProject().getProjectRoot() );
 	}
 
 	public List< String > getFeedback()
