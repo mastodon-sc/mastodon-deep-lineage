@@ -34,6 +34,7 @@ import org.mastodon.graph.algorithm.traversal.DepthFirstIterator;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.classification.config.ClusteringMethod;
 import org.mastodon.mamut.classification.config.SimilarityMeasure;
+import org.mastodon.mamut.classification.multiproject.ClassifiableProject;
 import org.mastodon.mamut.classification.multiproject.ExternalProjects;
 import org.mastodon.mamut.classification.util.Classification;
 import org.mastodon.mamut.classification.config.CropCriteria;
@@ -48,10 +49,9 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.classification.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.classification.treesimilarity.tree.TreeUtils;
 import org.mastodon.mamut.util.LineageTreeUtils;
-import org.mastodon.mamut.util.MastodonProjectService;
-import org.mastodon.mamut.util.ProjectSession;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.TagSetUtils;
+import org.scijava.Context;
 import org.scijava.prefs.PrefService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +64,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -121,15 +122,14 @@ public class ClassifyLineagesController
 	 * Create a new controller for classifying lineage trees.
 	 * @param referenceProjectModel the reference project model
 	 * @param prefs the preference service
-	 * @param projectService the project service
+	 * @param context the SciJava context
 	 */
-	public ClassifyLineagesController( final ProjectModel referenceProjectModel, final PrefService prefs,
-			final MastodonProjectService projectService )
+	public ClassifyLineagesController( final ProjectModel referenceProjectModel, final PrefService prefs, final Context context )
 	{
 		this.referenceProjectModel = referenceProjectModel;
 		this.referenceModel = referenceProjectModel.getModel();
 		this.prefs = prefs;
-		this.externalProjects = new ExternalProjects( projectService );
+		this.externalProjects = new ExternalProjects( context );
 	}
 
 	/**
@@ -159,11 +159,11 @@ public class ClassifyLineagesController
 		String createdTagSetName;
 		try
 		{
-			Pair< List< Pair< ProjectSession, List< BranchSpotTree > > >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
-			List< Pair< ProjectSession, List< BranchSpotTree > > > rootsMatrix = rootsAndDistances.getLeft();
+			Pair< List< ClassifiableProject >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
+			List< ClassifiableProject > rootsMatrix = rootsAndDistances.getLeft();
 			double[][] distances = rootsAndDistances.getRight();
-			Pair< ProjectSession, List< BranchSpotTree > > referenceRoots = rootsMatrix.get( 0 );
-			Classification< BranchSpotTree > classification = classifyLineageTrees( referenceRoots.getRight(), distances );
+			ClassifiableProject referenceProject = rootsMatrix.get( 0 );
+			Classification< BranchSpotTree > classification = classifyLineageTrees( referenceProject.getTrees(), distances );
 			List< Pair< String, Integer > > tagsAndColors = createTagsAndColors( classification );
 			Function< BranchSpotTree, BranchSpot > branchSpotProvider = BranchSpotTree::getBranchSpot;
 			createdTagSetName = applyClassification( classification, tagsAndColors, referenceModel, branchSpotProvider );
@@ -179,18 +179,17 @@ public class ClassifyLineagesController
 		return createdTagSetName;
 	}
 
-	private void classifyExternalProjects( final List< Pair< ProjectSession, List< BranchSpotTree > > > rootsMatrix,
+	private void classifyExternalProjects( final List< ClassifiableProject > rootsMatrix,
 			final double[][] distances, final List< Pair< String, Integer > > tagsAndColors )
 	{
 		Function< BranchSpotTree, BranchSpot > branchSpotProvider;
 		for ( int i = 1; i < rootsMatrix.size(); i++ ) // NB: start at 1 to skip reference project
 		{
-			Pair< ProjectSession, List< BranchSpotTree > > sessionAndRoots = rootsMatrix.get( i );
-			Classification< BranchSpotTree > classification = classifyLineageTrees( sessionAndRoots.getRight(), distances );
-			ProjectSession projectSession = sessionAndRoots.getLeft();
-			ProjectModel projectModel = projectSession.getProjectModel();
+			ClassifiableProject project = rootsMatrix.get( i );
+			Classification< BranchSpotTree > classification = classifyLineageTrees( project.getTrees(), distances );
+			ProjectModel projectModel = project.getProjectModel();
 			Model model = projectModel.getModel();
-			File file = projectSession.getFile();
+			File file = project.getFile();
 			branchSpotProvider = branchSpotTree -> model.getBranchGraph().vertices().stream()
 					.filter( ( branchSpot -> branchSpot.getFirstLabel().equals( branchSpotTree.getName() ) ) )
 					.findFirst().orElse( null );
@@ -207,29 +206,29 @@ public class ClassifyLineagesController
 		}
 	}
 
-	private Pair< List< Pair< ProjectSession, List< BranchSpotTree > > >, double[][] > getRootsAndDistanceMatrix()
+	private Pair< List< ClassifiableProject >, double[][] > getRootsAndDistanceMatrix()
 	{
 		List< BranchSpotTree > roots = getRoots();
+		ClassifiableProject referenceProject = new ClassifiableProject( null, referenceProjectModel, roots );
 		if ( externalProjects.isEmpty() )
 		{
 			double[][] distances = ClassificationUtils.getDistanceMatrix( roots, similarityMeasure );
-			return Pair.of( Collections.singletonList( Pair.of( null, roots ) ), distances );
+			return Pair.of( Collections.singletonList( referenceProject ), distances );
 		}
 
 		List< String > commonRootNames = findCommonRootNames();
-		List< Pair< ProjectSession, List< BranchSpotTree > > > projectSessionsAndRootLists = new ArrayList<>();
+		List< ClassifiableProject > projects = new ArrayList<>();
 
 		keepCommonRootsAndSort( roots, commonRootNames );
-		projectSessionsAndRootLists.add( Pair.of( null, roots ) );
-		for ( ProjectSession projectSession : externalProjects.getProjectSessions() )
+		projects.add( referenceProject );
+		for ( Map.Entry< File, ProjectModel > project : externalProjects.getProjects() )
 		{
-			List< BranchSpotTree > externalRoots = getRoots( projectSession.getProjectModel() );
+			List< BranchSpotTree > externalRoots = getRoots( project.getValue() );
 			keepCommonRootsAndSort( externalRoots, commonRootNames );
-			projectSessionsAndRootLists.add( Pair.of( projectSession, externalRoots ) );
+			projects.add( new ClassifiableProject( project.getKey(), project.getValue(), externalRoots ) );
 		}
-		List< List< BranchSpotTree > > treeMatrix =
-				projectSessionsAndRootLists.stream().map( Pair::getRight ).collect( Collectors.toList() );
-		return Pair.of( projectSessionsAndRootLists, ClassificationUtils.getAverageDistanceMatrix( treeMatrix, similarityMeasure ) );
+		List< List< BranchSpotTree > > treeMatrix = projects.stream().map( ClassifiableProject::getTrees ).collect( Collectors.toList() );
+		return Pair.of( projects, ClassificationUtils.getAverageDistanceMatrix( treeMatrix, similarityMeasure ) );
 	}
 
 	private List< String > findCommonRootNames()

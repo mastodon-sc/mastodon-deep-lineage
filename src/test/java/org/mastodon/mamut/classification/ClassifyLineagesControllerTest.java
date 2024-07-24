@@ -48,7 +48,6 @@ import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.util.MastodonProjectService;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.TagSetUtils;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
@@ -132,8 +131,7 @@ class ClassifyLineagesControllerTest
 			String tagSetName = "Test Tag Set";
 			TagSetUtils.addNewTagSetToModel( model1, tagSetName, Collections.emptyList() );
 			PrefService prefService = context.getService( PrefService.class );
-			MastodonProjectService projectService = context.getService( MastodonProjectService.class );
-			ClassifyLineagesController controller = new ClassifyLineagesController( projectModel1, prefService, projectService );
+			ClassifyLineagesController controller = new ClassifyLineagesController( projectModel1, prefService, context );
 			controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
 			controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 3 );
 			controller.setShowDendrogram( false );
@@ -201,8 +199,7 @@ class ClassifyLineagesControllerTest
 			File[] files = { file1, file2 };
 
 			PrefService prefService = context.getService( PrefService.class );
-			MastodonProjectService projectService = context.getService( MastodonProjectService.class );
-			ClassifyLineagesController controller = new ClassifyLineagesController( projectModel, prefService, projectService );
+			ClassifyLineagesController controller = new ClassifyLineagesController( projectModel, prefService, context );
 			controller.setInputParams( CropCriteria.TIMEPOINT, 0, 100, 1 );
 			controller.setComputeParams( SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, ClusteringMethod.AVERAGE_LINKAGE, 0 );
 			controller.setExternalProjects( files, false );

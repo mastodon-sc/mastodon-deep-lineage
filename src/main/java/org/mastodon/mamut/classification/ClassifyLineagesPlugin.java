@@ -33,7 +33,6 @@ import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.classification.ui.ClassifyLineagesCommand;
 import org.mastodon.mamut.plugin.MamutPlugin;
-import org.mastodon.mamut.util.MastodonProjectService;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.AbstractContextual;
 import org.scijava.command.CommandService;
@@ -72,10 +71,6 @@ public class ClassifyLineagesPlugin extends AbstractContextual implements MamutP
 	@Parameter
 	private PrefService prefService;
 
-	@SuppressWarnings( "unused" )
-	@Parameter
-	private MastodonProjectService projectService;
-
 	@SuppressWarnings("unused")
 	public ClassifyLineagesPlugin()
 	{
@@ -102,7 +97,7 @@ public class ClassifyLineagesPlugin extends AbstractContextual implements MamutP
 
 	private void classifyLineageTrees()
 	{
-		ClassifyLineagesController controller = new ClassifyLineagesController( projectModel, prefService, projectService );
+		ClassifyLineagesController controller = new ClassifyLineagesController( projectModel, prefService, getContext() );
 		commandService.run( ClassifyLineagesCommand.class, true, "controller", controller );
 	}
 

@@ -2,15 +2,14 @@ package org.mastodon.mamut.classification.multiproject;
 
 import mpicbg.spim.data.SpimDataException;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.util.MastodonProjectService;
-import org.mastodon.mamut.util.ProjectSession;
+import org.mastodon.mamut.io.ProjectLoader;
+import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 /**
  * A collection of external projects.
@@ -29,16 +28,16 @@ public class ExternalProjects implements AutoCloseable
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	private final MastodonProjectService projectService;
+	private final Context context;
 
-	private final Map< File, ProjectSession > projectSessions;
+	private final Map< File, ProjectModel > projects;
 
 	private final Map< File, String > failingProjects;
 
-	public ExternalProjects( final MastodonProjectService projectService )
+	public ExternalProjects( final Context context )
 	{
-		this.projectService = projectService;
-		this.projectSessions = new HashMap<>();
+		this.context = context;
+		this.projects = new HashMap<>();
 		this.failingProjects = new HashMap<>();
 	}
 
@@ -48,16 +47,12 @@ public class ExternalProjects implements AutoCloseable
 	 */
 	public Collection< ProjectModel > getProjectModels()
 	{
-		return projectSessions.values().stream().map( ProjectSession::getProjectModel ).collect( Collectors.toList() );
+		return projects.values();
 	}
 
-	/**
-	 * Gets a list of {@link ProjectSession}
-	 * @return the list
-	 */
-	public List< ProjectSession > getProjectSessions()
+	public Set< Map.Entry< File, ProjectModel > > getProjects()
 	{
-		return new ArrayList<>( projectSessions.values() );
+		return projects.entrySet();
 	}
 
 	/**
@@ -66,7 +61,7 @@ public class ExternalProjects implements AutoCloseable
 	 */
 	public int size()
 	{
-		return projectSessions.size();
+		return projects.size();
 	}
 
 	/**
@@ -75,7 +70,7 @@ public class ExternalProjects implements AutoCloseable
 	 */
 	public boolean isEmpty()
 	{
-		return projectSessions.isEmpty();
+		return projects.isEmpty();
 	}
 
 	/**
@@ -97,7 +92,7 @@ public class ExternalProjects implements AutoCloseable
 		removeProjects( projectsList );
 		cleanUpFailingProjects( projectsList );
 		addProjects( projects );
-		logger.debug( "Set {} projects. Active project sessions: {}.", projectsList.size(), projectService.activeSessions() );
+		logger.debug( "Set {} projects.", projectsList.size() );
 	}
 
 	/**
@@ -105,15 +100,15 @@ public class ExternalProjects implements AutoCloseable
 	 */
 	private void removeProjects( final List< File > projectsList )
 	{
-		Iterator< Map.Entry< File, ProjectSession > > iterator = projectSessions.entrySet().iterator();
+		Iterator< Map.Entry< File, ProjectModel > > iterator = projects.entrySet().iterator();
 		while ( iterator.hasNext() )
 		{
-			Map.Entry< File, ProjectSession > entry = iterator.next();
+			Map.Entry< File, ProjectModel > entry = iterator.next();
 			File file = entry.getKey();
 			if ( !projectsList.contains( file ) )
 			{
-				ProjectSession projectSession = entry.getValue();
-				projectSession.close();
+				ProjectModel projectModel = entry.getValue();
+				projectModel.close();
 				iterator.remove();
 			}
 		}
@@ -141,11 +136,16 @@ public class ExternalProjects implements AutoCloseable
 			return;
 		for ( File file : files )
 		{
-			if ( !projectSessions.containsKey( file ) )
+			if ( !projects.containsKey( file ) )
 			{
 				try
 				{
-					projectSessions.put( file, projectService.createSession( file ) );
+					// load project model from file
+					long start = System.currentTimeMillis();
+					ProjectModel projectModel =
+							ProjectLoader.open( file.getAbsolutePath(), context, false, true );
+					logger.debug( "Loaded project from file: {} in {} ms", file.getAbsolutePath(), System.currentTimeMillis() - start );
+					projects.put( file, projectModel );
 					failingProjects.remove( file );
 				}
 				catch ( SpimDataException | IOException | RuntimeException e )
@@ -161,8 +161,7 @@ public class ExternalProjects implements AutoCloseable
 	@Override
 	public void close()
 	{
-		for ( ProjectSession projectSession : projectSessions.values() )
-			projectSession.close();
-		logger.debug( "Remaining active project sessions: {}.", projectService.activeSessions() );
+		for ( ProjectModel projectModel : projects.values() )
+			projectModel.close();
 	}
 }
