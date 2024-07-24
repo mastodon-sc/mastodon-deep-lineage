@@ -137,8 +137,8 @@
         </filter>
     </appender>
 
-    <!-- Set root log level to DEBUG -->
-    <root level="DEBUG">
+    <!-- Set root log level to INFO -->
+    <root level="INFO">
         <appender-ref ref="stdout"/>
         <appender-ref ref="file-trace"/>
         <appender-ref ref="file-debug"/>
@@ -148,7 +148,6 @@
     </root>
 
     <!-- Example how to change log level for certain packages -->
-    <logger name="org.mastodon.mamut.util" level="DEBUG"/>
-
+    <logger name="org.mastodon.mamut" level="DEBUG"/>
 
 </configuration>

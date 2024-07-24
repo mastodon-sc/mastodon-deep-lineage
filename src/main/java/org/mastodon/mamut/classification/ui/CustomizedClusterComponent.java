@@ -35,7 +35,7 @@ import org.mastodon.mamut.classification.util.Classification;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.Set;
+import java.util.List;
 
 /**
  * This class extends the class {@link ClusterComponent} from the hierarchical clustering library.
@@ -61,7 +61,7 @@ public class CustomizedClusterComponent extends ClusterComponent
 	private static final Color DEFAULT_COLOR = Color.BLACK;
 
 	public < T > CustomizedClusterComponent(
-			final Cluster cluster, final Set< Classification.ObjectClassification< T > > objectClassifications
+			final Cluster cluster, final List< Classification.ObjectClassification< T > > objectClassifications
 	)
 	{
 		this( cluster, cluster.isLeaf(), new VCoord( 0, 1d / 2d ), 1d, DEFAULT_COLOR, objectClassifications );
@@ -88,7 +88,7 @@ public class CustomizedClusterComponent extends ClusterComponent
 	 */
 	private < T > CustomizedClusterComponent(
 			final Cluster cluster, final boolean printName, final VCoord splitPoint, final double clusterHeight, final Color color,
-			final Set< Classification.ObjectClassification< T > > objectClassifications
+			final List< Classification.ObjectClassification< T > > objectClassifications
 	)
 	{
 		super( cluster, printName, splitPoint );
@@ -101,7 +101,7 @@ public class CustomizedClusterComponent extends ClusterComponent
 	}
 
 	private static < T > Color getClusterColor(
-			final Cluster cluster, final Set< Classification.ObjectClassification< T > > objectClassifications
+			final Cluster cluster, final List< Classification.ObjectClassification< T > > objectClassifications
 	)
 	{
 		return objectClassifications.stream().filter( objectClassification -> objectClassification.getCluster().equals( cluster ) )
@@ -110,7 +110,7 @@ public class CustomizedClusterComponent extends ClusterComponent
 
 	private < T > void init(
 			final Cluster cluster, final VCoord splitPoint, final double clusterHeight,
-			final Set< Classification.ObjectClassification< T > > objectClassifications
+			final List< Classification.ObjectClassification< T > > objectClassifications
 	)
 	{
 		double leafHeight = clusterHeight / cluster.countLeafs();

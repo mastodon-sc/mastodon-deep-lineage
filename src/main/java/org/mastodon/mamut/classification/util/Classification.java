@@ -31,17 +31,17 @@ package org.mastodon.mamut.classification.util;
 import com.apporiented.algorithm.clustering.Cluster;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * A class that encapsulates the result of a clustering algorithm.<br>
+ * A class that encapsulates the result of a hierarchical clustering algorithm.<br>
  * It contains:
  *     <ul>
- *         <li>the root {@link Cluster} object, from which the results of the algorithm can be accessed</li>
+ *         <li>the root {@link Cluster} object, from which the results of the algorithm can be accessed. Clusters are hierarchically organized.</li>
  *         <li>a {@link List} of {@link ObjectClassification} objects, where each objects contains:
  *         	  <ul>
  *               <li>a {@link Cluster} object, which represents the classified objects in the dendrogram</li>
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  */
 public class Classification< T >
 {
-	private final Set< ObjectClassification< T > > objectClassifications;
+	private final List< ObjectClassification< T > > objectClassifications;
 
 	private final Cluster rootCluster;
 
@@ -102,7 +102,7 @@ public class Classification< T >
 			final double median, final Map< Cluster, T > clusterNodesToObjects )
 
 	{
-		this.objectClassifications = new HashSet<>();
+		this.objectClassifications = new ArrayList<>();
 		List< Integer > glasbeyColors = ClassificationUtils.getGlasbeyColors( classifiedObjects.size() );
 		int count = 0;
 		for ( int i = 0; i < classifiedObjects.size(); i++ )
@@ -123,7 +123,7 @@ public class Classification< T >
 	}
 
 	/**
-	 * Returns a {@link Set} of {@link ObjectClassification} objects, where each objects contain:
+	 * Returns a {@link List} of {@link ObjectClassification} objects, where each objects contain:
 	 *    <ul>
 	 *        <li>a {@link Cluster} object, which represents the classified objects in the dendrogram</li>
 	 *        <li>a {@link Set} of objects, which are classified into the same class</li>
@@ -131,7 +131,7 @@ public class Classification< T >
 	 *    </ul>
 	 * @return a {@link Set} of {@link ObjectClassification} objects
 	 */
-	public Set< ObjectClassification< T > > getObjectClassifications()
+	public List< ObjectClassification< T > > getObjectClassifications()
 	{
 		return objectClassifications;
 	}

@@ -34,25 +34,25 @@ import org.mastodon.mamut.classification.config.SimilarityMeasure;
 import org.mastodon.mamut.classification.ClassifyLineagesController;
 import org.mastodon.mamut.classification.config.CropCriteria;
 import org.scijava.ItemVisibility;
-import org.scijava.command.InteractiveCommand;
+import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.Button;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-@Plugin( type = InteractiveCommand.class, visible = false, label = "Classification of Lineage Trees", initializer = "init" )
-public class ClassifyLineagesCommand extends InteractiveCommand
+@Plugin( type = DynamicCommand.class, label = "Classification of Lineage Trees" )
+public class ClassifyLineagesCommand extends DynamicCommand
 {
 
-	private static final int WIDTH = 15;
-
-	private static final int WIDTH_INPUT = 7;
+	private static final float WIDTH = 18.5f;
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
@@ -65,15 +65,14 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	private String documentation = "<html>\n"
 			+ "<body width=" + WIDTH + "cm align=left>\n"
 			+ "<h1>Classification of Lineage Trees</h1>\n"
-			+ "<p>This plugin is capable of grouping similar lineage trees together. This is done by creating a tag set and assigning subtrees that are similar to each other with the same tag.</p>\n"
-			+ "<p>The similarity between two subtrees is computed based on the Zhang edit distance for unordered trees <a href=\"https://doi.org/10.1007/BF01975866\">(Zhang, K. Algorithmica 15, 205–222, 1996)</a>. The similarity measure uses the attribute the cell lifetime, which is computed as a difference of timepoints between to subsequent divisions. It is possible to apply the <i>absolute difference</i>, <i>average difference</i> or the <i>normalized difference</i> of cell lifetimes.</p>\n"
-			+ "<p>The similarity is computed between all possible combinations of subtrees leading to a two-dimensional similarity matrix. This matrix is then used to perform a <a href=\"https://en.wikipedia.org/wiki/Hierarchical_clustering\">agglomerative hierarchical clustering</a> into a specifiable number of classes. For the clustering three different <a href=\"https://en.wikipedia.org/wiki/Hierarchical_clustering#Cluster_Linkage\">linkage methods</a> can be chosen.</p>\n"
+			+ "<p>This command is capable of grouping similar lineage trees together, i.e. trees that share a similar cell division pattern. This is realised by creating a new tag set and assigning the same tag to lineage trees that are similar to each other.</p>\n"
+			+ "<p>Refer to the <a href=\"https://github.com/mastodon-sc/mastodon-deep-lineage/tree/master/doc/classification\">documentation</a> to learn how the similarity is computed.</p>"
 			+ "</body>\n"
 			+ "</html>\n";
 
 	@SuppressWarnings("all")
 	@Parameter( label = "Crop criterion", initializer = "initCropCriterionChoices", callback = "update" )
-	private String cropCriterion = CropCriteria.TIMEPOINT.getName();
+	private String cropCriterion = CropCriteria.NUMBER_OF_SPOTS.getName();
 
 	@SuppressWarnings("unused")
 	@Parameter(label = "Crop start", min = "0", callback = "update")
@@ -88,7 +87,7 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	private int numberOfClasses;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Minimum number of cell divisions", min = "0", description = "Only include lineage trees with at least the number of divisions specified here.", callback = "update")
+	@Parameter( label = "<html><body>Minimum number<br>of cell divisions</body></html>", min = "0", description = "Only include lineage trees with at least the number of divisions specified here.", callback = "update" )
 	private int numberOfCellDivisions;
 
 	@SuppressWarnings("all")
@@ -96,16 +95,27 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	public String similarityMeasure = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.getName();
 
 	@SuppressWarnings("all")
-	@Parameter( label = "Linkage strategy for hierarchical clustering", initializer = "initClusteringMethodChoices", callback = "update" )
+	@Parameter( label = "<html><body>Linkage strategy for<br>hierarchical clustering</body></html>", initializer = "initClusteringMethodChoices", callback = "update" )
 	private String clusteringMethod = ClusteringMethod.AVERAGE_LINKAGE.getName();
 
-	@SuppressWarnings("unused")
-	@Parameter(label = "Feature", choices = "Branch duration", callback = "update")
-	private String branchDuration;
+	@Parameter( visibility = ItemVisibility.MESSAGE, required = false, persist = false, label = "<html><body>Current project</body></html>", initializer = "initProjectName" )
+	private String currentProjectName;
+
+	@SuppressWarnings( "unused" )
+	@Parameter( label = "<html><body>List of<br>further projects<br>(Drag & Drop supported)</body></html>", style = "files,extensions:mastodon", callback = "update" )
+	private File[] projects = new File[ 0 ];
+
+	@SuppressWarnings( "unused" )
+	@Parameter( label = "<html><body>Add tag sets<br>also to these projects</body></html>", callback = "update" )
+	private boolean addTagSetToExternalProjects = false;
 
 	@SuppressWarnings("unused")
-	@Parameter(label = "Show dendrogram of clustering", callback = "update")
+	@Parameter( label = "<html><body>Show dendrogram<br>of clustering</body></html>", callback = "update" )
 	private boolean showDendrogram = true;
+
+	@SuppressWarnings( "unused" )
+	@Parameter( label = "Check validity of parameters", callback = "update" )
+	private Button checkParameters;
 
 	@SuppressWarnings("unused")
 	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false, label = " ")
@@ -115,58 +125,73 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	@Parameter(visibility = ItemVisibility.MESSAGE, required = false, persist = false, label = " ")
 	private String computeFeedback;
 
-	@SuppressWarnings("unused")
-	@Parameter( label = "Classify lineage trees", callback = "createTagSet" )
-	private Button createTagSet;
-
 	/**
 	 * This method is executed whenever a parameter changes
 	 */
 	@Override
 	public void run()
 	{
-		// NB: not implemented. Update method is called via callback on each parameter change.
+		// NB: This method is called, when the user presses the "OK" button.
+		createTagSet();
+		controller.close();
 	}
 
 	@SuppressWarnings("unused")
 	private void update()
 	{
+		updateParams();
+		updateFeedback();
+	}
+
+	private void updateParams()
+	{
 		controller.setInputParams( CropCriteria.getByName( cropCriterion ), start, end, numberOfCellDivisions );
 		controller.setComputeParams(
 				SimilarityMeasure.getByName( similarityMeasure ), ClusteringMethod.getByName( clusteringMethod ), numberOfClasses );
-		controller.setVisualisationParams( showDendrogram );
+		controller.setShowDendrogram( showDendrogram );
+		controller.setExternalProjects( projects, addTagSetToExternalProjects );
+	}
 
-		paramFeedback = "<html><body width=" + WIDTH_INPUT + "cm>";
+	private void updateFeedback()
+	{
+		paramFeedback = "<html><body width=" + WIDTH + "cm>";
 		if ( controller.isValidParams() )
 			paramFeedback += "<font color=green>Parameters are valid.";
 		else
-			paramFeedback += "<font color=red>" + String.join( "<p>", controller.getFeedback() );
+			paramFeedback += "<font color=red><ul><li>" + String.join( "</li><li>", controller.getFeedback() ) + "</li></ul>";
 		paramFeedback += "</font></body></html>";
 	}
 
 	@SuppressWarnings("unused")
 	private void createTagSet()
 	{
-		update();
+		updateParams();
 		if ( controller.isValidParams() )
 		{
-			String feedback;
-			String color;
 			try
 			{
-				controller.createTagSet();
-				feedback = "Classified lineage trees.<p>";
-				feedback += "Tag set created.";
-				color = "green";
+				String tagSetName = controller.createTagSet();
+				Notification.showSuccess( "Classification successful", "Classified lineage trees.<p>New tag set created: " + tagSetName );
 			}
 			catch ( IllegalArgumentException e )
 			{
-				feedback = e.getMessage();
-				color = "red";
+				Notification.showError( "Error during lineage classification", e.getMessage() );
 				logger.error( "Error during lineage classification: {}", e.getMessage() );
 			}
-			computeFeedback = "<html><body width=" + WIDTH_INPUT + "cm><font color=\"" + color + "\">" + feedback + "</font></body></html>";
 		}
+		else
+		{
+			StringJoiner joiner = new StringJoiner( "</li><li>" );
+			controller.getFeedback().forEach( joiner::add );
+			Notification.showWarning( "Invalid parameters", "Please check the parameters.<ul><li>" + joiner + "</li></ul>" );
+		}
+
+	}
+
+	@Override
+	public void cancel()
+	{
+		controller.close();
 	}
 
 	@SuppressWarnings( "unused" )
@@ -185,6 +210,12 @@ public class ClassifyLineagesCommand extends InteractiveCommand
 	private void initClusteringMethodChoices()
 	{
 		getInfo().getMutableInput( "clusteringMethod", String.class ).setChoices( enumNamesAsList( ClusteringMethod.values() ) );
+	}
+
+	@SuppressWarnings( "unused" )
+	private void initProjectName()
+	{
+		this.currentProjectName = controller.getProjectName();
 	}
 
 	static List< String > enumNamesAsList( final HasName[] values )

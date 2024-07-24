@@ -21,8 +21,10 @@
 
         <mastodon.version>1.0.0-beta-30</mastodon.version>
         <mastodon.group>org.mastodon</mastodon.group>
-        <!-- with pom-scijava >= 37.1.0, this can be removed again -->
-        <scijava-common.version>2.97.1</scijava-common.version>
+        <!-- when a pom-scijava exists that references the scijava-common 2.99.1 release, this can be removed again -->
+        <scijava-common.version>2.99.1-SNAPSHOT</scijava-common.version>
+        <!-- with pom-scijava >= 38.0.2, this can be removed again -->
+        <scijava-ui-swing.version>1.0.2</scijava-ui-swing.version>
 
         <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
@@ -210,13 +212,13 @@
             </activation>
             <build>
                 <plugins>
-                    <!-- Configure the maven-surefire-plugin to use a heap size of 2gb while running tests. -->
+                    <!-- Configure the maven-surefire-plugin to use a heap size of 3gb while running tests. -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>3.1.0</version>
                         <configuration>
-                            <argLine>-Xmx2g</argLine>
+                            <argLine>-Xmx3g</argLine>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -226,13 +228,13 @@
             <id>coverage</id>
             <build>
                 <plugins>
-                    <!-- Configure the maven-surefire-plugin to use a heap size of 2gb while running tests for jacoco coverage analysis. -->
+                    <!-- Configure the maven-surefire-plugin to use a heap size of 3gb while running tests for jacoco coverage analysis. -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>3.1.0</version>
                         <configuration>
-                            <argLine>@{argLine} -Xmx2g</argLine>
+                            <argLine>@{argLine} -Xmx3g</argLine>
                         </configuration>
                     </plugin>
                     <plugin>

@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -83,8 +82,10 @@ public class ClassificationUtils
 	 * @param similarityMeasure the similarity measure to be used
 	 * @return a symmetric quadratic distance matrix
 	 */
-	public static double[][] getDistanceMatrix( final List< Tree< Double > > trees, final SimilarityMeasure similarityMeasure )
+	public static < T extends Tree< Double > > double[][] getDistanceMatrix( final List< T > trees,
+			final SimilarityMeasure similarityMeasure )
 	{
+		logger.debug( "Start computing similarity matrix for {} lineage trees.", trees.size() );
 		int size = trees.size();
 		double[][] distances = new double[ size ][ size ];
 		List< Pair< Integer, Integer > > pairs = new ArrayList<>();
@@ -116,6 +117,8 @@ public class ClassificationUtils
 		} );
 		stopWatch.stop();
 		logger.debug( "Computed all distances in {} s.", stopWatch.getTime() / 1000d );
+		logger.debug( "Shape of similarity matrix: {}x{}={} entries.", distances.length, distances.length,
+				distances.length * distances.length );
 
 		return distances;
 	}
@@ -133,18 +136,21 @@ public class ClassificationUtils
 	 * @param similarityMeasure the similarity measure to be used
 	 * @return a symmetric quadratic distance matrix
 	 */
-	public static double[][] getDistanceMatrix( final Tree< Double >[][] treeMatrix, final SimilarityMeasure similarityMeasure )
+	public static < T extends Tree< Double > > double[][] getAverageDistanceMatrix( final List< List< T > > treeMatrix,
+			final SimilarityMeasure similarityMeasure )
 	{
-		if ( treeMatrix.length == 0 )
+		if ( treeMatrix.isEmpty() )
 			return new double[ 0 ][ 0 ];
 
-		double[][] result = new double[ treeMatrix[ 0 ].length ][ treeMatrix[ 0 ].length ];
-		for ( Tree< Double >[] trees : treeMatrix )
+		logger.debug( "Computing average similarity matrix with {} sets of {} trees each.", treeMatrix.size(), treeMatrix.get( 0 ).size() );
+		int numberOfTrees = treeMatrix.get( 0 ).size();
+		double[][] result = new double[ numberOfTrees ][ numberOfTrees ];
+		for ( List< T > trees : treeMatrix )
 		{
-			double[][] temp = getDistanceMatrix( Arrays.asList( trees ), similarityMeasure );
+			double[][] temp = getDistanceMatrix( trees, similarityMeasure );
 			LinAlgHelpers.add( result, temp, result );
 		}
-		LinAlgHelpers.scale( result, 1d / treeMatrix.length, result );
+		LinAlgHelpers.scale( result, 1d / treeMatrix.size(), result );
 		return result;
 	}
 
