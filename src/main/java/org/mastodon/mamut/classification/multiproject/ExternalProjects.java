@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A collection of external projects.
@@ -89,6 +90,7 @@ public class ExternalProjects implements AutoCloseable
 	public void setProjects( final File[] projects )
 	{
 		List< File > projectsList = projects == null ? Collections.emptyList() : Arrays.asList( projects );
+		projectsList = projectsList.stream().distinct().collect( Collectors.toList() ); // remove duplicates
 		removeProjects( projectsList );
 		cleanUpFailingProjects( projectsList );
 		addProjects( projects );
