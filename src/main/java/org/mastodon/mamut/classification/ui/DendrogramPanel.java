@@ -133,6 +133,8 @@ public class DendrogramPanel< T > extends JPanel
 
 	private boolean showMedian = false;
 
+	private TagSetStructure.TagSet tagSet;
+
 	/**
 	 * Creates a {@link DendrogramPanel} for the given {@link Classification} object.
 	 *
@@ -303,6 +305,7 @@ public class DendrogramPanel< T > extends JPanel
 		Map< Cluster, T > clusterNodesToObjects = classification.getClusterNodesToObjects();
 		if ( clusterNodesToObjects == null )
 			return;
+		this.tagSet = tagSet;
 		for ( Map.Entry< Cluster, T > entry : clusterNodesToObjects.entrySet() )
 		{
 			Cluster cluster = entry.getKey();
