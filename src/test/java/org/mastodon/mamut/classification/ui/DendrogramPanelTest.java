@@ -50,6 +50,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -197,4 +198,5 @@ class DendrogramPanelTest
 		cluster.getChildren().forEach( this::adaptClusterValues );
 		cluster.setDistance( new Distance( cluster.getDistanceValue() / 100d ) );
 	}
+
 }
