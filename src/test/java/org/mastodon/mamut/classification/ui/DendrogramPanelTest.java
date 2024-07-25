@@ -137,14 +137,14 @@ class DendrogramPanelTest
 		int width = 600;
 		int height = 600;
 		Image image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-		Graphics graphics = image.getGraphics();
+		Graphics g = image.getGraphics();
 		Color defaultColor = Color.WHITE;
-		graphics.setColor( defaultColor );
+		g.setColor( defaultColor );
 		dendrogramPanel.showMedian( true );
 		dendrogramPanel.showThreshold( true );
 		dendrogramPanel.setLeaveLabeling( true, true, null );
-		dendrogramPanel.paint( graphics );
-		assertEquals( DendrogramPanel.CLUSTER_LINE_COLOR, graphics.getColor() );
+		dendrogramPanel.paint( g );
+		assertEquals( DendrogramPanel.CLUSTER_LINE_COLOR, g.getColor() );
 	}
 
 	@Test
@@ -154,8 +154,8 @@ class DendrogramPanelTest
 		int width = 600;
 		int height = 600;
 		Image image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-		Graphics graphics = image.getGraphics();
-		assertDoesNotThrow( () -> dendrogramPanel.paint( graphics ) );
+		Graphics g = image.getGraphics();
+		assertDoesNotThrow( () -> dendrogramPanel.paint( g ) );
 	}
 
 	@Test
