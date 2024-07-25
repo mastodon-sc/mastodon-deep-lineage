@@ -109,7 +109,8 @@ public class Classification< T >
 		{
 			Pair< Set< T >, Cluster > clusterClassPair = classifiedObjects.get( i );
 			this.objectClassifications.add(
-					new ObjectClassification<>( glasbeyColors.get( i ), clusterClassPair.getRight(), clusterClassPair.getLeft() ) );
+					new ObjectClassification<>( glasbeyColors.get( i ), clusterClassPair.getRight(), clusterClassPair.getLeft(),
+							"Class " + ( i + 1 ) ) );
 			Set< T > classObject = clusterClassPair.getLeft();
 			if ( classObject != null )
 				count += clusterClassPair.getLeft().size();
@@ -218,11 +219,14 @@ public class Classification< T >
 
 		private final Set< T > objects;
 
-		private ObjectClassification( final int color, final Cluster cluster, final Set< T > objects )
+		private final String name;
+
+		private ObjectClassification( final int color, final Cluster cluster, final Set< T > objects, final String name )
 		{
 			this.color = color;
 			this.cluster = cluster;
 			this.objects = objects;
+			this.name = name;
 		}
 
 		/**
@@ -250,6 +254,15 @@ public class Classification< T >
 		public Set< T > getObjects()
 		{
 			return objects;
+		}
+
+		/**
+		 * Returns the name of the class
+		 * @return the name
+		 */
+		public String getName()
+		{
+			return name;
 		}
 	}
 }
