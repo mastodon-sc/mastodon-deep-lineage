@@ -61,6 +61,7 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.io.exporter.labelimage.config.LabelOptions;
+import org.mastodon.mamut.util.MathUtils;
 import org.mastodon.spatial.SpatialIndex;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
@@ -140,7 +141,7 @@ public class ExportLabelImageController
 		logger.info( "Save label image to file. Label options: {}, file: {}", labelOption, file.getAbsolutePath() );
 		long[] spatialDimensions = getDimensionsOfSource( mipMapLevel );
 		int numTimePoints = timePoints.size();
-		int frames = divideAndRoundUp( numTimePoints, frameRateReduction );
+		int frames = MathUtils.divideAndRoundUp( numTimePoints, frameRateReduction );
 		logger.debug(
 				"number of timepoints: {}, frame rate reduction: {}, resulting frames: {}", numTimePoints, frameRateReduction, frames );
 		DiskCachedCellImg< FloatType, ? > img = createCachedImage( spatialDimensions, frames );
@@ -286,28 +287,5 @@ public class ExportLabelImageController
 		final MamutFeatureComputerService featureComputerService = MamutFeatureComputerService.newInstance( context );
 		featureComputerService.setModel( model );
 		return featureComputerService;
-	}
-
-	/**
-	 * Calculate the number of frames to use for the export depending on the number of timepoints and the frame rate reduction.
-	 * <br>
-	 * Some examples:
-	 * <br>
-	 * <ul>
-	 *     <li>timepoints: 1,  frame rate reduction:  1 ->  1 frame</li>
-	 *     <li>timepoints: 1,  frame rate reduction: 10 ->  1 frame</li>
-	 *     <li>timepoints: 10, frame rate reduction: 10 ->  1 frame</li>
-	 *     <li>timepoints: 10, frame rate reduction:  1 -> 10 frames</li>
-	 *     <li>timepoints: 11, frame rate reduction: 10 ->  2 frames</li>
-	 *     <li>timepoints: 20, frame rate reduction: 10 ->  2 frames</li>
-	 * </ul>
-	 *
-	 * @param numerator the number of timepoints
-	 * @param denominator the frame rate reduction
-	 * @return the resulting number of frames
-	 */
-	static int divideAndRoundUp( int numerator, int denominator )
-	{
-		return ( numerator + denominator - 1 ) / denominator;
 	}
 }

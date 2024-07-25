@@ -26,4 +26,27 @@ public class MathUtils
 		final long shifted = Math.round( value * magnitude );
 		return shifted / magnitude;
 	}
+
+	/**
+	 * Divides the numerator by the denominator and subsequently rounds up to the next Integer value.
+	 * <br>
+	 * Some examples:
+	 * <br>
+	 * <ul>
+	 *     <li>numerator: 1,  denominator:  1 -&gt;  1</li>
+	 *     <li>numerator: 1,  denominator: 10 -&gt;  1</li>
+	 *     <li>numerator: 10, denominator: 10 -&gt;  1</li>
+	 *     <li>numerator: 10, denominator:  1 -&gt; 10</li>
+	 *     <li>numerator: 11, denominator: 10 -&gt;  2</li>
+	 *     <li>numerator: 20, denominator: 10 -&gt;  2</li>
+	 * </ul>
+	 *
+	 * @param numerator the numerator
+	 * @param denominator the denominator
+	 * @return the resulting value
+	 */
+	public static int divideAndRoundUp( int numerator, int denominator )
+	{
+		return ( numerator + denominator - 1 ) / denominator;
+	}
 }
