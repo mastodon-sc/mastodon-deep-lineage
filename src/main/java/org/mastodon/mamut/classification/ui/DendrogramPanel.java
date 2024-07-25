@@ -129,6 +129,8 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final String SVG_EXTENSION = "svg";
 
+	private static final String CSV_EXTENSION = "csv";
+
 	private boolean showThreshold = false;
 
 	private boolean showMedian = false;
@@ -343,6 +345,10 @@ public class DendrogramPanel< T > extends JPanel
 			JMenuItem svgItem = new JMenuItem( exportText + SVG_EXTENSION.toUpperCase() );
 			svgItem.addActionListener( actionEvent -> chooseFileAndExport( SVG_EXTENSION, ( file, resolution ) -> exportSvg( file ) ) );
 			add( svgItem );
+			JMenuItem csvItem = new JMenuItem( "Export classification to CSV" );
+			csvItem.addActionListener(
+					actionEvent -> chooseFileAndExport( CSV_EXTENSION, ( file, resolution ) -> classification.exportCsv( file, tagSet ) ) );
+			add( csvItem );
 		}
 
 		private void chooseFileAndExport( final String extension, final ObjIntConsumer< File > exportFunction )
