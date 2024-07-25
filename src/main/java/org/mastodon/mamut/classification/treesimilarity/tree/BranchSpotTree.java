@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.classification.treesimilarity.tree;
 
+import org.mastodon.mamut.classification.config.HasName;
 import org.mastodon.mamut.classification.util.ClassificationUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
@@ -43,7 +44,7 @@ import java.util.function.Supplier;
 /**
  * A tree data structure representing a branch spot and its children.
  */
-public class BranchSpotTree implements Tree< Double >
+public class BranchSpotTree implements Tree< Double >, HasName
 {
 	private final BranchSpot branchSpot;
 
