@@ -57,13 +57,7 @@
     </licenses>
 
     <dependencies>
-        <dependency>
-            <groupId>org.mastodon</groupId>
-            <artifactId>mastodon</artifactId>
-            <version>${mastodon.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
+        <!-- Mastodon Core -->
         <dependency>
             <groupId>org.mastodon</groupId>
             <artifactId>mastodon</artifactId>
@@ -151,6 +145,15 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>imagej-legacy</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- include mastodon at test runtime -->
+        <dependency>
+            <groupId>org.mastodon</groupId>
+            <artifactId>mastodon</artifactId>
+            <version>${mastodon.version}</version>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
     </dependencies>
