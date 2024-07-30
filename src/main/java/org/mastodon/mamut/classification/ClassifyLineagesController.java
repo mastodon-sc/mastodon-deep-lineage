@@ -485,7 +485,7 @@ public class ClassifyLineagesController
 			}
 			catch ( NoSuchElementException e )
 			{
-				String message = projectName + "Crop start: " + e.getMessage();
+				String message = projectName + ", Crop start: " + e.getMessage();
 				feedback.add( message );
 				logger.debug( message );
 			}
@@ -495,7 +495,7 @@ public class ClassifyLineagesController
 			}
 			catch ( NoSuchElementException e )
 			{
-				String message = projectName + "Crop end: " + e.getMessage();
+				String message = projectName + ", Crop end: " + e.getMessage();
 				feedback.add( message );
 				logger.debug( message );
 			}
