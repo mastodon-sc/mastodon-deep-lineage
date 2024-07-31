@@ -50,6 +50,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -136,14 +137,14 @@ class DendrogramPanelTest
 		int width = 600;
 		int height = 600;
 		Image image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-		Graphics graphics = image.getGraphics();
+		Graphics g = image.getGraphics();
 		Color defaultColor = Color.WHITE;
-		graphics.setColor( defaultColor );
+		g.setColor( defaultColor );
 		dendrogramPanel.showMedian( true );
 		dendrogramPanel.showThreshold( true );
 		dendrogramPanel.setLeaveLabeling( true, true, null );
-		dendrogramPanel.paint( graphics );
-		assertEquals( DendrogramPanel.CLUSTER_LINE_COLOR, graphics.getColor() );
+		dendrogramPanel.paint( g );
+		assertEquals( DendrogramPanel.CLUSTER_LINE_COLOR, g.getColor() );
 	}
 
 	@Test
@@ -153,8 +154,8 @@ class DendrogramPanelTest
 		int width = 600;
 		int height = 600;
 		Image image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-		Graphics graphics = image.getGraphics();
-		assertDoesNotThrow( () -> dendrogramPanel.paint( graphics ) );
+		Graphics g = image.getGraphics();
+		assertDoesNotThrow( () -> dendrogramPanel.paint( g ) );
 	}
 
 	@Test
@@ -197,4 +198,5 @@ class DendrogramPanelTest
 		cluster.getChildren().forEach( this::adaptClusterValues );
 		cluster.setDistance( new Distance( cluster.getDistanceValue() / 100d ) );
 	}
+
 }

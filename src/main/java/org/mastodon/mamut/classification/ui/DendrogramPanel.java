@@ -129,9 +129,13 @@ public class DendrogramPanel< T > extends JPanel
 
 	private static final String SVG_EXTENSION = "svg";
 
+	private static final String CSV_EXTENSION = "csv";
+
 	private boolean showThreshold = false;
 
 	private boolean showMedian = false;
+
+	private TagSetStructure.TagSet tagSet;
 
 	/**
 	 * Creates a {@link DendrogramPanel} for the given {@link Classification} object.
@@ -303,6 +307,7 @@ public class DendrogramPanel< T > extends JPanel
 		Map< Cluster, T > clusterNodesToObjects = classification.getClusterNodesToObjects();
 		if ( clusterNodesToObjects == null )
 			return;
+		this.tagSet = tagSet;
 		for ( Map.Entry< Cluster, T > entry : clusterNodesToObjects.entrySet() )
 		{
 			Cluster cluster = entry.getKey();
@@ -335,16 +340,22 @@ public class DendrogramPanel< T > extends JPanel
 		{
 			String exportText = "Export dendrogram as ";
 			JMenuItem pngItem = new JMenuItem( exportText + PNG_EXTENSION.toUpperCase() );
-			pngItem.addActionListener( actionEvent -> chooseFileAndExport( PNG_EXTENSION, DendrogramPanel.this::exportPng ) );
+			pngItem.addActionListener( actionEvent -> chooseFileAndExport( PNG_EXTENSION, "dendrogram", DendrogramPanel.this::exportPng ) );
 			add( pngItem );
 			JMenuItem svgItem = new JMenuItem( exportText + SVG_EXTENSION.toUpperCase() );
-			svgItem.addActionListener( actionEvent -> chooseFileAndExport( SVG_EXTENSION, ( file, resolution ) -> exportSvg( file ) ) );
+			svgItem.addActionListener(
+					actionEvent -> chooseFileAndExport( SVG_EXTENSION, "dendrogram", ( file, resolution ) -> exportSvg( file ) ) );
 			add( svgItem );
+			JMenuItem csvItem = new JMenuItem( "Export classification to CSV" );
+			csvItem.addActionListener(
+					actionEvent -> chooseFileAndExport( CSV_EXTENSION, "classification",
+							( file, resolution ) -> classification.exportCsv( file, tagSet ) ) );
+			add( csvItem );
 		}
 
-		private void chooseFileAndExport( final String extension, final ObjIntConsumer< File > exportFunction )
+		private void chooseFileAndExport( final String extension, final String fileName, final ObjIntConsumer< File > exportFunction )
 		{
-			File chosenFile = FileChooser.chooseFile( DendrogramPanel.this, "dendrogram." + extension,
+			File chosenFile = FileChooser.chooseFile( DendrogramPanel.this, fileName + File.separator + extension,
 					new ExtensionFileFilter( extension ), "Save dendrogram to " + extension, FileChooser.DialogType.SAVE );
 			if ( chosenFile != null )
 			{
