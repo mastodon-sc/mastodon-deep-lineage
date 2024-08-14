@@ -90,7 +90,7 @@ public class RelativeMovementView implements Command
 	@SuppressWarnings( "unused" )
 	private void init()
 	{
-		logger.debug( "init parameters from feature model, if a feature exists already" );
+		logger.debug( "try to init parameters from feature model, if a relative movement feature already exists" );
 		SpotRelativeMovementFeature spotRelativeMovementFeature =
 				FeatureUtils.getFeature( model, SpotRelativeMovementFeature.SpotRelativeMovementFeatureSpec.class );
 		RelativeMovementFeatureSettings settings =
