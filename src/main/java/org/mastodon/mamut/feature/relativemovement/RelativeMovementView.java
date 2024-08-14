@@ -76,9 +76,6 @@ public class RelativeMovementView implements Command
 	@Parameter
 	private Context context;
 
-	@Parameter( label = "Recompute all", description = "If true, all features are recomputed, otherwise only missing ones." )
-	private boolean forceComputeAll;
-
 	@Parameter( label = "Number of nearest neighbors", description = "Specify the number of neighbors to be taken into account. ", min = "1", persist = false )
 	private int nNearestNeighbors;
 
