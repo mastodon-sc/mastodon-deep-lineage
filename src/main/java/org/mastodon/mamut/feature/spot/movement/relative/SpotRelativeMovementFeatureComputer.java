@@ -147,6 +147,8 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 	@Override
 	protected void reset()
 	{
+		if ( feature == null )
+			return;
 		feature.x.beforeClearPool();
 		feature.y.beforeClearPool();
 		feature.z.beforeClearPool();
@@ -167,7 +169,6 @@ public class SpotRelativeMovementFeatureComputer extends AbstractSerialFeatureCo
 	{
 		this.forceComputeAll = new AtomicBoolean( true );
 		this.settings = settings;
-		createOutput();
 		updateMovementCache();
 		run();
 		model.getFeatureModel().declareFeature( feature );

@@ -127,6 +127,8 @@ public class BranchRelativeMovementFeatureComputer extends AbstractSerialFeature
 	@Override
 	protected void reset()
 	{
+		if ( feature == null )
+			return;
 		feature.xMap.beforeClearPool();
 		feature.yMap.beforeClearPool();
 		feature.zMap.beforeClearPool();
@@ -142,7 +144,6 @@ public class BranchRelativeMovementFeatureComputer extends AbstractSerialFeature
 	public void computeFeature()
 	{
 		this.forceComputeAll = new AtomicBoolean( true );
-		createOutput();
 		run();
 		model.getFeatureModel().declareFeature( feature );
 	}
