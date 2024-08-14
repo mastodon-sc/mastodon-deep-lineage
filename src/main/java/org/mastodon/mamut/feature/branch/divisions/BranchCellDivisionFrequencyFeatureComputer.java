@@ -110,6 +110,5 @@ public class BranchCellDivisionFrequencyFeatureComputer extends AbstractResettab
 			output.frequency.set( branchSpot, ( double ) totalSubsequentDivsions / totalDuration );
 			branchGraph.releaseRef( ref );
 		}
-		output.frequency.beforeClearPool();
 	}
 }
