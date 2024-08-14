@@ -32,7 +32,7 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import org.mastodon.collection.RefObjectMap;
 import org.mastodon.collection.ref.RefObjectHashMap;
-import org.mastodon.mamut.feature.AbstractCancelableFeatureComputer;
+import org.mastodon.mamut.feature.AbstractResettableFeatureComputer;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
 import org.mastodon.mamut.model.branch.BranchLink;
@@ -50,7 +50,7 @@ import javax.annotation.Nonnull;
  * Computes {@link BranchCellDivisionFrequencyFeature}
  */
 @Plugin( type = MamutFeatureComputer.class )
-public class BranchCellDivisionFrequencyFeatureComputer extends AbstractCancelableFeatureComputer
+public class BranchCellDivisionFrequencyFeatureComputer extends AbstractResettableFeatureComputer
 {
 
 	@Parameter
@@ -73,6 +73,13 @@ public class BranchCellDivisionFrequencyFeatureComputer extends AbstractCancelab
 	{
 		valueCache = new RefObjectHashMap<>( branchGraph.vertices().getRefPool(), 0 );
 		LineageTreeUtils.callDepthFirst( branchGraph, this::computeCellDivisionFrequency, this::isCanceled );
+	}
+
+	@Override
+	protected void reset()
+	{
+		valueCache.clear();
+		output.frequency.beforeClearPool();
 	}
 
 	private void computeCellDivisionFrequency( @Nonnull BranchSpot branchSpot )
@@ -103,5 +110,6 @@ public class BranchCellDivisionFrequencyFeatureComputer extends AbstractCancelab
 			output.frequency.set( branchSpot, ( double ) totalSubsequentDivsions / totalDuration );
 			branchGraph.releaseRef( ref );
 		}
+		output.frequency.beforeClearPool();
 	}
 }

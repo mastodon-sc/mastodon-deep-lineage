@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Abstract class for computing features in a resettable way.
  */
-public abstract class AbstractResettableFeatureComputer extends AbstractCancelableFeatureComputer
+public abstract class AbstractResettableFeatureComputer extends CancelableImpl implements MamutFeatureComputer
 {
 
 	@Parameter
@@ -44,7 +44,7 @@ public abstract class AbstractResettableFeatureComputer extends AbstractCancelab
 	@Override
 	public void run()
 	{
-		super.run();
+		super.deleteCancelReason();
 		final boolean recomputeAll = forceComputeAll.get();
 
 		if ( recomputeAll )
