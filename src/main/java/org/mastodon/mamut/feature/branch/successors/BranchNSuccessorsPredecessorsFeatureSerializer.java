@@ -76,7 +76,7 @@ public class BranchNSuccessorsPredecessorsFeatureSerializer
 			final IntPropertyMap< Spot > mapPredecessors = new IntPropertyMap<>( graph.vertices(), -1 );
 			final IntPropertyMapSerializer< Spot > serializerPredecessors = new IntPropertyMapSerializer<>( mapPredecessors );
 			serializerPredecessors.readPropertyMap( idmap, ois );
-			predecessors = BranchFeatureSerializer.mapToBranchSpotMap( mapSuccessors, branchGraph );
+			predecessors = BranchFeatureSerializer.mapToBranchSpotMap( mapPredecessors, branchGraph );
 		}
 		catch ( EOFException e )
 		{
