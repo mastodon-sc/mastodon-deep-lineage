@@ -35,6 +35,7 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 import org.mastodon.mamut.classification.util.Classification;
 import org.mastodon.mamut.classification.treesimilarity.tree.BranchSpotTree;
+import org.mastodon.mamut.util.MathUtils;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
@@ -451,28 +452,6 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
-	/**
-	 * Counts the number of zeros after the decimal point of the given number before the first non-zero digit.<br>
-	 * For numbers greater or equal to 1, 0 is returned.
-	 * If the number is 0, 0 is returned.
-	 * E.g.
-	 * <ul>
-	 *     <li>5.01 -> 0</li>
-	 *     <li>0.1 -> 0</li>
-	 *     <li>0.01 -> 1</li>
-	 *     <li>0.001 -> 2</li>
-	 *
-	 * </ul>
-	 * @param number the number to count the zeros after the decimal point
-	 * @return the number of zeros after the decimal point of the given number before the first non-zero digit
-	 */
-	static int countZerosAfterDecimalPoint( final double number )
-	{
-		if ( number == 0 )
-			return 0;
-		return ( int ) Math.max( 0, -Math.floor( Math.log10( Math.abs( number ) ) + 1 ) );
-	}
-
 	int getDisplayXCoordinate( final double modelXCoordinate, final DisplayMetrics displayMetrics )
 	{
 		double xDisplayCoordinate = modelXCoordinate * displayMetrics.xConversionFactor;
@@ -511,7 +490,7 @@ public class DendrogramPanel< T > extends JPanel
 			Cluster cluster = classification.getRootCluster();
 			if ( cluster.getDistanceValue() > 1d )
 				return;
-			int zeros = countZerosAfterDecimalPoint( cluster.getDistanceValue() );
+			int zeros = MathUtils.countZerosAfterDecimalPoint( cluster.getDistanceValue() );
 			scaleValueInterval = Math.pow( 10, -( zeros + 1 ) );
 			scaleValueDecimalDigits = zeros + 1;
 		}

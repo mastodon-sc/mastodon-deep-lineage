@@ -50,7 +50,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -83,16 +82,6 @@ class DendrogramPanelTest
 		Mockito.when( graphics.getFontMetrics() ).thenReturn( fontMetrics );
 		Mockito.when( fontMetrics.getStringBounds( Mockito.anyString(), Mockito.any() ) ).thenReturn( rectangle2D );
 		Mockito.when( fontMetrics.getHeight() ).thenReturn( 16 );
-	}
-
-
-	@Test
-	void testCountZerosAfterDecimalPoint()
-	{
-		assertEquals( 0, DendrogramPanel.countZerosAfterDecimalPoint( 5 ) );
-		assertEquals( 0, DendrogramPanel.countZerosAfterDecimalPoint( 0.1 ) );
-		assertEquals( 1, DendrogramPanel.countZerosAfterDecimalPoint( 0.01 ) );
-		assertEquals( 2, DendrogramPanel.countZerosAfterDecimalPoint( -0.003 ) );
 	}
 
 	@Test

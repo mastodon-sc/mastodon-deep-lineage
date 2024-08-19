@@ -18,6 +18,15 @@ class MathUtilsTest
 	}
 
 	@Test
+	void testCountZerosAfterDecimalPoint()
+	{
+		assertEquals( 0, MathUtils.countZerosAfterDecimalPoint( 5 ) );
+		assertEquals( 0, MathUtils.countZerosAfterDecimalPoint( 0.1 ) );
+		assertEquals( 1, MathUtils.countZerosAfterDecimalPoint( 0.01 ) );
+		assertEquals( 2, MathUtils.countZerosAfterDecimalPoint( -0.003 ) );
+	}
+
+	@Test
 	void testDivideAndRoundUp()
 	{
 		assertEquals( 1, MathUtils.divideAndRoundUp( 1, 1 ) );

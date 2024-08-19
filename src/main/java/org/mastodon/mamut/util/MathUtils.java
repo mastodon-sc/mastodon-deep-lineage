@@ -49,4 +49,25 @@ public class MathUtils
 	{
 		return ( numerator + denominator - 1 ) / denominator;
 	}
+
+	/**
+	 * Counts the number of zeros after the decimal point of the given number before the first non-zero digit.<br>
+	 * For numbers greater or equal to 1, 0 is returned.
+	 * If the number is 0, 0 is returned.
+	 * E.g.
+	 * <ul>
+	 *     <li>5.01 -&gt; 0</li>
+	 *     <li>0.1 -&gt; 0</li>
+	 *     <li>0.01 -&gt; 1</li>
+	 *     <li>0.001 -&gt; 2</li>
+	 * </ul>
+	 * @param number the number to count the zeros after the decimal point
+	 * @return the number of zeros after the decimal point of the given number before the first non-zero digit
+	 */
+	public static int countZerosAfterDecimalPoint( final double number )
+	{
+		if ( number == 0 )
+			return 0;
+		return ( int ) Math.max( 0, -Math.floor( Math.log10( Math.abs( number ) ) + 1 ) );
+	}
 }
