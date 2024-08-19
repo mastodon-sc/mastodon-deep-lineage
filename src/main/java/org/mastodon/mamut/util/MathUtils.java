@@ -1,5 +1,8 @@
 package org.mastodon.mamut.util;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+
 public class MathUtils
 {
 
@@ -9,22 +12,55 @@ public class MathUtils
 	}
 
 	/**
-	 * Round a double to a certain number of significant digits.
+	 * Round a double to a certain number of significant digits and return it as a string.
+	 * <br>
+	 * Examples:
+	 * <ul>
+	 *     <li>1234.5678, 3 -&gt; 1230</li>
+	 *     <li>-1234.5678, 3 -&gt; -1230</li>
+	 *     <li>0, 3 -&gt; 0</li>
+	 *     <li>1.2345678, 1 -&gt; 1</li>
+	 *     <li>12345678, 5 -&gt; 12346000</li>
+	 *     <li>1.2345678, 3 -&gt; 1.23</li>
+	 *     <li>0.00012345678, 3 -&gt; 0.000123</li>
+	 * </ul>
 	 *
 	 * @param value the value to round
 	 * @param significantDigits the number of significant digits
-	 * @return the rounded value
+	 * @return the rounded value as a string
 	 */
-	public static double roundToSignificantDigits( double value, int significantDigits )
+	public static String roundToSignificantDigits( double value, int significantDigits )
 	{
 		if ( value == 0 )
-			return 0;
+			return "0";
 		final double d = Math.ceil( Math.log10( value < 0 ? -value : value ) );
 		final int power = significantDigits - ( int ) d;
 
 		final double magnitude = Math.pow( 10, power );
 		final long shifted = Math.round( value * magnitude );
-		return shifted / magnitude;
+		double result = shifted / magnitude;
+		// avoid decimal points for integer values
+		if ( result == ( long ) result )
+			return String.valueOf( ( long ) result );
+		else
+		{
+			// avoid scientific notation for numbers with absolute value < 1
+			if ( Math.abs( result ) < 1 )
+			{
+				int zeros = countZerosAfterDecimalPoint( result );
+				DecimalFormat decimalFormat = new DecimalFormat( "0.00" );
+				DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
+				decimalFormat.setDecimalFormatSymbols( symbols );
+				decimalFormat.setMaximumFractionDigits( zeros + significantDigits );
+				return String.valueOf( decimalFormat.format( result ) );
+			}
+			else
+			{
+				DecimalFormat format = new DecimalFormat();
+				char decimalSeparator = format.getDecimalFormatSymbols().getDecimalSeparator();
+				return String.valueOf( result ).replace( '.', decimalSeparator );
+			}
+		}
 	}
 
 	/**

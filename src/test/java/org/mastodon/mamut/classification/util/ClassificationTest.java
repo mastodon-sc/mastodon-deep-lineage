@@ -94,7 +94,7 @@ class ClassificationTest
 			assertEquals( "F", firstLine.get( 0 ) );
 			assertEquals( "", firstLine.get( 1 ) );
 			assertEquals( "Class 1", firstLine.get( 2 ) );
-			assertEquals( "0.0", firstLine.get( 3 ) );
+			assertEquals( "0", firstLine.get( 3 ) );
 		}
 	}
 }

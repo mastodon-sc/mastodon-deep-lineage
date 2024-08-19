@@ -242,8 +242,8 @@ public class Classification< T >
 					String name = object instanceof HasName ? ( ( HasName ) object ).getName() : object.toString();
 					String tagLabel = object instanceof BranchSpotTree ? ( ( BranchSpotTree ) object ).getTagLabel() : "";
 					String className = objectClassification.getName();
-					String similarity = String.valueOf(
-							MathUtils.roundToSignificantDigits( objectClassification.getCluster().getDistance().getDistance(), 2 ) );
+					String similarity =
+							MathUtils.roundToSignificantDigits( objectClassification.getCluster().getDistance().getDistance(), 2 );
 					Object[] line = new String[] { name, tagLabel, className, similarity };
 					csvPrinter.printRecord( line );
 					logger.debug( "Cell name: {}, Tag label: {}, Class name: {}, Similarity of class: {}", name, tagLabel, className,
