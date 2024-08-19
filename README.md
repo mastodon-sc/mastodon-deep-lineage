@@ -13,6 +13,7 @@
 * [Installation Instructions](#installation-instructions)
 * [Numerical Features added to Mastodon](/doc/features)
 * [Lineage Tree Classification](/doc/classification)
+* [Dimensionality Reduction](/doc/dimensionalityreduction)
 * [Imports](/doc/import)
 * [Exports](/doc/export)
 * [Maintainer](#maintainer)
