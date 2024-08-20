@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -115,16 +115,20 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 
 	private TagSetStructure.TagSet selectedTagSet;
 
+	private final String projectName;
+
 	public DendrogramView( final Classification< T > classification, final String headline )
 	{
-		this( classification, headline, null, null );
+		this( classification, headline, null, null, null );
 	}
 
-	public DendrogramView( final Classification< T > classification, final String headline, final Model model, final PrefService prefs )
+	public DendrogramView( final Classification< T > classification, final String headline, final Model model, final PrefService prefs,
+			final String projectName )
 	{
 		this.classification = classification;
 		this.model = model;
 		this.prefs = prefs;
+		this.projectName = projectName;
 
 		frame = new JFrame( "Hierarchical clustering of lineage trees" );
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
@@ -313,14 +317,15 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 			String exportText = "Export dendrogram as ";
 			JMenuItem pngItem = new JMenuItem( exportText + PNG_EXTENSION.toUpperCase() );
 			pngItem.addActionListener( actionEvent -> chooseFileAndExport(
-					PNG_EXTENSION, "dendrogram", ( file, value ) -> dendrogramPanel.exportPng( file, value, PNG_EXTENSION ) ) );
+					PNG_EXTENSION, projectName + "_dendrogram",
+					( file, value ) -> dendrogramPanel.exportPng( file, value, PNG_EXTENSION ) ) );
 			add( pngItem );
 			JMenuItem svgItem = new JMenuItem( exportText + SVG_EXTENSION.toUpperCase() );
 			svgItem.addActionListener( actionEvent -> chooseFileAndExport(
-					SVG_EXTENSION, "dendrogram", ( file, value ) -> dendrogramPanel.exportSvg( file ) ) );
+					SVG_EXTENSION, projectName + "_dendrogram", ( file, value ) -> dendrogramPanel.exportSvg( file ) ) );
 			add( svgItem );
 			JMenuItem csvItem = new JMenuItem( "Export classification to CSV" );
-			csvItem.addActionListener( actionEvent -> chooseFileAndExport( CSV_EXTENSION, "classification",
+			csvItem.addActionListener( actionEvent -> chooseFileAndExport( CSV_EXTENSION, projectName + "_classification",
 					( file, resolution ) -> classification.exportCsv( file, selectedTagSet ) ) );
 			add( csvItem );
 		}

@@ -282,7 +282,8 @@ public class ClassifyLineagesController
 	private void showDendrogram( final Classification< BranchSpotTree > classification )
 	{
 		String header = "<html><body>Dendrogram of hierarchical clustering of lineages<br>" + getParameters() + "</body></html>";
-		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, header, referenceModel, prefs );
+		DendrogramView< BranchSpotTree > dendrogramView =
+				new DendrogramView<>( classification, header, referenceModel, prefs, referenceProjectModel.getProjectName() );
 		dendrogramView.show();
 	}
 

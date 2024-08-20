@@ -73,7 +73,7 @@ class DendrogramViewTest
 		try (Context context = new Context())
 		{
 			PrefService prefService = context.getService( PrefService.class );
-			DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, "test", model, prefService );
+			DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, "test", model, prefService, null );
 			assertNotNull( prefService );
 			assertNotNull( dendrogramView );
 			assertDoesNotThrow( () -> TagSetUtils.addNewTagSetToModel( model,

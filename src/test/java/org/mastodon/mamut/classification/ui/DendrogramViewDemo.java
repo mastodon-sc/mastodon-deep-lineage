@@ -44,7 +44,7 @@ public class DendrogramViewDemo
 			model.getTagSetModel().getTagSetStructure().createTagSet( "TagSet2" );
 			final DendrogramView< String > view =
 					new DendrogramView<>( ClusterData.createSampleClassification3(), "Classification of lineages", model,
-							context.getService( PrefService.class ) );
+							context.getService( PrefService.class ), "TestProject" );
 			view.show();
 		}
 	}
