@@ -172,7 +172,7 @@ class DendrogramPanelTest
 
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
 		dendrogramPanel.setSize( width, height );
-		dendrogramPanel.exportPng( tempFilePng, screenResolution );
+		dendrogramPanel.exportPng( tempFilePng, screenResolution, DendrogramView.PNG_EXTENSION );
 		dendrogramPanel.exportSvg( tempFileSvg );
 
 		Image readPng = ImageIO.read( tempFilePng );

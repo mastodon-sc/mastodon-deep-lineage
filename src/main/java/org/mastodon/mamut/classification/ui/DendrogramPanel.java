@@ -33,28 +33,22 @@ import com.apporiented.algorithm.clustering.visualization.ClusterComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
-import org.mastodon.mamut.classification.util.Classification;
 import org.mastodon.mamut.classification.treesimilarity.tree.BranchSpotTree;
+import org.mastodon.mamut.classification.util.Classification;
 import org.mastodon.mamut.util.MathUtils;
 import org.mastodon.model.tag.TagSetStructure;
-import org.mastodon.ui.util.ExtensionFileFilter;
-import org.mastodon.ui.util.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
@@ -65,7 +59,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.ObjIntConsumer;
 
 /**
  * Class for painting dendrograms derived from a {@link Classification} object.<br>
@@ -122,21 +115,13 @@ public class DendrogramPanel< T > extends JPanel
 
 	public static final int DENDROGRAM_VERTICAL_OFFSET = BORDER_TOP + SCALE_PADDING + SCALE_TICK_LABEL_PADDING + SCALE_TICK_LENGTH;
 
-	private static final String NO_DATA_AVAILABLE = "No classification data available.";
-
 	static final int PRINT_RESOLUTION = 600;
 
-	private static final String PNG_EXTENSION = "png";
-
-	private static final String SVG_EXTENSION = "svg";
-
-	private static final String CSV_EXTENSION = "csv";
+	private static final String NO_DATA_AVAILABLE = "No classification data available.";
 
 	private boolean showThreshold = false;
 
 	private boolean showMedian = false;
-
-	private TagSetStructure.TagSet tagSet;
 
 	/**
 	 * Creates a {@link DendrogramPanel} for the given {@link Classification} object.
@@ -147,7 +132,6 @@ public class DendrogramPanel< T > extends JPanel
 	{
 		super();
 		this.classification = classification;
-		setComponentPopupMenu( new PopupMenu() );
 		setBackground( Color.WHITE );
 		if ( classification == null )
 		{
@@ -244,7 +228,7 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
-	void exportPng( final File file, int screenResolution )
+	void exportPng( final File file, final int screenResolution, final String fileExtension )
 	{
 		double scale = PRINT_RESOLUTION / ( double ) screenResolution;
 		BufferedImage image =
@@ -254,7 +238,7 @@ public class DendrogramPanel< T > extends JPanel
 		paint( g );
 		try
 		{
-			ImageIO.write( image, PNG_EXTENSION, file );
+			ImageIO.write( image, fileExtension, file );
 		}
 		catch ( IOException e )
 		{
@@ -308,7 +292,6 @@ public class DendrogramPanel< T > extends JPanel
 		Map< Cluster, T > clusterNodesToObjects = classification.getClusterNodesToObjects();
 		if ( clusterNodesToObjects == null )
 			return;
-		this.tagSet = tagSet;
 		for ( Map.Entry< Cluster, T > entry : clusterNodesToObjects.entrySet() )
 		{
 			Cluster cluster = entry.getKey();
@@ -333,51 +316,6 @@ public class DendrogramPanel< T > extends JPanel
 		double maxY = component.getRectMaxY();
 
 		return new ModelMetrics( minX, minY, maxX - minX, maxY - minY );
-	}
-
-	private final class PopupMenu extends JPopupMenu
-	{
-		private PopupMenu()
-		{
-			String exportText = "Export dendrogram as ";
-			JMenuItem pngItem = new JMenuItem( exportText + PNG_EXTENSION.toUpperCase() );
-			pngItem.addActionListener( actionEvent -> chooseFileAndExport( PNG_EXTENSION, "dendrogram", DendrogramPanel.this::exportPng ) );
-			add( pngItem );
-			JMenuItem svgItem = new JMenuItem( exportText + SVG_EXTENSION.toUpperCase() );
-			svgItem.addActionListener(
-					actionEvent -> chooseFileAndExport( SVG_EXTENSION, "dendrogram", ( file, resolution ) -> exportSvg( file ) ) );
-			add( svgItem );
-			JMenuItem csvItem = new JMenuItem( "Export classification to CSV" );
-			csvItem.addActionListener(
-					actionEvent -> chooseFileAndExport( CSV_EXTENSION, "classification",
-							( file, resolution ) -> classification.exportCsv( file, tagSet ) ) );
-			add( csvItem );
-		}
-
-		private void chooseFileAndExport( final String extension, final String fileName, final ObjIntConsumer< File > exportFunction )
-		{
-			File chosenFile = FileChooser.chooseFile( DendrogramPanel.this, fileName + File.separator + extension,
-					new ExtensionFileFilter( extension ), "Save dendrogram to " + extension, FileChooser.DialogType.SAVE );
-			if ( chosenFile != null )
-			{
-				int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
-				exportFunction.accept( chosenFile, screenResolution );
-				openFile( chosenFile );
-			}
-		}
-
-		private void openFile( final File chosenFile )
-		{
-			try
-			{
-				Desktop.getDesktop().open( chosenFile );
-			}
-			catch ( IOException e )
-			{
-				logger.error( "Could not open dendrogram image file: {}. Message: {}", chosenFile.getAbsolutePath(),
-						e.getMessage() );
-			}
-		}
 	}
 
 	private static class ModelMetrics
