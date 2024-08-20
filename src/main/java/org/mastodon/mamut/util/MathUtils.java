@@ -1,10 +1,16 @@
 package org.mastodon.mamut.util;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.regex.Pattern;
 
 public class MathUtils
 {
+
+	private static final Pattern REMOVE_TRAILING_ZEROS_PATTERN = Pattern.compile( "0*$" );
+
+	private static final Pattern REMOVE_TRAILING_DECIMAL_POINT_PATTERN = Pattern.compile( "\\.$" );
 
 	private MathUtils()
 	{
@@ -33,34 +39,29 @@ public class MathUtils
 	{
 		if ( value == 0 )
 			return "0";
-		final double d = Math.ceil( Math.log10( value < 0 ? -value : value ) );
-		final int power = significantDigits - ( int ) d;
 
-		final double magnitude = Math.pow( 10, power );
-		final long shifted = Math.round( value * magnitude );
-		double result = shifted / magnitude;
-		// avoid decimal points for integer values
-		if ( result == ( long ) result )
-			return String.valueOf( ( long ) result );
-		else
+		BigDecimal bigDecimal = BigDecimal.valueOf( value );
+		MathContext mathContext = new MathContext( significantDigits, RoundingMode.HALF_UP );
+		BigDecimal rounded = bigDecimal.round( mathContext );
+		String result = rounded.toPlainString();
+
+		// If the result is an integer, remove the decimal part
+		if ( result.indexOf( '.' ) > -1 )
 		{
-			// avoid scientific notation for numbers with absolute value < 1
-			if ( Math.abs( result ) < 1 )
-			{
-				int zeros = countZerosAfterDecimalPoint( result );
-				DecimalFormat decimalFormat = new DecimalFormat( "0.00" );
-				DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
-				decimalFormat.setDecimalFormatSymbols( symbols );
-				decimalFormat.setMaximumFractionDigits( zeros + significantDigits );
-				return String.valueOf( decimalFormat.format( result ) );
-			}
-			else
-			{
-				DecimalFormat format = new DecimalFormat();
-				char decimalSeparator = format.getDecimalFormatSymbols().getDecimalSeparator();
-				return String.valueOf( result ).replace( '.', decimalSeparator );
-			}
+			result = removeTrailingZerosAfterDecimalPoint( result );
+			result = removeTrailingDecimalPoint( result );
 		}
+		return result;
+	}
+
+	private static String removeTrailingZerosAfterDecimalPoint( final String input )
+	{
+		return REMOVE_TRAILING_ZEROS_PATTERN.matcher( input ).replaceFirst( "" );
+	}
+
+	private static String removeTrailingDecimalPoint( final String input )
+	{
+		return REMOVE_TRAILING_DECIMAL_POINT_PATTERN.matcher( input ).replaceFirst( "" );
 	}
 
 	/**
