@@ -162,10 +162,9 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 		umap.setNumberComponents( settings.getNumberOfOutputDimensions() );
 		umap.setNumberNearestNeighbours( settings.getNumberOfNeighbors() );
 		umap.setMinDist( ( float ) settings.getMinimumDistance() );
-		int numThreads = Runtime.getRuntime().availableProcessors();
-		umap.setThreads( numThreads );
-		logger.info( "Fitting umap using {} threads. Data matrix has {} rows x {} columns.", numThreads, dataMatrix.length,
-				inputDimensions.size() );
+		umap.setThreads( 1 );
+		umap.setSeed( 42 );
+		logger.info( "Fitting umap. Data matrix has {} rows x {} columns.", dataMatrix.length, inputDimensions.size() );
 		umapResult = umap.fitTransform( dataMatrix );
 		logger.info( "Finished fitting umap. Results has {} rows x {} columns.", umapResult.length,
 				umapResult.length > 0 ? umapResult[ 0 ].length : 0 );
