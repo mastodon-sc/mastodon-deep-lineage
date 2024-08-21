@@ -473,7 +473,11 @@ public class ClassifyLineagesController
 			}
 			catch ( NoSuchElementException e )
 			{
-				String message = projectName + ", Crop start: " + e.getMessage();
+				String message;
+				if ( externalProjects.isEmpty() )
+					message = "Crop start: " + e.getMessage();
+				else
+					message = projectName + ", crop start: " + e.getMessage();
 				feedback.add( message );
 				logger.debug( message );
 			}
@@ -483,7 +487,11 @@ public class ClassifyLineagesController
 			}
 			catch ( NoSuchElementException e )
 			{
-				String message = projectName + ", Crop end: " + e.getMessage();
+				String message;
+				if ( externalProjects.isEmpty() )
+					message = "Crop end: " + e.getMessage();
+				else
+					message = projectName + ", crop end: " + e.getMessage();
 				feedback.add( message );
 				logger.debug( message );
 			}
