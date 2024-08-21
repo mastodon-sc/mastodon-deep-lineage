@@ -164,7 +164,8 @@ public class LineageTreeUtils {
 				return timepoint;
 		throw new NoSuchElementException(
 				"No time point with at least " + numberOfSpots + " spots in the range [minTimepoint=" + minTimepoint + ", maxTimepoint="
-						+ maxTimepoint + "]." );
+						+ maxTimepoint + "]. Maximum number of spots in a single time point in this model is: " + getMaxSpots( model )
+						+ "." );
 	}
 
 	/**
