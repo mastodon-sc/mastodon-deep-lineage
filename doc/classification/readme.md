@@ -1,11 +1,15 @@
 ## Lineage Tree Classification
 
 * This command is capable of grouping similar lineage trees together.
+* It can be found in the menu under `Plugins > Classification of Lineage Trees`.
 * The linage classification operates on Mastodon's branch graph.
 * Lineage trees are considered similar, if they share a similar structure and thus represent a similar cell division
   pattern. The structure of a lineage tree is represented by the tree topology.
   This tree topology consists of the actual branching pattern and the cell lifetimes,
   i.e. the time points between two subsequent cell divisions.
+
+### Zhang Tree Edit Distance
+
 * The similarity of a pair of lineage trees is computed based on the Zhang edit distance for unordered
   trees ([Zhang, K. Algorithmica 15, 205–222, 1996](https://doi.org/10.1007/BF01975866)). This method captures the cost
   of the transformation of one tree into the other.
@@ -101,35 +105,44 @@ Tree2
 ```
 
 * Edit distance of 69, because:
-    * one node has a difference of 1
-    * two nodes have a difference of 24 each
-    * two extra nodes are added with a weight of 10 each
+  * one node has a difference of 1 (13-12)
+  * two nodes have a difference of 24 each (227-203 * 2)
+  * two extra nodes are added with a weight of 10 each (10 * 2)
     * ![zhang_example.gif](zhang_example.gif)
 
-* The similarity measure uses the attribute cell lifetime, which is computed as a difference of time points between to
-  subsequent divisions. There are multiple ways to compute the similarity measure between two lineage trees (cf. below).
-* The similarities are computed between all possible combinations of lineage trees leading to a two-dimensional
+### Workflow
+
+1. The similarity measure uses the attribute cell lifetime, which is computed as a difference of time points between two
+   subsequent divisions. There are multiple ways to compute the similarity between two lineage trees based on this
+   attribute:
+2. The sum of the edit distances as shown in the basic example above. Individual differences in the cell lifetimes may
+   be normalized by their sum (i.e. local normalization)
+3. The sum of the edit distances as shown in the basic example above normalized by the maximum possible edit distances
+   of the two trees (normalized zhang edit distance)
+4. The sum of the edit distances normalized by the number of the involved nodes (per branch zhang edit distance)
+5. The similarities are computed between all possible combinations of lineage trees leading to a two-dimensional
   similarity matrix. The values in this matrix are considered to reflect similarities of lineage trees. Low tree edit
   distances represent a high similarity between a discrete pair of lineage trees. This matrix is then used to perform
   an [Agglomerative Hierarchical Clustering](https://en.wikipedia.org/wiki/Hierarchical_clustering) into a specifiable
   number of classes.
-* For the clustering three
+6. For the clustering three
   different [linkage methods](https://en.wikipedia.org/wiki/Hierarchical_clustering#Cluster_Linkage) can be chosen.
 
 ### Parameters
 
 * Crop criterion:
+  * The criterion for cropping the lineage trees
   * Number of spots (default)
   * Time point
 * Crop start
-  * At which number of spots or time point the analysis should start
+  * At which number of spots / time point (depending on the chose crop criterion) the analysis should start
 * Crop end
-  * At which number of spots or time point the analysis should end
+  * At which number of spots / time point (depending on the chose crop criterion) the analysis should end
 * Number of classes
   * The number of classes the lineage trees should be grouped into
-  * Must not be greater than the number of lineage trees
+  * Must not be greater than the number of valid lineage trees
 * Minimum number of divisions
-  * The minimum number of divisions a lineage tree must have to be considered in the classification
+  * The minimum number of divisions a lineage tree should have so that it is included in the analysis
 * Similarity measures:
   1. (default) ![normalized_zhang_distance.gif](normalized_zhang_distance.gif)<sup>1,2</sup>
   2. ![per_branch_zhang_distance.gif](per_branch_zhang_distance.gif)<sup>1</sup>
@@ -141,9 +154,35 @@ Tree2
     1. Average (default)
     2. Single
     3. Complete
-* Feature:
-    * Branch duration (default and currently only selectable feature)
-* Show dendrogram of clustering
+* List of further projects
+  * If you have multiple similar projects, you can add them here to get an average classification taking all projects
+    into account.
+  * Mastodon projects can be added / removed using
+    * "Add files..."
+    * "Add folder content..."
+    * "Remove selected"
+    * "Clear list"
+    * Drag and drop of files and folders
+  * The name of the current open project is shown above the list. The current project is always included in the
+    classification. It cannot be added to the list.
+  * It is important that the names of the roots of lineages in all projects included in the classification are the same.
+    Otherwise, the classification will not work.
+  * The effect of adding further projects is that the similarity matrix is computed for each project separately and then
+    averaged, resulting in a more robust classification.
+* Add generated tags to further projects
+  * If checked, the tags generated by the classification are also added to the further projects.
+  * *Important note: this will write tags to these projects*. Consider making a backup of the further projects before
+    running the classification, if you choose this option.
+* Show dendrogram of hierarchical clustering of lineage trees
+  * If checked, the dendrogram is shown after the classification
+* Check validity of parameters
+  * Press this button to check, if with the current parameters a classification is possible
+  * If the parameters are invalid, a message will appear with the reason(s)
+  * Possible reasons for invalid parameters:
+    * The number of classes is greater than the number of valid lineage trees
+    * The crop start is greater than the crop end
+    * The crop end is greater than the maximum number of spots / time points
+    * Further projects that are included in the classification could not be found / opened
 
 ### Example
 
@@ -152,16 +191,24 @@ Tree2
     * The spatial positions of the spots are randomly generated.
     * When opening the dataset, you should confirm that you open the project with dummy
       images. ![Dummy images](dummy.png)
-* The track scheme of the demo data containing 8 lineage tree in total. You may see that the "symmetric", the "
-  asymmetric" and the "single division" trees look
-  similar to each other, but dissimilar to the other
+* The track scheme of the demo data contains 8 lineage tree in total. You may see that the "symmetric", the "asymmetric"
+  and the "single division" trees look similar to each other, but dissimilar to the remaining
   trees. ![Trackscheme](trackscheme.png)
-* The lineage classification dialog. ![Settings](settings.png)
+* The lineage classification dialog. Cf. section [parameters](#parameters) ![Settings](settings.png)
+* Not visible to the user, a similarity matrix is computed based on the chosen similarity measure. For the demo data,
+  the matrix looks like this. Highly similar trees have low distances in this matrix.
+  * ![Similarity matrix](similarity_matrix.png)
 * The resulting dendrogram.
-  * User can toggle on/off root labes, tags, classification threshold and median of the tree edit distances.
-  * Export options to SVG and PNG accessible via a context menu.
+  * User can toggle on/off root labels, tags, classification threshold and median of the tree edit distances.
+  * If the option `Show tag labels` is checked, the tag set shown in the dendrogram can be chosen.
+  * Export options for the dendrogram to SVG and PNG accessible via the context menu.
   * ![Dendrogram](dendrogram.png)
-* The resulting tag set used for coloring the track
+  * The resulting classification can be exported to a CSV file via the context menu. The exported file contains the root
+    names of the lineage trees, the tag set value, the assigned class and the similarity score. The similarity score
+    indicates how similar the lineage trees in this class are. The lower the score, the more similar the trees are.
+  * ![Export classification](csv.png)
+* The resulting tag set may be used for coloring the track
   scheme. ![Trackscheme with tags](trackscheme_with_tags.png)
-* The resulting tag set used for coloring the track scheme branch
+* The resulting tag set may be used for coloring the track scheme branch
   view. ![Trackscheme Branch View with tags](trackscheme_branch_with_tags.png)
+* The resulting tag set may be used for coloring the spots in the BigDataViewer. ![BigDataViewer](bdv.gif)
