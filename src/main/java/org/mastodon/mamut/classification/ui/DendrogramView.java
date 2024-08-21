@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,21 +33,34 @@ import org.mastodon.mamut.classification.util.Classification;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.ui.util.ExtensionFileFilter;
+import org.mastodon.ui.util.FileChooser;
 import org.scijava.prefs.PrefService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.ObjIntConsumer;
 
 /**
  * A class that represents a UI view of a dendrogram.<br>
@@ -56,6 +69,7 @@ import java.util.List;
  */
 public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private static final String SHOW_THRESHOLD = "showThreshold";
 
@@ -66,6 +80,12 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 	private static final String SHOW_TAG_LABELS = "showTagLabels";
 
 	private static final String TAG_SET_NAME = "tagSetName";
+
+	static final String PNG_EXTENSION = "png";
+
+	private static final String SVG_EXTENSION = "svg";
+
+	private static final String CSV_EXTENSION = "csv";
 
 	private final JLabel headlineLabel;
 
@@ -87,17 +107,28 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 
 	private final JComboBox< TagSetElement > tagSetComboBox = new JComboBox<>();
 
+	private final JButton menuButton = new JButton( "⋮" );
+
 	private final DendrogramPanel< T > dendrogramPanel;
+
+	private final Classification< T > classification;
+
+	private TagSetStructure.TagSet selectedTagSet;
+
+	private final String projectName;
 
 	public DendrogramView( final Classification< T > classification, final String headline )
 	{
-		this( classification, headline, null, null );
+		this( classification, headline, null, null, null );
 	}
 
-	public DendrogramView( final Classification< T > classification, final String headline, final Model model, final PrefService prefs )
+	public DendrogramView( final Classification< T > classification, final String headline, final Model model, final PrefService prefs,
+			final String projectName )
 	{
+		this.classification = classification;
 		this.model = model;
 		this.prefs = prefs;
+		this.projectName = projectName;
 
 		frame = new JFrame( "Hierarchical clustering of lineage trees" );
 		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
@@ -144,7 +175,8 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 
 	private void initLayout()
 	{
-		canvas.add( headlineLabel, "wrap, align center" );
+		canvas.add( headlineLabel, "align left, growx" );
+		canvas.add( menuButton, "align right, wrap" );
 		canvas.add( showThresholdCheckBox, "split 2" );
 		canvas.add( showMedianCheckBox, "wrap" );
 		canvas.add( showRootLabelsCheckBox, "split 3" );
@@ -152,7 +184,7 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 		canvas.add( tagSetComboBox, "wrap" );
 		dendrogramPanel.setBackground( Color.WHITE );
 		JScrollPane scrollPane = new JScrollPane( dendrogramPanel );
-		canvas.add( scrollPane, "grow, push" );
+		canvas.add( scrollPane, "grow, push, span, wrap" );
 		canvas.setBorder( BorderFactory.createEtchedBorder() );
 	}
 
@@ -183,11 +215,16 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 	{
 		showThresholdCheckBox.addActionListener( ignore -> showThreshold( showThresholdCheckBox.isSelected() ) );
 		showMedianCheckBox.addActionListener( ignore -> showMedian( showMedianCheckBox.isSelected() ) );
-		ActionListener labelListener = ignore -> setLeaveLabeling( showRootLabelsCheckBox.isSelected(), showTagLabelsCheckBox.isSelected(),
-				tagSetComboBox.getSelectedItem() == null ? null : ( ( TagSetElement ) tagSetComboBox.getSelectedItem() ).tagSet );
-		showRootLabelsCheckBox.addActionListener( labelListener );
-		showTagLabelsCheckBox.addActionListener( labelListener );
-		tagSetComboBox.addActionListener( labelListener );
+		ActionListener tagSetListener = event -> {
+			selectedTagSet =
+					tagSetComboBox.getSelectedItem() == null ? null : ( ( TagSetElement ) tagSetComboBox.getSelectedItem() ).tagSet;
+			setLeaveLabeling( showRootLabelsCheckBox.isSelected(), showTagLabelsCheckBox.isSelected(), selectedTagSet );
+		};
+		showRootLabelsCheckBox.addActionListener( tagSetListener );
+		showTagLabelsCheckBox.addActionListener( tagSetListener );
+		tagSetComboBox.addActionListener( tagSetListener );
+		JPopupMenu popupMenu = new PopupMenu();
+		menuButton.addActionListener( event -> popupMenu.show( menuButton, 0, menuButton.getHeight() ) );
 	}
 
 	private void showThreshold( final boolean showThreshold )
@@ -270,6 +307,52 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 		public String toString()
 		{
 			return tagSet.getName();
+		}
+	}
+
+	private final class PopupMenu extends JPopupMenu
+	{
+		private PopupMenu()
+		{
+			String exportText = "Export dendrogram as ";
+			JMenuItem pngItem = new JMenuItem( exportText + PNG_EXTENSION.toUpperCase() );
+			pngItem.addActionListener( actionEvent -> chooseFileAndExport(
+					PNG_EXTENSION, projectName + "_dendrogram",
+					( file, value ) -> dendrogramPanel.exportPng( file, value, PNG_EXTENSION ) ) );
+			add( pngItem );
+			JMenuItem svgItem = new JMenuItem( exportText + SVG_EXTENSION.toUpperCase() );
+			svgItem.addActionListener( actionEvent -> chooseFileAndExport(
+					SVG_EXTENSION, projectName + "_dendrogram", ( file, value ) -> dendrogramPanel.exportSvg( file ) ) );
+			add( svgItem );
+			JMenuItem csvItem = new JMenuItem( "Export classification to CSV" );
+			csvItem.addActionListener( actionEvent -> chooseFileAndExport( CSV_EXTENSION, projectName + "_classification",
+					( file, resolution ) -> classification.exportCsv( file, selectedTagSet ) ) );
+			add( csvItem );
+		}
+
+		private void chooseFileAndExport( final String extension, final String fileName, final ObjIntConsumer< File > exportFunction )
+		{
+			File chosenFile = FileChooser.chooseFile( frame, fileName + '.' + extension,
+					new ExtensionFileFilter( extension ), "Save dendrogram to " + extension, FileChooser.DialogType.SAVE );
+			if ( chosenFile != null )
+			{
+				int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
+				exportFunction.accept( chosenFile, screenResolution );
+				openFile( chosenFile );
+			}
+		}
+
+		private void openFile( final File chosenFile )
+		{
+			try
+			{
+				Desktop.getDesktop().open( chosenFile );
+			}
+			catch ( IOException e )
+			{
+				logger.error( "Could not open dendrogram image file: {}. Message: {}", chosenFile.getAbsolutePath(),
+						e.getMessage() );
+			}
 		}
 	}
 }

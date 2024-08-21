@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.classification.treesimilarity.tree;
 
+import org.mastodon.mamut.classification.config.HasName;
 import org.mastodon.mamut.classification.util.ClassificationUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
@@ -43,7 +44,7 @@ import java.util.function.Supplier;
 /**
  * A tree data structure representing a branch spot and its children.
  */
-public class BranchSpotTree implements Tree< Double >
+public class BranchSpotTree implements Tree< Double >, HasName
 {
 	private final BranchSpot branchSpot;
 
@@ -129,6 +130,11 @@ public class BranchSpotTree implements Tree< Double >
 		return labelSupplier.get();
 	}
 
+	public String getTagLabel()
+	{
+		return labelSupplier.getTagLabel();
+	}
+
 	/**
 	 * Gets the first the label for the branch spot associated with the BranchSpotTree
 	 * @return the first label of the branch spot
@@ -160,14 +166,20 @@ public class BranchSpotTree implements Tree< Double >
 			this.tagSet = tagSet;
 		}
 
-		@Override
-		public String get()
+		private String getTagLabel()
 		{
 			Spot ref = model.getGraph().vertexRef();
 			String tagLabel = ClassificationUtils.getTagLabel( model, branchSpot, tagSet, ref );
 			model.getGraph().releaseRef( ref );
 			if ( tagLabel == null )
 				tagLabel = "";
+			return tagLabel;
+		}
+
+		@Override
+		public String get()
+		{
+			String tagLabel = getTagLabel();
 			if ( includeName && includeTag )
 			{
 				if ( tagLabel.isEmpty() )

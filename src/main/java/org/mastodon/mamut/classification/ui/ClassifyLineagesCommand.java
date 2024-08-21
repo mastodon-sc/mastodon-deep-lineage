@@ -106,7 +106,7 @@ public class ClassifyLineagesCommand extends DynamicCommand
 	private File[] projects = new File[ 0 ];
 
 	@SuppressWarnings( "unused" )
-	@Parameter( label = "<html><body>Add tag sets<br>also to these projects</body></html>", callback = "update" )
+	@Parameter( label = "<html><body>Add generated tags<br>to further projects<br>(Note: this will <i>write</i> tags<br>to these projects)</i></body></html>", callback = "update" )
 	private boolean addTagSetToExternalProjects = false;
 
 	@SuppressWarnings("unused")

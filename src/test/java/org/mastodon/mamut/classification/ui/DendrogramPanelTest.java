@@ -84,16 +84,6 @@ class DendrogramPanelTest
 		Mockito.when( fontMetrics.getHeight() ).thenReturn( 16 );
 	}
 
-
-	@Test
-	void testCountZerosAfterDecimalPoint()
-	{
-		assertEquals( 0, DendrogramPanel.countZerosAfterDecimalPoint( 5 ) );
-		assertEquals( 0, DendrogramPanel.countZerosAfterDecimalPoint( 0.1 ) );
-		assertEquals( 1, DendrogramPanel.countZerosAfterDecimalPoint( 0.01 ) );
-		assertEquals( 2, DendrogramPanel.countZerosAfterDecimalPoint( -0.003 ) );
-	}
-
 	@Test
 	void testDendrogramPanel()
 	{
@@ -136,14 +126,14 @@ class DendrogramPanelTest
 		int width = 600;
 		int height = 600;
 		Image image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-		Graphics graphics = image.getGraphics();
+		Graphics g = image.getGraphics();
 		Color defaultColor = Color.WHITE;
-		graphics.setColor( defaultColor );
+		g.setColor( defaultColor );
 		dendrogramPanel.showMedian( true );
 		dendrogramPanel.showThreshold( true );
 		dendrogramPanel.setLeaveLabeling( true, true, null );
-		dendrogramPanel.paint( graphics );
-		assertEquals( DendrogramPanel.CLUSTER_LINE_COLOR, graphics.getColor() );
+		dendrogramPanel.paint( g );
+		assertEquals( DendrogramPanel.CLUSTER_LINE_COLOR, g.getColor() );
 	}
 
 	@Test
@@ -153,8 +143,8 @@ class DendrogramPanelTest
 		int width = 600;
 		int height = 600;
 		Image image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-		Graphics graphics = image.getGraphics();
-		assertDoesNotThrow( () -> dendrogramPanel.paint( graphics ) );
+		Graphics g = image.getGraphics();
+		assertDoesNotThrow( () -> dendrogramPanel.paint( g ) );
 	}
 
 	@Test
@@ -182,7 +172,7 @@ class DendrogramPanelTest
 
 		DendrogramPanel< String > dendrogramPanel = new DendrogramPanel<>( classification );
 		dendrogramPanel.setSize( width, height );
-		dendrogramPanel.exportPng( tempFilePng, screenResolution );
+		dendrogramPanel.exportPng( tempFilePng, screenResolution, DendrogramView.PNG_EXTENSION );
 		dendrogramPanel.exportSvg( tempFileSvg );
 
 		Image readPng = ImageIO.read( tempFilePng );
@@ -197,4 +187,5 @@ class DendrogramPanelTest
 		cluster.getChildren().forEach( this::adaptClusterValues );
 		cluster.setDistance( new Distance( cluster.getDistanceValue() / 100d ) );
 	}
+
 }

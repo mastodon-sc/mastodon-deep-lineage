@@ -29,8 +29,20 @@
 package org.mastodon.mamut.classification.util;
 
 import com.apporiented.algorithm.clustering.Cluster;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.tuple.Pair;
+import org.mastodon.mamut.classification.config.HasName;
+import org.mastodon.mamut.classification.treesimilarity.tree.BranchSpotTree;
+import org.mastodon.mamut.util.MathUtils;
+import org.mastodon.model.tag.TagSetStructure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +69,8 @@ import java.util.stream.Collectors;
  */
 public class Classification< T >
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	private final List< ObjectClassification< T > > objectClassifications;
 
 	private final Cluster rootCluster;
@@ -109,7 +123,8 @@ public class Classification< T >
 		{
 			Pair< Set< T >, Cluster > clusterClassPair = classifiedObjects.get( i );
 			this.objectClassifications.add(
-					new ObjectClassification<>( glasbeyColors.get( i ), clusterClassPair.getRight(), clusterClassPair.getLeft() ) );
+					new ObjectClassification<>( glasbeyColors.get( i ), clusterClassPair.getRight(), clusterClassPair.getLeft(),
+							"Class " + ( i + 1 ) ) );
 			Set< T > classObject = clusterClassPair.getLeft();
 			if ( classObject != null )
 				count += clusterClassPair.getLeft().size();
@@ -202,6 +217,48 @@ public class Classification< T >
 	}
 
 	/**
+	 * Exports the classification data to a CSV file.
+	 * <br>
+	 * This method creates a CSV file with the classification data, including cell names, tag labels, class names, and class similarity scores.
+	 * The CSV file is created with a header and ";" as delimiter.
+	 *
+	 * @param file The file to which the CSV data will be written.
+	 * @param tagSet The tag set used for classification, which may be null.
+	 */
+	public void exportCsv( final File file, final TagSetStructure.TagSet tagSet )
+	{
+		char separator = ';';
+		String[] header = new String[] { "Cell name", tagSet == null ? "" : tagSet.getName(), "Class", "Class similarity score" };
+		CSVFormat csvFormat = CSVFormat.Builder.create().setHeader( header ).setDelimiter( separator ).setQuote( '"' ).setEscape( '"' )
+				.setRecordSeparator( "\n" ).build();
+		try (
+				FileWriter writer = new FileWriter( file );
+				CSVPrinter csvPrinter = new CSVPrinter( writer, csvFormat ))
+		{
+			for ( Classification.ObjectClassification< T > objectClassification : getObjectClassifications() )
+			{
+				for ( T object : objectClassification.getObjects() )
+				{
+					String name = object instanceof HasName ? ( ( HasName ) object ).getName() : object.toString();
+					String tagLabel = object instanceof BranchSpotTree ? ( ( BranchSpotTree ) object ).getTagLabel() : "";
+					String className = objectClassification.getName();
+					String similarity =
+							MathUtils.roundToSignificantDigits( objectClassification.getCluster().getDistance().getDistance(), 2 );
+					Object[] line = new String[] { name, tagLabel, className, similarity };
+					csvPrinter.printRecord( line );
+					logger.debug( "Cell name: {}, Tag label: {}, Class name: {}, Similarity of class: {}", name, tagLabel, className,
+							similarity );
+				}
+			}
+			csvPrinter.flush();
+		}
+		catch ( IOException e )
+		{
+			logger.error( "Could not save classification to File: {}. Message: {}", file.getAbsolutePath(), e.getMessage() );
+		}
+	}
+
+	/**
 	 * A class that encapsulates the result of a clustering algorithm for a single class.<br>
 	 * It contains:
 	 *    <ul>
@@ -218,11 +275,14 @@ public class Classification< T >
 
 		private final Set< T > objects;
 
-		private ObjectClassification( final int color, final Cluster cluster, final Set< T > objects )
+		private final String name;
+
+		private ObjectClassification( final int color, final Cluster cluster, final Set< T > objects, final String name )
 		{
 			this.color = color;
 			this.cluster = cluster;
 			this.objects = objects;
+			this.name = name;
 		}
 
 		/**
@@ -250,6 +310,15 @@ public class Classification< T >
 		public Set< T > getObjects()
 		{
 			return objects;
+		}
+
+		/**
+		 * Returns the name of the class
+		 * @return the name
+		 */
+		public String getName()
+		{
+			return name;
 		}
 	}
 }

@@ -33,27 +33,22 @@ import com.apporiented.algorithm.clustering.visualization.ClusterComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
-import org.mastodon.mamut.classification.util.Classification;
 import org.mastodon.mamut.classification.treesimilarity.tree.BranchSpotTree;
+import org.mastodon.mamut.classification.util.Classification;
+import org.mastodon.mamut.util.MathUtils;
 import org.mastodon.model.tag.TagSetStructure;
-import org.mastodon.ui.util.ExtensionFileFilter;
-import org.mastodon.ui.util.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
@@ -64,7 +59,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.ObjIntConsumer;
 
 /**
  * Class for painting dendrograms derived from a {@link Classification} object.<br>
@@ -121,13 +115,9 @@ public class DendrogramPanel< T > extends JPanel
 
 	public static final int DENDROGRAM_VERTICAL_OFFSET = BORDER_TOP + SCALE_PADDING + SCALE_TICK_LABEL_PADDING + SCALE_TICK_LENGTH;
 
-	private static final String NO_DATA_AVAILABLE = "No classification data available.";
-
 	static final int PRINT_RESOLUTION = 600;
 
-	private static final String PNG_EXTENSION = "png";
-
-	private static final String SVG_EXTENSION = "svg";
+	private static final String NO_DATA_AVAILABLE = "No classification data available.";
 
 	private boolean showThreshold = false;
 
@@ -142,7 +132,6 @@ public class DendrogramPanel< T > extends JPanel
 	{
 		super();
 		this.classification = classification;
-		setComponentPopupMenu( new PopupMenu() );
 		setBackground( Color.WHITE );
 		if ( classification == null )
 		{
@@ -239,7 +228,7 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
-	void exportPng( final File file, int screenResolution )
+	void exportPng( final File file, final int screenResolution, final String fileExtension )
 	{
 		double scale = PRINT_RESOLUTION / ( double ) screenResolution;
 		BufferedImage image =
@@ -249,7 +238,7 @@ public class DendrogramPanel< T > extends JPanel
 		paint( g );
 		try
 		{
-			ImageIO.write( image, PNG_EXTENSION, file );
+			ImageIO.write( image, fileExtension, file );
 		}
 		catch ( IOException e )
 		{
@@ -329,45 +318,6 @@ public class DendrogramPanel< T > extends JPanel
 		return new ModelMetrics( minX, minY, maxX - minX, maxY - minY );
 	}
 
-	private final class PopupMenu extends JPopupMenu
-	{
-		private PopupMenu()
-		{
-			String exportText = "Export dendrogram as ";
-			JMenuItem pngItem = new JMenuItem( exportText + PNG_EXTENSION.toUpperCase() );
-			pngItem.addActionListener( actionEvent -> chooseFileAndExport( PNG_EXTENSION, DendrogramPanel.this::exportPng ) );
-			add( pngItem );
-			JMenuItem svgItem = new JMenuItem( exportText + SVG_EXTENSION.toUpperCase() );
-			svgItem.addActionListener( actionEvent -> chooseFileAndExport( SVG_EXTENSION, ( file, resolution ) -> exportSvg( file ) ) );
-			add( svgItem );
-		}
-
-		private void chooseFileAndExport( final String extension, final ObjIntConsumer< File > exportFunction )
-		{
-			File chosenFile = FileChooser.chooseFile( DendrogramPanel.this, "dendrogram." + extension,
-					new ExtensionFileFilter( extension ), "Save dendrogram to " + extension, FileChooser.DialogType.SAVE );
-			if ( chosenFile != null )
-			{
-				int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
-				exportFunction.accept( chosenFile, screenResolution );
-				openFile( chosenFile );
-			}
-		}
-
-		private void openFile( final File chosenFile )
-		{
-			try
-			{
-				Desktop.getDesktop().open( chosenFile );
-			}
-			catch ( IOException e )
-			{
-				logger.error( "Could not open dendrogram image file: {}. Message: {}", chosenFile.getAbsolutePath(),
-						e.getMessage() );
-			}
-		}
-	}
-
 	private static class ModelMetrics
 	{
 		private final double xModelOrigin;
@@ -440,28 +390,6 @@ public class DendrogramPanel< T > extends JPanel
 		}
 	}
 
-	/**
-	 * Counts the number of zeros after the decimal point of the given number before the first non-zero digit.<br>
-	 * For numbers greater or equal to 1, 0 is returned.
-	 * If the number is 0, 0 is returned.
-	 * E.g.
-	 * <ul>
-	 *     <li>5.01 -> 0</li>
-	 *     <li>0.1 -> 0</li>
-	 *     <li>0.01 -> 1</li>
-	 *     <li>0.001 -> 2</li>
-	 *
-	 * </ul>
-	 * @param number the number to count the zeros after the decimal point
-	 * @return the number of zeros after the decimal point of the given number before the first non-zero digit
-	 */
-	static int countZerosAfterDecimalPoint( final double number )
-	{
-		if ( number == 0 )
-			return 0;
-		return ( int ) Math.max( 0, -Math.floor( Math.log10( Math.abs( number ) ) + 1 ) );
-	}
-
 	int getDisplayXCoordinate( final double modelXCoordinate, final DisplayMetrics displayMetrics )
 	{
 		double xDisplayCoordinate = modelXCoordinate * displayMetrics.xConversionFactor;
@@ -500,7 +428,7 @@ public class DendrogramPanel< T > extends JPanel
 			Cluster cluster = classification.getRootCluster();
 			if ( cluster.getDistanceValue() > 1d )
 				return;
-			int zeros = countZerosAfterDecimalPoint( cluster.getDistanceValue() );
+			int zeros = MathUtils.countZerosAfterDecimalPoint( cluster.getDistanceValue() );
 			scaleValueInterval = Math.pow( 10, -( zeros + 1 ) );
 			scaleValueDecimalDigits = zeros + 1;
 		}

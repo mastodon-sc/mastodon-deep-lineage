@@ -165,11 +165,10 @@ public class ClassifyLineagesController
 			double[][] distances = rootsAndDistances.getRight();
 			ClassifiableProject referenceProject = rootsMatrix.get( 0 );
 			Classification< BranchSpotTree > classification = classifyLineageTrees( referenceProject.getTrees(), distances );
-			List< Pair< String, Integer > > tagsAndColors = createTagsAndColors( classification );
 			Function< BranchSpotTree, BranchSpot > branchSpotProvider = BranchSpotTree::getBranchSpot;
-			createdTagSetName = applyClassification( classification, tagsAndColors, referenceModel, branchSpotProvider );
+			createdTagSetName = applyClassification( classification, referenceModel, branchSpotProvider );
 			if ( addTagSetToExternalProjects && rootsMatrix.size() > 1 )
-				classifyExternalProjects( rootsMatrix, distances, tagsAndColors );
+				classifyExternalProjects( rootsMatrix, distances );
 			if ( showDendrogram )
 				showDendrogram( classification );
 		}
@@ -180,8 +179,7 @@ public class ClassifyLineagesController
 		return createdTagSetName;
 	}
 
-	private void classifyExternalProjects( final List< ClassifiableProject > rootsMatrix,
-			final double[][] distances, final List< Pair< String, Integer > > tagsAndColors )
+	private void classifyExternalProjects( final List< ClassifiableProject > rootsMatrix, final double[][] distances )
 	{
 		Function< BranchSpotTree, BranchSpot > branchSpotProvider;
 		for ( int i = 1; i < rootsMatrix.size(); i++ ) // NB: start at 1 to skip reference project
@@ -194,7 +192,7 @@ public class ClassifyLineagesController
 			branchSpotProvider = branchSpotTree -> model.getBranchGraph().vertices().stream()
 					.filter( ( branchSpot -> branchSpot.getFirstLabel().equals( branchSpotTree.getName() ) ) )
 					.findFirst().orElse( null );
-			applyClassification( classification, tagsAndColors, model, branchSpotProvider );
+			applyClassification( classification, model, branchSpotProvider );
 			try
 			{
 				ProjectSaver.saveProject( file, projectModel );
@@ -284,7 +282,8 @@ public class ClassifyLineagesController
 	private void showDendrogram( final Classification< BranchSpotTree > classification )
 	{
 		String header = "<html><body>Dendrogram of hierarchical clustering of lineages<br>" + getParameters() + "</body></html>";
-		DendrogramView< BranchSpotTree > dendrogramView = new DendrogramView<>( classification, header, referenceModel, prefs );
+		DendrogramView< BranchSpotTree > dendrogramView =
+				new DendrogramView<>( classification, header, referenceModel, prefs, referenceProjectModel.getProjectName() );
 		dendrogramView.show();
 	}
 
@@ -302,25 +301,14 @@ public class ClassifyLineagesController
 		return result;
 	}
 
-	private List< Pair< String, Integer > > createTagsAndColors( final Classification< BranchSpotTree > classification )
-	{
-
-		List< Pair< String, Integer > > tagsAndColors = new ArrayList<>();
-		List< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
-		for ( int i = 0; i < objectClassifications.size(); i++ )
-		{
-			Classification.ObjectClassification< BranchSpotTree > objectClassification = objectClassifications.get( i );
-			tagsAndColors.add( Pair.of( "Class " + ( i + 1 ), objectClassification.getColor() ) );
-		}
-		return tagsAndColors;
-	}
-
-	private String applyClassification( final Classification< BranchSpotTree > classification,
-			final List< Pair< String, Integer > > tagsAndColors, final Model model,
+	private String applyClassification( final Classification< BranchSpotTree > classification, final Model model,
 			final Function< BranchSpotTree, BranchSpot > branchSpotProvider )
 	{
 		String tagSetName = getTagSetName();
 		List< Classification.ObjectClassification< BranchSpotTree > > objectClassifications = classification.getObjectClassifications();
+		List< Pair< String, Integer > > tagsAndColors = objectClassifications.stream()
+				.map( objectClassification -> Pair.of( objectClassification.getName(), objectClassification.getColor() ) )
+				.collect( Collectors.toList() );
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, tagSetName, tagsAndColors );
 		for ( int i = 0; i < objectClassifications.size(); i++ )
 		{
@@ -485,7 +473,11 @@ public class ClassifyLineagesController
 			}
 			catch ( NoSuchElementException e )
 			{
-				String message = projectName + ", Crop start: " + e.getMessage();
+				String message;
+				if ( externalProjects.isEmpty() )
+					message = "Crop start: " + e.getMessage();
+				else
+					message = projectName + ", crop start: " + e.getMessage();
 				feedback.add( message );
 				logger.debug( message );
 			}
@@ -495,7 +487,11 @@ public class ClassifyLineagesController
 			}
 			catch ( NoSuchElementException e )
 			{
-				String message = projectName + ", Crop end: " + e.getMessage();
+				String message;
+				if ( externalProjects.isEmpty() )
+					message = "Crop end: " + e.getMessage();
+				else
+					message = projectName + ", crop end: " + e.getMessage();
 				feedback.add( message );
 				logger.debug( message );
 			}

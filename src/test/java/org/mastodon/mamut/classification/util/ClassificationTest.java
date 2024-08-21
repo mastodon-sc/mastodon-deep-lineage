@@ -28,31 +28,73 @@
  */
 package org.mastodon.mamut.classification.util;
 
+import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.Cluster;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.classification.ClusterData;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ClassificationTest
 {
+	private Classification< String > classification;
+
+	@BeforeEach
+	void setUp()
+	{
+		classification = ClassificationUtils.getClassificationByClassCount( ClusterData.example1.getKey(), ClusterData.example1.getValue(),
+				new AverageLinkageStrategy(), 3 );
+	}
+
 	@Test
 	void testGetMedian()
 	{
-		Classification< String > classification = ClassificationUtils.getClassificationByClassCount( ClusterData.example1.getKey(),
-				ClusterData.example1.getValue(), new AverageLinkageUPGMAStrategy(), 3 );
 		assertEquals( 51, classification.getMedian(), 0d );
 	}
 
 	@Test
 	void testUpdateClusterNames()
 	{
-		Classification< String > classification = ClassificationUtils.getClassificationByClassCount( ClusterData.example1.getKey(),
-				ClusterData.example1.getValue(), new AverageLinkageUPGMAStrategy(), 3 );
 		classification.updateClusterNames();
 		Map< Cluster, String > clusterNodesToObjects = classification.getClusterNodesToObjects();
 		assertEquals( "A", clusterNodesToObjects.entrySet().iterator().next().getValue() );
+	}
+
+	@Test
+	void testExportCsv() throws IOException
+	{
+		File tempFileCsv = File.createTempFile( "dendrogram", ".csv" );
+		tempFileCsv.deleteOnExit();
+
+		classification.exportCsv( tempFileCsv, null );
+		CSVFormat csvFormat = CSVFormat.Builder.create().setDelimiter( ";" ).setQuote( '"' ).setEscape( '"' )
+				.setRecordSeparator( "\n" ).build();
+		try (
+				Reader reader = new FileReader( tempFileCsv );
+				CSVParser csvParser = new CSVParser( reader, csvFormat )
+		)
+		{
+			List< CSVRecord > records = csvParser.getRecords();
+			CSVRecord header = records.get( 0 );
+			CSVRecord firstLine = records.get( 1 );
+
+			assertEquals( 11, records.size() );
+			assertEquals( 4, header.size() );
+			assertEquals( "F", firstLine.get( 0 ) );
+			assertEquals( "", firstLine.get( 1 ) );
+			assertEquals( "Class 1", firstLine.get( 2 ) );
+			assertEquals( "0", firstLine.get( 3 ) );
+		}
 	}
 }
