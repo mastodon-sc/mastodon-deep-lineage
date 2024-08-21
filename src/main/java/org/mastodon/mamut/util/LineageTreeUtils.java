@@ -167,6 +167,21 @@ public class LineageTreeUtils {
 						+ maxTimepoint + "]." );
 	}
 
+	/**
+	 * Gets the maximum number of spots in a single time point by iterating through the {@link org.mastodon.spatial.SpatioTemporalIndex} of the given {@link Model}.
+	 * @param model the {@link Model} to search in
+	 * @return the maximum number of spots in a single time point
+	 */
+	public static int getMaxSpots( final Model model )
+	{
+		int maxSpots = 0;
+		int minTimepoint = TreeUtils.getMinTimepoint( model );
+		int maxTimepoint = TreeUtils.getMaxTimepoint( model );
+		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
+			maxSpots = Math.max( maxSpots, model.getSpatioTemporalIndex().getSpatialIndex( timepoint ).size() );
+		return maxSpots;
+	}
+
 	// Replace with new method after has been resolved https://github.com/mastodon-sc/mastodon-tomancak/issues/13
 	public static RefSet< Spot > getRoots( ModelGraph graph, int timepoint )
 	{

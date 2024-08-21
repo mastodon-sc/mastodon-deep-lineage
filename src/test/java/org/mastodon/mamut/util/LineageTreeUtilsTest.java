@@ -34,7 +34,9 @@ import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph3;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph4;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph5;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph6;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -171,6 +173,36 @@ class LineageTreeUtilsTest
 		assertEquals(
 				exampleGraph2.spot5, LineageTreeUtils.getFirstSpot( exampleGraph2.getModel(), exampleGraph2.branchSpotD, ref ) );
 		exampleGraph2.getModel().getGraph().releaseRef( ref );
+	}
+
+	@Test
+	void getMaxSpotsReturnsCorrectMaxSpots()
+	{
+		ExampleGraph1 exampleGraph1 = new ExampleGraph1();
+		Model model1 = exampleGraph1.getModel();
+		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
+		Model model2 = exampleGraph2.getModel();
+		ExampleGraph3 exampleGraph3 = new ExampleGraph3();
+		Model model3 = exampleGraph3.getModel();
+		ExampleGraph4 exampleGraph4 = new ExampleGraph4();
+		Model model4 = exampleGraph4.getModel();
+		ExampleGraph5 exampleGraph5 = new ExampleGraph5();
+		Model model5 = exampleGraph5.getModel();
+		ExampleGraph6 exampleGraph6 = new ExampleGraph6();
+		Model model6 = exampleGraph6.getModel();
+		assertEquals( 2, LineageTreeUtils.getMaxSpots( model1 ) );
+		assertEquals( 3, LineageTreeUtils.getMaxSpots( model2 ) );
+		assertEquals( 3, LineageTreeUtils.getMaxSpots( model3 ) );
+		assertEquals( 4, LineageTreeUtils.getMaxSpots( model4 ) );
+		assertEquals( 3, LineageTreeUtils.getMaxSpots( model5 ) );
+		assertEquals( 3, LineageTreeUtils.getMaxSpots( model6 ) );
+	}
+
+	@Test
+	void getMaxSpotsReturnsZeroForEmptyModel()
+	{
+		Model model = new Model();
+		assertEquals( 0, LineageTreeUtils.getMaxSpots( model ) );
 	}
 
 	private void assertSpotEquals( final Spot expected, final Spot actual )
