@@ -79,7 +79,7 @@ import java.util.Objects;
  * The project is saved as pm1.mastodon in the directory where the program is run.
  *
  * @see <a href="https://figshare.com/projects/Phallusiamammillata_embryonic_development/64301">Phallusia mammillata embryonic development data</a>
- * @see <a href="https://github.com/leoguignard/LineageTree/tree/master/src/LineageTree/export_csv.py">Conversion from ASTEC to csv</a>
+ * @see <a href="https://github.com/leoguignard/LineageTree/tree/master/src/LineageTree/legacy/export_csv.py">Conversion from ASTEC to csv</a>
  *
  */
 public class AstecReader
@@ -90,7 +90,7 @@ public class AstecReader
 
 	private final Model model;
 
-	private final static String MASTODON_FILE = "Pm10.mastodon";
+	private static final String MASTODON_FILE = "Pm10.mastodon";
 
 	private AstecReader()
 	{
