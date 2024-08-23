@@ -205,10 +205,10 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 		showMedianCheckBox.setSelected( showMedian );
 		showRootLabelsCheckBox.setSelected( showRootLabels );
 		showTagLabelsCheckBox.setSelected( showTagLabels );
+		selectedTagSet = tagSetComboBox.getSelectedItem() == null ? null : ( ( TagSetElement ) tagSetComboBox.getSelectedItem() ).tagSet;
 		dendrogramPanel.showThreshold( showThreshold );
 		dendrogramPanel.showMedian( showMedian );
-		dendrogramPanel.setLeaveLabeling( showRootLabels, showTagLabels,
-				tagSetComboBox.getSelectedItem() == null ? null : ( ( TagSetElement ) tagSetComboBox.getSelectedItem() ).tagSet );
+		dendrogramPanel.setLeaveLabeling( showRootLabels, showTagLabels, selectedTagSet );
 	}
 
 	private void initBehavior()
