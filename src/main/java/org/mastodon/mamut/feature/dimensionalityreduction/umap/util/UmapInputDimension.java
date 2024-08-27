@@ -1,10 +1,13 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.umap.util;
 
+import net.imglib2.util.Cast;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.feature.SpotTrackIDFeature;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeature;
+import org.mastodon.mamut.feature.spot.SpotBranchIDFeature;
 import org.mastodon.util.FeatureUtils;
 
 import java.util.ArrayList;
@@ -66,9 +69,12 @@ public class UmapInputDimension< V extends Vertex< ? > >
 	{
 		List< UmapInputDimension< V > > umapInputDimensions = new ArrayList<>();
 		Collection< Feature< V > > features = FeatureUtils.collectFeatureMap( featureModel, vertexType ).values();
+		Collection< Class< ? extends Feature< V > > > excludedFeatures = new ArrayList<>();
+		excludedFeatures.add( Cast.unchecked( SpotTrackIDFeature.class ) );
+		excludedFeatures.add( Cast.unchecked( SpotBranchIDFeature.class ) );
 		for ( Feature< V > feature : features )
 		{
-			if ( feature instanceof AbstractUmapFeature )
+			if ( excludedFeatures.contains( feature.getClass() ) || feature instanceof AbstractUmapFeature )
 				continue;
 			for ( FeatureProjection< V > projection : feature.projections() )
 				umapInputDimensions.add( new UmapInputDimension<>( feature, projection ) );
