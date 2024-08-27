@@ -1,6 +1,8 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.umap.feature;
 
 import org.mastodon.RefPool;
+import org.mastodon.collection.RefIntMap;
+import org.mastodon.collection.ref.RefIntHashMap;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
@@ -11,7 +13,6 @@ import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.StandardScal
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.properties.IntPropertyMap;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.slf4j.Logger;
@@ -54,16 +55,16 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 
 	private double[][] umapResult;
 
-	private final IntPropertyMap< V > validFeaturesCache;
+	private final RefIntMap< V > vertexToRowIndexMap;
 
-	private int index;
+	private static final int NO_ENTRY = -1;
 
 	protected AbstractUmapFeatureComputer( final Model model, final Context context )
 	{
 		this.model = model;
 		this.statusService = context.getService( StatusService.class );
 		this.umap = new Umap();
-		this.validFeaturesCache = createFeatureCacheInstance();
+		this.vertexToRowIndexMap = new RefIntHashMap<>( getRefPool(), NO_ENTRY );
 	}
 
 	/**
@@ -105,14 +106,13 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 	@Override
 	protected void compute( final V vertex )
 	{
-		if ( isVertexValid( vertex ) )
+		int rowIndex = vertexToRowIndexMap.get( vertex );
+		if ( rowIndex == NO_ENTRY )
+			return;
+		for ( int i = 0; i < settings.getNumberOfOutputDimensions(); i++ )
 		{
-			for ( int i = 0; i < settings.getNumberOfOutputDimensions(); i++ )
-			{
-				DoublePropertyMap< V > umapOutput = feature.getUmapOutputMaps().get( i );
-				umapOutput.set( vertex, umapResult[ index ][ i ] );
-			}
-			index++;
+			DoublePropertyMap< V > umapOutput = feature.getUmapOutputMaps().get( i );
+			umapOutput.set( vertex, umapResult[ rowIndex ][ i ] );
 		}
 	}
 
@@ -146,8 +146,8 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 
 	private void computeUmap()
 	{
-		index = 0;
-		List< double[] > data = extractAndCacheValidDataRows();
+		vertexToRowIndexMap.clear();
+		List< double[] > data = extractValidDataRowsAndCacheIndexes();
 		double[][] dataMatrix = data.toArray( new double[ 0 ][ 0 ] );
 		if ( dataMatrix.length == 0 )
 			throw new IllegalArgumentException(
@@ -170,9 +170,10 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 				umapResult.length > 0 ? umapResult[ 0 ].length : 0 );
 	}
 
-	private List< double[] > extractAndCacheValidDataRows()
+	private List< double[] > extractValidDataRowsAndCacheIndexes()
 	{
 		List< double[] > data = new ArrayList<>();
+		int index = 0;
 		for ( V vertex : getVertices() )
 		{
 			double[] row = new double[ inputDimensions.size() ];
@@ -190,34 +191,12 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 				row[ i ] = projection.value( vertex );
 			}
 			if ( !finiteRow )
-			{
-				cacheVertexAsInvalid( vertex );
 				continue;
-			}
 			data.add( row );
-			cacheVertexAsValid( vertex );
+			vertexToRowIndexMap.put( vertex, index );
+			index++;
 		}
 		return data;
-	}
-
-	private boolean isVertexValid( final V vertex )
-	{
-		return validFeaturesCache.get( vertex ) != 0;
-	}
-
-	private void cacheVertexAsValid( final V vertex )
-	{
-		validFeaturesCache.set( vertex, 1 );
-	}
-
-	private void cacheVertexAsInvalid( final V vertex )
-	{
-		validFeaturesCache.set( vertex, 0 );
-	}
-
-	private IntPropertyMap< V > createFeatureCacheInstance()
-	{
-		return new IntPropertyMap<>( getRefPool(), 0 );
 	}
 
 	private AbstractUmapFeature< V > initFeature( int numOutputDimensions )
