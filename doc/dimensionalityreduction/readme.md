@@ -8,7 +8,10 @@ For visualizing high-dimensional data, e.g. in two dimensions, potentially getti
 To apply it to your data, use the menu `Plugins > Compute Feature > Dimensionality reduction > UMAP`.
 Select the table whose features should be dimensionality reduced. Currently, the Spot and the BranchSpot table are
 supported.
-Next, select the feature + feature projections that should be dimensionality reduced.
+Next, select the feature + feature projections that should be dimensionality reduced. Prefer to select features, which
+describe the phenotype (size, shape, speed, number of neighbors, etc.).
+Only select positional features (e.g. centroid, coordinates, timeframe) if the position of cells within
+the image are descriptive for the phenotype.
 
 ![umap_dialog.png](umap_dialog.png)
 
