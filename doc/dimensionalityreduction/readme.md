@@ -44,6 +44,10 @@ You can visualize the results using the `Grapher` View of Mastodon and selecting
 
 ![umap_grapher.gif](umap_grapher.gif)
 
+Visualization with the [Mastodon Blender View](https://github.com/mastodon-sc/mastodon-blender-view) is also possible.
+
+![umap_blender.gif](umap_blender.gif)
+
 ### Example
 
 The example above has been generated using the [
