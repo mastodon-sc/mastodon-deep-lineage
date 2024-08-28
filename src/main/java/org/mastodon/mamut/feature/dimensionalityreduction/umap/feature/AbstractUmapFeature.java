@@ -25,7 +25,7 @@ import static org.mastodon.feature.FeatureProjectionKey.key;
  */
 public abstract class AbstractUmapFeature< V extends Vertex< ? > > implements Feature< V >, ValueIsSetEvaluator< V >
 {
-	private static final String PROJECTION_NAME_TEMPLATE = "Umap output dimension %d";
+	private static final String PROJECTION_NAME_TEMPLATE = "UMAP%d";
 
 	protected static final String HELP_STRING =
 			"Computes the umap according to the selected dimensions, the selected number of target dimensions and the minimum distance value.";
@@ -48,7 +48,7 @@ public abstract class AbstractUmapFeature< V extends Vertex< ? > > implements Fe
 
 	public String getProjectionName( final int outputDimension )
 	{
-		return String.format( PROJECTION_NAME_TEMPLATE, outputDimension );
+		return String.format( PROJECTION_NAME_TEMPLATE, outputDimension + 1 );
 	}
 
 	public List< DoublePropertyMap< V > > getUmapOutputMaps()
