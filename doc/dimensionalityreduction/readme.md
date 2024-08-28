@@ -1,6 +1,6 @@
 ## Dimensionality reduction
 
-For getting more insights into your data, you can reduce the dimensionality of the measurements, using this algorithm:
+For visualizing high-dimensional data, e.g. in two dimensions, potentially getting more insights into your data, you can reduce the dimensionality of the measurements, using this algorithm:
 
 * [Uniform Manifold Approximation Projection (UMAP)](https://arxiv.org/abs/1802.03426)
 * [UMAP Python implementation](https://umap-learn.readthedocs.io/en/latest/)
