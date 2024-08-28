@@ -2,7 +2,8 @@
 
 For getting more insights into your data, you can reduce the dimensionality of the measurements, using this algorithm:
 
-* [Uniform Manifold Approximation Projection (UMAP)](https://umap-learn.readthedocs.io/en/latest/)
+* [Uniform Manifold Approximation Projection (UMAP)](https://arxiv.org/abs/1802.03426)
+* [UMAP Python implementation](https://umap-learn.readthedocs.io/en/latest/)
 
 To apply it to your data, use the menu `Plugins > Compute Feature > Dimensionality reduction > UMAP`.
 Select the table whose features should be dimensionality reduced. Currently, the Spot and the BranchSpot table are
