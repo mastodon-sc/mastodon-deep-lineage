@@ -130,7 +130,7 @@
             <version>1.0</version>
         </dependency>
 
-        <!-- Mean and Variance computation for UMAP preprocessing -->
+        <!-- Standardization for UMAP preprocessing -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
