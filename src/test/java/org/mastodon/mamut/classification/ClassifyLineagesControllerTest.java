@@ -37,9 +37,9 @@ import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImgToVirtualStack;
 import net.imglib2.type.numeric.real.FloatType;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.TestUtils;
 import org.mastodon.mamut.classification.config.ClusteringMethod;
 import org.mastodon.mamut.classification.config.CropCriteria;
 import org.mastodon.mamut.classification.config.SimilarityMeasure;
@@ -56,7 +56,6 @@ import org.scijava.prefs.PrefService;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -77,7 +76,8 @@ class ClassifyLineagesControllerTest
 	{
 		try (Context context = new Context())
 		{
-			File tempFile = getTempFileCopy( "src/test/resources/org/mastodon/mamut/classification/model1.mastodon" );
+			File tempFile = TestUtils.getTempFileCopy( "src/test/resources/org/mastodon/mamut/classification/model1.mastodon", "model",
+					".mastodon" );
 			ProjectModel projectModel = ProjectLoader.open( tempFile.getAbsolutePath(), context, false, true );
 			Model model = projectModel.getModel();
 
@@ -120,8 +120,10 @@ class ClassifyLineagesControllerTest
 	{
 		try (Context context = new Context())
 		{
-			File tempFile1 = getTempFileCopy( "src/test/resources/org/mastodon/mamut/classification/model1.mastodon" );
-			File tempFile2 = getTempFileCopy( "src/test/resources/org/mastodon/mamut/classification/model2.mastodon" );
+			File tempFile1 = TestUtils.getTempFileCopy( "src/test/resources/org/mastodon/mamut/classification/model1.mastodon", "model",
+					".mastodon" );
+			File tempFile2 = TestUtils.getTempFileCopy( "src/test/resources/org/mastodon/mamut/classification/model2.mastodon", "model",
+					".mastodon" );
 
 			ProjectModel projectModel1 = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
 			Model model1 = projectModel1.getModel();
@@ -146,14 +148,6 @@ class ClassifyLineagesControllerTest
 			ProjectModel pm2 = ProjectLoader.open( tempFile2.getAbsolutePath(), context, false, true );
 			assertClassificationEquals( pm2.getModel(), 0, expectedClassNames, expectedSpotsPerClass );
 		}
-	}
-
-	private static File getTempFileCopy( final String fileName ) throws IOException
-	{
-		File tempFile1 = Files.createTempFile( "model", ".mastodon" ).toFile();
-		tempFile1.deleteOnExit();
-		FileUtils.copyFile( new File( fileName ), tempFile1 );
-		return tempFile1;
 	}
 
 	private void assertClassificationEquals( Model model, int existingTagSets, Set< String > expectedClassNames,

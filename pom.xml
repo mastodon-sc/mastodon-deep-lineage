@@ -123,6 +123,19 @@
             <artifactId>commons-csv</artifactId>
         </dependency>
 
+        <!-- UMAP -->
+        <dependency>
+            <groupId>tech.molecules</groupId>
+            <artifactId>external-umap-java</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!-- Standardization for UMAP preprocessing -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -138,12 +151,14 @@
             <scope>test</scope>
         </dependency>
 
+
         <!-- hierarchical clustering, tests only -->
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>
             <artifactId>weka-dev</artifactId>
             <scope>test</scope>
         </dependency>
+
 
         <!-- include imagej-legacy at test runtime -->
         <dependency>
