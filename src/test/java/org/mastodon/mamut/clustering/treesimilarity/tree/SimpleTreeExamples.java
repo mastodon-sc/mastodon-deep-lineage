@@ -450,10 +450,10 @@ public class SimpleTreeExamples
 	{
 		SimpleTree< Double > node1 = new SimpleTree<>( 50d );
 
-		SimpleTree< Double > node2 = addNode( 40d, node1 );
+		addNode( 40d, node1 );
 		SimpleTree< Double > node3 = addNode( 20d, node1 );
-		SimpleTree< Double > node4 = addNode( 200d, node3 );
-		SimpleTree< Double > node5 = addNode( 80d, node3 );
+		addNode( 200d, node3 );
+		addNode( 80d, node3 );
 
 		return node1;
 	}
@@ -471,10 +471,10 @@ public class SimpleTreeExamples
 	{
 		SimpleTree< Double > node1 = new SimpleTree<>( 50d );
 
-		SimpleTree< Double > node2 = addNode( 40d, node1 );
+		addNode( 40d, node1 );
 		SimpleTree< Double > node3 = addNode( 20d, node1 );
-		SimpleTree< Double > node4 = addNode( 30d, node3 );
-		SimpleTree< Double > node5 = addNode( 80d, node3 );
+		addNode( 30d, node3 );
+		addNode( 80d, node3 );
 
 		return node1;
 	}
@@ -492,10 +492,10 @@ public class SimpleTreeExamples
 	{
 		SimpleTree< Double > node1 = new SimpleTree<>( 60d );
 
-		SimpleTree< Double > node2 = addNode( 50d, node1 );
+		addNode( 50d, node1 );
 		SimpleTree< Double > node3 = addNode( 40d, node1 );
-		SimpleTree< Double > node4 = addNode( 80d, node3 );
-		SimpleTree< Double > node5 = addNode( 100d, node3 );
+		addNode( 80d, node3 );
+		addNode( 100d, node3 );
 
 		return node1;
 	}
@@ -514,9 +514,9 @@ public class SimpleTreeExamples
 		SimpleTree< Double > node1 = new SimpleTree<>( 60d );
 
 		SimpleTree< Double > node2 = addNode( 50d, node1 );
-		SimpleTree< Double > node3 = addNode( 40d, node1 );
-		SimpleTree< Double > node4 = addNode( 80d, node2 );
-		SimpleTree< Double > node5 = addNode( 100d, node2 );
+		addNode( 40d, node1 );
+		addNode( 80d, node2 );
+		addNode( 100d, node2 );
 
 		return node1;
 	}
