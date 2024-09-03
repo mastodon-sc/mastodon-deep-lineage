@@ -47,7 +47,7 @@ class ZhangUnorderedTreeEditDistanceTest
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	private final static ToDoubleBiFunction< Double, Double > defaultCosts = TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION;
+	private static final ToDoubleBiFunction< Double, Double > defaultCosts = TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION;
 
 	@SuppressWarnings("all")
 	@Test

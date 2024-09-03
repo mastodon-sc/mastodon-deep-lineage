@@ -57,15 +57,15 @@ import java.util.Random;
  */
 public class ClusterApporientedDemo
 {
-	private final static ClusteringAlgorithm algorithm = new DefaultClusteringAlgorithm();
+	private static final ClusteringAlgorithm algorithm = new DefaultClusteringAlgorithm();
 
-	private final static Cluster averageFixed =
+	private static final Cluster averageFixed =
 			algorithm.performClustering( ClusterData.example1.getValue(), ClusterData.example1.getKey(), new AverageLinkageStrategy() );
 
-	private final static Cluster singleFixed =
+	private static final Cluster singleFixed =
 			algorithm.performClustering( ClusterData.example1.getValue(), ClusterData.example1.getKey(), new SingleLinkageStrategy() );
 
-	private final static Cluster completeFixed =
+	private static final Cluster completeFixed =
 			algorithm.performClustering( ClusterData.example1.getValue(), ClusterData.example1.getKey(), new CompleteLinkageStrategy() );
 
 	public static void main( String[] args )

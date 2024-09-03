@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TreeDistancesTest
 {
 
-	private final static ToDoubleBiFunction< Double, Double > defaultCosts = TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION;
+	private static final ToDoubleBiFunction< Double, Double > defaultCosts = TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION;
 
 	@Test
 	void testNormalizedDistance()

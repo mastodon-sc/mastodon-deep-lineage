@@ -36,9 +36,9 @@ import org.mastodon.mamut.clustering.util.HierarchicalClusteringUtils;
 public class ClusterData
 {
 
-	private final static String[] names1 = new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
+	private static final String[] names1 = new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
 
-	private final static double[][] distances1 = new double[][] {
+	private static final double[][] distances1 = new double[][] {
 			{ 0, 51, 81, 35, 9, 95, 37, 19, 48, 21 },
 			{ 51, 0, 51, 21, 51, 55, 26, 17, 95, 75 },
 			{ 81, 51, 0, 9, 59, 66, 29, 73, 39, 3 },
@@ -51,11 +51,11 @@ public class ClusterData
 			{ 21, 75, 3, 11, 84, 82, 80, 29, 94, 0 }
 	};
 
-	public final static Pair< String[], double[][] > example1 = Pair.of( names1, distances1 );
+	public static final Pair< String[], double[][] > example1 = Pair.of( names1, distances1 );
 
-	private final static String[] names2 = new String[] { "A", "B", "C", "D", "E" };
+	private static final String[] names2 = new String[] { "A", "B", "C", "D", "E" };
 
-	private final static double[][] distances2 = new double[][] {
+	private static final double[][] distances2 = new double[][] {
 			{ 0, 1, 1, 2, 2 },
 			{ 1, 0, 0, 3, 3 },
 			{ 1, 0, 0, 3, 3 },
@@ -63,9 +63,9 @@ public class ClusterData
 			{ 2, 3, 3, 0, 0 },
 	};
 
-	public final static Pair< String[], double[][] > example2 = Pair.of( names2, distances2 );
+	public static final Pair< String[], double[][] > example2 = Pair.of( names2, distances2 );
 
-	public final static double[][] distances3 = new double[][] {
+	public static final double[][] distances3 = new double[][] {
 			{ 0, 1, 9, 7, 11, 14 },
 			{ 1, 0, 4, 3, 8, 10 },
 			{ 9, 4, 0, 9, 2, 8 },
@@ -74,7 +74,7 @@ public class ClusterData
 			{ 14, 10, 8, 13, 10, 0 }
 	};
 
-	public final static String[] names3 = new String[] { "O1", "O2", "O3", "O4", "O5", "O6" };
+	public static final String[] names3 = new String[] { "O1", "O2", "O3", "O4", "O5", "O6" };
 
 	public static HierarchicalClusteringResult< String > createSampleClassification3()
 	{
