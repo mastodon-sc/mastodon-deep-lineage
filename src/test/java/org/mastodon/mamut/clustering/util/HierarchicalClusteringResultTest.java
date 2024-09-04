@@ -79,8 +79,7 @@ class HierarchicalClusteringResultTest
 		tempFileCsv.deleteOnExit();
 
 		hierarchicalClusteringResult.exportCsv( tempFileCsv, null );
-		CSVFormat csvFormat = CSVFormat.Builder.create().setDelimiter( ";" ).setQuote( '"' ).setEscape( '"' )
-				.setRecordSeparator( "\n" ).build();
+		CSVFormat csvFormat = CSVFormat.Builder.create().setDelimiter( ";" ).setQuote( '"' ).setRecordSeparator( "\n" ).build();
 		try (
 				Reader reader = new FileReader( tempFileCsv );
 				CSVParser csvParser = new CSVParser( reader, csvFormat )

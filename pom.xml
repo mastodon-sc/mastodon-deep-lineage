@@ -117,12 +117,6 @@
             <artifactId>jfreesvg</artifactId>
         </dependency>
 
-        <!-- export of lineage classification results to csv -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-        </dependency>
-
         <!-- UMAP -->
         <dependency>
             <groupId>tech.molecules</groupId>
@@ -156,6 +150,13 @@
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>
             <artifactId>weka-dev</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- testing export of lineage clustering results to csv -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
             <scope>test</scope>
         </dependency>
 
