@@ -229,8 +229,13 @@ public class HierarchicalClusteringResult< T >
 	{
 		char separator = ';';
 		String[] header = new String[] { "Cell name", tagSet == null ? "" : tagSet.getName(), "Group", "Group similarity score" };
-		CSVFormat csvFormat = CSVFormat.Builder.create().setHeader( header ).setDelimiter( separator ).setQuote( '"' ).setEscape( '"' )
-				.setRecordSeparator( "\n" ).build();
+		//CSVFormat csvFormat = CSVFormat.Builder.create().setHeader( header ).setDelimiter( separator ).setQuote( '"' ).setEscape( '"' )
+		//		.setRecordSeparator( "\n" ).build();
+		// TODO: the following code is deprecated. However, it needs to be used at the moment, because an old version
+		// of the commons-csv library on the tomancak update site is shadowing newer versions of the library uploaded
+		// the DeepLineage update site. This should be fixed after the tomancak update site has been updated.
+		CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader( header ).withDelimiter( separator ).withQuote( '"' ).withEscape( '"' )
+				.withRecordSeparator( "\n" );
 		try (
 				FileWriter writer = new FileWriter( file );
 				CSVPrinter csvPrinter = new CSVPrinter( writer, csvFormat ))
