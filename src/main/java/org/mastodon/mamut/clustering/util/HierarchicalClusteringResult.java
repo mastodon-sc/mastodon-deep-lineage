@@ -29,8 +29,7 @@
 package org.mastodon.mamut.clustering.util;
 
 import com.apporiented.algorithm.clustering.Cluster;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+import com.opencsv.CSVWriter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.clustering.config.HasName;
 import org.mastodon.mamut.clustering.treesimilarity.tree.BranchSpotTree;
@@ -227,19 +226,12 @@ public class HierarchicalClusteringResult< T >
 	 */
 	public void exportCsv( final File file, final TagSetStructure.TagSet tagSet )
 	{
-		char separator = ';';
-		String[] header = new String[] { "Cell name", tagSet == null ? "" : tagSet.getName(), "Group", "Group similarity score" };
-		//CSVFormat csvFormat = CSVFormat.Builder.create().setHeader( header ).setDelimiter( separator ).setQuote( '"' ).setEscape( '"' )
-		//		.setRecordSeparator( "\n" ).build();
-		// TODO: the following code is deprecated. However, it needs to be used at the moment, because an old version
-		// of the commons-csv library on the tomancak update site is shadowing newer versions of the library uploaded
-		// the DeepLineage update site. This should be fixed after the tomancak update site has been updated.
-		CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader( header ).withDelimiter( separator ).withQuote( '"' ).withEscape( '"' )
-				.withRecordSeparator( "\n" );
+		String[] header = new String[] { "Cell name", tagSet == null ? "" : tagSet.getName(), "Group", "Similarity score" };
 		try (
 				FileWriter writer = new FileWriter( file );
-				CSVPrinter csvPrinter = new CSVPrinter( writer, csvFormat ))
+				CSVWriter csvWriter = new CSVWriter( writer, ';', '"', '"', "\n" ))
 		{
+			csvWriter.writeNext( header );
 			for ( Group< T > group : getGroups() )
 			{
 				for ( T object : group.getObjects() )
@@ -249,13 +241,12 @@ public class HierarchicalClusteringResult< T >
 					String groupName = group.getName();
 					String similarity =
 							MathUtils.roundToSignificantDigits( group.getCluster().getDistance().getDistance(), 2 );
-					Object[] line = new String[] { name, tagLabel, groupName, similarity };
-					csvPrinter.printRecord( line );
+					csvWriter.writeNext( new String[] { name, tagLabel, groupName, similarity } );
 					logger.debug( "Cell name: {}, Tag label: {}, Group name: {}, Similarity of group: {}", name, tagLabel, groupName,
 							similarity );
 				}
 			}
-			csvPrinter.flush();
+			csvWriter.flush();
 		}
 		catch ( IOException e )
 		{
