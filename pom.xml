@@ -153,14 +153,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- testing export of lineage clustering results to csv -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-
         <!-- include imagej-legacy at test runtime -->
         <dependency>
             <groupId>net.imagej</groupId>

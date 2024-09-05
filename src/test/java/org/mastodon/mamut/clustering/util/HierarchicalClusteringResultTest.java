@@ -30,9 +30,11 @@ package org.mastodon.mamut.clustering.util;
 
 import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.Cluster;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.clustering.ClusterData;
@@ -40,8 +42,6 @@ import org.mastodon.mamut.clustering.ClusterData;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -73,28 +73,33 @@ class HierarchicalClusteringResultTest
 	}
 
 	@Test
-	void testExportCsv() throws IOException
+	void testExportCsv() throws IOException, CsvValidationException
 	{
 		File tempFileCsv = File.createTempFile( "dendrogram", ".csv" );
 		tempFileCsv.deleteOnExit();
 
 		hierarchicalClusteringResult.exportCsv( tempFileCsv, null );
-		CSVFormat csvFormat = CSVFormat.Builder.create().setDelimiter( ";" ).setQuote( '"' ).setRecordSeparator( "\n" ).build();
+		CSVParser csvParser = new CSVParserBuilder().withSeparator( ';' ).withQuoteChar( '"' ).build();
 		try (
-				Reader reader = new FileReader( tempFileCsv );
-				CSVParser csvParser = new CSVParser( reader, csvFormat )
+				FileReader fileReader = new FileReader( tempFileCsv );
+				CSVReader csvReader = new CSVReaderBuilder( fileReader ).withCSVParser( csvParser ).build();
 		)
 		{
-			List< CSVRecord > records = csvParser.getRecords();
-			CSVRecord header = records.get( 0 );
-			CSVRecord firstLine = records.get( 1 );
+			int lineCount = 0;
+			String[] header = csvReader.readNext();
+			lineCount++;
+			String[] firstLine = csvReader.readNext();
+			lineCount++;
 
-			assertEquals( 11, records.size() );
-			assertEquals( 4, header.size() );
-			assertEquals( "F", firstLine.get( 0 ) );
-			assertEquals( "", firstLine.get( 1 ) );
-			assertEquals( "Group 1", firstLine.get( 2 ) );
-			assertEquals( "0", firstLine.get( 3 ) );
+			assertEquals( 4, header.length );
+			assertEquals( "F", firstLine[ 0 ] );
+			assertEquals( "", firstLine[ 1 ] );
+			assertEquals( "Group 1", firstLine[ 2 ] );
+			assertEquals( "0", firstLine[ 3 ] );
+
+			while ( csvReader.readNext() != null )
+				lineCount++;
+			assertEquals( 11, lineCount );
 		}
 	}
 }
