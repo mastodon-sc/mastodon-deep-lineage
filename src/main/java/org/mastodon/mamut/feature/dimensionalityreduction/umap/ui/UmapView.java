@@ -8,8 +8,6 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapController;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapFeatureSettings;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,9 +53,9 @@ public class UmapView extends JFrame
 
 	private final JPanel canvas;
 
-	private final JRadioButton spotRadioButton;
+	private final JRadioButton modelGraphRadioButton;
 
-	private final JRadioButton branchSpotRadioButton;
+	private final JRadioButton branchGraphRadioButton;
 
 	private final JCheckBox standardizeFeaturesCheckBox;
 
@@ -98,8 +96,8 @@ public class UmapView extends JFrame
 		setSize( 600, 600 );
 		setLocationRelativeTo( null );
 
-		spotRadioButton = new JRadioButton( Spot.class.getSimpleName() );
-		branchSpotRadioButton = new JRadioButton( BranchSpot.class.getSimpleName() );
+		modelGraphRadioButton = new JRadioButton( "Model Graph Features" );
+		branchGraphRadioButton = new JRadioButton( "Branch Graph Features" );
 
 		standardizeFeaturesCheckBox = new JCheckBox( "Standardize features" );
 		numberOfDimensionsInput = new JSpinner();
@@ -119,9 +117,9 @@ public class UmapView extends JFrame
 	private void initSettings()
 	{
 		logger.debug( "Initializing UMAP settings." );
-		boolean isSpotGraph = umapController.isModelGraphPreferences();
-		spotRadioButton.setSelected( isSpotGraph );
-		branchSpotRadioButton.setSelected( !isSpotGraph );
+		boolean isModelGraph = umapController.isModelGraphPreferences();
+		modelGraphRadioButton.setSelected( isModelGraph );
+		branchGraphRadioButton.setSelected( !isModelGraph );
 		UmapFeatureSettings settings = umapController.getFeatureSettings();
 		standardizeFeaturesCheckBox.setSelected( settings.isStandardizeFeatures() );
 		numberOfDimensionsInput.setModel( getNumberOfDimensionsSpinnerModel() );
@@ -131,12 +129,12 @@ public class UmapView extends JFrame
 
 	private void initBehavior()
 	{
-		spotRadioButton.addActionListener( e -> updateUmapInputDimensionsPanel() );
-		branchSpotRadioButton.addActionListener( e -> updateUmapInputDimensionsPanel() );
+		modelGraphRadioButton.addActionListener( e -> updateUmapInputDimensionsPanel() );
+		branchGraphRadioButton.addActionListener( e -> updateUmapInputDimensionsPanel() );
 
 		ButtonGroup group = new ButtonGroup();
-		group.add( spotRadioButton );
-		group.add( branchSpotRadioButton );
+		group.add( modelGraphRadioButton );
+		group.add( branchGraphRadioButton );
 
 		UmapFeatureSettings settings = umapController.getFeatureSettings();
 		standardizeFeaturesCheckBox.addActionListener( e -> settings.setStandardizeFeatures( standardizeFeaturesCheckBox.isSelected() ) );
@@ -160,9 +158,9 @@ public class UmapView extends JFrame
 	{
 		add( canvas, BorderLayout.CENTER );
 
-		canvas.add( new JLabel( "Table:" ), "split 3" );
-		canvas.add( spotRadioButton );
-		canvas.add( branchSpotRadioButton, "wrap" );
+		canvas.add( new JLabel( "Graph type:" ), "split 3" );
+		canvas.add( modelGraphRadioButton );
+		canvas.add( branchGraphRadioButton, "wrap" );
 		canvas.add( standardizeFeaturesCheckBox, "wrap" );
 		String split2 = "split 2";
 		canvas.add( new JLabel( "Number of dimensions:" ), split2 );
@@ -195,8 +193,7 @@ public class UmapView extends JFrame
 	private void updateUmapInputDimensionsPanel()
 	{
 		canvas.remove( umapInputDimensionsPanel );
-		boolean isSpotGraph = spotRadioButton.isSelected();
-		umapController.setModelGraph( isSpotGraph );
+		umapController.setModelGraph( modelGraphRadioButton.isSelected() );
 		umapInputDimensionsPanel = createUmapInputDimensionsPanel();
 		canvas.add( umapInputDimensionsPanel, UMAP_PANEL_CONSTRANTS );
 		revalidate();
