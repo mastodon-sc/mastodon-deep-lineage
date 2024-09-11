@@ -45,8 +45,6 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 
 	private final StatusService statusService;
 
-	private final Umap umap;
-
 	private List< UmapInputDimension< V > > inputDimensions;
 
 	private UmapFeatureSettings settings;
@@ -63,7 +61,6 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 	{
 		this.model = model;
 		this.statusService = context.getService( StatusService.class );
-		this.umap = new Umap();
 		this.vertexToRowIndexMap = new RefIntHashMap<>( getRefPool(), NO_ENTRY );
 	}
 
@@ -158,6 +155,7 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 			StandardScaler.standardizeColumns( dataMatrix );
 			logger.debug( "Finished standardizing features" );
 		}
+		Umap umap = new Umap();
 		umap.setNumberComponents( settings.getNumberOfOutputDimensions() );
 		umap.setNumberNearestNeighbours( settings.getNumberOfNeighbors() );
 		umap.setMinDist( ( float ) settings.getMinimumDistance() );
