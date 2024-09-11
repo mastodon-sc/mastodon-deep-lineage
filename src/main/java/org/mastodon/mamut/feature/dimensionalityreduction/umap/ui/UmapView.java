@@ -262,12 +262,13 @@ public class UmapView extends JFrame
 				try
 				{
 					get();
-					afterSuccessfulRun();
+					executionCompleted( "UMAP sucessfully computed.", new Color( 0, 100, 0 ) );
 				}
 				catch ( Exception e )
 				{
-					logger.error( "Running umap failed. {}", e.getCause().getMessage(), e );
-					afterFailedRun( e.getCause().getMessage() );
+					String message = e.getCause().getMessage();
+					logger.error( "Running umap failed. {}", message, e.getCause() );
+					executionCompleted( message, Color.RED );
 					Thread.currentThread().interrupt();
 				}
 				finally
@@ -279,18 +280,11 @@ public class UmapView extends JFrame
 		worker.execute();
 	}
 
-	private void afterFailedRun( final String message )
+	private void executionCompleted( final String message, final Color color )
 	{
-		feedbackLabel.setForeground( Color.RED );
+		feedbackLabel.setForeground( color );
 		feedbackLabel.setText( message );
-		repaint();
-	}
-
-	private void afterSuccessfulRun()
-	{
 		computeButton.setIcon( null );
-		feedbackLabel.setForeground( new Color( 0, 100, 0 ) );
-		feedbackLabel.setText( "UMAP sucessfully computed." );
 		repaint();
 	}
 }
