@@ -94,7 +94,7 @@ public class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
 			UmapController umapController = new UmapController( graph2.getModel(), context );
 			UmapFeatureSettings settings = umapController.getFeatureSettings();
 			settings.setNumberOfNeighbors( 3 );
-			umapController.setSpotGraph( false );
+			umapController.setModelGraph( false );
 			umapController.computeFeature( inputDimensionsSupplier );
 			umapFeature = FeatureUtils.getFeature( graph2.getModel(), BranchUmapFeature.BranchSpotUmapFeatureSpec.class );
 			assertNotNull( umapFeature );

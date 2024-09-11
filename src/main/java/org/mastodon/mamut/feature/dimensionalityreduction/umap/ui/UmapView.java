@@ -118,7 +118,7 @@ public class UmapView extends JFrame
 	private void initSettings()
 	{
 		logger.debug( "Initializing UMAP settings." );
-		boolean isSpotGraph = umapController.isSpotGraphPreferences();
+		boolean isSpotGraph = umapController.isModelGraphPreferences();
 		spotRadioButton.setSelected( isSpotGraph );
 		branchSpotRadioButton.setSelected( !isSpotGraph );
 		UmapFeatureSettings settings = umapController.getFeatureSettings();
@@ -195,7 +195,7 @@ public class UmapView extends JFrame
 	{
 		canvas.remove( umapInputDimensionsPanel );
 		boolean isSpotGraph = spotRadioButton.isSelected();
-		umapController.setSpotGraph( isSpotGraph );
+		umapController.setModelGraph( isSpotGraph );
 		umapInputDimensionsPanel = createUmapInputDimensionsPanel();
 		canvas.add( umapInputDimensionsPanel, UMAP_PANEL_CONSTRANTS );
 		revalidate();

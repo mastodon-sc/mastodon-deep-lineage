@@ -67,7 +67,7 @@ class UmapControllerTest
 			Model model = new Model();
 			UmapController umapController = new UmapController( model, context );
 			assertEquals( Spot.class, umapController.getVertexType() );
-			umapController.setSpotGraph( false );
+			umapController.setModelGraph( false );
 			assertEquals( BranchSpot.class, umapController.getVertexType() );
 		}
 	}
@@ -140,6 +140,7 @@ class UmapControllerTest
 			Set< FeatureProjection< Spot > > projections = spotUmapFeature.projections();
 			assertEquals( 2, projections.size() );
 			FeatureProjection< Spot > projection0 = spotUmapFeature.projections().iterator().next();
+			assertTrue( Double.isNaN( projection0.value( graph2.spot0 ) ) ); // NB: the link feature for spot0 is NaN, since it has no incoming edges
 			assertFalse( Double.isNaN( projection0.value( graph2.spot1 ) ) );
 			assertTrue( Double.isNaN( projection0.value( graph2.spot13 ) ) );
 		}
