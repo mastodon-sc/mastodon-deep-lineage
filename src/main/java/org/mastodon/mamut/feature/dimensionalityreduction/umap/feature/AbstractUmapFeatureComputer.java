@@ -3,7 +3,6 @@ package org.mastodon.mamut.feature.dimensionalityreduction.umap.feature;
 import org.mastodon.RefPool;
 import org.mastodon.collection.RefIntMap;
 import org.mastodon.collection.ref.RefIntHashMap;
-import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
@@ -178,14 +177,13 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 			for ( int i = 0; i < inputDimensions.size(); i++ )
 			{
 				UmapInputDimension< V > inputDimension = inputDimensions.get( i );
-				FeatureProjection< V > projection = inputDimension.getFeatureProjection();
-				double value = projection.value( vertex );
+				double value = inputDimension.getValue( vertex );
 				if ( Double.isNaN( value ) )
 				{
 					finiteRow = false;
 					break;
 				}
-				row[ i ] = projection.value( vertex );
+				row[ i ] = value;
 			}
 			if ( !finiteRow )
 				continue;

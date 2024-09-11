@@ -49,9 +49,9 @@ public class UmapInputDimension< V extends Vertex< ? > >
 		return featureKey + " - " + projectionKey;
 	}
 
-	public FeatureProjection< V > getFeatureProjection()
+	public double getValue( final V vertex )
 	{
-		return featureProjection;
+		return featureProjection.value( vertex );
 	}
 
 	/**
