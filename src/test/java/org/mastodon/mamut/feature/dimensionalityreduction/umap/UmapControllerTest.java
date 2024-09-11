@@ -11,6 +11,7 @@ import org.mastodon.mamut.feature.spot.dimensionalityreduction.umap.SpotUmapFeat
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.ui.coloring.feature.DefaultFeatureRangeCalculatorTest;
@@ -60,15 +61,17 @@ class UmapControllerTest
 	}
 
 	@Test
-	void testGetVertexType()
+	void testGetVertexAndEdgeType()
 	{
 		try (Context context = new Context())
 		{
 			Model model = new Model();
 			UmapController umapController = new UmapController( model, context );
-			assertEquals( Spot.class, umapController.getVertexType() );
+			assertEquals( Spot.class, umapController.getVertexAndEdgeType().getKey() );
+			assertEquals( Link.class, umapController.getVertexAndEdgeType().getValue() );
 			umapController.setModelGraph( false );
-			assertEquals( BranchSpot.class, umapController.getVertexType() );
+			assertEquals( BranchSpot.class, umapController.getVertexAndEdgeType().getKey() );
+			assertEquals( BranchLink.class, umapController.getVertexAndEdgeType().getValue() );
 		}
 	}
 

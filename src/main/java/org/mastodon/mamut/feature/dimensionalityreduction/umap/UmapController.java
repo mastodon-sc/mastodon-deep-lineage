@@ -1,6 +1,7 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.umap;
 
 import net.imglib2.util.Cast;
+import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
@@ -130,25 +131,14 @@ public class UmapController
 	}
 
 	/**
-	 * Gets the vertex type for the UMAP feature, i.e. {@link Spot} or {@link BranchSpot}.
-	 * @return the vertex type
+	 * Gets the vertex and edge type for the UMAP feature, i.e. {@link Spot} and {@link Link} or {@link BranchSpot} and {@link BranchLink}.
+	 * @return the vertex and edge type
 	 */
-	public < V extends Vertex< E >, E extends Edge< V > > Class< V > getVertexType()
+	public < V extends Vertex< E >, E extends Edge< V > > Pair< Class< V >, Class< E > > getVertexAndEdgeType()
 	{
 		if ( isModelGraph )
-			return Cast.unchecked( Spot.class );
-		return Cast.unchecked( BranchSpot.class );
-	}
-
-	/**
-	 * Gets the edge type for the UMAP feature, i.e. {@link Link} or {@link BranchLink}.
-	 * @return the vertex type
-	 */
-	public < V extends Vertex< E >, E extends Edge< V > > Class< E > getEdgeType()
-	{
-		if ( isModelGraph )
-			return Cast.unchecked( Link.class );
-		return Cast.unchecked( BranchLink.class );
+			return Pair.of( Cast.unchecked( Spot.class ), Cast.unchecked( Link.class ) );
+		return Pair.of( Cast.unchecked( BranchSpot.class ), Cast.unchecked( BranchLink.class ) );
 	}
 
 	/**
