@@ -2,6 +2,7 @@ package org.mastodon.mamut.feature.dimensionalityreduction.umap.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapController;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapFeatureSettings;
@@ -65,7 +66,7 @@ public class UmapView extends JFrame
 
 	private final JSpinner minimumDistanceInput;
 
-	private UmapInputDimensionsPanel< ? > umapInputDimensionsPanel;
+	private UmapInputDimensionsPanel< ?, ? > umapInputDimensionsPanel;
 
 	private final JLabel feedbackLabel;
 
@@ -202,10 +203,11 @@ public class UmapView extends JFrame
 		numberOfDimensionsInput.setModel( getNumberOfDimensionsSpinnerModel() );
 	}
 
-	private < V extends Vertex< ? > > UmapInputDimensionsPanel< V > createUmapInputDimensionsPanel()
+	private < V extends Vertex< E >, E extends Edge< V > > UmapInputDimensionsPanel< V, E > createUmapInputDimensionsPanel()
 	{
 		final Class< V > vertexType = umapController.getVertexType();
-		return new UmapInputDimensionsPanel<>( vertexType, featureModel );
+		final Class< E > edgeType = umapController.getEdgeType();
+		return new UmapInputDimensionsPanel<>( vertexType, edgeType, featureModel );
 	}
 
 	private SpinnerModel getNumberOfDimensionsSpinnerModel()

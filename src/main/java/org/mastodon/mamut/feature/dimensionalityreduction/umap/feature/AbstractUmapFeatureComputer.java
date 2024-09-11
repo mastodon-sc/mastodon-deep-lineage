@@ -3,6 +3,7 @@ package org.mastodon.mamut.feature.dimensionalityreduction.umap.feature;
 import org.mastodon.RefPool;
 import org.mastodon.collection.RefIntMap;
 import org.mastodon.collection.ref.RefIntHashMap;
+import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
@@ -36,7 +37,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @param <V> the type of vertex
  * @param <G> the type of read-only graph
  */
-public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G extends ReadOnlyGraph< V, ? > >
+public abstract class AbstractUmapFeatureComputer< V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, E > >
 		extends AbstractSerialFeatureComputer< V >
 {
 
@@ -44,7 +45,7 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 
 	private final StatusService statusService;
 
-	private List< UmapInputDimension< V > > inputDimensions;
+	private List< UmapInputDimension< V, E > > inputDimensions;
 
 	private UmapFeatureSettings settings;
 
@@ -74,13 +75,13 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 	 * @param inputDimensions the input dimensions
 	 * @param graph           the read-only graph
 	 */
-	public void computeFeature( final UmapFeatureSettings settings, final List< UmapInputDimension< V > > inputDimensions,
+	public void computeFeature( final UmapFeatureSettings settings, final List< UmapInputDimension< V, E > > inputDimensions,
 			final G graph )
 	{
 		logger.info( "Computing UmapFeature with settings: {}", settings );
 		this.settings = settings;
 		logger.info( "Computing UmapFeatureComputer with {} input dimensions.", inputDimensions.size() );
-		for ( UmapInputDimension< V > inputDimension : inputDimensions )
+		for ( UmapInputDimension< V, E > inputDimension : inputDimensions )
 			logger.info( "Input dimension: {}", inputDimension );
 		this.inputDimensions = inputDimensions;
 		this.forceComputeAll = new AtomicBoolean( true );
@@ -176,7 +177,7 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 			boolean finiteRow = true;
 			for ( int i = 0; i < inputDimensions.size(); i++ )
 			{
-				UmapInputDimension< V > inputDimension = inputDimensions.get( i );
+				UmapInputDimension< V, E > inputDimension = inputDimensions.get( i );
 				double value = inputDimension.getValue( vertex );
 				if ( Double.isNaN( value ) )
 				{

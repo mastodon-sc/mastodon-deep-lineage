@@ -4,6 +4,7 @@ import org.mastodon.RefPool;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeature;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeatureComputer;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.properties.DoublePropertyMap;
@@ -13,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class BranchUmapFeatureComputer extends AbstractUmapFeatureComputer< BranchSpot, ModelBranchGraph >
+public class BranchUmapFeatureComputer extends AbstractUmapFeatureComputer< BranchSpot, BranchLink, ModelBranchGraph >
 {
 
 	public BranchUmapFeatureComputer( final Model model, final Context context )

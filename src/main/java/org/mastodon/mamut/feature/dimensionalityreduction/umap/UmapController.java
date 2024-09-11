@@ -1,14 +1,17 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.umap;
 
 import net.imglib2.util.Cast;
+import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.branch.dimensionalityreduction.umap.BranchUmapFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
 import org.mastodon.mamut.feature.spot.dimensionalityreduction.umap.SpotUmapFeatureComputer;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 import org.scijava.prefs.PrefService;
@@ -74,7 +77,8 @@ public class UmapController
 	 * Since the UMAP computation is computationally expensive, this method prevents multiple executions of itself at the same time.
 	 * @param inputDimensionsSupplier a supplier for the selected input dimensions
 	 */
-	public < V extends Vertex< ? > > void computeFeature( final Supplier< List< UmapInputDimension< V > > > inputDimensionsSupplier )
+	public < V extends Vertex< E >, E extends Edge< V > > void
+			computeFeature( final Supplier< List< UmapInputDimension< V, E > > > inputDimensionsSupplier )
 	{
 		if ( running )
 		{
@@ -103,8 +107,8 @@ public class UmapController
 		isSpotGraph = spotGraph;
 	}
 
-	private < V extends Vertex< ? >, G extends ReadOnlyGraph< V, ? > > void
-			updateFeature( final List< UmapInputDimension< V > > inputDimensions )
+	private < V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, E > > void
+			updateFeature( final List< UmapInputDimension< V, E > > inputDimensions )
 	{
 		if ( inputDimensions.isEmpty() )
 			throw new IllegalArgumentException( "No features selected." );
@@ -112,13 +116,13 @@ public class UmapController
 			throw new IllegalArgumentException( "Number of output dimensions (" + settings.getNumberOfOutputDimensions()
 					+ ") must be smaller than the number of input features (" + inputDimensions.size() + ")." );
 		G graph = getGraph( isSpotGraph );
-		AbstractUmapFeatureComputer< V, G > umapFeatureComputer =
+		AbstractUmapFeatureComputer< V, E, G > umapFeatureComputer =
 				isSpotGraph ? Cast.unchecked( new SpotUmapFeatureComputer( model, context ) )
 						: Cast.unchecked( new BranchUmapFeatureComputer( model, context ) );
 		umapFeatureComputer.computeFeature( settings, inputDimensions, graph );
 	}
 
-	private < V extends Vertex< ? >, G extends ReadOnlyGraph< V, ? > > G getGraph( boolean isSpotGraph )
+	private < V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, ? > > G getGraph( boolean isSpotGraph )
 	{
 		if ( isSpotGraph )
 			return Cast.unchecked( model.getGraph() );
@@ -129,11 +133,22 @@ public class UmapController
 	 * Gets the vertex type for the UMAP feature, i.e. {@link Spot} or {@link BranchSpot}.
 	 * @return the vertex type
 	 */
-	public < V extends Vertex< ? > > Class< V > getVertexType()
+	public < V extends Vertex< E >, E extends Edge< V > > Class< V > getVertexType()
 	{
 		if ( isSpotGraph )
 			return Cast.unchecked( Spot.class );
 		return Cast.unchecked( BranchSpot.class );
+	}
+
+	/**
+	 * Gets the edge type for the UMAP feature, i.e. {@link Link} or {@link BranchLink}.
+	 * @return the vertex type
+	 */
+	public < V extends Vertex< E >, E extends Edge< V > > Class< E > getEdgeType()
+	{
+		if ( isSpotGraph )
+			return Cast.unchecked( Link.class );
+		return Cast.unchecked( BranchLink.class );
 	}
 
 	/**

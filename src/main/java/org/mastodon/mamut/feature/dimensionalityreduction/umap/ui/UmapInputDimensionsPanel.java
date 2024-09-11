@@ -2,6 +2,7 @@ package org.mastodon.mamut.feature.dimensionalityreduction.umap.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
 
@@ -14,20 +15,24 @@ import javax.swing.ListSelectionModel;
 import java.util.List;
 import java.util.function.Supplier;
 
-class UmapInputDimensionsPanel< V extends Vertex< ? > > extends JPanel implements Supplier< List< UmapInputDimension< V > > >
+class UmapInputDimensionsPanel< V extends Vertex< E >, E extends Edge< V > > extends JPanel
+		implements Supplier< List< UmapInputDimension< V, E > > >
 {
-	private final JList< UmapInputDimension< V > > featureList;
+	private final JList< UmapInputDimension< V, E > > featureList;
 
-	private final DefaultListModel< UmapInputDimension< V > > listModel;
+	private final DefaultListModel< UmapInputDimension< V, E > > listModel;
 
 	private final Class< V > vertexType;
 
+	private final Class< E > edgeType;
+
 	private final FeatureModel featureModel;
 
-	UmapInputDimensionsPanel( final Class< V > vertexType, final FeatureModel featureModel )
+	UmapInputDimensionsPanel( final Class< V > vertexType, final Class< E > edgeType, final FeatureModel featureModel )
 	{
 		super( new MigLayout( "insets 0 0 0 0, fill", "", "" ) );
 		this.vertexType = vertexType;
+		this.edgeType = edgeType;
 		this.featureModel = featureModel;
 		listModel = new DefaultListModel<>();
 		featureList = new JList<>( listModel );
@@ -63,8 +68,8 @@ class UmapInputDimensionsPanel< V extends Vertex< ? > > extends JPanel implement
 	private void updateItemList()
 	{
 		listModel.clear();
-		List< UmapInputDimension< V > > items = UmapInputDimension.getListFromFeatureModel( featureModel, vertexType );
-		for ( UmapInputDimension< V > item : items )
+		List< UmapInputDimension< V, E > > items = UmapInputDimension.getListFromFeatureModel( featureModel, vertexType, edgeType );
+		for ( UmapInputDimension< V, E > item : items )
 			listModel.addElement( item );
 	}
 
@@ -75,7 +80,7 @@ class UmapInputDimensionsPanel< V extends Vertex< ? > > extends JPanel implement
 	}
 
 	@Override
-	public List< UmapInputDimension< V > > get()
+	public List< UmapInputDimension< V, E > > get()
 	{
 		return featureList.getSelectedValuesList();
 	}

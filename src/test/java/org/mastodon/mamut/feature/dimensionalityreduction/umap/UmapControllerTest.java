@@ -8,6 +8,7 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
 import org.mastodon.mamut.feature.spot.dimensionalityreduction.umap.SpotUmapFeature;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
@@ -82,10 +83,10 @@ class UmapControllerTest
 			UmapController umapController = new UmapController( model, context );
 			UmapFeatureSettings umapFeatureSettings = umapController.getFeatureSettings();
 			umapFeatureSettings.setNumberOfOutputDimensions( numberOfOutputDimensions );
-			List< UmapInputDimension< Spot > > umapInputDimensions =
-					UmapInputDimension.getListFromFeatureModel( model.getFeatureModel(), Spot.class );
+			List< UmapInputDimension< Spot, Link > > umapInputDimensions =
+					UmapInputDimension.getListFromFeatureModel( model.getFeatureModel(), Spot.class, Link.class );
 			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( () -> umapInputDimensions ) );
-			Supplier< List< UmapInputDimension< Spot > > > emptyInputDimensionsSupplier = Collections::emptyList;
+			Supplier< List< UmapInputDimension< Spot, Link > > > emptyInputDimensionsSupplier = Collections::emptyList;
 			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( emptyInputDimensionsSupplier ) );
 		}
 	}
@@ -103,8 +104,8 @@ class UmapControllerTest
 			UmapController umapController = new UmapController( graph2.getModel(), context );
 			UmapFeatureSettings settings = umapController.getFeatureSettings();
 			settings.setNumberOfNeighbors( 5 );
-			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
-					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class );
+			Supplier< List< UmapInputDimension< Spot, Link > > > inputDimensionsSupplier =
+					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class, Link.class );
 			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( inputDimensionsSupplier ) );
 		}
 	}
@@ -132,14 +133,14 @@ class UmapControllerTest
 			UmapController umapController = new UmapController( graph2.getModel(), context );
 			UmapFeatureSettings settings = umapController.getFeatureSettings();
 			settings.setNumberOfNeighbors( 5 );
-			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
-					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class );
+			Supplier< List< UmapInputDimension< Spot, Link > > > inputDimensionsSupplier =
+					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class, Link.class );
 			umapController.computeFeature( inputDimensionsSupplier );
 			Feature< Spot > spotUmapFeature = Cast.unchecked( featureModel.getFeature( SpotUmapFeature.GENERIC_SPEC ) );
 			Set< FeatureProjection< Spot > > projections = spotUmapFeature.projections();
 			assertEquals( 2, projections.size() );
 			FeatureProjection< Spot > projection0 = spotUmapFeature.projections().iterator().next();
-			assertFalse( Double.isNaN( projection0.value( graph2.spot0 ) ) );
+			assertFalse( Double.isNaN( projection0.value( graph2.spot1 ) ) );
 			assertTrue( Double.isNaN( projection0.value( graph2.spot13 ) ) );
 		}
 	}
