@@ -26,7 +26,7 @@ import java.util.function.ToDoubleFunction;
  *
  * @param <V> the type of vertex
  */
-public class UmapInputDimension< V extends Vertex< E >, E extends Edge< V > >
+public class UmapInputDimension< V extends Vertex< ? > >
 {
 	private final Feature< ? > feature;
 
@@ -44,7 +44,7 @@ public class UmapInputDimension< V extends Vertex< E >, E extends Edge< V > >
 	 * @param <V> the type of vertex
 	 * @param <E> the type of edge
 	 */
-	public static < V extends Vertex< E >, E extends Edge< V > > UmapInputDimension< V, E >
+	public static < V extends Vertex< E >, E extends Edge< V > > UmapInputDimension< V >
 			fromVertexFeature( final Feature< V > vertexFeature, final FeatureProjection< V > vertexProjection )
 	{
 		return new UmapInputDimension<>( vertexFeature, vertexProjection, vertexProjection::value );
@@ -60,7 +60,7 @@ public class UmapInputDimension< V extends Vertex< E >, E extends Edge< V > >
 	 * @param <V> the type of vertex
 	 * @param <E> the type of edge
 	 */
-	public static < V extends Vertex< E >, E extends Edge< V > > UmapInputDimension< V, E > fromEdgeFeature( final Feature< E > edgeFeature,
+	public static < V extends Vertex< E >, E extends Edge< V > > UmapInputDimension< V > fromEdgeFeature( final Feature< E > edgeFeature,
 			final FeatureProjection< E > edgeProjection )
 	{
 		return new UmapInputDimension<>( edgeFeature, edgeProjection, edgeProjectionFunction( edgeProjection ) );
@@ -114,19 +114,19 @@ public class UmapInputDimension< V extends Vertex< E >, E extends Edge< V > >
 	 * @param <V> the type of vertex
 	 * @param <E> the type of edge
 	 */
-	public static < V extends Vertex< E >, E extends Edge< V > > List< UmapInputDimension< V, E > > getListFromFeatureModel(
+	public static < V extends Vertex< E >, E extends Edge< V > > List< UmapInputDimension< V > > getListFromFeatureModel(
 			final FeatureModel featureModel, final Class< V > vertexType, final Class< E > edgeType )
 	{
-		List< UmapInputDimension< V, E > > umapInputDimensions = getVertexDimensions( featureModel, vertexType );
+		List< UmapInputDimension< V > > umapInputDimensions = getVertexDimensions( featureModel, vertexType );
 		umapInputDimensions.addAll( getEdgeDimensions( featureModel, edgeType ) );
 		getEdgeDimensions( featureModel, edgeType );
 		return umapInputDimensions;
 	}
 
-	private static < V extends Vertex< E >, E extends Edge< V > > List< UmapInputDimension< V, E > >
+	private static < V extends Vertex< E >, E extends Edge< V > > List< UmapInputDimension< V > >
 			getVertexDimensions( final FeatureModel featureModel, final Class< V > vertexType )
 	{
-		List< UmapInputDimension< V, E > > umapInputDimensions = new ArrayList<>();
+		List< UmapInputDimension< V > > umapInputDimensions = new ArrayList<>();
 		Collection< Feature< V > > vertexFeatures = FeatureUtils.collectFeatureMap( featureModel, vertexType ).values();
 		Collection< Class< ? extends Feature< V > > > excludedVertexFeatures = new ArrayList<>();
 		excludedVertexFeatures.add( Cast.unchecked( SpotTrackIDFeature.class ) );
@@ -141,10 +141,10 @@ public class UmapInputDimension< V extends Vertex< E >, E extends Edge< V > >
 		return umapInputDimensions;
 	}
 
-	private static < V extends Vertex< E >, E extends Edge< V > > List< UmapInputDimension< V, E > >
+	private static < V extends Vertex< E >, E extends Edge< V > > List< UmapInputDimension< V > >
 			getEdgeDimensions( final FeatureModel featureModel, final Class< E > edgeType )
 	{
-		List< UmapInputDimension< V, E > > umapInputDimensions = new ArrayList<>();
+		List< UmapInputDimension< V > > umapInputDimensions = new ArrayList<>();
 		Collection< Feature< E > > edgeFeatures = FeatureUtils.collectFeatureMap( featureModel, edgeType ).values();
 		Collection< Class< ? extends Feature< E > > > excludedEdgeFeatures = new ArrayList<>();
 		excludedEdgeFeatures.add( Cast.unchecked( LinkTargetIdFeature.class ) );
@@ -159,8 +159,7 @@ public class UmapInputDimension< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	private static < V extends Vertex< E >, E extends Edge< V > > ToDoubleFunction< V > edgeProjectionFunction(
-			final FeatureProjection< E > edgeProjection
-	)
+			final FeatureProjection< E > edgeProjection )
 	{
 		return vertex -> {
 			if ( vertex.incomingEdges().isEmpty() )

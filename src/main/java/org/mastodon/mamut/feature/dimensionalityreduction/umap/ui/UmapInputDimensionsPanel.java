@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.function.Supplier;
 
 class UmapInputDimensionsPanel< V extends Vertex< E >, E extends Edge< V > > extends JPanel
-		implements Supplier< List< UmapInputDimension< V, E > > >
+		implements Supplier< List< UmapInputDimension< V > > >
 {
-	private final JList< UmapInputDimension< V, E > > featureList;
+	private final JList< UmapInputDimension< V > > featureList;
 
-	private final DefaultListModel< UmapInputDimension< V, E > > listModel;
+	private final DefaultListModel< UmapInputDimension< V > > listModel;
 
 	private final Class< V > vertexType;
 
@@ -68,8 +68,8 @@ class UmapInputDimensionsPanel< V extends Vertex< E >, E extends Edge< V > > ext
 	private void updateItemList()
 	{
 		listModel.clear();
-		List< UmapInputDimension< V, E > > items = UmapInputDimension.getListFromFeatureModel( featureModel, vertexType, edgeType );
-		for ( UmapInputDimension< V, E > item : items )
+		List< UmapInputDimension< V > > items = UmapInputDimension.getListFromFeatureModel( featureModel, vertexType, edgeType );
+		for ( UmapInputDimension< V > item : items )
 			listModel.addElement( item );
 	}
 
@@ -80,7 +80,7 @@ class UmapInputDimensionsPanel< V extends Vertex< E >, E extends Edge< V > > ext
 	}
 
 	@Override
-	public List< UmapInputDimension< V, E > > get()
+	public List< UmapInputDimension< V > > get()
 	{
 		return featureList.getSelectedValuesList();
 	}

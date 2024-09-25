@@ -18,7 +18,7 @@ class UmapInputDimensionTest
 	{
 		Model model = new Model();
 		FeatureModel featureModel = model.getFeatureModel();
-		List< UmapInputDimension< Spot, Link > > umapInputDimensions =
+		List< UmapInputDimension< Spot > > umapInputDimensions =
 				UmapInputDimension.getListFromFeatureModel( featureModel, Spot.class, Link.class );
 		assertNotNull( umapInputDimensions );
 		assertFalse( umapInputDimensions.isEmpty() ); // NB: we do not test for specific content, as this is defined by the core and may change.

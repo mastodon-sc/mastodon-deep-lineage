@@ -79,7 +79,7 @@ public class UmapController
 	 * @param inputDimensionsSupplier a supplier for the selected input dimensions
 	 */
 	public < V extends Vertex< E >, E extends Edge< V > > void
-			computeFeature( final Supplier< List< UmapInputDimension< V, E > > > inputDimensionsSupplier )
+			computeFeature( final Supplier< List< UmapInputDimension< V > > > inputDimensionsSupplier )
 	{
 		if ( running )
 		{
@@ -109,7 +109,7 @@ public class UmapController
 	}
 
 	private < V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, E > > void
-			updateFeature( final List< UmapInputDimension< V, E > > inputDimensions )
+			updateFeature( final List< UmapInputDimension< V > > inputDimensions )
 	{
 		if ( inputDimensions.isEmpty() )
 			throw new IllegalArgumentException( "No features selected." );

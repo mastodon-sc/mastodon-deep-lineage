@@ -45,7 +45,7 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< E >, E exte
 
 	private final StatusService statusService;
 
-	private List< UmapInputDimension< V, E > > inputDimensions;
+	private List< UmapInputDimension< V > > inputDimensions;
 
 	private UmapFeatureSettings settings;
 
@@ -75,13 +75,13 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< E >, E exte
 	 * @param inputDimensions the input dimensions
 	 * @param graph           the read-only graph
 	 */
-	public void computeFeature( final UmapFeatureSettings settings, final List< UmapInputDimension< V, E > > inputDimensions,
+	public void computeFeature( final UmapFeatureSettings settings, final List< UmapInputDimension< V > > inputDimensions,
 			final G graph )
 	{
 		logger.info( "Computing UmapFeature with settings: {}", settings );
 		this.settings = settings;
 		logger.info( "Computing UmapFeatureComputer with {} input dimensions.", inputDimensions.size() );
-		for ( UmapInputDimension< V, E > inputDimension : inputDimensions )
+		for ( UmapInputDimension< V > inputDimension : inputDimensions )
 			logger.info( "Input dimension: {}", inputDimension );
 		this.inputDimensions = inputDimensions;
 		this.forceComputeAll = new AtomicBoolean( true );
@@ -177,7 +177,7 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< E >, E exte
 			boolean finiteRow = true;
 			for ( int i = 0; i < inputDimensions.size(); i++ )
 			{
-				UmapInputDimension< V, E > inputDimension = inputDimensions.get( i );
+				UmapInputDimension< V > inputDimension = inputDimensions.get( i );
 				double value = inputDimension.getValue( vertex );
 				if ( Double.isNaN( value ) )
 				{

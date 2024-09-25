@@ -87,10 +87,10 @@ class UmapControllerTest
 			UmapController umapController = new UmapController( model, context );
 			UmapFeatureSettings umapFeatureSettings = umapController.getFeatureSettings();
 			umapFeatureSettings.setNumberOfOutputDimensions( numberOfOutputDimensions );
-			List< UmapInputDimension< Spot, Link > > umapInputDimensions =
+			List< UmapInputDimension< Spot > > umapInputDimensions =
 					UmapInputDimension.getListFromFeatureModel( model.getFeatureModel(), Spot.class, Link.class );
 			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( () -> umapInputDimensions ) );
-			Supplier< List< UmapInputDimension< Spot, Link > > > emptyInputDimensionsSupplier = Collections::emptyList;
+			Supplier< List< UmapInputDimension< Spot > > > emptyInputDimensionsSupplier = Collections::emptyList;
 			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( emptyInputDimensionsSupplier ) );
 		}
 	}
@@ -108,7 +108,7 @@ class UmapControllerTest
 			UmapController umapController = new UmapController( graph2.getModel(), context );
 			UmapFeatureSettings settings = umapController.getFeatureSettings();
 			settings.setNumberOfNeighbors( 5 );
-			Supplier< List< UmapInputDimension< Spot, Link > > > inputDimensionsSupplier =
+			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
 					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class, Link.class );
 			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( inputDimensionsSupplier ) );
 		}
@@ -137,7 +137,7 @@ class UmapControllerTest
 			UmapController umapController = new UmapController( graph2.getModel(), context );
 			UmapFeatureSettings settings = umapController.getFeatureSettings();
 			settings.setNumberOfNeighbors( 5 );
-			Supplier< List< UmapInputDimension< Spot, Link > > > inputDimensionsSupplier =
+			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
 					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class, Link.class );
 			umapController.computeFeature( inputDimensionsSupplier );
 			Feature< Spot > spotUmapFeature = Cast.unchecked( featureModel.getFeature( SpotUmapFeature.GENERIC_SPEC ) );
@@ -167,7 +167,7 @@ class UmapControllerTest
 		{
 			UmapController umapController = new UmapController( model, context );
 			FeatureModel featureModel = model.getFeatureModel();
-			Supplier< List< UmapInputDimension< Spot, Link > > > inputDimensionsSupplier =
+			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
 					() -> UmapInputDimension.getListFromFeatureModel( featureModel, Spot.class, Link.class );
 			umapController.computeFeature( inputDimensionsSupplier );
 			Feature< Spot > spotUmapFeature = Cast.unchecked( featureModel.getFeature( SpotUmapFeature.GENERIC_SPEC ) );

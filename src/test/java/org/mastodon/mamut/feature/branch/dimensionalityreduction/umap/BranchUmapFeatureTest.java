@@ -86,11 +86,11 @@ public class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
 			BranchSinuosityFeature branchSinuosityFeature = Cast.unchecked(
 					FeatureComputerTestUtils.getFeature( context, model, BranchSinuosityFeature.BRANCH_SINUOSITY_FEATURE_SPEC ) );
 			featureModel.declareFeature( branchSinuosityFeature );
-			List< UmapInputDimension< BranchSpot, BranchLink > > umapInputDimensions =
+			List< UmapInputDimension< BranchSpot > > umapInputDimensions =
 					UmapInputDimension.getListFromFeatureModel( featureModel, BranchSpot.class, BranchLink.class );
 
 			// set up the controller and compute the feature
-			Supplier< List< UmapInputDimension< BranchSpot, BranchLink > > > inputDimensionsSupplier = () -> umapInputDimensions;
+			Supplier< List< UmapInputDimension< BranchSpot > > > inputDimensionsSupplier = () -> umapInputDimensions;
 			UmapController umapController = new UmapController( graph2.getModel(), context );
 			UmapFeatureSettings settings = umapController.getFeatureSettings();
 			settings.setNumberOfNeighbors( 3 );

@@ -74,7 +74,7 @@ public class SpotUmapFeatureTest extends AbstractFeatureTest< Spot >
 			UmapController umapController = new UmapController( graph2.getModel(), context );
 			UmapFeatureSettings settings = umapController.getFeatureSettings();
 			settings.setNumberOfNeighbors( 5 );
-			Supplier< List< UmapInputDimension< Spot, Link > > > inputDimensionsSupplier =
+			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
 					() -> UmapInputDimension.getListFromFeatureModel( featureModel, Spot.class, Link.class );
 			umapController.computeFeature( inputDimensionsSupplier );
 			spotUmapFeature = FeatureUtils.getFeature( graph2.getModel(), SpotUmapFeature.SpotUmapFeatureSpec.class );
