@@ -6,6 +6,7 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.Edges;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.LinkTargetIdFeature;
 import org.mastodon.mamut.feature.SpotTrackIDFeature;
@@ -162,17 +163,14 @@ public class UmapInputDimension< V extends Vertex< ? > >
 			final FeatureProjection< E > edgeProjection )
 	{
 		return vertex -> {
-			if ( vertex.incomingEdges().isEmpty() )
+			Edges< E > incomingEdges = vertex.incomingEdges();
+			if ( incomingEdges.isEmpty() )
 				return Double.NaN;
-			else if ( vertex.incomingEdges().size() == 1 )
-				return edgeProjection.value( vertex.incomingEdges().get( 0 ) );
-			double[] edgeValues = new double[ vertex.incomingEdges().size() ];
-			for ( int i = 0; i < edgeValues.length; i++ )
-			{
-				E edge = vertex.incomingEdges().get( i );
-				edgeValues[ i ] = edgeProjection.value( edge );
-			}
-			return Util.average( edgeValues );
+			else if ( incomingEdges.size() == 1 )
+				return edgeProjection.value( incomingEdges.iterator().next() );
+			List< Double > edgeValues = new ArrayList<>( incomingEdges.size() );
+			incomingEdges.iterator().forEachRemaining( edge -> edgeValues.add( edgeProjection.value( edge ) ) );
+			return Util.average( edgeValues.stream().mapToDouble( Double::doubleValue ).toArray() );
 		};
 	}
 }
