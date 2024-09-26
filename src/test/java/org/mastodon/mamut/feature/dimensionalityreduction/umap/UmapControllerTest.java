@@ -62,17 +62,28 @@ class UmapControllerTest
 	}
 
 	@Test
-	void testGetVertexAndEdgeType()
+	void testGetVertexType()
 	{
 		try (Context context = new Context())
 		{
 			Model model = new Model();
 			UmapController umapController = new UmapController( model, context );
-			assertEquals( Spot.class, umapController.getVertexAndEdgeType().getKey() );
-			assertEquals( Link.class, umapController.getVertexAndEdgeType().getValue() );
+			assertEquals( Spot.class, umapController.getVertexType() );
 			umapController.setModelGraph( false );
-			assertEquals( BranchSpot.class, umapController.getVertexAndEdgeType().getKey() );
-			assertEquals( BranchLink.class, umapController.getVertexAndEdgeType().getValue() );
+			assertEquals( BranchSpot.class, umapController.getVertexType() );
+		}
+	}
+
+	@Test
+	void testGetEdgeType()
+	{
+		try (Context context = new Context())
+		{
+			Model model = new Model();
+			UmapController umapController = new UmapController( model, context );
+			assertEquals( Link.class, umapController.getEdgeType() );
+			umapController.setModelGraph( false );
+			assertEquals( BranchLink.class, umapController.getEdgeType() );
 		}
 	}
 

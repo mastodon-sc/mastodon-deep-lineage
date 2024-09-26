@@ -1,7 +1,7 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.umap.ui;
 
+import net.imglib2.util.Cast;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
@@ -203,8 +203,8 @@ public class UmapView extends JFrame
 
 	private < V extends Vertex< E >, E extends Edge< V > > UmapInputDimensionsPanel< V, E > createUmapInputDimensionsPanel()
 	{
-		Pair< Class< V >, Class< E > > vertexAndEdgeType = umapController.getVertexAndEdgeType();
-		return new UmapInputDimensionsPanel<>( vertexAndEdgeType.getKey(), vertexAndEdgeType.getValue(), featureModel );
+		return new UmapInputDimensionsPanel<>( Cast.unchecked( umapController.getVertexType() ),
+				Cast.unchecked( umapController.getEdgeType() ), featureModel );
 	}
 
 	private SpinnerModel getNumberOfDimensionsSpinnerModel()
