@@ -2,6 +2,7 @@ package org.mastodon.mamut.feature.dimensionalityreduction.umap.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
 
@@ -14,7 +15,8 @@ import javax.swing.ListSelectionModel;
 import java.util.List;
 import java.util.function.Supplier;
 
-class UmapInputDimensionsPanel< V extends Vertex< ? > > extends JPanel implements Supplier< List< UmapInputDimension< V > > >
+class UmapInputDimensionsPanel< V extends Vertex< E >, E extends Edge< V > > extends JPanel
+		implements Supplier< List< UmapInputDimension< V > > >
 {
 	private final JList< UmapInputDimension< V > > featureList;
 
@@ -22,12 +24,15 @@ class UmapInputDimensionsPanel< V extends Vertex< ? > > extends JPanel implement
 
 	private final Class< V > vertexType;
 
+	private final Class< E > edgeType;
+
 	private final FeatureModel featureModel;
 
-	UmapInputDimensionsPanel( final Class< V > vertexType, final FeatureModel featureModel )
+	UmapInputDimensionsPanel( final Class< V > vertexType, final Class< E > edgeType, final FeatureModel featureModel )
 	{
 		super( new MigLayout( "insets 0 0 0 0, fill", "", "" ) );
 		this.vertexType = vertexType;
+		this.edgeType = edgeType;
 		this.featureModel = featureModel;
 		listModel = new DefaultListModel<>();
 		featureList = new JList<>( listModel );
@@ -63,7 +68,7 @@ class UmapInputDimensionsPanel< V extends Vertex< ? > > extends JPanel implement
 	private void updateItemList()
 	{
 		listModel.clear();
-		List< UmapInputDimension< V > > items = UmapInputDimension.getListFromFeatureModel( featureModel, vertexType );
+		List< UmapInputDimension< V > > items = UmapInputDimension.getListFromFeatureModel( featureModel, vertexType, edgeType );
 		for ( UmapInputDimension< V > item : items )
 			listModel.addElement( item );
 	}

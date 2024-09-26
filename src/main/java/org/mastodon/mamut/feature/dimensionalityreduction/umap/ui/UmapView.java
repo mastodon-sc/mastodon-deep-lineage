@@ -1,13 +1,13 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.umap.ui;
 
+import net.imglib2.util.Cast;
 import net.miginfocom.swing.MigLayout;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapController;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapFeatureSettings;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +53,9 @@ public class UmapView extends JFrame
 
 	private final JPanel canvas;
 
-	private final JRadioButton spotRadioButton;
+	private final JRadioButton modelGraphRadioButton;
 
-	private final JRadioButton branchSpotRadioButton;
+	private final JRadioButton branchGraphRadioButton;
 
 	private final JCheckBox standardizeFeaturesCheckBox;
 
@@ -65,7 +65,7 @@ public class UmapView extends JFrame
 
 	private final JSpinner minimumDistanceInput;
 
-	private UmapInputDimensionsPanel< ? > umapInputDimensionsPanel;
+	private UmapInputDimensionsPanel< ?, ? > umapInputDimensionsPanel;
 
 	private final JLabel feedbackLabel;
 
@@ -96,8 +96,8 @@ public class UmapView extends JFrame
 		setSize( 600, 600 );
 		setLocationRelativeTo( null );
 
-		spotRadioButton = new JRadioButton( Spot.class.getSimpleName() );
-		branchSpotRadioButton = new JRadioButton( BranchSpot.class.getSimpleName() );
+		modelGraphRadioButton = new JRadioButton( "Model Graph Features" );
+		branchGraphRadioButton = new JRadioButton( "Branch Graph Features" );
 
 		standardizeFeaturesCheckBox = new JCheckBox( "Standardize features" );
 		numberOfDimensionsInput = new JSpinner();
@@ -117,9 +117,9 @@ public class UmapView extends JFrame
 	private void initSettings()
 	{
 		logger.debug( "Initializing UMAP settings." );
-		boolean isSpotGraph = umapController.isSpotGraphPreferences();
-		spotRadioButton.setSelected( isSpotGraph );
-		branchSpotRadioButton.setSelected( !isSpotGraph );
+		boolean isModelGraph = umapController.isModelGraphPreferences();
+		modelGraphRadioButton.setSelected( isModelGraph );
+		branchGraphRadioButton.setSelected( !isModelGraph );
 		UmapFeatureSettings settings = umapController.getFeatureSettings();
 		standardizeFeaturesCheckBox.setSelected( settings.isStandardizeFeatures() );
 		numberOfDimensionsInput.setModel( getNumberOfDimensionsSpinnerModel() );
@@ -129,12 +129,12 @@ public class UmapView extends JFrame
 
 	private void initBehavior()
 	{
-		spotRadioButton.addActionListener( e -> updateUmapInputDimensionsPanel() );
-		branchSpotRadioButton.addActionListener( e -> updateUmapInputDimensionsPanel() );
+		modelGraphRadioButton.addActionListener( e -> updateUmapInputDimensionsPanel() );
+		branchGraphRadioButton.addActionListener( e -> updateUmapInputDimensionsPanel() );
 
 		ButtonGroup group = new ButtonGroup();
-		group.add( spotRadioButton );
-		group.add( branchSpotRadioButton );
+		group.add( modelGraphRadioButton );
+		group.add( branchGraphRadioButton );
 
 		UmapFeatureSettings settings = umapController.getFeatureSettings();
 		standardizeFeaturesCheckBox.addActionListener( e -> settings.setStandardizeFeatures( standardizeFeaturesCheckBox.isSelected() ) );
@@ -158,9 +158,9 @@ public class UmapView extends JFrame
 	{
 		add( canvas, BorderLayout.CENTER );
 
-		canvas.add( new JLabel( "Table:" ), "split 3" );
-		canvas.add( spotRadioButton );
-		canvas.add( branchSpotRadioButton, "wrap" );
+		canvas.add( new JLabel( "Graph type:" ), "split 3" );
+		canvas.add( modelGraphRadioButton );
+		canvas.add( branchGraphRadioButton, "wrap" );
 		canvas.add( standardizeFeaturesCheckBox, "wrap" );
 		String split2 = "split 2";
 		canvas.add( new JLabel( "Number of dimensions:" ), split2 );
@@ -193,8 +193,7 @@ public class UmapView extends JFrame
 	private void updateUmapInputDimensionsPanel()
 	{
 		canvas.remove( umapInputDimensionsPanel );
-		boolean isSpotGraph = spotRadioButton.isSelected();
-		umapController.setSpotGraph( isSpotGraph );
+		umapController.setModelGraph( modelGraphRadioButton.isSelected() );
 		umapInputDimensionsPanel = createUmapInputDimensionsPanel();
 		canvas.add( umapInputDimensionsPanel, UMAP_PANEL_CONSTRANTS );
 		revalidate();
@@ -202,10 +201,10 @@ public class UmapView extends JFrame
 		numberOfDimensionsInput.setModel( getNumberOfDimensionsSpinnerModel() );
 	}
 
-	private < V extends Vertex< ? > > UmapInputDimensionsPanel< V > createUmapInputDimensionsPanel()
+	private < V extends Vertex< E >, E extends Edge< V > > UmapInputDimensionsPanel< V, E > createUmapInputDimensionsPanel()
 	{
-		final Class< V > vertexType = umapController.getVertexType();
-		return new UmapInputDimensionsPanel<>( vertexType, featureModel );
+		return new UmapInputDimensionsPanel<>( Cast.unchecked( umapController.getVertexType() ),
+				Cast.unchecked( umapController.getEdgeType() ), featureModel );
 	}
 
 	private SpinnerModel getNumberOfDimensionsSpinnerModel()
@@ -263,12 +262,13 @@ public class UmapView extends JFrame
 				try
 				{
 					get();
-					afterSuccessfulRun();
+					executionCompleted( "UMAP sucessfully computed.", new Color( 0, 100, 0 ) );
 				}
 				catch ( Exception e )
 				{
-					logger.error( "Running umap failed. {}", e.getCause().getMessage(), e );
-					afterFailedRun( e.getCause().getMessage() );
+					String message = e.getCause().getMessage();
+					logger.error( "Running umap failed. {}", message, e.getCause() );
+					executionCompleted( message, Color.RED );
 					Thread.currentThread().interrupt();
 				}
 				finally
@@ -280,18 +280,11 @@ public class UmapView extends JFrame
 		worker.execute();
 	}
 
-	private void afterFailedRun( final String message )
+	private void executionCompleted( final String message, final Color color )
 	{
-		feedbackLabel.setForeground( Color.RED );
+		feedbackLabel.setForeground( color );
 		feedbackLabel.setText( message );
-		repaint();
-	}
-
-	private void afterSuccessfulRun()
-	{
 		computeButton.setIcon( null );
-		feedbackLabel.setForeground( new Color( 0, 100, 0 ) );
-		feedbackLabel.setText( "UMAP sucessfully computed." );
 		repaint();
 	}
 }

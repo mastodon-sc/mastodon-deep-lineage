@@ -3,7 +3,7 @@ package org.mastodon.mamut.feature.dimensionalityreduction.umap.feature;
 import org.mastodon.RefPool;
 import org.mastodon.collection.RefIntMap;
 import org.mastodon.collection.ref.RefIntHashMap;
-import org.mastodon.feature.FeatureProjection;
+import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
@@ -37,15 +37,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @param <V> the type of vertex
  * @param <G> the type of read-only graph
  */
-public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G extends ReadOnlyGraph< V, ? > >
+public abstract class AbstractUmapFeatureComputer< V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, E > >
 		extends AbstractSerialFeatureComputer< V >
 {
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final StatusService statusService;
-
-	private final Umap umap;
 
 	private List< UmapInputDimension< V > > inputDimensions;
 
@@ -63,7 +61,6 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 	{
 		this.model = model;
 		this.statusService = context.getService( StatusService.class );
-		this.umap = new Umap();
 		this.vertexToRowIndexMap = new RefIntHashMap<>( getRefPool(), NO_ENTRY );
 	}
 
@@ -151,13 +148,14 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 		double[][] dataMatrix = data.toArray( new double[ 0 ][ 0 ] );
 		if ( dataMatrix.length == 0 )
 			throw new IllegalArgumentException(
-					"No valid data rows found, i.e. in each existing data row there is at least one non-finite value, such Not a Number or Infinity." );
+					"No valid data rows found, i.e. in each existing data row there is at least one non-finite value, such as Not a Number or Infinity." );
 		if ( settings.isStandardizeFeatures() )
 		{
 			logger.debug( "Standardizing features with {} rows and {} columns.", dataMatrix.length, inputDimensions.size() );
 			StandardScaler.standardizeColumns( dataMatrix );
 			logger.debug( "Finished standardizing features" );
 		}
+		Umap umap = new Umap();
 		umap.setNumberComponents( settings.getNumberOfOutputDimensions() );
 		umap.setNumberNearestNeighbours( settings.getNumberOfNeighbors() );
 		umap.setMinDist( ( float ) settings.getMinimumDistance() );
@@ -180,14 +178,13 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< ? >, G exte
 			for ( int i = 0; i < inputDimensions.size(); i++ )
 			{
 				UmapInputDimension< V > inputDimension = inputDimensions.get( i );
-				FeatureProjection< V > projection = inputDimension.getFeatureProjection();
-				double value = projection.value( vertex );
+				double value = inputDimension.getValue( vertex );
 				if ( Double.isNaN( value ) )
 				{
 					finiteRow = false;
 					break;
 				}
-				row[ i ] = projection.value( vertex );
+				row[ i ] = value;
 			}
 			if ( !finiteRow )
 				continue;

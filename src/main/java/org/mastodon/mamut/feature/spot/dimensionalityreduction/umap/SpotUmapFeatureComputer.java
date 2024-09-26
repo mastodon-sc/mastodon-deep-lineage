@@ -3,6 +3,7 @@ package org.mastodon.mamut.feature.spot.dimensionalityreduction.umap;
 import org.mastodon.RefPool;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeature;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeatureComputer;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
@@ -13,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class SpotUmapFeatureComputer extends AbstractUmapFeatureComputer< Spot, ModelGraph >
+public class SpotUmapFeatureComputer extends AbstractUmapFeatureComputer< Spot, Link, ModelGraph >
 {
 
 	public SpotUmapFeatureComputer( final Model model, final Context context )

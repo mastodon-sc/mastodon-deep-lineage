@@ -41,6 +41,7 @@ import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapController;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapFeatureSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
 import org.scijava.Context;
 
@@ -74,7 +75,7 @@ public class SpotUmapFeatureTest extends AbstractFeatureTest< Spot >
 			UmapFeatureSettings settings = umapController.getFeatureSettings();
 			settings.setNumberOfNeighbors( 5 );
 			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
-					() -> UmapInputDimension.getListFromFeatureModel( featureModel, Spot.class );
+					() -> UmapInputDimension.getListFromFeatureModel( featureModel, Spot.class, Link.class );
 			umapController.computeFeature( inputDimensionsSupplier );
 			spotUmapFeature = FeatureUtils.getFeature( graph2.getModel(), SpotUmapFeature.SpotUmapFeatureSpec.class );
 			assertNotNull( spotUmapFeature );

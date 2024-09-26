@@ -5,14 +5,27 @@ For visualizing high-dimensional data, e.g. in two dimensions, potentially getti
 * [Uniform Manifold Approximation Projection (UMAP)](https://arxiv.org/abs/1802.03426)
 * [UMAP Python implementation](https://umap-learn.readthedocs.io/en/latest/)
 
-To apply it to your data, use the menu `Plugins > Compute Feature > Dimensionality reduction > UMAP`.
-Select the table whose features should be dimensionality reduced. Currently, the Spot and the BranchSpot table are
-supported.
-Next, select the feature + feature projections that should be dimensionality reduced. Prefer to select features, which
-describe the phenotype (e.g. size, shape, speed, number of neighbors, etc.).
-Only select positional features (e.g. centroid, coordinates, timeframe, etc.) if the position of cells within
-the image are descriptive for the phenotype.
+### Usage
 
+To apply it to your data, use the menu `Plugins > Compute Feature > Dimensionality reduction > UMAP`.
+Select the graph type whose features should be dimensionality reduced, either the Model Graph with Features for Spots
+and Links or the Branch Graph with Features on BranchSpots and BranchLinks.
+Next, select the feature + feature projections that should be dimensionality reduced. Prefer to select features, which
+describe the phenotype (e.g. size, shape, velocity, number of neighbors, etc.).
+Only select positional features (e.g. centroid, coordinates, timeframe, etc.) if the position of cells within
+the image are descriptive for the phenotype. If you are unsure, you can select all features and then remove the
+positional features later.
+
+### Description
+
+The UMAP algorithm reduces the dimensionality of the selected features and adds the reduced features to the table.
+In order to do so, the UMAP algorithm uses the data matrix from the spot or branch spot table, where each row represents
+a spot or branch spot and each column represents a feature. The link and branch link features can be included in the
+algorithm.
+If they are selected, the algorithm will use the link feature value of its incoming edge or the average of all values of
+all incoming edges, if there is more than one incoming edge.
+
+The dialog will look like this:
 ![umap_dialog.png](umap_dialog.png)
 
 By default, all measurements are selected in the box.
@@ -53,7 +66,3 @@ Visualization with the [Mastodon Blender View](https://github.com/mastodon-sc/ma
 The example above has been generated using the [
 tgmm-mini](https://github.com/mastodon-sc/mastodon-example-data/tree/master/tgmm-mini) dataset, which is included in
 the Mastodon repository.
-
-
-
-

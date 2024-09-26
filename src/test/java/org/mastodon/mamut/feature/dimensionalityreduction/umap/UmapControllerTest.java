@@ -8,8 +8,11 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
 import org.mastodon.mamut.feature.spot.dimensionalityreduction.umap.SpotUmapFeature;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.ui.coloring.feature.DefaultFeatureRangeCalculatorTest;
@@ -66,8 +69,21 @@ class UmapControllerTest
 			Model model = new Model();
 			UmapController umapController = new UmapController( model, context );
 			assertEquals( Spot.class, umapController.getVertexType() );
-			umapController.setSpotGraph( false );
+			umapController.setModelGraph( false );
 			assertEquals( BranchSpot.class, umapController.getVertexType() );
+		}
+	}
+
+	@Test
+	void testGetEdgeType()
+	{
+		try (Context context = new Context())
+		{
+			Model model = new Model();
+			UmapController umapController = new UmapController( model, context );
+			assertEquals( Link.class, umapController.getEdgeType() );
+			umapController.setModelGraph( false );
+			assertEquals( BranchLink.class, umapController.getEdgeType() );
 		}
 	}
 
@@ -83,7 +99,7 @@ class UmapControllerTest
 			UmapFeatureSettings umapFeatureSettings = umapController.getFeatureSettings();
 			umapFeatureSettings.setNumberOfOutputDimensions( numberOfOutputDimensions );
 			List< UmapInputDimension< Spot > > umapInputDimensions =
-					UmapInputDimension.getListFromFeatureModel( model.getFeatureModel(), Spot.class );
+					UmapInputDimension.getListFromFeatureModel( model.getFeatureModel(), Spot.class, Link.class );
 			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( () -> umapInputDimensions ) );
 			Supplier< List< UmapInputDimension< Spot > > > emptyInputDimensionsSupplier = Collections::emptyList;
 			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( emptyInputDimensionsSupplier ) );
@@ -104,7 +120,7 @@ class UmapControllerTest
 			UmapFeatureSettings settings = umapController.getFeatureSettings();
 			settings.setNumberOfNeighbors( 5 );
 			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
-					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class );
+					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class, Link.class );
 			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( inputDimensionsSupplier ) );
 		}
 	}
@@ -133,14 +149,44 @@ class UmapControllerTest
 			UmapFeatureSettings settings = umapController.getFeatureSettings();
 			settings.setNumberOfNeighbors( 5 );
 			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
-					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class );
+					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class, Link.class );
 			umapController.computeFeature( inputDimensionsSupplier );
 			Feature< Spot > spotUmapFeature = Cast.unchecked( featureModel.getFeature( SpotUmapFeature.GENERIC_SPEC ) );
 			Set< FeatureProjection< Spot > > projections = spotUmapFeature.projections();
 			assertEquals( 2, projections.size() );
 			FeatureProjection< Spot > projection0 = spotUmapFeature.projections().iterator().next();
-			assertFalse( Double.isNaN( projection0.value( graph2.spot0 ) ) );
+			assertTrue( Double.isNaN( projection0.value( graph2.spot0 ) ) ); // NB: the link feature for spot0 is NaN, since it has no incoming edges
+			assertFalse( Double.isNaN( projection0.value( graph2.spot1 ) ) );
 			assertTrue( Double.isNaN( projection0.value( graph2.spot13 ) ) );
 		}
 	}
+
+	@Test
+	void testMultipleIncomingEdges()
+	{
+		Model model = new Model();
+		ModelGraph graph = model.getGraph();
+		Spot spot00 = graph.addVertex().init( 0, new double[] { 0, 0, 0 }, 0 );
+		Spot spot01 = graph.addVertex().init( 0, new double[] { 3, 4, 0 }, 0 );
+		Spot spot02 = graph.addVertex().init( 0, new double[] { 6, 8, 0 }, 0 );
+		Spot spot1 = graph.addVertex().init( 1, new double[] { 3, 4, 0 }, 0 );
+		graph.addEdge( spot00, spot1 ).init();
+		graph.addEdge( spot01, spot1 ).init();
+		graph.addEdge( spot02, spot1 ).init();
+
+		try (Context context = new Context())
+		{
+			UmapController umapController = new UmapController( model, context );
+			FeatureModel featureModel = model.getFeatureModel();
+			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
+					() -> UmapInputDimension.getListFromFeatureModel( featureModel, Spot.class, Link.class );
+			umapController.computeFeature( inputDimensionsSupplier );
+			Feature< Spot > spotUmapFeature = Cast.unchecked( featureModel.getFeature( SpotUmapFeature.GENERIC_SPEC ) );
+			Set< FeatureProjection< Spot > > projections = spotUmapFeature.projections();
+			assertEquals( 2, projections.size() );
+			FeatureProjection< Spot > projection0 = spotUmapFeature.projections().iterator().next();
+			assertFalse( Double.isNaN( projection0.value( spot1 ) ) );
+		}
+	}
+
 }

@@ -46,6 +46,7 @@ import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapController;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapFeatureSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.IntPropertyMap;
 import org.scijava.Context;
@@ -86,14 +87,14 @@ public class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
 					FeatureComputerTestUtils.getFeature( context, model, BranchSinuosityFeature.BRANCH_SINUOSITY_FEATURE_SPEC ) );
 			featureModel.declareFeature( branchSinuosityFeature );
 			List< UmapInputDimension< BranchSpot > > umapInputDimensions =
-					UmapInputDimension.getListFromFeatureModel( featureModel, BranchSpot.class );
+					UmapInputDimension.getListFromFeatureModel( featureModel, BranchSpot.class, BranchLink.class );
 
 			// set up the controller and compute the feature
 			Supplier< List< UmapInputDimension< BranchSpot > > > inputDimensionsSupplier = () -> umapInputDimensions;
 			UmapController umapController = new UmapController( graph2.getModel(), context );
 			UmapFeatureSettings settings = umapController.getFeatureSettings();
 			settings.setNumberOfNeighbors( 3 );
-			umapController.setSpotGraph( false );
+			umapController.setModelGraph( false );
 			umapController.computeFeature( inputDimensionsSupplier );
 			umapFeature = FeatureUtils.getFeature( graph2.getModel(), BranchUmapFeature.BranchSpotUmapFeatureSpec.class );
 			assertNotNull( umapFeature );

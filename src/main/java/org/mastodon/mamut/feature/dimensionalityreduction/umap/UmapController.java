@@ -1,14 +1,17 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.umap;
 
 import net.imglib2.util.Cast;
+import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.branch.dimensionalityreduction.umap.BranchUmapFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
 import org.mastodon.mamut.feature.spot.dimensionalityreduction.umap.SpotUmapFeatureComputer;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 import org.scijava.prefs.PrefService;
@@ -37,11 +40,11 @@ public class UmapController
 
 	private final PrefService prefs;
 
-	private boolean isSpotGraph;
+	private boolean isModelGraph;
 
 	private final UmapFeatureSettings settings;
 
-	private static final String SPOT_GRAPH_SETTING = "GraphType";
+	private static final String IS_MODEL_GRAPH = "IsModelGraph";
 
 	private static final String NUMBER_OF_DIMENSIONS_SETTING = "NumberOfDimensions";
 
@@ -74,7 +77,8 @@ public class UmapController
 	 * Since the UMAP computation is computationally expensive, this method prevents multiple executions of itself at the same time.
 	 * @param inputDimensionsSupplier a supplier for the selected input dimensions
 	 */
-	public < V extends Vertex< ? > > void computeFeature( final Supplier< List< UmapInputDimension< V > > > inputDimensionsSupplier )
+	public < V extends Vertex< E >, E extends Edge< V > > void
+			computeFeature( final Supplier< List< UmapInputDimension< V > > > inputDimensionsSupplier )
 	{
 		if ( running )
 		{
@@ -96,14 +100,14 @@ public class UmapController
 
 	/**
 	 * Sets the graph type for the UMAP feature.
-	 * @param spotGraph {@code true} if the UMAP feature is to be computed for the spot graph, {@code false} for the branch graph
+	 * @param isModelGraph {@code true} if the UMAP feature is to be computed for the model graph, {@code false} for the branch graph
 	 */
-	public void setSpotGraph( final boolean spotGraph )
+	public void setModelGraph( final boolean isModelGraph )
 	{
-		isSpotGraph = spotGraph;
+		this.isModelGraph = isModelGraph;
 	}
 
-	private < V extends Vertex< ? >, G extends ReadOnlyGraph< V, ? > > void
+	private < V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, E > > void
 			updateFeature( final List< UmapInputDimension< V > > inputDimensions )
 	{
 		if ( inputDimensions.isEmpty() )
@@ -111,14 +115,14 @@ public class UmapController
 		if ( settings.getNumberOfOutputDimensions() >= inputDimensions.size() )
 			throw new IllegalArgumentException( "Number of output dimensions (" + settings.getNumberOfOutputDimensions()
 					+ ") must be smaller than the number of input features (" + inputDimensions.size() + ")." );
-		G graph = getGraph( isSpotGraph );
-		AbstractUmapFeatureComputer< V, G > umapFeatureComputer =
-				isSpotGraph ? Cast.unchecked( new SpotUmapFeatureComputer( model, context ) )
+		G graph = getGraph( isModelGraph );
+		AbstractUmapFeatureComputer< V, E, G > umapFeatureComputer =
+				isModelGraph ? Cast.unchecked( new SpotUmapFeatureComputer( model, context ) )
 						: Cast.unchecked( new BranchUmapFeatureComputer( model, context ) );
 		umapFeatureComputer.computeFeature( settings, inputDimensions, graph );
 	}
 
-	private < V extends Vertex< ? >, G extends ReadOnlyGraph< V, ? > > G getGraph( boolean isSpotGraph )
+	private < V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, ? > > G getGraph( boolean isSpotGraph )
 	{
 		if ( isSpotGraph )
 			return Cast.unchecked( model.getGraph() );
@@ -126,29 +130,40 @@ public class UmapController
 	}
 
 	/**
-	 * Gets the vertex type for the UMAP feature, i.e. {@link Spot} or {@link BranchSpot}.
+	 * Gets the vertex and edge type for the UMAP feature, i.e. {@link Spot} or {@link BranchSpot}.
 	 * @return the vertex type
 	 */
-	public < V extends Vertex< ? > > Class< V > getVertexType()
+	public Class< ? extends Vertex< ? > > getVertexType()
 	{
-		if ( isSpotGraph )
-			return Cast.unchecked( Spot.class );
-		return Cast.unchecked( BranchSpot.class );
+		if ( isModelGraph )
+			return Spot.class;
+		return BranchSpot.class;
 	}
 
 	/**
-	 * Gets from the user preferences, whether the UMAP feature is to be computed for the spot graph.
-	 * If the preferences are not available, the default value is {@code true}.
-	 * @return {@code true} if the UMAP feature is to be computed for the spot graph, {@code false} otherwise
+	 * Gets the edge type for the UMAP feature, i.e. {@link Link} or {@link BranchLink}.
+	 * @return the edge type
 	 */
-	public boolean isSpotGraphPreferences()
+	public Class< ? extends Edge< ? > > getEdgeType()
 	{
-		return prefs == null || prefs.getBoolean( UmapController.class, SPOT_GRAPH_SETTING, true );
+		if ( isModelGraph )
+			return Link.class;
+		return BranchLink.class;
+	}
+
+	/**
+	 * Gets from the user preferences, whether the UMAP feature is to be computed for the model graph.
+	 * If the preferences are not available, the default value is {@code true}.
+	 * @return {@code true} if the UMAP feature is to be computed for the model graph, {@code false} otherwise
+	 */
+	public boolean isModelGraphPreferences()
+	{
+		return prefs == null || prefs.getBoolean( UmapController.class, IS_MODEL_GRAPH, true );
 	}
 
 	private UmapFeatureSettings loadSettingsFromPreferences()
 	{
-		isSpotGraph = prefs == null || prefs.getBoolean( UmapController.class, SPOT_GRAPH_SETTING, true );
+		isModelGraph = prefs == null || prefs.getBoolean( UmapController.class, IS_MODEL_GRAPH, true );
 		boolean standardizeFeatures = prefs == null
 				|| prefs.getBoolean( UmapController.class, STANDARDIZE_FEATURES_SETTING, UmapFeatureSettings.DEFAULT_STANDARDIZE_FEATURES );
 		int numberOfDimensions = prefs == null ? UmapFeatureSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS
@@ -169,7 +184,7 @@ public class UmapController
 		logger.debug( "Save UMAP settings." );
 		if ( prefs == null )
 			return;
-		prefs.put( UmapController.class, SPOT_GRAPH_SETTING, isSpotGraph );
+		prefs.put( UmapController.class, IS_MODEL_GRAPH, isModelGraph );
 		prefs.put( UmapController.class, STANDARDIZE_FEATURES_SETTING, settings.isStandardizeFeatures() );
 		prefs.put( UmapController.class, NUMBER_OF_DIMENSIONS_SETTING, settings.getNumberOfOutputDimensions() );
 		prefs.put( UmapController.class, NUMBER_OF_NEIGHBORS_SETTING, settings.getNumberOfNeighbors() );
