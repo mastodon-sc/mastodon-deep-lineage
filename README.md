@@ -23,9 +23,9 @@
     * [Usage](#usage)
     * [Description](#description)
     * [Parameters](#parameters)
-* [Import](#import)
+* [Imports](#imports)
     * [Import Spots from Label Image](#import-spots-from-label-image)
-* [Export](#export)
+* [Exports](#exports)
     * [Label Image Exporter](#label-image-exporter)
     * [GraphML Exporter](#graphml-exporter)
 * [Technical Information](#technical-information)
@@ -372,7 +372,7 @@ The example above has been generated using the [
 tgmm-mini](https://github.com/mastodon-sc/mastodon-example-data/tree/master/tgmm-mini) dataset, which is included in
 the Mastodon repository.
 
-## Import
+## Imports
 
 ### Import Spots from Label Image
 
@@ -402,7 +402,7 @@ the Mastodon repository.
 #### Label image as active image in ImageJ
 
 * The label image can be opened in ImageJ and the plugin can be called from the
-  menu: ![Plugin Import Menu](/doc/import/label_image/imagej/plugin_import_imagej_menu.png)
+  menu: ![Plugin Import Menu](/doc/imports/label_image/imagej/plugin_import_imagej_menu.png)
 * Please make sure that the label image is the active image in ImageJ.
 * Please make sure that the label image has the same dimensions as the image data in Mastodon.
     * You can use the `Image > Properties` command ImageJ to check (and) set the dimensions of the label image.
@@ -415,24 +415,24 @@ the Mastodon repository.
     * Import the image sequence with the actual image into ImageJ contained in folder `Fluo-C3DL-MDA231/01/`
         * `File > Import > Image Sequence...`
     * Set the dimensions of the image sequence to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-    * ![plugin_import_example_1.png](/doc/import/label_image/imagej/plugin_import_example_1.png)
+  * ![plugin_import_example_1.png](/doc/imports/label_image/imagej/plugin_import_example_1.png)
     * Open Mastodon from Fiji and create a new project with the image sequence
         * `Plugins > Mastodon > new Mastodon project > Use an image opened in ImageJ > Create`
-        * ![plugin_import_example_2.png](/doc/import/label_image/imagej/plugin_import_example_2.png)
+      * ![plugin_import_example_2.png](/doc/imports/label_image/imagej/plugin_import_example_2.png)
     * Import the image sequence encoding the label images into ImageJ contained in
       folder: `Fluo-C3DL-MDA231/01_ERR_SEG/`
     * Set the dimensions of the label image to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-        * ![plugin_import_example_3.png](/doc/import/label_image/imagej/plugin_import_example_3.png)
+        * ![plugin_import_example_3.png](/doc/imports/label_image/imagej/plugin_import_example_3.png)
     * Open Import window in
       Mastodon: `Plugins > Imports > Import spots from label image > Import spots from ImageJ image`
     * Select the channel in Big Data Viewer containing the image that has been used to create the label image.
         * Click `OK` and the spots are imported into Mastodon.
-            * ![plugin_import_example_4.png](/doc/import/label_image/imagej/plugin_import_example_4.png)
+            * ![plugin_import_example_4.png](/doc/imports/label_image/imagej/plugin_import_example_4.png)
 
 #### Label image as BDV channel
 
 * The plugin can be called from the
-  menu: ![Plugin Import Menu](/doc/import/label_image/imagej/plugin_import_imagej_menu.png)
+  menu: ![Plugin Import Menu](/doc/imports/label_image/imagej/plugin_import_imagej_menu.png)
 
 ##### Example
 
@@ -442,22 +442,22 @@ the Mastodon repository.
     * Import the image sequence with the actual image into ImageJ contained in folder `Fluo-C3DL-MDA231/01/`
         * `File > Import > Image Sequence...`
     * Set the dimensions of the image sequence to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-    * ![plugin_import_example_1.png](/doc/import/label_image/imagej/plugin_import_example_1.png)
+  * ![plugin_import_example_1.png](/doc/imports/label_image/imagej/plugin_import_example_1.png)
     * Import the image sequence encoding the label images into ImageJ contained in
       folder: `Fluo-C3DL-MDA231/01_ERR_SEG/`
     * Set the dimensions of the label image to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-        * ![plugin_import_example_3.png](/doc/import/label_image/imagej/plugin_import_example_3.png)
+        * ![plugin_import_example_3.png](/doc/imports/label_image/imagej/plugin_import_example_3.png)
     * Merge the 2 images into a single image using the `Image > Color > Merge Channels...` command
-        * ![plugin_import_example_5.png](/doc/import/label_image/imagej/plugin_import_example_5.png)
+        * ![plugin_import_example_5.png](/doc/imports/label_image/imagej/plugin_import_example_5.png)
     * Open Mastodon from Fiji and create a new project with merged image
         * `Plugins > Mastodon > new Mastodon project > Use an image opened in ImageJ > Create`
-        * ![plugin_import_example_6.png](/doc/import/label_image/imagej/plugin_import_example_6.png)
+      * ![plugin_import_example_6.png](/doc/imports/label_image/imagej/plugin_import_example_6.png)
     * Open Import window: `Plugins > Imports > Import spots from label image > Import spots from BDV channel`
     * Select the BDV channel containing the label image
     * Click `OK` and the spots are imported into Mastodon.
-        * ![plugin_import_example_7.png](/doc/import/label_image/imagej/plugin_import_example_7.png)
+        * ![plugin_import_example_7.png](/doc/imports/label_image/imagej/plugin_import_example_7.png)
 
-## Export
+## Exports
 
 ### Label Image Exporter
 
@@ -467,14 +467,14 @@ the Mastodon repository.
   clashes with the background of zero.
 * The recommended export format is '*.tif'-files. However, it should work also for other formats supported by ImageJ.
 * The export uses an image with signed integer value space, thus the maximum allowed id is 2.147.483.646.
-* Exporter can be found here:  ![Plugin Export Menu](/doc/export/label_image/plugin_export_menu.png)
-* The dialog:  ![Plugin Export Dialog](/doc/export/label_image/plugin_export_dialog.png)
+* Exporter can be found here:  ![Plugin Export Menu](/doc/exports/label_image/plugin_export_menu.png)
+* The dialog:  ![Plugin Export Dialog](/doc/exports/label_image/plugin_export_dialog.png)
 
 #### Parameters
 
 * Label Id: The id that is used for the labels. The default is the Spot track Id.
     * The ids correspond to the highlighted columns in the feature
-      table: ![Feature Table](/doc/export/label_image/plugin_export_table.png)
+      table: ![Feature Table](/doc/exports/label_image/plugin_export_table.png)
 * Frame rate reduction: Only export every n-th frame. 1 means no reduction. Value must be >= 1.
     * The frame number corresponds to the _Spot frame_ column in the feature table.
 * Resolution level: Spatial resolution level of export. 0 means highest resolution. Value > 0 mean lower resolution.
@@ -484,9 +484,9 @@ the Mastodon repository.
 
 * Demo data: [Example data set](https://github.com/mastodon-sc/mastodon-example-data/tree/master/tgmm-mini)
 * The timelapse with the ellipsoids in
-  BigDataViewer: ![BigDataViewer](/doc/export/label_image/bdv_timelapse.gif)
+  BigDataViewer: ![BigDataViewer](/doc/exports/label_image/bdv_timelapse.gif)
 * The exported tif imported into [Napari](https://napari.org/stable/) 3D
-  view: ![Napari](/doc/export/label_image/napari_timelapse.gif)
+  view: ![Napari](/doc/exports/label_image/napari_timelapse.gif)
 
 ### GraphML Exporter
 
@@ -499,7 +499,7 @@ the Mastodon repository.
   or [Gephi](https://gephi.org/).
 * GraphML can be processed in Java using the [JGraphT](https://jgrapht.org/) library.
 * GraphML can be processed in Python using the [NetworkX](https://networkx.org/) library.
-* Exporter can be found here:  ![Plugin Export Dialog](/doc/export/graphml/plugin_export_menu.png)
+* Exporter can be found here:  ![Plugin Export Dialog](/doc/exports/graphml/plugin_export_menu.png)
 
 #### Options
 
@@ -520,8 +520,8 @@ the Mastodon repository.
 #### Example
 
 * Demo data: [Example data set](https://github.com/mastodon-sc/mastodon-example-data/tree/master/tgmm-mini)
-* The resulting file loaded into yEd: ![yEd](/doc/export/graphml/yed_graphml.png)
-* The resulting file loaded into Cytoscape: ![Cytoscape](/doc/export/graphml/cytoscape_graphml.png)
+* The resulting file loaded into yEd: ![yEd](/doc/exports/graphml/yed_graphml.png)
+* The resulting file loaded into Cytoscape: ![Cytoscape](/doc/exports/graphml/cytoscape_graphml.png)
 
 ## Technical Information
 
