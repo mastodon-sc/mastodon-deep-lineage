@@ -12,28 +12,28 @@
 * [Documentation of Mastodon](#documentation-of-mastodon)
 * [Installation Instructions](#installation-instructions)
 * [Numerical Features added to Mastodon](#numerical-features-added-to-mastodon)
-  * [Spot Features](#spot-features)
-  * [Branch Features](#branch-features)
+    * [Spot Features](#spot-features)
+    * [Branch Features](#branch-features)
 * [Hierarchical Clustering of Lineage Trees](#hierarchical-clustering-of-lineage-trees)
-  * [Zhang Tree Edit Distance](#zhang-tree-edit-distance)
-  * [Workflow](#workflow)
-  * [Parameters](#parameters)
-  * [Example](#example)
+    * [Zhang Tree Edit Distance](#zhang-tree-edit-distance)
+    * [Workflow](#workflow)
+    * [Parameters](#parameters)
+    * [Example](#example)
 * [Dimensionality reduction](#dimensionality-reduction)
-  * [Usage](#usage)
-  * [Description](#description)
-  * [Parameters](#parameters)
+    * [Usage](#usage)
+    * [Description](#description)
+    * [Parameters](#parameters)
 * [Import](#import)
-  * [Import Spots from Label Image](#import-spots-from-label-image)
+    * [Import Spots from Label Image](#import-spots-from-label-image)
 * [Export](#export)
-  * [Label Image Exporter](#label-image-exporter)
-  * [GraphML Exporter](#graphml-exporter)
+    * [Label Image Exporter](#label-image-exporter)
+    * [GraphML Exporter](#graphml-exporter)
 * [Technical Information](#technical-information)
-  * [Maintainer](#maintainer)
-  * [Contributors](#contributors)
-  * [License](#license)
-  * [Contribute Code or Provide Feedback](#contribute-code-or-provide-feedback)
-  * [Contribute Documentation](#contribute-documentation)
+    * [Maintainer](#maintainer)
+    * [Contributors](#contributors)
+    * [License](#license)
+    * [Contribute Code or Provide Feedback](#contribute-code-or-provide-feedback)
+    * [Contribute Documentation](#contribute-documentation)
 * [Acknowledgements](#acknowledgements)
 
 ## Documentation of Mastodon
@@ -44,10 +44,10 @@ Mastodon Deep Lineage is an extension of Mastodon. For the full documentation of
 ## Installation Instructions
 
 * Add the listed Mastodon update sites in Fiji:
-  * `Help > Update > Manage update sites`
-    1. `Mastodon`
-    2. `Mastodon-DeepLineage`
-       ![Mastodon Update sites](doc/installation/Mastodon.png)
+    * `Help > Update > Manage update sites`
+        1. `Mastodon`
+        2. `Mastodon-DeepLineage`
+           ![Mastodon Update sites](doc/installation/Mastodon.png)
 
 ## Numerical Features added to Mastodon
 
@@ -188,21 +188,21 @@ Tree2
 ```
 
 * Edit distance of 69, because:
-  * one node has a difference of 1 (13-12)
-  * two nodes have a difference of 24 each (227-203 * 2)
-  * two extra nodes are added with a weight of 10 each (10 * 2)
-    * ![zhang_example.gif](doc/clustering/zhang_example.gif)
+    * one node has a difference of 1 (13-12)
+    * two nodes have a difference of 24 each (227-203 * 2)
+    * two extra nodes are added with a weight of 10 each (10 * 2)
+        * ![zhang_example.gif](doc/clustering/zhang_example.gif)
 
 ### Workflow
 
 1. The similarity measure uses the attribute cell lifetime, which is computed as a difference of time points between two
    subsequent divisions. There are multiple ways to compute the similarity between two lineage trees based on this
    attribute:
-1. The sum of the edit distances as shown in the basic example above. Individual differences in the cell lifetimes may
-   be normalized by their sum (i.e. local normalization)
-2. The sum of the edit distances as shown in the basic example above normalized by the maximum possible edit
-   distances of the two trees (normalized zhang edit distance)
-3. The sum of the edit distances normalized by the number of the involved nodes (per branch zhang edit distance)
+    1. The sum of the edit distances as shown in the basic example above. Individual differences in the cell lifetimes
+       may be normalized by their sum (i.e. local normalization)
+    2. The sum of the edit distances as shown in the basic example above normalized by the maximum possible edit
+       distances of the two trees (normalized zhang edit distance)
+    3. The sum of the edit distances normalized by the number of the involved nodes (per branch zhang edit distance)
 2. The similarities are computed between all possible combinations of lineage trees leading to a two-dimensional
    similarity matrix. The values in this matrix are considered to reflect similarities of lineage trees. Low tree edit
    distances represent a high similarity between a discrete pair of lineage trees. This matrix is then used to perform
@@ -214,69 +214,68 @@ Tree2
 ### Parameters
 
 * Crop criterion:
-  * The criterion for cropping the lineage trees
-  * Number of spots (default)
-  * Time point
+    * The criterion for cropping the lineage trees
+    * Number of spots (default)
+    * Time point
 * Crop start
-  * At which number of spots / time point (depending on the chose crop criterion) the analysis should start
+    * At which number of spots / time point (depending on the chose crop criterion) the analysis should start
 * Crop end
-  * At which number of spots / time point (depending on the chose crop criterion) the analysis should end
+    * At which number of spots / time point (depending on the chose crop criterion) the analysis should end
 * Number of clusters
-  * How many groups the lineage trees should be assigned to by the clustering
-  * Must not be greater than the number of valid lineage trees
+    * How many groups the lineage trees should be assigned to by the clustering
+    * Must not be greater than the number of valid lineage trees
 * Minimum number of divisions
-  * The minimum number of divisions a lineage tree should have so that it is included in the analysis
+    * The minimum number of divisions a lineage tree should have so that it is included in the analysis
 * Similarity measures:
-  1. (default) ![normalized_zhang_distance.gif](doc/clustering/normalized_zhang_distance.gif)<sup>1,2</sup>
-  2. ![per_branch_zhang_distance.gif](doc/clustering/per_branch_zhang_distance.gif)<sup>1</sup>
-  3. [Zhang](https://doi.org/10.1007/BF01975866) Tree Edit Distance<sup>1,2</sup>
+    1. (default) ![normalized_zhang_distance.gif](doc/clustering/normalized_zhang_distance.gif)<sup>1,2</sup>
+    2. ![per_branch_zhang_distance.gif](doc/clustering/per_branch_zhang_distance.gif)<sup>1</sup>
+    3. [Zhang](https://doi.org/10.1007/BF01975866) Tree Edit Distance<sup>1,2</sup>
 
-  * <sup>1</sup>Local cost function: ![local_cost.gif](doc/clustering/local_cost.gif)
-  * <sup>2</sup>Local cost function with
-    normalization: ![local_cost_normalized.gif](doc/clustering/local_cost_normalized.gif)
+    * <sup>1</sup>Local cost function: ![local_cost.gif](doc/clustering/local_cost.gif)
+    * <sup>2</sup>Local cost function with
+      normalization: ![local_cost_normalized.gif](doc/clustering/local_cost_normalized.gif)
 * Linkage strategy for hierarchical clustering,
   cf. [linkage methods](https://en.wikipedia.org/wiki/Hierarchical_clustering#Cluster_Linkage)
-  1. Average (default)
-  2. Single
-  3. Complete
+    1. Average (default)
+    2. Single
+    3. Complete
 * List of further projects
-  * If you have multiple similar projects, you can add them here to get an average clustering taking all projects
-    into account.
-  * Mastodon projects can be added / removed using
-    * "Add files..."
-    * "Add folder content..."
-    * "Remove selected"
-    * "Clear list"
-    * Drag and drop of files and folders
-  * The name of the current open project is shown above the list. The current project is always included in the
-    hierarchical clustering. It cannot be added to the list.
-  * It is important that the names of the roots of lineages in all projects included in the hierarchical clustering are
-    the same.
-    Otherwise, the hierarchical clustering will not work.
-  * The effect of adding further projects is that the similarity matrix is computed for each project separately and then
-    averaged, resulting in a more robust hierarchical clustering.
+    * If you have multiple similar projects, you can add them here to get an average clustering taking all projects
+      into account.
+    * Mastodon projects can be added / removed using
+        * "Add files..."
+        * "Add folder content..."
+        * "Remove selected"
+        * "Clear list"
+        * Drag and drop of files and folders
+    * The name of the current open project is shown above the list. The current project is always included in the
+      hierarchical clustering. It cannot be added to the list.
+    * It is important that the names of the roots of lineages in all projects included in the hierarchical clustering
+      are the same. Otherwise, the hierarchical clustering will not work.
+    * The effect of adding further projects is that the similarity matrix is computed for each project separately and
+      then averaged, resulting in a more robust hierarchical clustering.
 * Add generated tags to further projects
-  * If checked, the tags generated by the hierarchical clustering are also added to the further projects.
-  * *Important note: this will write tags to these projects*. Consider making a backup of the further projects before
-    running the hierarchical clustering, if you choose this option.
+    * If checked, the tags generated by the hierarchical clustering are also added to the further projects.
+    * *Important note: this will write tags to these projects*. Consider making a backup of the further projects before
+      running the hierarchical clustering, if you choose this option.
 * Show dendrogram of hierarchical clustering of lineage trees
-  * If checked, the dendrogram is shown after the hierarchical clustering
+    * If checked, the dendrogram is shown after the hierarchical clustering
 * Check validity of parameters
-  * Press this button to check, if with the current parameters a hierarchical clustering is possible
-  * If the parameters are invalid, a message will appear with the reason(s)
-  * Possible reasons for invalid parameters:
-    * The number of clusters is greater than the number of valid lineage trees
-    * The crop start is greater than the crop end
-    * The crop end is greater than the maximum number of spots / time points
-    * Further projects that are included in the hierarchical clustering could not be found / opened
+    * Press this button to check, if with the current parameters a hierarchical clustering is possible
+    * If the parameters are invalid, a message will appear with the reason(s)
+    * Possible reasons for invalid parameters:
+        * The number of clusters is greater than the number of valid lineage trees
+        * The crop start is greater than the crop end
+        * The crop end is greater than the maximum number of spots / time points
+        * Further projects that are included in the hierarchical clustering could not be found / opened
 
 ### Example
 
 * Demo data: [Example data set](doc/clustering/lineage_clustering.mastodon)
-  * The demo data does not contain any image data.
-  * The spatial positions of the spots are randomly generated.
-  * When opening the dataset, you should confirm that you open the project with dummy
-    images. ![Dummy images](doc/clustering/dummy.png)
+    * The demo data does not contain any image data.
+    * The spatial positions of the spots are randomly generated.
+    * When opening the dataset, you should confirm that you open the project with dummy
+      images. ![Dummy images](doc/clustering/dummy.png)
 * The track scheme of the demo data contains 8 lineage tree in total. You may see that the "symmetric", the "asymmetric"
   and the "single division" trees look similar to each other, but dissimilar to the remaining
   trees. ![Trackscheme](doc/clustering/trackscheme.png)
@@ -284,17 +283,17 @@ Tree2
 * Cf. section [Parameters](#parameters) for the meaning of the parameters.
 * Not visible to the user, a similarity matrix is computed based on the chosen similarity measure. For the demo data,
   the matrix looks like this. Highly similar trees have low distances in this matrix.
-  * ![Similarity matrix](doc/clustering/similarity_matrix.png)
+    * ![Similarity matrix](doc/clustering/similarity_matrix.png)
 * The resulting dendrogram.
-  * User can toggle on/off root labels, tags, clustering threshold and median of the tree edit distances.
-  * If the option `Show tag labels` is checked, the tag set shown in the dendrogram can be chosen.
-  * Export options for the dendrogram to SVG and PNG accessible via the context menu.
-  * ![Dendrogram](doc/clustering/dendrogram.png)
-  * The result of the hierarchical clustering can be exported to a CSV file via the context menu. The exported file
-    contains the root
-    names of the lineage trees, the tag set value, the assigned group and the similarity score. The similarity score
-    indicates how similar the lineage trees in this group are. The lower the score, the more similar the trees are.
-  * ![Export clustering](doc/clustering/csv.png)
+    * User can toggle on/off root labels, tags, clustering threshold and median of the tree edit distances.
+    * If the option `Show tag labels` is checked, the tag set shown in the dendrogram can be chosen.
+    * Export options for the dendrogram to SVG and PNG accessible via the context menu.
+    * ![Dendrogram](doc/clustering/dendrogram.png)
+    * The result of the hierarchical clustering can be exported to a CSV file via the context menu. The exported file
+      contains the root
+      names of the lineage trees, the tag set value, the assigned group and the similarity score. The similarity score
+      indicates how similar the lineage trees in this group are. The lower the score, the more similar the trees are.
+    * ![Export clustering](doc/clustering/csv.png)
 * The resulting tag set may be used for coloring the track
   scheme. ![Trackscheme with tags](doc/clustering/trackscheme_with_tags.png)
 * The resulting tag set may be used for coloring the track scheme branch
@@ -327,6 +326,7 @@ The UMAP algorithm reduces the dimensionality of the selected features and adds 
 In order to do so, the UMAP algorithm uses the data matrix from the spot or branch spot table, where each row represents
 a spot or branch spot and each column represents a feature. The link and branch link features can be included in the
 algorithm.
+
 If they are selected, the algorithm will use the link feature value of its incoming edge or the average of all values of
 all incoming edges, if there is more than one incoming edge.
 
@@ -405,29 +405,29 @@ the Mastodon repository.
   menu: ![Plugin Import Menu](/doc/import/label_image/imagej/plugin_import_imagej_menu.png)
 * Please make sure that the label image is the active image in ImageJ.
 * Please make sure that the label image has the same dimensions as the image data in Mastodon.
-  * You can use the `Image > Properties` command ImageJ to check (and) set the dimensions of the label image.
+    * You can use the `Image > Properties` command ImageJ to check (and) set the dimensions of the label image.
 
 ##### Example
 
 * Example
   dataset: [Fluo-C3DL-MDA231 from Cell Tracking Challenge](http://data.celltrackingchallenge.net/training-datasets/Fluo-C3DL-MDA231.zip)
-  * Extract the file to a folder named `Fluo-C3DL-MDA231`
-  * Import the image sequence with the actual image into ImageJ contained in folder `Fluo-C3DL-MDA231/01/`
-    * `File > Import > Image Sequence...`
-  * Set the dimensions of the image sequence to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-  * ![plugin_import_example_1.png](/doc/import/label_image/imagej/plugin_import_example_1.png)
-  * Open Mastodon from Fiji and create a new project with the image sequence
-    * `Plugins > Mastodon > new Mastodon project > Use an image opened in ImageJ > Create`
-    * ![plugin_import_example_2.png](/doc/import/label_image/imagej/plugin_import_example_2.png)
-  * Import the image sequence encoding the label images into ImageJ contained in
-    folder: `Fluo-C3DL-MDA231/01_ERR_SEG/`
-  * Set the dimensions of the label image to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-    * ![plugin_import_example_3.png](/doc/import/label_image/imagej/plugin_import_example_3.png)
-  * Open Import window in
-    Mastodon: `Plugins > Imports > Import spots from label image > Import spots from ImageJ image`
-  * Select the channel in Big Data Viewer containing the image that has been used to create the label image.
-    * Click `OK` and the spots are imported into Mastodon.
-      * ![plugin_import_example_4.png](/doc/import/label_image/imagej/plugin_import_example_4.png)
+    * Extract the file to a folder named `Fluo-C3DL-MDA231`
+    * Import the image sequence with the actual image into ImageJ contained in folder `Fluo-C3DL-MDA231/01/`
+        * `File > Import > Image Sequence...`
+    * Set the dimensions of the image sequence to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
+    * ![plugin_import_example_1.png](/doc/import/label_image/imagej/plugin_import_example_1.png)
+    * Open Mastodon from Fiji and create a new project with the image sequence
+        * `Plugins > Mastodon > new Mastodon project > Use an image opened in ImageJ > Create`
+        * ![plugin_import_example_2.png](/doc/import/label_image/imagej/plugin_import_example_2.png)
+    * Import the image sequence encoding the label images into ImageJ contained in
+      folder: `Fluo-C3DL-MDA231/01_ERR_SEG/`
+    * Set the dimensions of the label image to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
+        * ![plugin_import_example_3.png](/doc/import/label_image/imagej/plugin_import_example_3.png)
+    * Open Import window in
+      Mastodon: `Plugins > Imports > Import spots from label image > Import spots from ImageJ image`
+    * Select the channel in Big Data Viewer containing the image that has been used to create the label image.
+        * Click `OK` and the spots are imported into Mastodon.
+            * ![plugin_import_example_4.png](/doc/import/label_image/imagej/plugin_import_example_4.png)
 
 #### Label image as BDV channel
 
@@ -438,24 +438,24 @@ the Mastodon repository.
 
 * Example
   dataset: [Fluo-C3DL-MDA231 from Cell Tracking Challenge](http://data.celltrackingchallenge.net/training-datasets/Fluo-C3DL-MDA231.zip)
-  * Extract the file to a folder named `Fluo-C3DL-MDA231`
-  * Import the image sequence with the actual image into ImageJ contained in folder `Fluo-C3DL-MDA231/01/`
-    * `File > Import > Image Sequence...`
-  * Set the dimensions of the image sequence to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-  * ![plugin_import_example_1.png](/doc/import/label_image/imagej/plugin_import_example_1.png)
-  * Import the image sequence encoding the label images into ImageJ contained in
-    folder: `Fluo-C3DL-MDA231/01_ERR_SEG/`
-  * Set the dimensions of the label image to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-    * ![plugin_import_example_3.png](/doc/import/label_image/imagej/plugin_import_example_3.png)
-  * Merge the 2 images into a single image using the `Image > Color > Merge Channels...` command
-    * ![plugin_import_example_5.png](/doc/import/label_image/imagej/plugin_import_example_5.png)
-  * Open Mastodon from Fiji and create a new project with merged image
-    * `Plugins > Mastodon > new Mastodon project > Use an image opened in ImageJ > Create`
-    * ![plugin_import_example_6.png](/doc/import/label_image/imagej/plugin_import_example_6.png)
-  * Open Import window: `Plugins > Imports > Import spots from label image > Import spots from BDV channel`
-  * Select the BDV channel containing the label image
-  * Click `OK` and the spots are imported into Mastodon.
-    * ![plugin_import_example_7.png](/doc/import/label_image/imagej/plugin_import_example_7.png)
+    * Extract the file to a folder named `Fluo-C3DL-MDA231`
+    * Import the image sequence with the actual image into ImageJ contained in folder `Fluo-C3DL-MDA231/01/`
+        * `File > Import > Image Sequence...`
+    * Set the dimensions of the image sequence to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
+    * ![plugin_import_example_1.png](/doc/import/label_image/imagej/plugin_import_example_1.png)
+    * Import the image sequence encoding the label images into ImageJ contained in
+      folder: `Fluo-C3DL-MDA231/01_ERR_SEG/`
+    * Set the dimensions of the label image to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
+        * ![plugin_import_example_3.png](/doc/import/label_image/imagej/plugin_import_example_3.png)
+    * Merge the 2 images into a single image using the `Image > Color > Merge Channels...` command
+        * ![plugin_import_example_5.png](/doc/import/label_image/imagej/plugin_import_example_5.png)
+    * Open Mastodon from Fiji and create a new project with merged image
+        * `Plugins > Mastodon > new Mastodon project > Use an image opened in ImageJ > Create`
+        * ![plugin_import_example_6.png](/doc/import/label_image/imagej/plugin_import_example_6.png)
+    * Open Import window: `Plugins > Imports > Import spots from label image > Import spots from BDV channel`
+    * Select the BDV channel containing the label image
+    * Click `OK` and the spots are imported into Mastodon.
+        * ![plugin_import_example_7.png](/doc/import/label_image/imagej/plugin_import_example_7.png)
 
 ## Export
 
@@ -473,10 +473,10 @@ the Mastodon repository.
 #### Parameters
 
 * Label Id: The id that is used for the labels. The default is the Spot track Id.
-  * The ids correspond to the highlighted columns in the feature
-    table: ![Feature Table](/doc/export/label_image/plugin_export_table.png)
+    * The ids correspond to the highlighted columns in the feature
+      table: ![Feature Table](/doc/export/label_image/plugin_export_table.png)
 * Frame rate reduction: Only export every n-th frame. 1 means no reduction. Value must be >= 1.
-  * The frame number corresponds to the _Spot frame_ column in the feature table.
+    * The frame number corresponds to the _Spot frame_ column in the feature table.
 * Resolution level: Spatial resolution level of export. 0 means highest resolution. Value > 0 mean lower resolution.
 * Save to: Path to the file to save the label image to. Should end with '.tif'.
 
@@ -491,11 +491,10 @@ the Mastodon repository.
 ### GraphML Exporter
 
 * Exports the branch graph to a [GraphML](http://graphml.graphdrawing.org/) file.
-  * The graph is directed. The branch spots are the vertices and the branch links are the edges.
-  * The vertices receive a label attribute with the branch spot name. The vertices receive a duration attribute with
-    the
-    branch duration.
-  * The edges are not labeled and have no attributes.
+    * The graph is directed. The branch spots are the vertices and the branch links are the edges.
+    * The vertices receive a label attribute with the branch spot name. The vertices receive a duration attribute with
+      the branch duration.
+    * The edges are not labeled and have no attributes.
 * GraphML can be visualized with [Cytoscape](https://cytoscape.org/), [yEd](https://www.yworks.com/products/yed)
   or [Gephi](https://gephi.org/).
 * GraphML can be processed in Java using the [JGraphT](https://jgrapht.org/) library.
@@ -505,18 +504,18 @@ the Mastodon repository.
 #### Options
 
 * Export all branches to GraphML (one file)
-  * Exports the whole branch graph to a single file.
-  * Select a file to save to. Should end with '.graphml'.
+    * Exports the whole branch graph to a single file.
+    * Select a file to save to. Should end with '.graphml'.
 * Export selected branches to GraphML (one file)
-  * Exports the selected branches to a single file.
-    * The selected branches are the ones that are highlighted in the branch view.
-    * A branch is considered selected if at least one of its spots is selected. However, the exported duration
-      attribute
-      always reflects the whole branch duration.
-  * Select a file to save to. Should end with '.graphml'.
+    * Exports the selected branches to a single file.
+        * The selected branches are the ones that are highlighted in the branch view.
+        * A branch is considered selected if at least one of its spots is selected. However, the exported duration
+          attribute
+          always reflects the whole branch duration.
+    * Select a file to save to. Should end with '.graphml'.
 * Export tracks to GraphML (one file per track)
-  * Exports each track to a separate file.
-  * Select a directory to save to.
+    * Exports each track to a separate file.
+    * Select a directory to save to.
 
 #### Example
 
