@@ -198,17 +198,17 @@ Tree2
 1. The similarity measure uses the attribute cell lifetime, which is computed as a difference of time points between two
    subsequent divisions. There are multiple ways to compute the similarity between two lineage trees based on this
    attribute:
-2. The sum of the edit distances as shown in the basic example above. Individual differences in the cell lifetimes may
+1. The sum of the edit distances as shown in the basic example above. Individual differences in the cell lifetimes may
    be normalized by their sum (i.e. local normalization)
-3. The sum of the edit distances as shown in the basic example above normalized by the maximum possible edit distances
-   of the two trees (normalized zhang edit distance)
-4. The sum of the edit distances normalized by the number of the involved nodes (per branch zhang edit distance)
-5. The similarities are computed between all possible combinations of lineage trees leading to a two-dimensional
+2. The sum of the edit distances as shown in the basic example above normalized by the maximum possible edit
+   distances of the two trees (normalized zhang edit distance)
+3. The sum of the edit distances normalized by the number of the involved nodes (per branch zhang edit distance)
+2. The similarities are computed between all possible combinations of lineage trees leading to a two-dimensional
    similarity matrix. The values in this matrix are considered to reflect similarities of lineage trees. Low tree edit
    distances represent a high similarity between a discrete pair of lineage trees. This matrix is then used to perform
    an [Agglomerative Hierarchical Clustering](https://en.wikipedia.org/wiki/Hierarchical_clustering) into a specifiable
    number of groups.
-6. For the clustering three
+3. For the clustering three
    different [linkage methods](https://en.wikipedia.org/wiki/Hierarchical_clustering#Cluster_Linkage) can be chosen.
 
 ### Parameters
@@ -477,6 +477,7 @@ the Mastodon repository.
     table: ![Feature Table](/doc/export/label_image/plugin_export_table.png)
 * Frame rate reduction: Only export every n-th frame. 1 means no reduction. Value must be >= 1.
   * The frame number corresponds to the _Spot frame_ column in the feature table.
+* Resolution level: Spatial resolution level of export. 0 means highest resolution. Value > 0 mean lower resolution.
 * Save to: Path to the file to save the label image to. Should end with '.tif'.
 
 #### Example
