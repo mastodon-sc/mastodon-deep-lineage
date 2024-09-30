@@ -78,13 +78,12 @@ Mastodon Deep Lineage is an extension of Mastodon. For the full documentation of
 |                                      | average speed        | The average speed of a spot during its life cycle relative to its `n` nearest neighbors.                                                                                                                                                                                                                                                                                                                     | ![](doc/features/branch/branchRelativeMovementEquation2.gif)                                                                          |
 
 '*' The relative movement features cannot be called from the FeatureComputer directly. Instead, they are computed via
-the
-plugin menu: ![](doc/features/relativemovement.png)
+the plugin menu: ![](doc/features/relativemovement.png)
 
 ## Hierarchical Clustering of Lineage Trees
 
+* Menu Location: `Plugins > Hierarchical Clustering of Lineage Trees`
 * This command is capable of grouping similar lineage trees together.
-* It can be found in the menu under `Plugins > Hierarchical Clustering of Lineage Trees`.
 * The linage clustering operates on Mastodon's branch graph.
 * Lineage trees are considered similar, if they share a similar structure and thus represent a similar cell division
   pattern. The structure of a lineage tree is represented by the tree topology.
@@ -311,7 +310,8 @@ reduce the dimensionality of the measurements, using this algorithm:
 
 ### Usage
 
-To apply it to your data, use the menu `Plugins > Compute Feature > Dimensionality reduction > UMAP`.
+* Menu Location: `Plugins > Compute Feature > Dimensionality reduction > UMAP`
+
 Select the graph type whose features should be dimensionality reduced, either the Model Graph with Features for Spots
 and Links or the Branch Graph with Features on BranchSpots and BranchLinks.
 Next, select the feature + feature projections that should be dimensionality reduced. Prefer to select features, which
@@ -376,6 +376,7 @@ the Mastodon repository.
 
 ### Import Spots from Label Image
 
+* Menu Location: `Plugins > Imports > Import spots from label image`
 * You can use the plugin to import spots from a label image representing an instance segmentation into Mastodon. This
   may be useful if you have an instance segmentation of cells or other objects, and you want to track them using
   Mastodon.
@@ -461,6 +462,7 @@ the Mastodon repository.
 
 ### Label Image Exporter
 
+* Menu Location: `Plugins > Exports > Export label image using ellipsoids`
 * The Label image exporter is capable of saving a label image to a file using the existing ellipsoids in Mastodon.
 * For the labels, the _spot ids_, _branch spot ids_ or the _track ids_ that correspond to the spots / ellipsoids may be
   used. Since these Ids are counted zero based in Mastodon, an **offset of 1** is added to all Ids so that no label
@@ -490,6 +492,7 @@ the Mastodon repository.
 
 ### GraphML Exporter
 
+* Menu Location: `Plugins > Exports > Export GraphML (Branches)`
 * Exports the branch graph to a [GraphML](http://graphml.graphdrawing.org/) file.
     * The graph is directed. The branch spots are the vertices and the branch links are the edges.
     * The vertices receive a label attribute with the branch spot name. The vertices receive a duration attribute with
