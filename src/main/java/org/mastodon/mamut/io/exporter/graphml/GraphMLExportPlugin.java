@@ -33,6 +33,7 @@ import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
 import org.mastodon.mamut.KeyConfigScopes;
+import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
@@ -105,15 +106,10 @@ public class GraphMLExportPlugin extends AbstractContextual implements MamutPlug
 	@Override
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
-		return Collections.singletonList(
-				menu( "Plugins",
-						menu( "Exports",
-								menu( "Export GraphML (Branches)",
-										item( EXPORT_BRANCH_GRAPH ),
-										item( EXPORT_SELECTED_BRANCH_GRAPH ),
-										item( EXPORT_LINEAGES ) )
-						)
-				) );
+		return Collections.singletonList( MamutMenuBuilder.fileMenu(
+				menu( "Export",
+						menu( "Export to GraphML (branches)",
+								item( EXPORT_BRANCH_GRAPH ), item( EXPORT_SELECTED_BRANCH_GRAPH ), item( EXPORT_LINEAGES ) ) ) ) );
 	}
 
 	@Override

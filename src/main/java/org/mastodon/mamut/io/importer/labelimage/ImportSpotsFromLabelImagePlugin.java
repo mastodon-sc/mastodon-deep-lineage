@@ -30,6 +30,7 @@ package org.mastodon.mamut.io.importer.labelimage;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
+import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.importer.labelimage.ui.ImportSpotsFromImgPlusView;
 import org.mastodon.mamut.plugin.MamutPlugin;
@@ -89,10 +90,8 @@ public class ImportSpotsFromLabelImagePlugin extends AbstractContextual implemen
 	@Override
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
-		return Collections.singletonList(
-				menu( "Plugins", menu( "Imports",
-						menu( "Import spots from label image", item( IMPORT_SPOTS_FROM_IMAGEJ ),
-								item( IMPORT_SPOTS_FROM_BDV_CHANNEL ) ) ) ) );
+		return Collections.singletonList( MamutMenuBuilder.fileMenu( menu( "Import",
+				menu( "Import spots from label image", item( IMPORT_SPOTS_FROM_IMAGEJ ), item( IMPORT_SPOTS_FROM_BDV_CHANNEL ) ) ) ) );
 	}
 
 	@Override
