@@ -83,7 +83,7 @@ public class ExportLabelImagePlugin extends AbstractContextual implements MamutP
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				menu( "Plugins", menu( "Exports", item( EXPORT_LABEL_IMAGE_USING_ELLIPSOIDS ) ) ) );
+				menu( "File", menu( "Export", item( EXPORT_LABEL_IMAGE_USING_ELLIPSOIDS ) ) ) );
 	}
 
 	@Override
