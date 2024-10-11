@@ -29,13 +29,13 @@
 package org.mastodon.mamut.clustering.treesimilarity.tree;
 
 import org.mastodon.mamut.clustering.config.HasName;
-import org.mastodon.mamut.clustering.util.HierarchicalClusteringUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.util.TagSetUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -169,7 +169,7 @@ public class BranchSpotTree implements Tree< Double >, HasName
 		private String getTagLabel()
 		{
 			Spot ref = model.getGraph().vertexRef();
-			String tagLabel = HierarchicalClusteringUtils.getTagLabel( model, branchSpot, tagSet, ref );
+			String tagLabel = TagSetUtils.getTagLabel( model, branchSpot, tagSet, ref );
 			model.getGraph().releaseRef( ref );
 			if ( tagLabel == null )
 				tagLabel = "";

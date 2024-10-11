@@ -504,39 +504,4 @@ class HierarchicalClusteringResultUtilsTest
 		assertEquals( "matrix is null.", HierarchicalClusteringUtils.dumpSimilarityMatrix( null, 1, 1 ) );
 		assertEquals( "matrix is empty.", HierarchicalClusteringUtils.dumpSimilarityMatrix( new double[][] {}, 1, 1 ) );
 	}
-
-	@Test
-	void testGetTagSetNames()
-	{
-		ExampleGraph1 exampleGraph1 = new ExampleGraph1();
-		String tagSetName1 = "TagSet1";
-		String tagSetName2 = "TagSet2";
-		String tagSetName3 = "TagSet2";
-		Collection< Pair< String, Integer > > emptyTagsAndColors = Collections.emptyList();
-		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), tagSetName1, emptyTagsAndColors );
-		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), tagSetName2, emptyTagsAndColors );
-		TagSetUtils.addNewTagSetToModel( exampleGraph1.getModel(), tagSetName3, emptyTagsAndColors );
-		Collection< String > tagSetNames = HierarchicalClusteringUtils.getTagSetNames( exampleGraph1.getModel() );
-		List< String > expected = Arrays.asList( tagSetName1, tagSetName2, tagSetName3 );
-		assertEquals( expected, tagSetNames );
-	}
-
-	@Test
-	void testGetTagLabel()
-	{
-		ExampleGraph2 exampleGraph2 = new ExampleGraph2();
-		Spot ref = exampleGraph2.getModel().getGraph().vertexRef();
-		String tagSetName = "TagSet";
-		Pair< String, Integer > tag0 = Pair.of( "Tag", 0 );
-		Collection< Pair< String, Integer > > tagAndColor = Collections.singletonList( tag0 );
-		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( exampleGraph2.getModel(), tagSetName, tagAndColor );
-		TagSetStructure.Tag tag = tagSet.getTags().get( 0 );
-		TagSetUtils.tagBranch( exampleGraph2.getModel(), tagSet, tag, exampleGraph2.spot5 );
-		assertEquals( tag.label(),
-				HierarchicalClusteringUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, tagSet, ref ) );
-		assertNull( HierarchicalClusteringUtils.getTagLabel( null, exampleGraph2.branchSpotD, tagSet, ref ) );
-		assertNull( HierarchicalClusteringUtils.getTagLabel( exampleGraph2.getModel(), null, tagSet, ref ) );
-		assertNull( HierarchicalClusteringUtils.getTagLabel( exampleGraph2.getModel(), exampleGraph2.branchSpotD, null, ref ) );
-		exampleGraph2.getModel().getGraph().releaseRef( ref );
-	}
 }
