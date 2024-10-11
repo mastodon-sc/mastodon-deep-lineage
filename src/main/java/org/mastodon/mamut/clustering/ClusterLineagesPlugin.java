@@ -55,7 +55,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 @Plugin( type = MamutPlugin.class )
 public class ClusterLineagesPlugin extends AbstractContextual implements MamutPlugin
 {
-	private static final String CLUSTER_LINEAGE_TRESS = "Hierarchical Clustering of Lineage Trees";
+	private static final String CLUSTER_LINEAGE_TRESS = "Hierarchical clustering of lineage trees";
 
 	private static final String[] CLUSTERING_LINEAGE_TRESS_KEYS = { "ctrl shift C" };
 
