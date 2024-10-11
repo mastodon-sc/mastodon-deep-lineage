@@ -82,7 +82,7 @@ public class UmapPlugin extends AbstractContextual implements MamutPlugin
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				menu( "Plugins", menu( "Compute Feature", menu( "Dimensionality Reduction", item( ACTION_NAME ) ) ) ) );
+				menu( "Plugins", menu( "Compute feature", menu( "Dimensionality reduction", item( ACTION_NAME ) ) ) ) );
 	}
 
 	@Override

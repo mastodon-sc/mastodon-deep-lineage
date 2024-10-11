@@ -81,7 +81,7 @@ public class RelativeMovementPlugin extends AbstractContextual implements MamutP
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				menu( "Plugins", menu( "Compute Feature", item( DESCRIPTION ) ) ) );
+				menu( "Plugins", menu( "Compute feature", item( DESCRIPTION ) ) ) );
 	}
 
 	@Override

@@ -86,7 +86,7 @@ public class ClusterLineagesPlugin extends AbstractContextual implements MamutPl
 	@Override
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
-		return Collections.singletonList( menu( "Plugins", menu( "Lineage Analysis", item( CLUSTER_LINEAGE_TRESS ) ) ) );
+		return Collections.singletonList( menu( "Plugins", menu( "Lineage analysis", item( CLUSTER_LINEAGE_TRESS ) ) ) );
 	}
 
 	@Override
