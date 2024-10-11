@@ -37,7 +37,7 @@ public enum LabelOptions
 
 	BRANCH_SPOT_ID( "Branch spot ID" ),
 
-	TRACK_ID( "Spot track Id" );
+	TRACK_ID( "Spot track ID" );
 
 	private final String name;
 
