@@ -43,7 +43,7 @@ class LabelOptionsTest
 	{
 		assertEquals( LabelOptions.SPOT_ID, LabelOptions.getByName( "Spot ID" ) );
 		assertEquals( LabelOptions.BRANCH_SPOT_ID, LabelOptions.getByName( "Branch spot ID" ) );
-		assertEquals( LabelOptions.TRACK_ID, LabelOptions.getByName( "Spot track Id" ) );
+		assertEquals( LabelOptions.TRACK_ID, LabelOptions.getByName( "Spot track ID" ) );
 		assertThrows( NoSuchElementException.class, () -> LabelOptions.getByName( "Foo" ) );
 	}
 
