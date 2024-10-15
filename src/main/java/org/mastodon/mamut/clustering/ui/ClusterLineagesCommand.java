@@ -102,7 +102,7 @@ public class ClusterLineagesCommand extends DynamicCommand
 	private String currentProjectName;
 
 	@SuppressWarnings( "unused" )
-	@Parameter( label = "<html><body>List of<br>further projects<br>(Drag & Drop supported)</body></html>", style = "files,extensions:mastodon", callback = "update" )
+	@Parameter( label = "<html><body>List of<br>further projects<br>(Drag & Drop supported)</body></html>", style = "files,extensions:mastodon", callback = "update", persist = false )
 	private File[] projects = new File[ 0 ];
 
 	@SuppressWarnings( "unused" )
