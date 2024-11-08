@@ -424,13 +424,13 @@ the Mastodon repository.
 * Import the image sequence with the actual image into ImageJ contained in folder `Fluo-C3DL-MDA231/01/`
     * `File > Import > Image Sequence...`
 * Set the dimensions of the image sequence to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-    * ![plugin_import_example_1.png](doc/import/label_image/plugin_import_example_1.png)
+    * ![plugin_import_example_1.png](doc/import/label_image/plugin_import_example_01.png)
 * Open Mastodon from Fiji and create a new project with the image sequence
     * `Plugins > Mastodon > new Mastodon project > Use an image opened in ImageJ > Create`
-    * ![plugin_import_example_2.png](doc/import/label_image/plugin_import_example_2.png)
+  * ![plugin_import_example_2.png](doc/import/label_image/plugin_import_example_02.png)
 * Import the image sequence encoding the label images into ImageJ contained in folder: `Fluo-C3DL-MDA231/01_ERR_SEG/`
     * Set the dimensions of the label image to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-  * ![plugin_import_example_3.png](doc/import/label_image/plugin_import_example_3.png)
+  * ![plugin_import_example_3.png](doc/import/label_image/plugin_import_example_03.png)
 * Open Import window in Mastodon: `File > Import > Import spots from label image > Import spots from ImageJ image`
     * You can keep the ellipsoid scaling factor at 1.0. Select factor higher than 1.0 to increase the size of the
       ellipsoids and lower than 1.0 to decrease the size of the resulting ellipsoids.
@@ -438,9 +438,9 @@ the Mastodon repository.
     * Select the channel in Big Data Viewer containing the image that has been used to create the label image. The
       channel is used to check, if the dimensions of the label image in ImageJ match the dimensions of the image data in
       Mastodon.
-    * ![plugin_import_example_8.png](doc/import/label_image/plugin_import_example_8.png)
+  * ![plugin_import_example_8.png](doc/import/label_image/plugin_import_example_08.png)
     * Click `OK` and the spots are imported into Mastodon.
-    * ![plugin_import_example_4.png](doc/import/label_image/plugin_import_example_4.png)
+  * ![plugin_import_example_4.png](doc/import/label_image/plugin_import_example_04.png)
 
 #### Label image as BDV channel
 
@@ -457,15 +457,15 @@ the Mastodon repository.
 * Import the image sequence with the actual image into ImageJ contained in folder `Fluo-C3DL-MDA231/01/`
     * `File > Import > Image Sequence...`
     * Set the dimensions of the image sequence to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-    * ![plugin_import_example_1.png](doc/import/label_image/plugin_import_example_1.png)
+  * ![plugin_import_example_1.png](doc/import/label_image/plugin_import_example_01.png)
 * Import the image sequence encoding the label images into ImageJ contained in folder: `Fluo-C3DL-MDA231/01_ERR_SEG/`
     * Set the dimensions of the label image to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
-  * ![plugin_import_example_3.png](doc/import/label_image/plugin_import_example_3.png)
+  * ![plugin_import_example_3.png](doc/import/label_image/plugin_import_example_03.png)
     * Merge the 2 images into a single image using the `Image > Color > Merge Channels...` command
-  * ![plugin_import_example_5.png](doc/import/label_image/plugin_import_example_5.png)
+  * ![plugin_import_example_5.png](doc/import/label_image/plugin_import_example_05.png)
 * Open Mastodon from Fiji and create a new project with merged image
     * `Plugins > Mastodon > new Mastodon project > Use an image opened in ImageJ > Create`
-    * ![plugin_import_example_6.png](doc/import/label_image/plugin_import_example_6.png)
+  * ![plugin_import_example_6.png](doc/import/label_image/plugin_import_example_06.png)
 * Open Import window: `File > Import > Import spots from label image > Import spots from BDV channel`
     * Keep the ellipsoid scaling factor at 1.0
     * You can decide to link spots having the same label id in consecutive frames. This is useful if you have a time
@@ -473,9 +473,9 @@ the Mastodon repository.
       The Mastodon Linker plugin should be used for this.
     * Select the BDV channel containing the label image that has been used to create the segmented label image. This is
       used to check, if the dimensions of the label image and the image data in BDV match, which is required.
-    * ![plugin_import_example_9.png](doc/import/label_image/plugin_import_example_8.png)
+  * ![plugin_import_example_9.png](doc/import/label_image/plugin_import_example_08.png)
     * Click `OK` and the spots are imported into Mastodon.
-    * ![plugin_import_example_7.png](doc/import/label_image/plugin_import_example_7.png)
+  * ![plugin_import_example_7.png](doc/import/label_image/plugin_import_example_07.png)
 
 ## Export
 
