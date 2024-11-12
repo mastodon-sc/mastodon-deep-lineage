@@ -29,6 +29,8 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.umap;
 
 import org.junit.jupiter.api.Test;
+import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
+
 import tagbio.umap.Umap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,7 +41,7 @@ class UmapTest
 	@Test
 	void test()
 	{
-		double[][] sampleData = SimpleUmapDemo.generateSampleData();
+		double[][] sampleData = RandomDataTools.generateSampleData();
 		Umap umap = SimpleUmapDemo.setUpUmap();
 		double[][] umapResult = umap.fitTransform( sampleData );
 
