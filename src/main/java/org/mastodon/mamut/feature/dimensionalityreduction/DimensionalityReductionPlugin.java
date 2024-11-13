@@ -58,7 +58,13 @@ public class DimensionalityReductionPlugin extends AbstractContextual implements
 
 	private static final String[] UMAP_SHORT_CUT = { "ctrl alt U" };
 
+	private static final String TSNE_ACTION_NAME = "t-SNE";
+
+	private static final String[] TSNE_SHORT_CUT = { "ctrl alt U" };
+
 	private final AbstractNamedAction umapAction;
+
+	private final AbstractNamedAction tsneAction;
 
 	private ProjectModel projectModel;
 
@@ -70,6 +76,7 @@ public class DimensionalityReductionPlugin extends AbstractContextual implements
 	public DimensionalityReductionPlugin()
 	{
 		umapAction = new RunnableAction( UMAP_ACTION_NAME, this::showUmapDialog );
+		tsneAction = new RunnableAction( TSNE_ACTION_NAME, this::showTSneDialog );
 	}
 
 	@Override
@@ -82,7 +89,8 @@ public class DimensionalityReductionPlugin extends AbstractContextual implements
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				menu( "Plugins", menu( "Compute feature", menu( "Dimensionality reduction", item( UMAP_ACTION_NAME ) ) ) ) );
+				menu( "Plugins", menu( "Compute feature",
+						menu( "Dimensionality reduction", item( UMAP_ACTION_NAME ), item( TSNE_ACTION_NAME ) ) ) ) );
 	}
 
 	@Override
@@ -94,6 +102,11 @@ public class DimensionalityReductionPlugin extends AbstractContextual implements
 	private void showUmapDialog()
 	{
 		new UmapView( projectModel.getModel(), getContext() ).setVisible( true );
+	}
+
+	private void showTSneDialog()
+	{
+
 	}
 
 	/*
@@ -112,6 +125,8 @@ public class DimensionalityReductionPlugin extends AbstractContextual implements
 		{
 			descriptions.add( UMAP_ACTION_NAME, UMAP_SHORT_CUT,
 					"Uniform Manifold Approximation and Projection for Dimension Reduction (UMAP)." );
+			descriptions.add( TSNE_ACTION_NAME, TSNE_SHORT_CUT,
+					"t-distributed Stochastic Neighbor Embedding (t-SNE)." );
 		}
 	}
 }
