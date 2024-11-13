@@ -45,7 +45,7 @@ public class UmapDemo extends JPanel
 		double[][] sampleData = RandomDataTools.generateSampleData();
 		Umap umap = setUpUmap();
 		double[][] umapResult = umap.fitTransform( sampleData );
-		PlotPoints.plot( sampleData, umapResult );
+		PlotPoints.plot( sampleData, umapResult, resultValues -> resultValues[ 0 ] > 0 );
 	}
 
 	static Umap setUpUmap()

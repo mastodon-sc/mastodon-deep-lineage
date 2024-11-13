@@ -3,6 +3,7 @@ package org.mastodon.mamut.feature.dimensionalityreduction;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.lang.invoke.MethodHandles;
+import java.util.function.Predicate;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -19,9 +20,11 @@ public class PlotPoints extends JPanel
 
 	private final double[][] result;
 
-	public static void plot( final double[][] sampleData, final double[][] umapResult )
+	private final Predicate< double[] > filter;
+
+	public static void plot( final double[][] sampleData, final double[][] umapResult, final Predicate< double[] > filter )
 	{
-		PlotPoints plotPoints = new PlotPoints( sampleData, umapResult );
+		PlotPoints plotPoints = new PlotPoints( sampleData, umapResult, filter );
 		JFrame frame = new JFrame( "Dimensionality Reduction Demo. Reduction from 3 dimensions to 2." );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		frame.setSize( 600, 400 );
@@ -29,10 +32,12 @@ public class PlotPoints extends JPanel
 		frame.setVisible( true );
 	}
 
-	private PlotPoints( final double[][] points, final double[][] result )
+	private PlotPoints( final double[][] points, final double[][] result, Predicate< double[] > filter )
+
 	{
 		this.points = points;
 		this.result = result;
+		this.filter = filter;
 	}
 
 	@Override
@@ -50,7 +55,7 @@ public class PlotPoints extends JPanel
 			int z = ( int ) points[ i ][ 2 ];
 			int resultX = ( int ) result[ i ][ 0 ];
 			int resultY = ( int ) result[ i ][ 1 ];
-			if ( resultX > 0 )
+			if ( filter.test( result[ i ] ) )
 				g.setColor( Color.RED );
 			else
 				g.setColor( Color.BLUE );
