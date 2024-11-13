@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.dimensionalityreduction;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
@@ -52,13 +52,13 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
 @SuppressWarnings( "unused" )
 @Plugin( type = MamutPlugin.class )
-public class UmapPlugin extends AbstractContextual implements MamutPlugin
+public class DimensionalityReductionPlugin extends AbstractContextual implements MamutPlugin
 {
-	private static final String ACTION_NAME = "UMAP";
+	private static final String UMAP_ACTION_NAME = "UMAP";
 
-	private static final String[] SHORT_CUT = { "ctrl alt U" };
+	private static final String[] UMAP_SHORT_CUT = { "ctrl alt U" };
 
-	private final AbstractNamedAction action;
+	private final AbstractNamedAction umapAction;
 
 	private ProjectModel projectModel;
 
@@ -67,9 +67,9 @@ public class UmapPlugin extends AbstractContextual implements MamutPlugin
 	private CommandService commandService;
 
 	@SuppressWarnings( "unused" )
-	public UmapPlugin()
+	public DimensionalityReductionPlugin()
 	{
-		action = new RunnableAction( ACTION_NAME, this::showUmapDialog );
+		umapAction = new RunnableAction( UMAP_ACTION_NAME, this::showUmapDialog );
 	}
 
 	@Override
@@ -82,13 +82,13 @@ public class UmapPlugin extends AbstractContextual implements MamutPlugin
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				menu( "Plugins", menu( "Compute feature", menu( "Dimensionality reduction", item( ACTION_NAME ) ) ) ) );
+				menu( "Plugins", menu( "Compute feature", menu( "Dimensionality reduction", item( UMAP_ACTION_NAME ) ) ) ) );
 	}
 
 	@Override
 	public void installGlobalActions( Actions actions )
 	{
-		actions.namedAction( action, SHORT_CUT );
+		actions.namedAction( umapAction, UMAP_SHORT_CUT );
 	}
 
 	private void showUmapDialog()
@@ -110,7 +110,8 @@ public class UmapPlugin extends AbstractContextual implements MamutPlugin
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( ACTION_NAME, SHORT_CUT, "Uniform Manifold Approximation and Projection for Dimension Reduction." );
+			descriptions.add( UMAP_ACTION_NAME, UMAP_SHORT_CUT,
+					"Uniform Manifold Approximation and Projection for Dimension Reduction (UMAP)." );
 		}
 	}
 }
