@@ -33,6 +33,7 @@ import net.miginfocom.swing.MigLayout;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapController;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapFeatureSettings;
 import org.mastodon.mamut.model.Model;
@@ -239,7 +240,7 @@ public class UmapView extends JFrame
 	{
 		int maximumNumberOfDimensions = Math.max( 2, umapInputDimensionsPanel.getNumberOfFeatures() );
 		int numberOfDimensions = Math.min( umapController.getFeatureSettings().getNumberOfOutputDimensions(), maximumNumberOfDimensions );
-		return new SpinnerNumberModel( numberOfDimensions, UmapFeatureSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS,
+		return new SpinnerNumberModel( numberOfDimensions, DimensionalityReductionSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS,
 				maximumNumberOfDimensions, 1 );
 	}
 

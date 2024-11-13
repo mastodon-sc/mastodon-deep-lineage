@@ -33,6 +33,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.branch.dimensionalityreduction.umap.BranchUmapFeatureComputer;
+import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
 import org.mastodon.mamut.feature.spot.dimensionalityreduction.umap.SpotUmapFeatureComputer;
@@ -192,11 +193,11 @@ public class UmapController
 	private UmapFeatureSettings loadSettingsFromPreferences()
 	{
 		isModelGraph = prefs == null || prefs.getBoolean( UmapController.class, IS_MODEL_GRAPH, true );
-		boolean standardizeFeatures = prefs == null
-				|| prefs.getBoolean( UmapController.class, STANDARDIZE_FEATURES_SETTING, UmapFeatureSettings.DEFAULT_STANDARDIZE_FEATURES );
-		int numberOfDimensions = prefs == null ? UmapFeatureSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS
-				: prefs.getInt( UmapController.class, NUMBER_OF_DIMENSIONS_SETTING,
-						UmapFeatureSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS );
+		boolean standardizeFeatures = prefs == null || prefs.getBoolean( UmapController.class, STANDARDIZE_FEATURES_SETTING,
+				DimensionalityReductionSettings.DEFAULT_STANDARDIZE_FEATURES );
+		int numberOfDimensions =
+				prefs == null ? DimensionalityReductionSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS : prefs.getInt( UmapController.class,
+						NUMBER_OF_DIMENSIONS_SETTING, DimensionalityReductionSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS );
 		int numberOfNeighbours = prefs == null ? UmapFeatureSettings.DEFAULT_NUMBER_OF_NEIGHBORS
 				: prefs.getInt( UmapController.class, NUMBER_OF_NEIGHBORS_SETTING, UmapFeatureSettings.DEFAULT_NUMBER_OF_NEIGHBORS );
 		double minimumDistance = prefs == null ? UmapFeatureSettings.DEFAULT_MINIMUM_DISTANCE
