@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap.util;
+package org.mastodon.mamut.feature.dimensionalityreduction.util;
 
 import org.junit.jupiter.api.Test;
 

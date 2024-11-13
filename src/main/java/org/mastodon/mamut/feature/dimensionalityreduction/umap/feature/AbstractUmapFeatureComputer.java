@@ -37,7 +37,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
 import org.mastodon.mamut.feature.ValueIsSetEvaluator;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapFeatureSettings;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.StandardScaler;
+import org.mastodon.mamut.feature.dimensionalityreduction.util.StandardScaler;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.properties.DoublePropertyMap;
