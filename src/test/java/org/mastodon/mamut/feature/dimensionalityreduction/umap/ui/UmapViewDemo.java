@@ -55,7 +55,7 @@ public class UmapViewDemo
 
 		try (Context context = new Context())
 		{
-			File tempFile1 = TestUtils.getTempFileCopy( "src/test/resources/org/mastodon/mamut/classification/model1.mastodon", "model",
+			File tempFile1 = TestUtils.getTempFileCopy( "src/test/resources/org/mastodon/mamut/clustering/model1.mastodon", "model",
 					".mastodon" );
 			ProjectModel projectModel = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
 
