@@ -28,6 +28,12 @@
  */
 package org.mastodon.mamut.feature.dimensionalityreduction;
 
+import java.lang.invoke.MethodHandles;
+
+import org.scijava.prefs.PrefService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Settings for the Dimensionality reduction
  * <br>
@@ -37,11 +43,17 @@ package org.mastodon.mamut.feature.dimensionalityreduction;
  *     <li>the number of output dimensions</li>
  * </ul>
  */
-public class DimensionalityReductionSettings
+public class CommonSettings
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	public static final int DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS = 2;
 
 	public static final boolean DEFAULT_STANDARDIZE_FEATURES = true;
+
+	private static final String NUMBER_OF_DIMENSIONS_SETTING = "NumberOfDimensions";
+
+	private static final String STANDARDIZE_FEATURES_SETTING = "StandardizeFeatures";
 
 	private int numberOfOutputDimensions;
 
@@ -55,7 +67,7 @@ public class DimensionalityReductionSettings
 	 *     <li>standardize features: {@value DEFAULT_STANDARDIZE_FEATURES}</li>
 	 * </ul>
 	 */
-	protected DimensionalityReductionSettings()
+	public CommonSettings()
 	{
 		this( DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS, DEFAULT_STANDARDIZE_FEATURES );
 	}
@@ -65,7 +77,7 @@ public class DimensionalityReductionSettings
 	 *
 	 * @param numberOfOutputDimensions the number of neighbors to consider for relative movement.
 	 */
-	public DimensionalityReductionSettings( final int numberOfOutputDimensions, final boolean standardizeFeatures )
+	public CommonSettings( final int numberOfOutputDimensions, final boolean standardizeFeatures )
 	{
 		this.numberOfOutputDimensions = numberOfOutputDimensions;
 		this.standardizeFeatures = standardizeFeatures;
@@ -89,6 +101,28 @@ public class DimensionalityReductionSettings
 	public void setStandardizeFeatures( final boolean standardizeFeatures )
 	{
 		this.standardizeFeatures = standardizeFeatures;
+	}
+
+	static CommonSettings loadSettingsFromPreferences( final PrefService prefs )
+	{
+		boolean standardize = prefs == null || prefs.getBoolean( CommonSettings.class, STANDARDIZE_FEATURES_SETTING,
+				CommonSettings.DEFAULT_STANDARDIZE_FEATURES );
+		int dimensions = prefs == null ? CommonSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS
+				: prefs.getInt( CommonSettings.class, NUMBER_OF_DIMENSIONS_SETTING,
+						CommonSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS );
+		return new CommonSettings( dimensions, standardize );
+	}
+
+	/**
+	 * Saves the dimensionality reduction settings to the user preferences.
+	 */
+	void saveSettingsToPreferences( final PrefService prefs )
+	{
+		logger.debug( "Save Dimensionality Reduction settings." );
+		if ( prefs == null )
+			return;
+		prefs.put( CommonSettings.class, STANDARDIZE_FEATURES_SETTING, isStandardizeFeatures() );
+		prefs.put( CommonSettings.class, NUMBER_OF_DIMENSIONS_SETTING, getNumberOfOutputDimensions() );
 	}
 
 	@Override

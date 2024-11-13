@@ -42,9 +42,9 @@ import org.mastodon.mamut.feature.FeatureUtils;
 import org.mastodon.mamut.feature.branch.BranchDepthFeature;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.feature.branch.sinuosity.BranchSinuosityFeature;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapController;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapFeatureSettings;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
+import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionController;
+import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapSettings;
+import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
@@ -86,16 +86,16 @@ public class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
 			BranchSinuosityFeature branchSinuosityFeature = Cast.unchecked(
 					FeatureComputerTestUtils.getFeature( context, model, BranchSinuosityFeature.BRANCH_SINUOSITY_FEATURE_SPEC ) );
 			featureModel.declareFeature( branchSinuosityFeature );
-			List< UmapInputDimension< BranchSpot > > umapInputDimensions =
-					UmapInputDimension.getListFromFeatureModel( featureModel, BranchSpot.class, BranchLink.class );
+			List< InputDimension< BranchSpot > > inputDimensions =
+					InputDimension.getListFromFeatureModel( featureModel, BranchSpot.class, BranchLink.class );
 
 			// set up the controller and compute the feature
-			Supplier< List< UmapInputDimension< BranchSpot > > > inputDimensionsSupplier = () -> umapInputDimensions;
-			UmapController umapController = new UmapController( graph2.getModel(), context );
-			UmapFeatureSettings settings = umapController.getFeatureSettings();
-			settings.setNumberOfNeighbors( 3 );
-			umapController.setModelGraph( false );
-			umapController.computeFeature( inputDimensionsSupplier );
+			Supplier< List< InputDimension< BranchSpot > > > inputDimensionsSupplier = () -> inputDimensions;
+			DimensionalityReductionController controller = new DimensionalityReductionController( graph2.getModel(), context );
+			UmapSettings umapSettings = controller.getUmapSettings();
+			umapSettings.setNumberOfNeighbors( 3 );
+			controller.setModelGraph( false );
+			controller.computeFeature( inputDimensionsSupplier );
 			umapFeature = FeatureUtils.getFeature( graph2.getModel(), BranchUmapFeature.BranchSpotUmapFeatureSpec.class );
 			assertNotNull( umapFeature );
 			spec0 = new FeatureProjectionSpec( umapFeature.getProjectionName( 0 ), Dimension.NONE );

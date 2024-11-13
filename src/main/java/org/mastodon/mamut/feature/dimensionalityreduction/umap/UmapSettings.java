@@ -28,7 +28,11 @@
  */
 package org.mastodon.mamut.feature.dimensionalityreduction.umap;
 
-import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionSettings;
+import java.lang.invoke.MethodHandles;
+
+import org.scijava.prefs.PrefService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Settings for the UMAP feature.
@@ -39,8 +43,10 @@ import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductio
  *     <li>the minimum distance between points</li>
  * </ul>
  */
-public class UmapFeatureSettings extends DimensionalityReductionSettings
+public class UmapSettings
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	public static final int DEFAULT_NUMBER_OF_NEIGHBORS = 15;
 
 	public static final double DEFAULT_MINIMUM_DISTANCE = 0.1d;
@@ -48,6 +54,10 @@ public class UmapFeatureSettings extends DimensionalityReductionSettings
 	private int numberOfNeighbors;
 
 	private double minimumDistance;
+
+	private static final String NUMBER_OF_NEIGHBORS_SETTING = "NumberOfNeighbors";
+
+	private static final String MINIMUM_DISTANCE_SETTING = "MinimumDistance";
 
 	/**
 	 * Constructor with default values.
@@ -57,22 +67,13 @@ public class UmapFeatureSettings extends DimensionalityReductionSettings
 	 *     <li>minimum distance: {@value DEFAULT_MINIMUM_DISTANCE}</li>
 	 * </ul>
 	 */
-	public UmapFeatureSettings()
+	public UmapSettings()
 	{
 		this( DEFAULT_NUMBER_OF_NEIGHBORS, DEFAULT_MINIMUM_DISTANCE );
 	}
 
-	public UmapFeatureSettings( final int numberOfNeighbors, final double minimumDistance )
+	public UmapSettings( final int numberOfNeighbors, final double minimumDistance )
 	{
-		super();
-		this.numberOfNeighbors = numberOfNeighbors;
-		this.minimumDistance = minimumDistance;
-	}
-
-	public UmapFeatureSettings( final int numberOfOutputDimensions, final int numberOfNeighbors, final double minimumDistance,
-			final boolean standardizeFeatures )
-	{
-		super( numberOfOutputDimensions, standardizeFeatures );
 		this.numberOfNeighbors = numberOfNeighbors;
 		this.minimumDistance = minimumDistance;
 	}
@@ -97,10 +98,30 @@ public class UmapFeatureSettings extends DimensionalityReductionSettings
 		this.minimumDistance = minimumDistance;
 	}
 
+	public static UmapSettings loadSettingsFromPreferences( final PrefService prefs )
+	{
+		int numberOfNeighbours = prefs == null ? UmapSettings.DEFAULT_NUMBER_OF_NEIGHBORS
+				: prefs.getInt( UmapSettings.class, NUMBER_OF_NEIGHBORS_SETTING, UmapSettings.DEFAULT_NUMBER_OF_NEIGHBORS );
+		double minimumDistance = prefs == null ? UmapSettings.DEFAULT_MINIMUM_DISTANCE
+				: prefs.getDouble( UmapSettings.class, MINIMUM_DISTANCE_SETTING, UmapSettings.DEFAULT_MINIMUM_DISTANCE );
+		return new UmapSettings( numberOfNeighbours, minimumDistance );
+	}
+
+	/**
+	 * Saves the UMAP settings to the user preferences.
+	 */
+	public void saveSettingsToPreferences( final PrefService prefs )
+	{
+		logger.debug( "Save UMAP settings." );
+		if ( prefs == null )
+			return;
+		prefs.put( UmapSettings.class, NUMBER_OF_NEIGHBORS_SETTING, getNumberOfNeighbors() );
+		prefs.put( UmapSettings.class, MINIMUM_DISTANCE_SETTING, getMinimumDistance() );
+	}
+
 	@Override
 	public String toString()
 	{
-		return super.toString() + ", UmapFeatureSettings{numberOfNeighbors=" + numberOfNeighbors + ", minimumDistance=" + minimumDistance
-				+ '}';
+		return "UmapSettings{numberOfNeighbors=" + numberOfNeighbors + ", minimumDistance=" + minimumDistance + '}';
 	}
 }

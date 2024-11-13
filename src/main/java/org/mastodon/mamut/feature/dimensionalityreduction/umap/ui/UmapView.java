@@ -33,9 +33,10 @@ import net.miginfocom.swing.MigLayout;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionSettings;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapController;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapFeatureSettings;
+import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionController;
+import org.mastodon.mamut.feature.dimensionalityreduction.CommonSettings;
+import org.mastodon.mamut.feature.dimensionalityreduction.ui.InputDimensionsPanel;
+import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapSettings;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
 import org.slf4j.Logger;
@@ -94,7 +95,7 @@ public class UmapView extends JFrame
 
 	private final JSpinner minimumDistanceInput;
 
-	private UmapInputDimensionsPanel< ?, ? > umapInputDimensionsPanel;
+	private InputDimensionsPanel< ?, ? > umapInputDimensionsPanel;
 
 	private final JLabel feedbackLabel;
 
@@ -104,9 +105,9 @@ public class UmapView extends JFrame
 
 	private final FeatureModel featureModel;
 
-	private final UmapController umapController;
+	private final DimensionalityReductionController controller;
 
-	private static final String UMAP_PANEL_CONSTRANTS = "span, growx, pushx, growy, pushy, wrap";
+	private static final String PANEL_CONSTRAINTS = "span, growx, pushx, growy, pushy, wrap";
 
 	/**
 	 * Constructs a new UmapView with the specified model and context.
@@ -117,7 +118,7 @@ public class UmapView extends JFrame
 	public UmapView( final Model model, final Context context )
 	{
 		this.featureModel = model.getFeatureModel();
-		this.umapController = new UmapController( model, context );
+		this.controller = new DimensionalityReductionController( model, context );
 
 		canvas = new JPanel( new MigLayout( "insets 0 10 0 10, fill", "", "" ) );
 		setTitle( "Dimensionality Reduction using UMAP" );
@@ -146,14 +147,15 @@ public class UmapView extends JFrame
 	private void initSettings()
 	{
 		logger.debug( "Initializing UMAP settings." );
-		boolean isModelGraph = umapController.isModelGraphPreferences();
+		boolean isModelGraph = controller.isModelGraphPreferences();
 		modelGraphRadioButton.setSelected( isModelGraph );
 		branchGraphRadioButton.setSelected( !isModelGraph );
-		UmapFeatureSettings settings = umapController.getFeatureSettings();
+		CommonSettings settings = controller.getCommonSettings();
+		UmapSettings umapSettings = controller.getUmapSettings();
 		standardizeFeaturesCheckBox.setSelected( settings.isStandardizeFeatures() );
 		numberOfDimensionsInput.setModel( getNumberOfDimensionsSpinnerModel() );
 		numberOfNeighborsInput.setModel( getNumberOfNeighborsSpinnerModel() );
-		minimumDistanceInput.setModel( new SpinnerNumberModel( settings.getMinimumDistance(), 0d, 1d, 0.1d ) );
+		minimumDistanceInput.setModel( new SpinnerNumberModel( umapSettings.getMinimumDistance(), 0d, 1d, 0.1d ) );
 	}
 
 	private void initBehavior()
@@ -165,12 +167,13 @@ public class UmapView extends JFrame
 		group.add( modelGraphRadioButton );
 		group.add( branchGraphRadioButton );
 
-		UmapFeatureSettings settings = umapController.getFeatureSettings();
+		CommonSettings settings = controller.getCommonSettings();
+		UmapSettings umapSettings = controller.getUmapSettings();
 		standardizeFeaturesCheckBox.addActionListener( e -> settings.setStandardizeFeatures( standardizeFeaturesCheckBox.isSelected() ) );
 		numberOfDimensionsInput
 				.addChangeListener( e -> settings.setNumberOfOutputDimensions( ( int ) numberOfDimensionsInput.getValue() ) );
-		numberOfNeighborsInput.addChangeListener( e -> settings.setNumberOfNeighbors( ( int ) numberOfNeighborsInput.getValue() ) );
-		minimumDistanceInput.addChangeListener( e -> settings.setMinimumDistance( ( double ) minimumDistanceInput.getValue() ) );
+		numberOfNeighborsInput.addChangeListener( e -> umapSettings.setNumberOfNeighbors( ( int ) numberOfNeighborsInput.getValue() ) );
+		minimumDistanceInput.addChangeListener( e -> umapSettings.setMinimumDistance( ( double ) minimumDistanceInput.getValue() ) );
 		computeButton.addActionListener( e -> SwingUtilities.invokeLater( this::run ) );
 
 		addWindowListener( new WindowAdapter()
@@ -198,7 +201,7 @@ public class UmapView extends JFrame
 		canvas.add( numberOfNeighborsInput, "wmin 35, wrap" );
 		canvas.add( new JLabel( "Minimum distance:" ), split2 );
 		canvas.add( minimumDistanceInput, "wmin 40, wrap" );
-		canvas.add( umapInputDimensionsPanel, UMAP_PANEL_CONSTRANTS );
+		canvas.add( umapInputDimensionsPanel, PANEL_CONSTRAINTS );
 		canvas.add( computeButton, "dock south, gapleft 10, gapbottom 10, wmax 150, wrap" );
 		canvas.add( feedbackLabel, "dock south, gapleft 10, gapbottom 10, wrap" );
 	}
@@ -222,31 +225,31 @@ public class UmapView extends JFrame
 	private void updateUmapInputDimensionsPanel()
 	{
 		canvas.remove( umapInputDimensionsPanel );
-		umapController.setModelGraph( modelGraphRadioButton.isSelected() );
+		controller.setModelGraph( modelGraphRadioButton.isSelected() );
 		umapInputDimensionsPanel = createUmapInputDimensionsPanel();
-		canvas.add( umapInputDimensionsPanel, UMAP_PANEL_CONSTRANTS );
+		canvas.add( umapInputDimensionsPanel, PANEL_CONSTRAINTS );
 		revalidate();
 		repaint();
 		numberOfDimensionsInput.setModel( getNumberOfDimensionsSpinnerModel() );
 	}
 
-	private < V extends Vertex< E >, E extends Edge< V > > UmapInputDimensionsPanel< V, E > createUmapInputDimensionsPanel()
+	private < V extends Vertex< E >, E extends Edge< V > > InputDimensionsPanel< V, E > createUmapInputDimensionsPanel()
 	{
-		return new UmapInputDimensionsPanel<>( Cast.unchecked( umapController.getVertexType() ),
-				Cast.unchecked( umapController.getEdgeType() ), featureModel );
+		return new InputDimensionsPanel<>( Cast.unchecked( controller.getVertexType() ),
+				Cast.unchecked( controller.getEdgeType() ), featureModel );
 	}
 
 	private SpinnerModel getNumberOfDimensionsSpinnerModel()
 	{
 		int maximumNumberOfDimensions = Math.max( 2, umapInputDimensionsPanel.getNumberOfFeatures() );
-		int numberOfDimensions = Math.min( umapController.getFeatureSettings().getNumberOfOutputDimensions(), maximumNumberOfDimensions );
-		return new SpinnerNumberModel( numberOfDimensions, DimensionalityReductionSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS,
+		int numberOfDimensions = Math.min( controller.getCommonSettings().getNumberOfOutputDimensions(), maximumNumberOfDimensions );
+		return new SpinnerNumberModel( numberOfDimensions, CommonSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS,
 				maximumNumberOfDimensions, 1 );
 	}
 
 	private SpinnerModel getNumberOfNeighborsSpinnerModel()
 	{
-		return new SpinnerNumberModel( umapController.getFeatureSettings().getNumberOfNeighbors(), 1, 100, 1 );
+		return new SpinnerNumberModel( controller.getUmapSettings().getNumberOfNeighbors(), 1, 100, 1 );
 	}
 
 	// Method called when the JFrame is closed
@@ -254,7 +257,7 @@ public class UmapView extends JFrame
 	{
 		// Perform any cleanup or actions needed before closing the window
 		logger.debug( "UmapView is closing." );
-		umapController.saveSettingsToPreferences();
+		controller.saveSettingsToPreferences();
 		// Dispose the window
 		dispose();
 	}
@@ -281,7 +284,7 @@ public class UmapView extends JFrame
 			@Override
 			protected Void doInBackground()
 			{
-				umapController.computeFeature( umapInputDimensionsPanel );
+				controller.computeFeature( umapInputDimensionsPanel );
 				return null;
 			}
 

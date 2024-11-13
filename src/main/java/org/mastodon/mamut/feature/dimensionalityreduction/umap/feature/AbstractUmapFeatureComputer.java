@@ -36,9 +36,10 @@ import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
 import org.mastodon.mamut.feature.ValueIsSetEvaluator;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapFeatureSettings;
+import org.mastodon.mamut.feature.dimensionalityreduction.CommonSettings;
+import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapSettings;
+import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
 import org.mastodon.mamut.feature.dimensionalityreduction.util.StandardScaler;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.Context;
@@ -73,9 +74,11 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< E >, E exte
 
 	private final StatusService statusService;
 
-	private List< UmapInputDimension< V > > inputDimensions;
+	private List< InputDimension< V > > inputDimensions;
 
-	private UmapFeatureSettings settings;
+	private CommonSettings settings;
+
+	private UmapSettings umapSettings;
 
 	private AbstractUmapFeature< V > feature;
 
@@ -103,13 +106,15 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< E >, E exte
 	 * @param inputDimensions the input dimensions
 	 * @param graph           the read-only graph
 	 */
-	public void computeFeature( final UmapFeatureSettings settings, final List< UmapInputDimension< V > > inputDimensions,
+	public void computeFeature( final CommonSettings settings, final UmapSettings umapSettings,
+			final List< InputDimension< V > > inputDimensions,
 			final G graph )
 	{
 		logger.info( "Computing UmapFeature with settings: {}", settings );
 		this.settings = settings;
+		this.umapSettings = umapSettings;
 		logger.info( "Computing UmapFeatureComputer with {} input dimensions.", inputDimensions.size() );
-		for ( UmapInputDimension< V > inputDimension : inputDimensions )
+		for ( InputDimension< V > inputDimension : inputDimensions )
 			logger.info( "Input dimension: {}", inputDimension );
 		this.inputDimensions = inputDimensions;
 		this.forceComputeAll = new AtomicBoolean( true );
@@ -185,8 +190,8 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< E >, E exte
 		}
 		Umap umap = new Umap();
 		umap.setNumberComponents( settings.getNumberOfOutputDimensions() );
-		umap.setNumberNearestNeighbours( settings.getNumberOfNeighbors() );
-		umap.setMinDist( ( float ) settings.getMinimumDistance() );
+		umap.setNumberNearestNeighbours( umapSettings.getNumberOfNeighbors() );
+		umap.setMinDist( ( float ) umapSettings.getMinimumDistance() );
 		umap.setThreads( 1 );
 		umap.setSeed( 42 );
 		logger.info( "Fitting umap. Data matrix has {} rows x {} columns.", dataMatrix.length, inputDimensions.size() );
@@ -205,7 +210,7 @@ public abstract class AbstractUmapFeatureComputer< V extends Vertex< E >, E exte
 			boolean finiteRow = true;
 			for ( int i = 0; i < inputDimensions.size(); i++ )
 			{
-				UmapInputDimension< V > inputDimension = inputDimensions.get( i );
+				InputDimension< V > inputDimension = inputDimensions.get( i );
 				double value = inputDimension.getValue( vertex );
 				if ( Double.isNaN( value ) )
 				{

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.dimensionalityreduction;
 
 import net.imglib2.util.Cast;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,8 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
+import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapSettings;
+import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
 import org.mastodon.mamut.feature.spot.dimensionalityreduction.umap.SpotUmapFeature;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -57,35 +58,42 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UmapControllerTest
+class DimensionalityReductionControllerTest
 {
 	@Test
 	void testSaveSettingsToPreferences()
 	{
 		try (Context context = new Context())
 		{
+			boolean modelGraph = true;
 			int numberOfOutputDimensions = 5;
 			int numberOfNeighbors = 10;
 			double minimumDistance = 0.5;
 			boolean standardizeFeatures = false;
 
 			Model model = new Model();
-			UmapController umapController = new UmapController( model, context );
-			UmapFeatureSettings umapFeatureSettings = umapController.getFeatureSettings();
-			umapFeatureSettings.setNumberOfOutputDimensions( numberOfOutputDimensions );
-			umapFeatureSettings.setNumberOfNeighbors( numberOfNeighbors );
-			umapFeatureSettings.setMinimumDistance( minimumDistance );
-			umapFeatureSettings.setStandardizeFeatures( standardizeFeatures );
-			umapController.saveSettingsToPreferences();
+			DimensionalityReductionController controller = new DimensionalityReductionController( model, context );
+			CommonSettings commonSettings = controller.getCommonSettings();
+			UmapSettings umapSettings = controller.getUmapSettings();
+			commonSettings.setNumberOfOutputDimensions( numberOfOutputDimensions );
+			umapSettings.setNumberOfNeighbors( numberOfNeighbors );
+			umapSettings.setMinimumDistance( minimumDistance );
+			commonSettings.setStandardizeFeatures( standardizeFeatures );
+			controller.setModelGraph( modelGraph );
+			controller.saveSettingsToPreferences();
 
-			UmapController umapController2 = new UmapController( model, context );
-			UmapFeatureSettings umapFeatureSettings2 = umapController2.getFeatureSettings();
-			assertEquals( numberOfOutputDimensions, umapFeatureSettings2.getNumberOfOutputDimensions() );
-			assertEquals( numberOfNeighbors, umapFeatureSettings2.getNumberOfNeighbors() );
-			assertEquals( minimumDistance, umapFeatureSettings2.getMinimumDistance() );
-			assertEquals( standardizeFeatures, umapFeatureSettings2.isStandardizeFeatures() );
+			DimensionalityReductionController controller2 = new DimensionalityReductionController( model, context );
+			CommonSettings commonSettings2 = controller2.getCommonSettings();
+			UmapSettings umapSettings2 = controller2.getUmapSettings();
+			assertEquals( controller.isModelGraph, controller2.isModelGraph );
+			assertEquals( numberOfOutputDimensions, commonSettings2.getNumberOfOutputDimensions() );
+			assertEquals( numberOfNeighbors, umapSettings2.getNumberOfNeighbors() );
+			assertEquals( minimumDistance, umapSettings2.getMinimumDistance() );
+			assertEquals( standardizeFeatures, commonSettings2.isStandardizeFeatures() );
 
-			context.getService( PrefService.class ).clear( UmapController.class );
+			context.getService( PrefService.class ).clear( DimensionalityReductionController.class );
+			context.getService( PrefService.class ).clear( CommonSettings.class );
+			context.getService( PrefService.class ).clear( UmapSettings.class );
 		}
 	}
 
@@ -95,10 +103,10 @@ class UmapControllerTest
 		try (Context context = new Context())
 		{
 			Model model = new Model();
-			UmapController umapController = new UmapController( model, context );
-			assertEquals( Spot.class, umapController.getVertexType() );
-			umapController.setModelGraph( false );
-			assertEquals( BranchSpot.class, umapController.getVertexType() );
+			DimensionalityReductionController controller = new DimensionalityReductionController( model, context );
+			assertEquals( Spot.class, controller.getVertexType() );
+			controller.setModelGraph( false );
+			assertEquals( BranchSpot.class, controller.getVertexType() );
 		}
 	}
 
@@ -108,10 +116,10 @@ class UmapControllerTest
 		try (Context context = new Context())
 		{
 			Model model = new Model();
-			UmapController umapController = new UmapController( model, context );
-			assertEquals( Link.class, umapController.getEdgeType() );
-			umapController.setModelGraph( false );
-			assertEquals( BranchLink.class, umapController.getEdgeType() );
+			DimensionalityReductionController controller = new DimensionalityReductionController( model, context );
+			assertEquals( Link.class, controller.getEdgeType() );
+			controller.setModelGraph( false );
+			assertEquals( BranchLink.class, controller.getEdgeType() );
 		}
 	}
 
@@ -123,13 +131,13 @@ class UmapControllerTest
 			int numberOfOutputDimensions = 10;
 
 			Model model = new Model();
-			UmapController umapController = new UmapController( model, context );
-			UmapFeatureSettings umapFeatureSettings = umapController.getFeatureSettings();
-			umapFeatureSettings.setNumberOfOutputDimensions( numberOfOutputDimensions );
-			List< UmapInputDimension< Spot > > umapInputDimensions =
-					UmapInputDimension.getListFromFeatureModel( model.getFeatureModel(), Spot.class, Link.class );
-			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( () -> umapInputDimensions ) );
-			Supplier< List< UmapInputDimension< Spot > > > emptyInputDimensionsSupplier = Collections::emptyList;
+			DimensionalityReductionController umapController = new DimensionalityReductionController( model, context );
+			CommonSettings commonSettings = umapController.getCommonSettings();
+			commonSettings.setNumberOfOutputDimensions( numberOfOutputDimensions );
+			List< InputDimension< Spot > > inputDimensions =
+					InputDimension.getListFromFeatureModel( model.getFeatureModel(), Spot.class, Link.class );
+			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( () -> inputDimensions ) );
+			Supplier< List< InputDimension< Spot > > > emptyInputDimensionsSupplier = Collections::emptyList;
 			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( emptyInputDimensionsSupplier ) );
 		}
 	}
@@ -144,11 +152,12 @@ class UmapControllerTest
 
 		try (Context context = new Context())
 		{
-			UmapController umapController = new UmapController( graph2.getModel(), context );
-			UmapFeatureSettings settings = umapController.getFeatureSettings();
+			DimensionalityReductionController umapController = new DimensionalityReductionController( graph2.getModel(), context );
+			UmapSettings settings = umapController.getUmapSettings();
 			settings.setNumberOfNeighbors( 5 );
-			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
-					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class, Link.class );
+			Supplier< List< InputDimension< Spot > > > inputDimensionsSupplier =
+					() -> InputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class,
+							Link.class );
 			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( inputDimensionsSupplier ) );
 		}
 	}
@@ -173,11 +182,12 @@ class UmapControllerTest
 
 		try (Context context = new Context())
 		{
-			UmapController umapController = new UmapController( graph2.getModel(), context );
-			UmapFeatureSettings settings = umapController.getFeatureSettings();
+			DimensionalityReductionController umapController = new DimensionalityReductionController( graph2.getModel(), context );
+			UmapSettings settings = umapController.getUmapSettings();
 			settings.setNumberOfNeighbors( 5 );
-			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
-					() -> UmapInputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class, Link.class );
+			Supplier< List< InputDimension< Spot > > > inputDimensionsSupplier =
+					() -> InputDimension.getListFromFeatureModel( graph2.getModel().getFeatureModel(), Spot.class,
+							Link.class );
 			umapController.computeFeature( inputDimensionsSupplier );
 			Feature< Spot > spotUmapFeature = Cast.unchecked( featureModel.getFeature( SpotUmapFeature.GENERIC_SPEC ) );
 			Set< FeatureProjection< Spot > > projections = spotUmapFeature.projections();
@@ -204,10 +214,10 @@ class UmapControllerTest
 
 		try (Context context = new Context())
 		{
-			UmapController umapController = new UmapController( model, context );
+			DimensionalityReductionController umapController = new DimensionalityReductionController( model, context );
 			FeatureModel featureModel = model.getFeatureModel();
-			Supplier< List< UmapInputDimension< Spot > > > inputDimensionsSupplier =
-					() -> UmapInputDimension.getListFromFeatureModel( featureModel, Spot.class, Link.class );
+			Supplier< List< InputDimension< Spot > > > inputDimensionsSupplier =
+					() -> InputDimension.getListFromFeatureModel( featureModel, Spot.class, Link.class );
 			umapController.computeFeature( inputDimensionsSupplier );
 			Feature< Spot > spotUmapFeature = Cast.unchecked( featureModel.getFeature( SpotUmapFeature.GENERIC_SPEC ) );
 			Set< FeatureProjection< Spot > > projections = spotUmapFeature.projections();

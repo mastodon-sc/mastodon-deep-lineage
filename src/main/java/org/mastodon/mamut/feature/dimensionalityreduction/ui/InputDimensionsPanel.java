@@ -26,13 +26,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap.ui;
+package org.mastodon.mamut.feature.dimensionalityreduction.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.util.UmapInputDimension;
+import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
@@ -43,12 +43,12 @@ import javax.swing.ListSelectionModel;
 import java.util.List;
 import java.util.function.Supplier;
 
-class UmapInputDimensionsPanel< V extends Vertex< E >, E extends Edge< V > > extends JPanel
-		implements Supplier< List< UmapInputDimension< V > > >
+public class InputDimensionsPanel< V extends Vertex< E >, E extends Edge< V > > extends JPanel
+		implements Supplier< List< InputDimension< V > > >
 {
-	private final JList< UmapInputDimension< V > > featureList;
+	private final JList< InputDimension< V > > featureList;
 
-	private final DefaultListModel< UmapInputDimension< V > > listModel;
+	private final DefaultListModel< InputDimension< V > > listModel;
 
 	private final Class< V > vertexType;
 
@@ -56,7 +56,7 @@ class UmapInputDimensionsPanel< V extends Vertex< E >, E extends Edge< V > > ext
 
 	private final FeatureModel featureModel;
 
-	UmapInputDimensionsPanel( final Class< V > vertexType, final Class< E > edgeType, final FeatureModel featureModel )
+	public InputDimensionsPanel( final Class< V > vertexType, final Class< E > edgeType, final FeatureModel featureModel )
 	{
 		super( new MigLayout( "insets 0 0 0 0, fill", "", "" ) );
 		this.vertexType = vertexType;
@@ -96,19 +96,20 @@ class UmapInputDimensionsPanel< V extends Vertex< E >, E extends Edge< V > > ext
 	private void updateItemList()
 	{
 		listModel.clear();
-		List< UmapInputDimension< V > > items = UmapInputDimension.getListFromFeatureModel( featureModel, vertexType, edgeType );
-		for ( UmapInputDimension< V > item : items )
+		List< InputDimension< V > > items =
+				InputDimension.getListFromFeatureModel( featureModel, vertexType, edgeType );
+		for ( InputDimension< V > item : items )
 			listModel.addElement( item );
 	}
 
-	int getNumberOfFeatures()
+	public int getNumberOfFeatures()
 	{
 		featureList.getSelectedValuesList();
 		return listModel.getSize();
 	}
 
 	@Override
-	public List< UmapInputDimension< V > > get()
+	public List< InputDimension< V > > get()
 	{
 		return featureList.getSelectedValuesList();
 	}
