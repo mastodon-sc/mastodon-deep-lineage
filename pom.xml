@@ -213,7 +213,7 @@
     <repositories>
         <repository>
             <id>scijava.public</id>
-            <url>https://maven.scijava.org/content/groups/public</url>
+            <url>https://maven.scijava.org/content/repositories/public/</url>
         </repository>
     </repositories>
 
