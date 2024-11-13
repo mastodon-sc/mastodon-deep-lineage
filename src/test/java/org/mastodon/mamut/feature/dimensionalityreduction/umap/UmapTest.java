@@ -42,7 +42,7 @@ class UmapTest
 	void test()
 	{
 		double[][] sampleData = RandomDataTools.generateSampleData();
-		Umap umap = SimpleUmapDemo.setUpUmap();
+		Umap umap = UmapDemo.setUpUmap();
 		double[][] umapResult = umap.fitTransform( sampleData );
 
 		assertEquals( umapResult.length, sampleData.length );

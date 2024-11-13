@@ -28,17 +28,16 @@
  */
 package org.mastodon.mamut.feature.dimensionalityreduction.umap;
 
-import tagbio.umap.Umap;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.Random;
 
+import javax.swing.JPanel;
+
+import org.mastodon.mamut.feature.dimensionalityreduction.PlotPoints;
 import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
 
-public class SimpleUmapDemo extends JPanel
+import tagbio.umap.Umap;
+
+public class UmapDemo extends JPanel
 {
 
 	public static void main( final String[] args )
@@ -46,17 +45,7 @@ public class SimpleUmapDemo extends JPanel
 		double[][] sampleData = RandomDataTools.generateSampleData();
 		Umap umap = setUpUmap();
 		double[][] umapResult = umap.fitTransform( sampleData );
-		plot( sampleData, umapResult );
-	}
-
-	private static void plot( final double[][] sampleData, final double[][] umapResult )
-	{
-		PlotPoints plotPoints = new PlotPoints( sampleData, umapResult );
-		JFrame frame = new JFrame( "Simple Umap Demo. Reduction from 3 dimensions to 2." );
-		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		frame.setSize( 600, 400 );
-		frame.add( plotPoints );
-		frame.setVisible( true );
+		PlotPoints.plot( sampleData, umapResult );
 	}
 
 	static Umap setUpUmap()
@@ -68,41 +57,5 @@ public class SimpleUmapDemo extends JPanel
 		umap.setNumberNearestNeighbours( 15 );
 		umap.setRandom( new Random( 42 ) );
 		return umap;
-	}
-
-	private static class PlotPoints extends JPanel
-	{
-
-		private final double[][] points;
-
-		private final double[][] umapResult;
-
-		private PlotPoints( final double[][] points, final double[][] umapResult )
-		{
-			this.points = points;
-			this.umapResult = umapResult;
-		}
-
-		@Override
-		protected void paintComponent( Graphics g )
-		{
-			super.paintComponent( g );
-			for ( int i = 0; i < points.length; i++ )
-			{
-				int x = ( int ) points[ i ][ 0 ];
-				int y = ( int ) points[ i ][ 1 ];
-				int z = ( int ) points[ i ][ 2 ];
-				int umapX = ( int ) umapResult[ i ][ 0 ];
-				int umapY = ( int ) umapResult[ i ][ 1 ];
-				if ( umapX > 0 )
-					g.setColor( Color.RED );
-				else
-					g.setColor( Color.BLUE );
-
-				System.out.println( "i = " + i + ", x = " + x + ", y = " + y + ", z= " + z + ", umapX = " + umapX + ", umapY = " + umapY );
-				g.fillOval( x, y, 5, 5 );
-				g.fillRect( umapX + 200, umapY + 100, 2, 2 );
-			}
-		}
 	}
 }
