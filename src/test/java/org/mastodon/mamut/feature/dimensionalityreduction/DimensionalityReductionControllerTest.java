@@ -34,6 +34,7 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
+import org.mastodon.mamut.feature.dimensionalityreduction.tsne.TSneSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
 import org.mastodon.mamut.feature.spot.dimensionalityreduction.umap.SpotUmapFeature;
@@ -67,33 +68,48 @@ class DimensionalityReductionControllerTest
 		{
 			boolean modelGraph = true;
 			int numberOfOutputDimensions = 5;
+			boolean standardizeFeatures = false;
 			int numberOfNeighbors = 10;
 			double minimumDistance = 0.5;
-			boolean standardizeFeatures = false;
+			int perplexity = 50;
+			int maxIterations = 2000;
+			DimensionalityReductionAlgorithm algorithm = DimensionalityReductionAlgorithm.TSNE;
 
 			Model model = new Model();
 			DimensionalityReductionController controller = new DimensionalityReductionController( model, context );
 			CommonSettings commonSettings = controller.getCommonSettings();
 			UmapSettings umapSettings = controller.getUmapSettings();
+			TSneSettings tsneSettings = controller.getTSneSettings();
 			commonSettings.setNumberOfOutputDimensions( numberOfOutputDimensions );
 			umapSettings.setNumberOfNeighbors( numberOfNeighbors );
 			umapSettings.setMinimumDistance( minimumDistance );
+			tsneSettings.setPerplexity( perplexity );
+			tsneSettings.setMaxIterations( maxIterations );
 			commonSettings.setStandardizeFeatures( standardizeFeatures );
 			controller.setModelGraph( modelGraph );
+			controller.setAlgorithm( algorithm );
 			controller.saveSettingsToPreferences();
 
 			DimensionalityReductionController controller2 = new DimensionalityReductionController( model, context );
 			CommonSettings commonSettings2 = controller2.getCommonSettings();
 			UmapSettings umapSettings2 = controller2.getUmapSettings();
+			TSneSettings tsneSettings2 = controller2.getTSneSettings();
 			assertEquals( controller.isModelGraph, controller2.isModelGraph );
+			assertEquals( controller.getAlgorithm(), controller2.getAlgorithm() );
+
 			assertEquals( numberOfOutputDimensions, commonSettings2.getNumberOfOutputDimensions() );
+			assertEquals( standardizeFeatures, commonSettings2.isStandardizeFeatures() );
+
 			assertEquals( numberOfNeighbors, umapSettings2.getNumberOfNeighbors() );
 			assertEquals( minimumDistance, umapSettings2.getMinimumDistance() );
-			assertEquals( standardizeFeatures, commonSettings2.isStandardizeFeatures() );
+
+			assertEquals( perplexity, tsneSettings2.getPerplexity() );
+			assertEquals( maxIterations, tsneSettings2.getMaxIterations() );
 
 			context.getService( PrefService.class ).clear( DimensionalityReductionController.class );
 			context.getService( PrefService.class ).clear( CommonSettings.class );
 			context.getService( PrefService.class ).clear( UmapSettings.class );
+			context.getService( PrefService.class ).clear( TSneSettings.class );
 		}
 	}
 
