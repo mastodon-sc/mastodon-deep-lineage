@@ -37,11 +37,14 @@ import net.imglib2.util.Cast;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.feature.branch.dimensionalityreduction.tsne.BranchTSneFeatureComputer;
 import org.mastodon.mamut.feature.branch.dimensionalityreduction.umap.BranchUmapFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.tsne.TSneSettings;
+import org.mastodon.mamut.feature.dimensionalityreduction.tsne.feature.AbstractTSneFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
+import org.mastodon.mamut.feature.spot.dimensionalityreduction.tsne.SpotTSneFeatureComputer;
 import org.mastodon.mamut.feature.spot.dimensionalityreduction.umap.SpotUmapFeatureComputer;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -177,10 +180,23 @@ public class DimensionalityReductionController
 			throw new IllegalArgumentException( "Number of output dimensions (" + commonSettings.getNumberOfOutputDimensions()
 					+ ") must be smaller than the number of input features (" + inputDimensions.size() + ")." );
 		G graph = getGraph( isModelGraph );
-		AbstractUmapFeatureComputer< V, E, G > umapFeatureComputer =
-				isModelGraph ? Cast.unchecked( new SpotUmapFeatureComputer( model, context ) )
-						: Cast.unchecked( new BranchUmapFeatureComputer( model, context ) );
-		umapFeatureComputer.computeFeature( commonSettings, umapSettings, inputDimensions, graph );
+		switch ( algorithm )
+		{
+		case UMAP:
+			AbstractUmapFeatureComputer< V, E, G > umapFeatureComputer =
+					isModelGraph ? Cast.unchecked( new SpotUmapFeatureComputer( model, context ) )
+							: Cast.unchecked( new BranchUmapFeatureComputer( model, context ) );
+			umapFeatureComputer.computeFeature( commonSettings, umapSettings, inputDimensions, graph );
+			break;
+		case TSNE:
+			AbstractTSneFeatureComputer< V, E, G > tSneFeatureComputer =
+					isModelGraph ? Cast.unchecked( new SpotTSneFeatureComputer( model, context ) )
+							: Cast.unchecked( new BranchTSneFeatureComputer( model, context ) );
+			tSneFeatureComputer.computeFeature( commonSettings, tSneSettings, inputDimensions, graph );
+			break;
+		default:
+			throw new IllegalArgumentException( "Unknown algorithm: " + algorithm );
+		}
 	}
 
 	private < V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, ? > > G getGraph( boolean isSpotGraph )
