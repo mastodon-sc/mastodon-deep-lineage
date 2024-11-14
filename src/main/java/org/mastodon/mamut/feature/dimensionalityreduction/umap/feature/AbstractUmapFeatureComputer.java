@@ -28,31 +28,25 @@
  */
 package org.mastodon.mamut.feature.dimensionalityreduction.umap.feature;
 
+import java.lang.invoke.MethodHandles;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.RefPool;
-import org.mastodon.collection.RefIntMap;
-import org.mastodon.collection.ref.RefIntHashMap;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.mamut.feature.AbstractSerialFeatureComputer;
-import org.mastodon.mamut.feature.ValueIsSetEvaluator;
+import org.mastodon.mamut.feature.dimensionalityreduction.AbstractOutputFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.CommonSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
-import org.mastodon.mamut.feature.dimensionalityreduction.util.StandardScaler;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.Context;
-import org.scijava.app.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tagbio.umap.Umap;
 
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import tagbio.umap.Umap;
 
 /**
  * Abstract class for computing UMAP features in the Mastodon project.
@@ -67,176 +61,46 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @param <G> the type of read-only graph
  */
 public abstract class AbstractUmapFeatureComputer< V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, E > >
-		extends AbstractSerialFeatureComputer< V >
+		extends AbstractOutputFeatureComputer< V, E, G >
 {
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	private final StatusService statusService;
-
-	private List< InputDimension< V > > inputDimensions;
-
-	private CommonSettings settings;
-
 	private UmapSettings umapSettings;
-
-	private AbstractUmapFeature< V > feature;
 
 	private double[][] umapResult;
 
-	private final RefIntMap< V > vertexToRowIndexMap;
-
-	private static final int NO_ENTRY = -1;
-
 	protected AbstractUmapFeatureComputer( final Model model, final Context context )
 	{
-		this.model = model;
-		this.statusService = context.getService( StatusService.class );
-		this.vertexToRowIndexMap = new RefIntHashMap<>( getRefPool(), NO_ENTRY );
+		super( model, context );
 	}
 
-	/**
-	 * Computes the UMAP feature with the given settings and input dimensions and declares it in the feature model.
-	 * <br>
-	 * During computation, the given graph is locked for reading.
-	 * The UMAP feature is computed for each vertex in the graph, excluding vertices with invalid data rows
-	 * (i.e. rows where the selected feature projections do not have values, such as {@link Double#NaN} or {@link Double#POSITIVE_INFINITY}).
-	 *
-	 * @param settings        the UMAP settings
-	 * @param inputDimensions the input dimensions
-	 * @param graph           the read-only graph
-	 */
-	public void computeFeature( final CommonSettings settings, final UmapSettings umapSettings,
-			final List< InputDimension< V > > inputDimensions,
-			final G graph )
+	public void computeFeature( final CommonSettings commonSettings, final UmapSettings umapSettings,
+			final List< InputDimension< V > > inputDimensions, final G graph )
 	{
-		logger.info( "Computing UmapFeature with settings: {}", settings );
-		this.settings = settings;
 		this.umapSettings = umapSettings;
-		logger.info( "Computing UmapFeatureComputer with {} input dimensions.", inputDimensions.size() );
-		for ( InputDimension< V > inputDimension : inputDimensions )
-			logger.info( "Input dimension: {}", inputDimension );
-		this.inputDimensions = inputDimensions;
-		this.forceComputeAll = new AtomicBoolean( true );
-		long start = System.currentTimeMillis();
-		ReentrantReadWriteLock.ReadLock lock = getLock( graph ).readLock();
-		lock.lock();
-		try
-		{
-			run();
-		}
-		finally
-		{
-			lock.unlock();
-		}
-		logger.info( "Finished computing UmapFeature in {} ms", System.currentTimeMillis() - start );
-		model.getFeatureModel().declareFeature( feature );
+		super.computeFeature( commonSettings, inputDimensions, graph );
 	}
 
 	@Override
-	protected void compute( final V vertex )
+	protected void computeAlgorithm( double[][] dataMatrix )
 	{
-		int rowIndex = vertexToRowIndexMap.get( vertex );
-		if ( rowIndex == NO_ENTRY )
-			return;
-		for ( int i = 0; i < settings.getNumberOfOutputDimensions(); i++ )
-		{
-			DoublePropertyMap< V > umapOutput = feature.getUmapOutputMaps().get( i );
-			umapOutput.set( vertex, umapResult[ rowIndex ][ i ] );
-		}
-	}
-
-	@Override
-	public void createOutput()
-	{
-		if ( feature == null )
-			feature = initFeature( settings.getNumberOfOutputDimensions() );
-		computeUmap();
-	}
-
-	@Override
-	protected void notifyProgress( final int finished, final int total )
-	{
-		statusService.showStatus( finished, total, "Computing UmapFeature" );
-	}
-
-	@Override
-	protected ValueIsSetEvaluator< V > getEvaluator()
-	{
-		return feature;
-	}
-
-	@Override
-	protected void reset()
-	{
-		if ( feature == null )
-			return;
-		feature.getUmapOutputMaps().forEach( DoublePropertyMap::beforeClearPool );
-	}
-
-	private void computeUmap()
-	{
-		vertexToRowIndexMap.clear();
-		List< double[] > data = extractValidDataRowsAndCacheIndexes();
-		double[][] dataMatrix = data.toArray( new double[ 0 ][ 0 ] );
-		if ( dataMatrix.length == 0 )
-			throw new IllegalArgumentException(
-					"No valid data rows found, i.e. in each existing data row there is at least one non-finite value, such as Not a Number or Infinity." );
-		if ( settings.isStandardizeFeatures() )
-		{
-			logger.debug( "Standardizing features with {} rows and {} columns.", dataMatrix.length, inputDimensions.size() );
-			StandardScaler.standardizeColumns( dataMatrix );
-			logger.debug( "Finished standardizing features" );
-		}
 		Umap umap = new Umap();
 		umap.setNumberComponents( settings.getNumberOfOutputDimensions() );
 		umap.setNumberNearestNeighbours( umapSettings.getNumberOfNeighbors() );
 		umap.setMinDist( ( float ) umapSettings.getMinimumDistance() );
 		umap.setThreads( 1 );
 		umap.setSeed( 42 );
-		logger.info( "Fitting umap. Data matrix has {} rows x {} columns.", dataMatrix.length, inputDimensions.size() );
+		logger.info( "Fitting umap. Data matrix has {} rows x {} columns.", dataMatrix.length, dataMatrix[ 0 ].length );
 		umapResult = umap.fitTransform( dataMatrix );
 		logger.info( "Finished fitting umap. Results has {} rows x {} columns.", umapResult.length,
 				umapResult.length > 0 ? umapResult[ 0 ].length : 0 );
 	}
 
-	private List< double[] > extractValidDataRowsAndCacheIndexes()
+	@Override
+	protected double[][] getResult()
 	{
-		List< double[] > data = new ArrayList<>();
-		int index = 0;
-		for ( V vertex : getVertices() )
-		{
-			double[] row = new double[ inputDimensions.size() ];
-			boolean finiteRow = true;
-			for ( int i = 0; i < inputDimensions.size(); i++ )
-			{
-				InputDimension< V > inputDimension = inputDimensions.get( i );
-				double value = inputDimension.getValue( vertex );
-				if ( Double.isNaN( value ) )
-				{
-					finiteRow = false;
-					break;
-				}
-				row[ i ] = value;
-			}
-			if ( !finiteRow )
-				continue;
-			data.add( row );
-			vertexToRowIndexMap.put( vertex, index );
-			index++;
-		}
-		return data;
-	}
-
-	private AbstractUmapFeature< V > initFeature( int numOutputDimensions )
-	{
-		List< DoublePropertyMap< V > > umapOutputMaps;
-		umapOutputMaps = new ArrayList<>( numOutputDimensions );
-		for ( int i = 0; i < numOutputDimensions; i++ )
-		{
-			umapOutputMaps.add( new DoublePropertyMap<>( getRefPool(), Double.NaN ) );
-		}
-		return createFeatureInstance( umapOutputMaps );
+		return umapResult;
 	}
 
 	protected abstract AbstractUmapFeature< V > createFeatureInstance( final List< DoublePropertyMap< V > > umapOutputMaps );

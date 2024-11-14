@@ -28,31 +28,27 @@
  */
 package org.mastodon.mamut.feature.branch.dimensionalityreduction.umap;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.io.FeatureSerializer;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
-import org.mastodon.io.properties.DoublePropertyMapSerializer;
 import org.mastodon.mamut.feature.branch.BranchFeatureSerializer;
+import org.mastodon.mamut.feature.branch.dimensionalityreduction.BranchOutputSerializerTools;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * De-/serializes {@link BranchUmapFeature}
  */
 @Plugin( type = FeatureSerializer.class )
 public class BranchUmapFeatureSerializer implements BranchFeatureSerializer< BranchUmapFeature, BranchSpot, Spot >
-
 {
 	@Override
 	public FeatureSpec< BranchUmapFeature, BranchSpot > getFeatureSpec()
@@ -64,31 +60,13 @@ public class BranchUmapFeatureSerializer implements BranchFeatureSerializer< Bra
 	public void serialize( final BranchUmapFeature feature, final ObjectToFileIdMap< Spot > idmap, final ObjectOutputStream oos,
 			final ModelBranchGraph branchGraph, final ModelGraph graph ) throws IOException
 	{
-		oos.writeInt( feature.getUmapOutputMaps().size() );
-		for ( DoublePropertyMap< BranchSpot > umapOutput : feature.getUmapOutputMaps() )
-		{
-			final DoublePropertyMap< Spot > spotMap =
-					BranchFeatureSerializer.branchSpotMapToMap( umapOutput, branchGraph, graph );
-			final DoublePropertyMapSerializer< Spot > propertyMapSerializer = new DoublePropertyMapSerializer<>( spotMap );
-			propertyMapSerializer.writePropertyMap( idmap, oos );
-		}
+		BranchOutputSerializerTools.serialize( feature, idmap, oos, branchGraph, graph );
 	}
 
 	@Override
 	public BranchUmapFeature deserialize( final FileIdToObjectMap< Spot > idmap, final ObjectInputStream ois,
 			final ModelBranchGraph branchGraph, final ModelGraph graph ) throws ClassNotFoundException, IOException
 	{
-		int numDimensions = ois.readInt();
-		List< DoublePropertyMap< BranchSpot > > umapOutputs = new ArrayList<>( numDimensions );
-		for ( int i = 0; i < numDimensions; i++ )
-		{
-			final DoublePropertyMap< Spot > spotMap = new DoublePropertyMap<>( graph.vertices(), Double.NaN );
-			DoublePropertyMapSerializer< Spot > serializer = new DoublePropertyMapSerializer<>( spotMap );
-			serializer.readPropertyMap( idmap, ois );
-
-			DoublePropertyMap< BranchSpot > umapOutput = BranchFeatureSerializer.mapToBranchSpotMap( spotMap, branchGraph );
-			umapOutputs.add( umapOutput );
-		}
-		return new BranchUmapFeature( umapOutputs );
+		return BranchOutputSerializerTools.deserialize( idmap, ois, branchGraph, graph, BranchUmapFeature::new );
 	}
 }

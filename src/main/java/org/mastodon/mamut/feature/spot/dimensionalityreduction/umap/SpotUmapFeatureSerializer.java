@@ -28,21 +28,18 @@
  */
 package org.mastodon.mamut.feature.spot.dimensionalityreduction.umap;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.mastodon.collection.RefCollection;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.io.FeatureSerializer;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
-import org.mastodon.io.properties.DoublePropertyMapSerializer;
+import org.mastodon.mamut.feature.spot.dimensionalityreduction.SpotOutputFeatureSerializerTools;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * De-/serializes {@link SpotUmapFeature}
@@ -61,27 +58,13 @@ public class SpotUmapFeatureSerializer implements FeatureSerializer< SpotUmapFea
 	public void serialize( final SpotUmapFeature feature, final ObjectToFileIdMap< Spot > idMap, final ObjectOutputStream oos )
 			throws IOException
 	{
-		oos.writeInt( feature.getUmapOutputMaps().size() );
-		for ( DoublePropertyMap< Spot > umapOutput : feature.getUmapOutputMaps() )
-		{
-			final DoublePropertyMapSerializer< Spot > serializer = new DoublePropertyMapSerializer<>( umapOutput );
-			serializer.writePropertyMap( idMap, oos );
-		}
+		SpotOutputFeatureSerializerTools.serialize( feature, idMap, oos );
 	}
 
 	@Override
 	public SpotUmapFeature deserialize( final FileIdToObjectMap< Spot > idMap, final RefCollection< Spot > pool,
 			final ObjectInputStream ois ) throws IOException, ClassNotFoundException
 	{
-		int numDimensions = ois.readInt();
-		List< DoublePropertyMap< Spot > > umapOutputs = new ArrayList<>( numDimensions );
-		for ( int i = 0; i < numDimensions; i++ )
-		{
-			DoublePropertyMap< Spot > umapOutput = new DoublePropertyMap<>( pool, Double.NaN );
-			DoublePropertyMapSerializer< Spot > serializer = new DoublePropertyMapSerializer<>( umapOutput );
-			serializer.readPropertyMap( idMap, ois );
-			umapOutputs.add( umapOutput );
-		}
-		return new SpotUmapFeature( umapOutputs );
+		return SpotOutputFeatureSerializerTools.deserialize( idMap, pool, ois, SpotUmapFeature::new );
 	}
 }
