@@ -49,7 +49,15 @@ public class UmapSettings
 
 	public static final int DEFAULT_NUMBER_OF_NEIGHBORS = 15;
 
+	public static final int MIN_VALUE_NUMBER_OF_NEIGHBORS = 1;
+
+	public static final int MAX_VALUE_NUMBER_OF_NEIGHBORS = 100;
+
 	public static final double DEFAULT_MINIMUM_DISTANCE = 0.1d;
+
+	public static final double MIN_VALUE_MINIMUM_DISTANCE = 0.1d;
+
+	public static final double MAX_VALUE_MINIMUM_DISTANCE = 1d;
 
 	private int numberOfNeighbors;
 
