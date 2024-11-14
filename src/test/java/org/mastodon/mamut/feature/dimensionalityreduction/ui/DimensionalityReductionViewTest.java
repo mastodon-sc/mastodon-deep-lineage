@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap.ui;
+package org.mastodon.mamut.feature.dimensionalityreduction.ui;
 
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.model.Model;
@@ -34,7 +34,7 @@ import org.scijava.Context;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-class UmapViewTest
+class DimensionalityReductionViewTest
 {
 	@Test
 	void testUmapView()
@@ -42,7 +42,7 @@ class UmapViewTest
 		try (Context context = new Context())
 		{
 			Model model = new Model();
-			assertDoesNotThrow( () -> new UmapView( model, context ) );
+			assertDoesNotThrow( () -> new DimensionalityReductionView( model, context ) );
 		}
 	}
 }

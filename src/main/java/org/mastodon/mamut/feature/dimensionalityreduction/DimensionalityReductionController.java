@@ -38,6 +38,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.branch.dimensionalityreduction.umap.BranchUmapFeatureComputer;
+import org.mastodon.mamut.feature.dimensionalityreduction.tsne.TSneSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
@@ -72,11 +73,17 @@ public class DimensionalityReductionController
 
 	protected boolean isModelGraph;
 
+	protected DimensionalityReductionAlgorithm algorithm;
+
 	private final CommonSettings commonSettings;
 
 	private final UmapSettings umapSettings;
 
+	private final TSneSettings tSneSettings;
+
 	private static final String IS_MODEL_GRAPH = "IsModelGraph";
+
+	private static final String DIMENSIONALITY_REDUCTION_ALGORITHM = "DimensionalityReductionAlgorithm";
 
 	public DimensionalityReductionController( final Model model, final Context context )
 	{
@@ -85,6 +92,7 @@ public class DimensionalityReductionController
 		this.context = context;
 		this.commonSettings = CommonSettings.loadSettingsFromPreferences( prefs );
 		this.umapSettings = UmapSettings.loadSettingsFromPreferences( prefs );
+		this.tSneSettings = TSneSettings.loadSettingsFromPreferences( prefs );
 		loadSettingsFromPreferences();
 	}
 
@@ -97,9 +105,22 @@ public class DimensionalityReductionController
 		return commonSettings;
 	}
 
+	/**
+	 * Gets the UMAP specific settings.
+	 * @return the UMAP specific settings
+	 */
 	public UmapSettings getUmapSettings()
 	{
 		return umapSettings;
+	}
+
+	/**
+	 * Gets the t-SNE specific settings.
+	 * @return the t-SNE specific settings
+	 */
+	public TSneSettings getTSneSettings()
+	{
+		return tSneSettings;
 	}
 
 	/**
@@ -136,6 +157,15 @@ public class DimensionalityReductionController
 	public void setModelGraph( final boolean isModelGraph )
 	{
 		this.isModelGraph = isModelGraph;
+	}
+
+	/**
+	 * Sets the dimensionality reduction algorithm.
+	 * @param algorithm the algorithm
+	 */
+	public void setAlgorithm( final DimensionalityReductionAlgorithm algorithm )
+	{
+		this.algorithm = algorithm;
 	}
 
 	private < V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, E > > void
@@ -192,9 +222,25 @@ public class DimensionalityReductionController
 		return prefs == null || prefs.getBoolean( DimensionalityReductionController.class, IS_MODEL_GRAPH, true );
 	}
 
+	/**
+	 * Gets the dimensionality reduction algorithm from the user preferences.
+	 * If the preferences are not available, the default value is {@link DimensionalityReductionAlgorithm#UMAP}.
+	 * @return the dimensionality reduction algorithm
+	 */
+	public DimensionalityReductionAlgorithm getAlgorithm()
+	{
+		return prefs == null ? DimensionalityReductionAlgorithm.UMAP
+				: DimensionalityReductionAlgorithm
+						.valueOf( prefs.get( DimensionalityReductionController.class, DIMENSIONALITY_REDUCTION_ALGORITHM,
+								DimensionalityReductionAlgorithm.UMAP.name() ) );
+	}
+
 	private void loadSettingsFromPreferences()
 	{
 		isModelGraph = prefs == null || prefs.getBoolean( DimensionalityReductionController.class, IS_MODEL_GRAPH, true );
+		algorithm = DimensionalityReductionAlgorithm.valueOf( prefs == null ? DimensionalityReductionAlgorithm.UMAP.name()
+				: prefs.get( DimensionalityReductionController.class, DIMENSIONALITY_REDUCTION_ALGORITHM,
+						DimensionalityReductionAlgorithm.UMAP.name() ) );
 	}
 
 	/**
@@ -206,7 +252,9 @@ public class DimensionalityReductionController
 		if ( prefs == null )
 			return;
 		prefs.put( DimensionalityReductionController.class, IS_MODEL_GRAPH, isModelGraph );
+		prefs.put( DimensionalityReductionController.class, DIMENSIONALITY_REDUCTION_ALGORITHM, algorithm.name() );
 		commonSettings.saveSettingsToPreferences( prefs );
 		umapSettings.saveSettingsToPreferences( prefs );
+		tSneSettings.saveSettingsToPreferences( prefs );
 	}
 }

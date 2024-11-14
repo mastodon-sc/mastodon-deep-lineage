@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap.ui;
+package org.mastodon.mamut.feature.dimensionalityreduction.ui;
 
 import mpicbg.spim.data.SpimDataException;
 import org.mastodon.mamut.ProjectModel;
@@ -34,11 +34,12 @@ import org.mastodon.mamut.TestUtils;
 import org.mastodon.mamut.io.ProjectLoader;
 import org.scijava.Context;
 
+import javax.swing.JFrame;
 import javax.swing.UIManager;
 import java.io.File;
 import java.io.IOException;
 
-public class UmapViewDemo
+public class DimensionalityReductionViewDemo
 {
 
 	public static void main( String[] args ) throws IOException, SpimDataException
@@ -59,9 +60,9 @@ public class UmapViewDemo
 					".mastodon" );
 			ProjectModel projectModel = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
 
-			UmapView umapView = new UmapView( projectModel.getModel(), context );
-			umapView.setVisible( true );
-			umapView.setDefaultCloseOperation( UmapView.EXIT_ON_CLOSE );
+			DimensionalityReductionView dimensionalityReductionView = new DimensionalityReductionView( projectModel.getModel(), context );
+			dimensionalityReductionView.setVisible( true );
+			dimensionalityReductionView.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		}
 	}
 }

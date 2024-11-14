@@ -31,7 +31,7 @@ package org.mastodon.mamut.feature.dimensionalityreduction;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.ui.UmapView;
+import org.mastodon.mamut.feature.dimensionalityreduction.ui.DimensionalityReductionView;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.AbstractContextual;
@@ -54,17 +54,11 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 @Plugin( type = MamutPlugin.class )
 public class DimensionalityReductionPlugin extends AbstractContextual implements MamutPlugin
 {
-	private static final String UMAP_ACTION_NAME = "UMAP";
+	private static final String DIMENSIONALITY_REDUCTION_ACTION_NAME = "Dimensionality reduction";
 
-	private static final String[] UMAP_SHORT_CUT = { "ctrl alt U" };
+	private static final String[] DIMENSIONALITY_REDUCTION_SHORT_CUT = { "ctrl alt D" };
 
-	private static final String TSNE_ACTION_NAME = "t-SNE";
-
-	private static final String[] TSNE_SHORT_CUT = { "ctrl alt U" };
-
-	private final AbstractNamedAction umapAction;
-
-	private final AbstractNamedAction tsneAction;
+	private final AbstractNamedAction action;
 
 	private ProjectModel projectModel;
 
@@ -75,8 +69,7 @@ public class DimensionalityReductionPlugin extends AbstractContextual implements
 	@SuppressWarnings( "unused" )
 	public DimensionalityReductionPlugin()
 	{
-		umapAction = new RunnableAction( UMAP_ACTION_NAME, this::showUmapDialog );
-		tsneAction = new RunnableAction( TSNE_ACTION_NAME, this::showTSneDialog );
+		action = new RunnableAction( DIMENSIONALITY_REDUCTION_ACTION_NAME, this::showDimensionalityReductionDialog );
 	}
 
 	@Override
@@ -89,24 +82,18 @@ public class DimensionalityReductionPlugin extends AbstractContextual implements
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				menu( "Plugins", menu( "Compute feature",
-						menu( "Dimensionality reduction", item( UMAP_ACTION_NAME ), item( TSNE_ACTION_NAME ) ) ) ) );
+				menu( "Plugins", menu( "Compute feature", item( DIMENSIONALITY_REDUCTION_ACTION_NAME ) ) ) );
 	}
 
 	@Override
 	public void installGlobalActions( Actions actions )
 	{
-		actions.namedAction( umapAction, UMAP_SHORT_CUT );
+		actions.namedAction( action, DIMENSIONALITY_REDUCTION_SHORT_CUT );
 	}
 
-	private void showUmapDialog()
+	private void showDimensionalityReductionDialog()
 	{
-		new UmapView( projectModel.getModel(), getContext() ).setVisible( true );
-	}
-
-	private void showTSneDialog()
-	{
-
+		new DimensionalityReductionView( projectModel.getModel(), getContext() ).setVisible( true );
 	}
 
 	/*
@@ -123,10 +110,8 @@ public class DimensionalityReductionPlugin extends AbstractContextual implements
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( UMAP_ACTION_NAME, UMAP_SHORT_CUT,
-					"Uniform Manifold Approximation and Projection for Dimension Reduction (UMAP)." );
-			descriptions.add( TSNE_ACTION_NAME, TSNE_SHORT_CUT,
-					"t-distributed Stochastic Neighbor Embedding (t-SNE)." );
+			descriptions.add( DIMENSIONALITY_REDUCTION_ACTION_NAME, DIMENSIONALITY_REDUCTION_SHORT_CUT,
+					"Dimensionality Reduction of Feature Data using different algorithms, such as UMAP, t-SNE." );
 		}
 	}
 }
