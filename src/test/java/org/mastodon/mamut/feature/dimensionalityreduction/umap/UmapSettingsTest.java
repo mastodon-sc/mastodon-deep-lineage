@@ -44,26 +44,26 @@ class UmapSettingsTest
 	}
 
 	@Test
-	void getNumberOfNeighbors()
+	void testGetNumberOfNeighbors()
 	{
 		assertEquals( UmapSettings.DEFAULT_NUMBER_OF_NEIGHBORS, umapSettings.getNumberOfNeighbors() );
 	}
 
 	@Test
-	void getMinimumDistance()
+	void testGetMinimumDistance()
 	{
 		assertEquals( UmapSettings.DEFAULT_MINIMUM_DISTANCE, umapSettings.getMinimumDistance() );
 	}
 
 	@Test
-	void setNumberOfNeighbors()
+	void testSetNumberOfNeighbors()
 	{
 		umapSettings.setNumberOfNeighbors( 10 );
 		assertEquals( 10, umapSettings.getNumberOfNeighbors() );
 	}
 
 	@Test
-	void setMinimumDistance()
+	void testSetMinimumDistance()
 	{
 		umapSettings.setMinimumDistance( 0.5 );
 		assertEquals( 0.5, umapSettings.getMinimumDistance() );
