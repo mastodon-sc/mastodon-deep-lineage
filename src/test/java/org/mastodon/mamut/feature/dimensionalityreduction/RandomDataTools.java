@@ -8,8 +8,13 @@ public class RandomDataTools
 
 	public static double[][] generateSampleData()
 	{
-		double[][] firstPointCloud = generateRandomPointsInSphere( 100, 100, -10, 20, 50 );
-		double[][] secondPointCloud = generateRandomPointsInSphere( 250, 250, 10, 50, 100 );
+		return generateSampleData( 50, 100 );
+	}
+
+	public static double[][] generateSampleData( int numCluster1, int numCluster2 )
+	{
+		double[][] firstPointCloud = generateRandomPointsInSphere( 100, 100, -10, 20, numCluster1 );
+		double[][] secondPointCloud = generateRandomPointsInSphere( 250, 250, 10, 50, numCluster2 );
 
 		return concatenateArrays( firstPointCloud, secondPointCloud );
 	}

@@ -50,7 +50,9 @@ class TsneTest
 	@Test
 	void test()
 	{
-		double[][] inputData = RandomDataTools.generateSampleData();
+		int numCluster1 = 50;
+		int numCluster2 = 100;
+		double[][] inputData = RandomDataTools.generateSampleData( numCluster1, numCluster2 );
 		logger.debug( "dimensions rows: {}, columns:{}", inputData.length, inputData[ 0 ].length );
 
 		// Recommendations for t-SNE defaults: https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
@@ -67,9 +69,9 @@ class TsneTest
 		assertEquals( tsneResult.length, inputData.length );
 		assertEquals( 2, tsneResult[ 0 ].length );
 
-		for ( int i = 0; i < 50; i++ )
+		for ( int i = 0; i < numCluster1; i++ )
 			assertTrue( tsneResult[ i ][ 0 ] > 10 );
-		for ( int i = 50; i < 150; i++ )
+		for ( int i = numCluster1; i < numCluster1 + numCluster2; i++ )
 			assertTrue( tsneResult[ i ][ 0 ] < 10 );
 	}
 }
