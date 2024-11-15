@@ -133,6 +133,26 @@ public class TSneSettings
 		prefs.put( TSneSettings.class, MAX_ITERATIONS_SETTING, getMaxIterations() );
 	}
 
+	/**
+	 * Checks if the perplexity is valid for the given number of dataset rows.
+	 * @param rows the number of rows in the dataset
+	 * @return {@code true} if the perplexity is valid, {@code false} otherwise
+	 */
+	public boolean isValidPerplexity( final int rows )
+	{
+		return ( double ) rows - 1 >= 3d * perplexity;
+	}
+
+	/**
+	 * Returns the maximum valid perplexity for the given number of dataset rows.
+	 * @param rows the number of rows in the dataset
+	 * @return the maximum valid perplexity
+	 */
+	public int getMaxValidPerplexity( final int rows )
+	{
+		return ( int ) ( ( rows - 1 ) / 3d );
+	}
+
 	@Override
 	public String toString()
 	{
