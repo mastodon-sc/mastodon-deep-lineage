@@ -192,7 +192,15 @@ public class DimensionalityReductionController
 			AbstractTSneFeatureComputer< V, E, G > tSneFeatureComputer =
 					isModelGraph ? Cast.unchecked( new SpotTSneFeatureComputer( model, context ) )
 							: Cast.unchecked( new BranchTSneFeatureComputer( model, context ) );
-			tSneFeatureComputer.computeFeature( commonSettings, tSneSettings, inputDimensions, graph );
+			try
+			{
+				tSneFeatureComputer.computeFeature( commonSettings, tSneSettings, inputDimensions, graph );
+			}
+			catch ( ArrayIndexOutOfBoundsException e )
+			{
+				logger.error( "Error during t-SNE computation: {}", e.getMessage() );
+				throw new ArrayIndexOutOfBoundsException( "Not enough data for t-SNE computation." );
+			}
 			break;
 		default:
 			throw new IllegalArgumentException( "Unknown algorithm: " + algorithm );
