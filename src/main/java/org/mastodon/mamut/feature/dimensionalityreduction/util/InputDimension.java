@@ -38,7 +38,7 @@ import org.mastodon.graph.Edges;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.LinkTargetIdFeature;
 import org.mastodon.mamut.feature.SpotTrackIDFeature;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeature;
+import org.mastodon.mamut.feature.dimensionalityreduction.AbstractOutputFeature;
 import org.mastodon.mamut.feature.spot.SpotBranchIDFeature;
 import org.mastodon.util.FeatureUtils;
 
@@ -162,7 +162,7 @@ public class InputDimension< V extends Vertex< ? > >
 		excludedVertexFeatures.add( Cast.unchecked( SpotBranchIDFeature.class ) );
 		for ( Feature< V > feature : vertexFeatures )
 		{
-			if ( excludedVertexFeatures.contains( feature.getClass() ) || feature instanceof AbstractUmapFeature )
+			if ( excludedVertexFeatures.contains( feature.getClass() ) || feature instanceof AbstractOutputFeature )
 				continue;
 			for ( FeatureProjection< V > projection : feature.projections() )
 				inputDimensions.add( InputDimension.fromVertexFeature( feature, projection ) );
