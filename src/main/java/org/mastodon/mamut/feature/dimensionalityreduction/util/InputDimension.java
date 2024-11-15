@@ -41,7 +41,10 @@ import org.mastodon.mamut.feature.SpotTrackIDFeature;
 import org.mastodon.mamut.feature.dimensionalityreduction.AbstractOutputFeature;
 import org.mastodon.mamut.feature.spot.SpotBranchIDFeature;
 import org.mastodon.util.FeatureUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -57,6 +60,8 @@ import java.util.function.ToDoubleFunction;
  */
 public class InputDimension< V extends Vertex< ? > >
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	private final Feature< ? > feature;
 
 	private final FeatureProjection< ? > featureProjection;
@@ -167,6 +172,7 @@ public class InputDimension< V extends Vertex< ? > >
 			for ( FeatureProjection< V > projection : feature.projections() )
 				inputDimensions.add( InputDimension.fromVertexFeature( feature, projection ) );
 		}
+		logger.debug( "Found {} input dimensions for vertex type '{}'.", inputDimensions.size(), vertexType.getSimpleName() );
 		return inputDimensions;
 	}
 
@@ -184,6 +190,7 @@ public class InputDimension< V extends Vertex< ? > >
 			for ( FeatureProjection< E > projection : feature.projections() )
 				inputDimensions.add( InputDimension.fromEdgeFeature( feature, projection ) );
 		}
+		logger.debug( "Found {} input dimensions for edge type '{}'.", inputDimensions.size(), edgeType.getSimpleName() );
 		return inputDimensions;
 	}
 
