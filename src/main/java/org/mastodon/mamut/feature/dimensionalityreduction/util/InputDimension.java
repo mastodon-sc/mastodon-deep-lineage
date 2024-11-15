@@ -149,7 +149,6 @@ public class InputDimension< V extends Vertex< ? > >
 	{
 		List< InputDimension< V > > inputDimensions = getVertexDimensions( featureModel, vertexType );
 		inputDimensions.addAll( getEdgeDimensions( featureModel, edgeType ) );
-		getEdgeDimensions( featureModel, edgeType );
 		return inputDimensions;
 	}
 
