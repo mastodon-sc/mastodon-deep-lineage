@@ -88,6 +88,13 @@ public abstract class AbstractTSneFeatureComputer< V extends Vertex< E >, E exte
 	@Override
 	protected void computeAlgorithm( double[][] dataMatrix )
 	{
+		int rows = dataMatrix.length;
+		if ( !tSneSettings.isValidPerplexity( rows ) )
+		{
+			throw new IllegalArgumentException( "For t-SNE, the number of valid rows in the dataset (" + rows
+					+ ") requires the perplexity (" + tSneSettings.getPerplexity() + ") to not be higher than ("
+					+ tSneSettings.getMaxValidPerplexity( rows ) + ")." );
+		}
 		TSneConfiguration tSneConfig =
 				TSneUtils.buildConfig( dataMatrix, settings.getNumberOfOutputDimensions(), TSneSettings.INITIAL_DIMENSIONS,
 						tSneSettings.getPerplexity(),
