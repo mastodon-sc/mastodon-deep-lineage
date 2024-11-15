@@ -147,14 +147,16 @@ class DimensionalityReductionControllerTest
 			int numberOfOutputDimensions = 10;
 
 			Model model = new Model();
-			DimensionalityReductionController umapController = new DimensionalityReductionController( model, context );
-			CommonSettings commonSettings = umapController.getCommonSettings();
+			DimensionalityReductionController controller = new DimensionalityReductionController( model, context );
+			CommonSettings commonSettings = controller.getCommonSettings();
 			commonSettings.setNumberOfOutputDimensions( numberOfOutputDimensions );
 			List< InputDimension< Spot > > inputDimensions =
 					InputDimension.getListFromFeatureModel( model.getFeatureModel(), Spot.class, Link.class );
-			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( () -> inputDimensions ) );
+			assertThrows( IllegalArgumentException.class, () -> controller.computeFeature( () -> inputDimensions ) );
+			commonSettings.setNumberOfOutputDimensions( 11 );
+			assertThrows( IllegalArgumentException.class, () -> controller.computeFeature( () -> inputDimensions ) );
 			Supplier< List< InputDimension< Spot > > > emptyInputDimensionsSupplier = Collections::emptyList;
-			assertThrows( IllegalArgumentException.class, () -> umapController.computeFeature( emptyInputDimensionsSupplier ) );
+			assertThrows( IllegalArgumentException.class, () -> controller.computeFeature( emptyInputDimensionsSupplier ) );
 		}
 	}
 
