@@ -79,7 +79,7 @@ public class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
 			Model model = graph2.getModel();
 			FeatureModel featureModel = model.getFeatureModel();
 
-			// declare some features
+			// declare some features as input dimensions
 			BranchDepthFeature branchDepthFeature =
 					new BranchDepthFeature( new IntPropertyMap<>( model.getBranchGraph().vertices().getRefPool(), -1 ) );
 			featureModel.declareFeature( branchDepthFeature );
