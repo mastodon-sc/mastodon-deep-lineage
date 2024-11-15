@@ -26,11 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap.util;
+package org.mastodon.mamut.feature.dimensionalityreduction.util;
 
 import org.junit.jupiter.api.Test;
 import org.mastodon.feature.FeatureModel;
-import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
