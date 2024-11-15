@@ -171,8 +171,12 @@ public abstract class AbstractOutputFeatureComputer< V extends Vertex< E >, E ex
 		List< double[] > data = extractValidDataRowsAndCacheIndexes();
 		double[][] dataMatrix = data.toArray( new double[ 0 ][ 0 ] );
 		if ( dataMatrix.length == 0 )
+		{
+			logger.error(
+					"No valid data rows found, i.e. in each existing data row there is at least one non-finite value, such as Not a Number or Infinity." );
 			throw new IllegalArgumentException(
 					"No valid data rows found, i.e. in each existing data row there is at least one non-finite value, such as Not a Number or Infinity." );
+		}
 		if ( settings.isStandardizeFeatures() )
 		{
 			logger.debug( "Standardizing features with {} rows and {} columns.", dataMatrix.length, inputDimensions.size() );

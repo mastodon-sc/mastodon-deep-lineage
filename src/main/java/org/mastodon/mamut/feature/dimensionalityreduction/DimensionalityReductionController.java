@@ -175,10 +175,18 @@ public class DimensionalityReductionController
 			updateFeature( final List< InputDimension< V > > inputDimensions )
 	{
 		if ( inputDimensions.isEmpty() )
+		{
+			logger.error( "No features selected." );
 			throw new IllegalArgumentException( "No features selected." );
+		}
 		if ( commonSettings.getNumberOfOutputDimensions() >= inputDimensions.size() )
+		{
+			logger.error( "Number of output dimensions ({}) must be smaller than the number of input features {}.",
+					commonSettings.getNumberOfOutputDimensions(), inputDimensions.size() );
 			throw new IllegalArgumentException( "Number of output dimensions (" + commonSettings.getNumberOfOutputDimensions()
 					+ ") must be smaller than the number of input features (" + inputDimensions.size() + ")." );
+		}
+
 		G graph = getGraph( isModelGraph );
 		switch ( algorithm )
 		{
@@ -198,7 +206,7 @@ public class DimensionalityReductionController
 			}
 			catch ( ArrayIndexOutOfBoundsException e )
 			{
-				logger.error( "Error during t-SNE computation: {}", e.getMessage() );
+				logger.error( "Not enough data for t-SNE computation. {}", e.getMessage() );
 				throw new ArrayIndexOutOfBoundsException( "Not enough data for t-SNE computation." );
 			}
 			break;

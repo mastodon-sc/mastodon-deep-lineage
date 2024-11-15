@@ -91,6 +91,9 @@ public abstract class AbstractTSneFeatureComputer< V extends Vertex< E >, E exte
 		int rows = dataMatrix.length;
 		if ( !tSneSettings.isValidPerplexity( rows ) )
 		{
+			logger.error(
+					"For t-SNE, the number of valid rows in the dataset ({}) requires the perplexity ({}) to not be higher than ({}).",
+					rows, tSneSettings.getPerplexity(), tSneSettings.getMaxValidPerplexity( rows ) );
 			throw new IllegalArgumentException( "For t-SNE, the number of valid rows in the dataset (" + rows
 					+ ") requires the perplexity (" + tSneSettings.getPerplexity() + ") to not be higher than ("
 					+ tSneSettings.getMaxValidPerplexity( rows ) + ")." );
