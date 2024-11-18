@@ -146,7 +146,7 @@ class LineageTreeUtilsTest
 	void testLinkSpotsWithSameLabel()
 	{
 		assertEquals( 0, graph6.getModel().getGraph().edges().size() );
-		LineageTreeUtils.linkSpotsWithSameLabel( graph6.getModel() );
+		LineageTreeUtils.linkSpotsWithSameLabel( graph6.getModel(), null );
 		assertEquals( 7, graph6.getModel().getGraph().edges().size() );
 		assertSpotEquals( graph6.spot0.outgoingEdges().get( 0 ).getTarget(), graph6.spot1 );
 		assertSpotEquals( graph6.spot1.outgoingEdges().get( 0 ).getTarget(), graph6.spot2 );

@@ -50,6 +50,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.util.TreeUtils;
+import org.scijava.app.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,7 @@ import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -331,17 +333,28 @@ public class LineageTreeUtils {
 	 * </pre>
 	 * @param model the model to link spots in.
 	 */
-	public static void linkSpotsWithSameLabel( final Model model )
+	public static void linkSpotsWithSameLabel( final Model model, final StatusService statusService )
 	{
 		Link edgeRef = model.getGraph().edgeRef();
-		for ( int timepoint = TreeUtils.getMinTimepoint( model ); timepoint < TreeUtils.getMaxTimepoint( model ); timepoint++ )
+		int minTimepoint = TreeUtils.getMinTimepoint( model );
+		int maxTimepoint = TreeUtils.getMaxTimepoint( model );
+		logger.debug( "Linking spots with the same label in consecutive timepoints from timepoint {} to timepoint {}.", minTimepoint,
+				maxTimepoint );
+		for ( int timepoint = minTimepoint; timepoint < maxTimepoint; timepoint++ )
 		{
+			if ( statusService != null )
+				statusService.showProgress( timepoint + 1, maxTimepoint );
+			AtomicInteger edgeCounter = new AtomicInteger( 0 );
 			SpatialIndex< Spot > currentTimepoint = model.getSpatioTemporalIndex().getSpatialIndex( timepoint );
 			SpatialIndex< Spot > nextTimepoint = model.getSpatioTemporalIndex().getSpatialIndex( timepoint + 1 );
 			currentTimepoint.forEach( spotA -> nextTimepoint.forEach( spotB -> {
 				if ( spotA.getLabel().equals( spotB.getLabel() ) )
+				{
 					model.getGraph().addEdge( spotA, spotB, edgeRef ).init();
+					edgeCounter.incrementAndGet();
+				}
 			} ) );
+			logger.debug( "Added {} edge(s) between spots in time point {} and {}.", edgeCounter.get(), timepoint, timepoint + 1 );
 		}
 		model.getGraph().releaseRef( edgeRef );
 		logger.debug( "Added {} edge(s) to the graph.", model.getGraph().edges().size() );

@@ -112,8 +112,9 @@ public class LabelImageUtils
 				if ( statusService != null )
 					statusService.showProgress( i + 1, numTimepoints );
 			}
+			logger.info( "Created {} new spot(s) in {} frame(s).", count, frames.size() );
 			if ( linkSpotsWithSameLabels )
-				LineageTreeUtils.linkSpotsWithSameLabel( model );
+				LineageTreeUtils.linkSpotsWithSameLabel( model, statusService );
 			model.setUndoPoint();
 		}
 		finally
@@ -121,7 +122,6 @@ public class LabelImageUtils
 			lock.writeLock().unlock();
 		}
 		graph.notifyGraphChanged();
-		logger.info( "Created {} new spot(s) in {} frame(s).", count, frames.size() );
 	}
 
 	/**
@@ -136,7 +136,8 @@ public class LabelImageUtils
 			final int frameId, final AffineTransform3D transform, final double scaleFactor )
 	{
 		logger.debug( "Computing mean, covariance of all labels at frame {}", frameId );
-		logger.debug( "Dimensions of frame: {}, {}, {}", frame.dimension( 0 ), frame.dimension( 1 ), frame.dimension( 2 ) );
+		logger.debug( "Dimensions of frame: {}, {}, {}", frame.dimension( 0 ), frame.dimension( 1 ),
+				frame.numDimensions() > 2 ? frame.dimension( 2 ) : "1" );
 
 		// get the maximum value possible to learn how many objects need to be instantiated
 		Pair< Integer, Integer > minAndMax = getPixelValueInterval( frame );
@@ -212,6 +213,15 @@ public class LabelImageUtils
 				cov = label.covariances.get();
 			for ( int i = 0; i < cov.length; i++ )
 				cov[ i ][ i ] += SINGLE_PIXEL_COVARIANCE;
+			if ( mean.length == 2 ) // NB: 2D case, add a third dimension with 0 covariance
+			{
+				mean = new double[] { mean[ 0 ], mean[ 1 ], 1 };
+				cov = new double[][] {
+						{ cov[ 0 ][ 0 ], cov[ 0 ][ 1 ], 0 },
+						{ cov[ 1 ][ 0 ], cov[ 1 ][ 1 ], 0 },
+						{ 0, 0, 1 }
+				};
+			}
 			// transform ellipsoid center to mastodon coordinate system
 			transform.apply( mean, mean );
 			// scale ellipsoid axes to desired factor
@@ -282,11 +292,20 @@ public class LabelImageUtils
 	public static long[] getImgPlusDimensions( final ImgPlus< ? > imgPlus )
 	{
 		long[] imgPlusDimensions = imgPlus.getImg().dimensionsAsLongArray();
+		imgPlus.dimensions( imgPlusDimensions );
 		int numDimensions = imgPlusDimensions.length;
 		long imgPlusX = imgPlusDimensions[ 0 ];
 		long imgPlusY = imgPlusDimensions[ 1 ];
-		long imgPlusZ = numDimensions > 2 ? imgPlusDimensions[ 2 ] : 0;
-		long imgPlusT = numDimensions > 3 ? imgPlusDimensions[ 3 ] : 0;
+		long imgPlusZ = 1;
+		long imgPlusT = 1;
+		if ( numDimensions > 2 )
+			imgPlusT = imgPlusDimensions[ 2 ];
+		if ( numDimensions > 3 )
+		{
+			imgPlusZ = imgPlusDimensions[ 2 ];
+			imgPlusT = imgPlusDimensions[ 3 ];
+		}
+
 		return new long[] { imgPlusX, imgPlusY, imgPlusZ, imgPlusT };
 	}
 
@@ -334,8 +353,9 @@ public class LabelImageUtils
 		if ( !dimensionsMatch( sharedBdvData, imgPlus ) )
 			throw new IllegalArgumentException( "The dimensions of the ImageJ image " + imgPlus.getName()
 					+ " do not match the dimensions of the big data viewer image." );
+		int sliceDimensions = imgPlus.numDimensions() == 3 ? 2 : 3;
 		IntFunction< RandomAccessibleInterval< RealType< ? > > > frameProvider =
-				frameId -> Cast.unchecked( Views.hyperSlice( imgPlus.getImg(), 3, frameId ) );
+				frameId -> Cast.unchecked( Views.hyperSlice( imgPlus.getImg(), sliceDimensions, frameId ) );
 		IntFunction< AffineTransform3D > transformProvider = frameId -> {
 			AffineTransform3D transform = new AffineTransform3D();
 			projectModel.getSharedBdvData().getSources().get( sourceIndex ).getSpimSource().getSourceTransform( frameId, 0, transform );
