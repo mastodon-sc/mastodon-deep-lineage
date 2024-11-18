@@ -106,8 +106,5 @@ public class ExampleGraph5 extends AbstractExampleGraph
 		addEdge( spot12, spot13 );
 
 		branchSpotA = getBranchSpot( spot0 );
-		BranchSpot branchSpotB = getBranchSpot( spot6 );
-		BranchSpot branchSpotC = getBranchSpot( spot10 );
-		BranchSpot branchSpotD = getBranchSpot( spot12 );
 	}
 }

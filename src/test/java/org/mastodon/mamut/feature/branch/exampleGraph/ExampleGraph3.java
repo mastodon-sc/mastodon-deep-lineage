@@ -74,7 +74,5 @@ public class ExampleGraph3 extends AbstractExampleGraph
 		addEdge( spot7, spot8 );
 
 		branchSpotA = getBranchSpot( spot0 );
-		BranchSpot branchSpotB = getBranchSpot( spot3 );
-		BranchSpot branchSpotC = getBranchSpot( spot6 );
 	}
 }
