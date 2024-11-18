@@ -243,7 +243,7 @@ class LabelImageUtilsTest
 			Spot spot = model.getGraph().addVertex().init( 0, center, givenCovariance );
 			int pixelValue = 1;
 			Img< FloatType > image = createImageFromSpot( spot, pixelValue );
-			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
+			ImgPlus< FloatType > imgPlus = createImgPlus3DAndT( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
 			LabelImageUtils.importSpotsFromImgPlus( projectModel, 0, imgPlus, 1, false );
 
@@ -273,7 +273,7 @@ class LabelImageUtilsTest
 		try (Context context = new Context())
 		{
 			Img< FloatType > twoFramesImage = DemoUtils.generateExampleTStack();
-			ImgPlus< FloatType > imgPlus = createImgPlus( twoFramesImage, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
+			ImgPlus< FloatType > imgPlus = createImgPlus3DAndT( twoFramesImage, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( twoFramesImage, model, context );
 			LabelImageUtils.importSpotsFromImgPlus( projectModel, 0, imgPlus, 1, true );
 
@@ -290,7 +290,7 @@ class LabelImageUtilsTest
 		try (Context context = new Context())
 		{
 			Img< FloatType > image = DemoUtils.generateNonSequentialLabelImage();
-			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
+			ImgPlus< FloatType > imgPlus = createImgPlus3DAndT( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
 			LabelImageUtils.importSpotsFromImgPlus( projectModel, 0, imgPlus, 1, true );
 
@@ -307,18 +307,35 @@ class LabelImageUtilsTest
 		{
 			Img< FloatType > image = ArrayImgs.floats( 10, 10, 10, 2 );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( image, model, context );
-			ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
+			ImgPlus< FloatType > imgPlus = createImgPlus3DAndT( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 			assertTrue( LabelImageUtils.dimensionsMatch( projectModel.getSharedBdvData(), imgPlus ) );
 		}
 	}
 
 	@Test
-	void testGetImgPlusDimensions()
+	void testGetImgPlusDimensions3DAndT()
 	{
-		Img< FloatType > image = ArrayImgs.floats( 100, 100, 100, 2 );
-		ImgPlus< FloatType > imgPlus = createImgPlus( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
+		int x = 100;
+		int y = 100;
+		int z = 100;
+		int t = 2;
+		Img< FloatType > image = ArrayImgs.floats( x, y, z, t );
+		ImgPlus< FloatType > imgPlus = createImgPlus3DAndT( image, new FinalVoxelDimensions( "um", 1, 1, 1 ) );
 		long[] dimensions = LabelImageUtils.getImgPlusDimensions( imgPlus );
-		assertArrayEquals( new long[] { 100, 100, 100, 2 }, dimensions );
+		assertArrayEquals( new long[] { x, y, z, t }, dimensions );
+	}
+
+	@Test
+	void testGetImgPlusDimensions2DAndT()
+	{
+		int x = 100;
+		int y = 100;
+		int z = 1;
+		int t = 2;
+		Img< FloatType > image = ArrayImgs.floats( x, y, t );
+		ImgPlus< FloatType > imgPlus = createImgPlus2DAndT( image, new FinalVoxelDimensions( "um", 1, 1 ) );
+		long[] dimensions = LabelImageUtils.getImgPlusDimensions( imgPlus );
+		assertArrayEquals( new long[] { x, y, z, t }, dimensions );
 	}
 
 	@Test
@@ -348,11 +365,18 @@ class LabelImageUtilsTest
 		}
 	}
 
-	private ImgPlus< FloatType > createImgPlus( final Img< FloatType > img, final VoxelDimensions voxelDimensions )
+	private ImgPlus< FloatType > createImgPlus3DAndT( final Img< FloatType > img, final VoxelDimensions voxelDimensions )
 	{
 		final CalibratedAxis[] axes = { new DefaultLinearAxis( Axes.X, voxelDimensions.dimension( 0 ) ),
 				new DefaultLinearAxis( Axes.Y, voxelDimensions.dimension( 1 ) ),
 				new DefaultLinearAxis( Axes.Z, voxelDimensions.dimension( 2 ) ), new DefaultLinearAxis( Axes.TIME ) };
+		return new ImgPlus<>( img, "Result", axes );
+	}
+
+	private ImgPlus< FloatType > createImgPlus2DAndT( final Img< FloatType > img, final VoxelDimensions voxelDimensions )
+	{
+		final CalibratedAxis[] axes = { new DefaultLinearAxis( Axes.X, voxelDimensions.dimension( 0 ) ),
+				new DefaultLinearAxis( Axes.Y, voxelDimensions.dimension( 1 ) ), new DefaultLinearAxis( Axes.TIME ) };
 		return new ImgPlus<>( img, "Result", axes );
 	}
 

@@ -282,11 +282,20 @@ public class LabelImageUtils
 	public static long[] getImgPlusDimensions( final ImgPlus< ? > imgPlus )
 	{
 		long[] imgPlusDimensions = imgPlus.getImg().dimensionsAsLongArray();
+		imgPlus.dimensions( imgPlusDimensions );
 		int numDimensions = imgPlusDimensions.length;
 		long imgPlusX = imgPlusDimensions[ 0 ];
 		long imgPlusY = imgPlusDimensions[ 1 ];
-		long imgPlusZ = numDimensions > 2 ? imgPlusDimensions[ 2 ] : 0;
-		long imgPlusT = numDimensions > 3 ? imgPlusDimensions[ 3 ] : 0;
+		long imgPlusZ = 1;
+		long imgPlusT = 1;
+		if ( numDimensions > 2 )
+			imgPlusT = imgPlusDimensions[ 2 ];
+		if ( numDimensions > 3 )
+		{
+			imgPlusZ = imgPlusDimensions[ 2 ];
+			imgPlusT = imgPlusDimensions[ 3 ];
+		}
+
 		return new long[] { imgPlusX, imgPlusY, imgPlusZ, imgPlusT };
 	}
 
