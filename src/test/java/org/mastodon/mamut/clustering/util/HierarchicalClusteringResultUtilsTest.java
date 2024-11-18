@@ -32,22 +32,15 @@ import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.CompleteLinkageStrategy;
 import com.apporiented.algorithm.clustering.LinkageStrategy;
 import com.apporiented.algorithm.clustering.SingleLinkageStrategy;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.clustering.ClusterData;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
-import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
-import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.clustering.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.clustering.treesimilarity.tree.Tree;
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.ColorUtils;
-import org.mastodon.util.TagSetUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -56,7 +49,6 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HierarchicalClusteringResultUtilsTest
