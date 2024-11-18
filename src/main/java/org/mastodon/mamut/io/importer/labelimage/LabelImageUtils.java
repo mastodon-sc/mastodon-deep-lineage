@@ -113,7 +113,7 @@ public class LabelImageUtils
 					statusService.showProgress( i + 1, numTimepoints );
 			}
 			if ( linkSpotsWithSameLabels )
-				LineageTreeUtils.linkSpotsWithSameLabel( model );
+				LineageTreeUtils.linkSpotsWithSameLabel( model, statusService );
 			model.setUndoPoint();
 		}
 		finally
