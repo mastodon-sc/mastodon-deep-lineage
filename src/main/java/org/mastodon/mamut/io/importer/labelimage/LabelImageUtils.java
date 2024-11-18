@@ -112,6 +112,7 @@ public class LabelImageUtils
 				if ( statusService != null )
 					statusService.showProgress( i + 1, numTimepoints );
 			}
+			logger.info( "Created {} new spot(s) in {} frame(s).", count, frames.size() );
 			if ( linkSpotsWithSameLabels )
 				LineageTreeUtils.linkSpotsWithSameLabel( model, statusService );
 			model.setUndoPoint();
@@ -121,7 +122,6 @@ public class LabelImageUtils
 			lock.writeLock().unlock();
 		}
 		graph.notifyGraphChanged();
-		logger.info( "Created {} new spot(s) in {} frame(s).", count, frames.size() );
 	}
 
 	/**
