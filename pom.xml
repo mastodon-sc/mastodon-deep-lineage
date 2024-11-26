@@ -128,6 +128,13 @@
             <version>v2.6.4</version>
         </dependency>
 
+        <!-- PCA -->
+        <dependency>
+            <groupId>com.github.haifengl</groupId>
+            <artifactId>smile-core</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
         <!-- Standardization for dimensionality reduction preprocessing -->
         <dependency>
             <groupId>org.apache.commons</groupId>
