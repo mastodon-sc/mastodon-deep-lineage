@@ -573,3 +573,5 @@ the Mastodon repository.
 * The development of this plugin was supported by the [DFG](https://www.dfg.de/en/) under
   grant [490966236](https://gepris.dfg.de/gepris/projekt/490966236) and the [ANR](https://anr.fr/en/) under
   grant [ANR-21-CE13-0044](https://anr.fr/Project-ANR-21-CE13-0044).
+
+
