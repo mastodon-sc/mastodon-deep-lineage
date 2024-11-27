@@ -234,6 +234,9 @@
                         <version>3.1.0</version>
                         <configuration>
                             <argLine>-Xmx3g</argLine>
+                            <classpathDependencyExcludes>
+                                <classpathDependencyExclude>net.imagej:imagej-legacy</classpathDependencyExclude>
+                            </classpathDependencyExcludes>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -250,6 +253,9 @@
                         <version>3.1.0</version>
                         <configuration>
                             <argLine>@{argLine} -Xmx3g</argLine>
+                            <classpathDependencyExcludes>
+                                <classpathDependencyExclude>net.imagej:imagej-legacy</classpathDependencyExclude>
+                            </classpathDependencyExcludes>
                         </configuration>
                     </plugin>
                     <plugin>
