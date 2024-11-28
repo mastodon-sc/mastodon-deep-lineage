@@ -25,6 +25,8 @@
         <mastodon.group>org.mastodon</mastodon.group>
         <!-- when a pom-scijava exists that references the scijava-common 2.99.1 release, this can be removed again -->
         <scijava-common.version>2.99.1</scijava-common.version>
+        <!-- when a pom-scijava exists that references the ij1-patcher 1.2.7 release, this can be removed again -->
+        <ij1-patcher.version>1.2.7</ij1-patcher.version>
 
         <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
