@@ -72,8 +72,8 @@ class TSneTest
 		assertEquals( 2, tsneResult[ 0 ].length );
 
 		for ( int i = 0; i < numCluster1; i++ )
-			assertTrue( tsneResult[ i ][ 0 ] > 10 );
+			assertTrue( tsneResult[ i ][ 0 ] > 18 );
 		for ( int i = numCluster1; i < numCluster1 + numCluster2; i++ )
-			assertTrue( tsneResult[ i ][ 0 ] < 10 );
+			assertTrue( tsneResult[ i ][ 0 ] < 18 );
 	}
 }
