@@ -49,7 +49,7 @@ import java.util.List;
  */
 public class BranchUmapFeature extends AbstractUmapFeature< BranchSpot >
 {
-	public static final String KEY = "Branch Umap output";
+	public static final String KEY = "Branch UMAP output";
 
 	private final BranchSpotUmapFeatureSpec adaptedSpec;
 
