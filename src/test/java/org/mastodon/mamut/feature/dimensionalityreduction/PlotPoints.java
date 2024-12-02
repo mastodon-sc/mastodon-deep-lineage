@@ -76,14 +76,14 @@ public class PlotPoints extends JPanel
 		int offsetY = 100;
 		g.drawLine( -10 + offsetX, offsetY, 10 + offsetX, offsetY );
 		g.drawLine( offsetX, -10 + offsetY, offsetX, 10 + offsetY );
-		for ( int i = 0; i < points.length; i++ )
+		for ( int i = 0; i < result.length; i++ )
 		{
-			int x = ( int ) points[ i ][ 0 ];
-			int y = ( int ) points[ i ][ 1 ];
-			int z = ( int ) points[ i ][ 2 ];
+			int x = points != null ? ( int ) points[ i ][ 0 ] : 0;
+			int y = points != null ? ( int ) points[ i ][ 1 ] : 0;
+			int z = points != null ? ( int ) points[ i ][ 2 ] : 0;
 			int resultX = ( int ) result[ i ][ 0 ];
 			int resultY = ( int ) result[ i ][ 1 ];
-			if ( filter.test( result[ i ] ) )
+			if ( filter != null && filter.test( result[ i ] ) )
 				g.setColor( Color.RED );
 			else
 				g.setColor( Color.BLUE );
