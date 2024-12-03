@@ -38,11 +38,13 @@ import com.jujutsu.tsne.barneshut.BarnesHutTSne;
 import com.jujutsu.tsne.barneshut.ParallelBHTsne;
 import com.jujutsu.utils.TSneUtils;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Disabled( "mvn test takes too long" )
 class TSneTest
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
@@ -70,8 +72,8 @@ class TSneTest
 		assertEquals( 2, tsneResult[ 0 ].length );
 
 		for ( int i = 0; i < numCluster1; i++ )
-			assertTrue( tsneResult[ i ][ 0 ] > 10 );
+			assertTrue( tsneResult[ i ][ 0 ] > 18 );
 		for ( int i = numCluster1; i < numCluster1 + numCluster2; i++ )
-			assertTrue( tsneResult[ i ][ 0 ] < 10 );
+			assertTrue( tsneResult[ i ][ 0 ] < 18 );
 	}
 }

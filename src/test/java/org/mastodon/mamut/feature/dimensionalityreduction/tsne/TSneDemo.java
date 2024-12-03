@@ -44,7 +44,7 @@ public class TSneDemo
 		TSneConfiguration config = setUpTSne( inputData );
 		BarnesHutTSne tsne = new ParallelBHTsne(); // according to https://github.com/lejon/T-SNE-Java/ the parallel version is faster at same accuracy
 		double[][] tsneResult = tsne.tsne( config );
-		PlotPoints.plot( inputData, tsneResult, resultValues -> resultValues[ 0 ] > 10 );
+		PlotPoints.plot( inputData, tsneResult, resultValues -> resultValues[ 0 ] > 18 );
 	}
 
 	static TSneConfiguration setUpTSne( double[][] inputData )

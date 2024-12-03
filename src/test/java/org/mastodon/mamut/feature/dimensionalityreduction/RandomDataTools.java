@@ -32,8 +32,6 @@ import java.util.Random;
 
 public class RandomDataTools
 {
-	private static final Random random = new Random( 42 );
-
 	public static double[][] generateSampleData()
 	{
 		return generateSampleData( 50, 100 );
@@ -59,6 +57,8 @@ public class RandomDataTools
 			int numberOfPoints )
 	{
 		double[][] points = new double[ numberOfPoints ][ 3 ];
+
+		final Random random = new Random( 42 );
 
 		for ( int i = 0; i < numberOfPoints; i++ )
 		{
