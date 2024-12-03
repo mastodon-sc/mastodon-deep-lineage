@@ -1,11 +1,12 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.pca;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
+import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionTestUtils;
 import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +35,10 @@ class PCATest
 		assertEquals( pcaResult.length, inputData.length );
 		assertEquals( targetDimensions, pcaResult[ 0 ].length );
 
-		for ( int i = 0; i < numCluster1; i++ )
-			assertTrue( pcaResult[ i ][ 0 ] < 0 );
-		for ( int i = numCluster1; i < numCluster1 + numCluster2; i++ )
-			assertTrue( pcaResult[ i ][ 0 ] > 0 );
+		double[][] pcaResult1 = Arrays.copyOfRange( pcaResult, 0, numCluster1 );
+		double[][] pcaResult2 = Arrays.copyOfRange( pcaResult, numCluster1, numCluster1 + numCluster2 );
+
+		DimensionalityReductionTestUtils.testNonOverlappingClusters( pcaResult1, pcaResult2 );
 
 	}
 }

@@ -29,11 +29,12 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.tsne;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
+import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionTestUtils;
 import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,12 @@ class TSneTest
 		int numCluster1 = 50;
 		int numCluster2 = 100;
 		double[][] inputData = RandomDataTools.generateSampleData( numCluster1, numCluster2 );
+		for ( int i = 0; i < inputData.length; i++ )
+		{
+			logger.debug( "inputData[{}]: {}, {}", i, inputData[ i ][ 0 ], inputData[ i ][ 1 ] );
+		}
 		logger.debug( "dimensions rows: {}, columns:{}", inputData.length, inputData[ 0 ].length );
+
 
 		// Recommendations for t-SNE defaults: https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
 		double perplexity = 30d; // recommended value is between 5 and 50
@@ -62,9 +68,9 @@ class TSneTest
 		assertEquals( tsneResult.length, inputData.length );
 		assertEquals( 2, tsneResult[ 0 ].length );
 
-		for ( int i = 0; i < numCluster1; i++ )
-			assertTrue( tsneResult[ i ][ 1 ] < 0 );
-		for ( int i = numCluster1; i < numCluster1 + numCluster2; i++ )
-			assertTrue( tsneResult[ i ][ 1 ] > 0 );
+		double[][] tsneResult1 = Arrays.copyOfRange( tsneResult, 0, numCluster1 );
+		double[][] tsneResult2 = Arrays.copyOfRange( tsneResult, numCluster1, numCluster1 + numCluster2 );
+
+		DimensionalityReductionTestUtils.testNonOverlappingClusters( tsneResult1, tsneResult2 );
 	}
 }
