@@ -26,29 +26,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap.util;
-
-import org.junit.jupiter.api.Test;
-import org.mastodon.feature.FeatureModel;
-import org.mastodon.mamut.model.Link;
-import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.Spot;
+package org.mastodon.mamut.feature.dimensionalityreduction.tsne.feature;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.feature.dimensionalityreduction.AbstractOutputFeature;
+import org.mastodon.properties.DoublePropertyMap;
 
-class UmapInputDimensionTest
+/**
+ * This generic feature is used to store the t-SNE outputs.
+ * <br>
+ * The t-SNE outputs are stored in a list of {@link DoublePropertyMap}s. The size of the list is equal to the number of dimensions of the t-SNE output.
+ */
+public abstract class AbstractTSneFeature< V extends Vertex< ? > > extends AbstractOutputFeature< V >
 {
+	private static final String PROJECTION_NAME_TEMPLATE = "tSNE%d";
 
-	@Test
-	void getListFromFeatureModel()
+	protected static final String HELP_STRING =
+			"Computes the t-SNE according to the selected input dimensions, number of target dimensions, the perplexity value and maximum number of iterations.";
+
+	protected AbstractTSneFeature( final List< DoublePropertyMap< V > > umapOutputMaps )
 	{
-		Model model = new Model();
-		FeatureModel featureModel = model.getFeatureModel();
-		List< UmapInputDimension< Spot > > umapInputDimensions =
-				UmapInputDimension.getListFromFeatureModel( featureModel, Spot.class, Link.class );
-		assertNotNull( umapInputDimensions );
-		assertFalse( umapInputDimensions.isEmpty() ); // NB: we do not test for specific content, as this is defined by the core and may change.
+		super( umapOutputMaps );
+	}
+
+	@Override
+	protected String getProjectionNameTemplate()
+	{
+		return PROJECTION_NAME_TEMPLATE;
 	}
 }

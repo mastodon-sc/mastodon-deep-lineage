@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,34 +26,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.dimensionalityreduction;
+
+import java.lang.invoke.MethodHandles;
+
+import org.scijava.prefs.PrefService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Settings for the UMAP feature.
+ * Settings for the Dimensionality reduction
  * <br>
- * Encapsulates the settings for the UMAP feature, such as:
+ * Encapsulates the common settings for the dimensionality reduction, such as:
  * <ul>
- *     <li>the number of neighbors to consider in the umap algorithm</li>
- *     <li>the minimum distance between points</li>
  *     <li>whether to standardize features</li>
  *     <li>the number of output dimensions</li>
  * </ul>
  */
-public class UmapFeatureSettings
+public class CommonSettings
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	public static final int DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS = 2;
-
-	public static final int DEFAULT_NUMBER_OF_NEIGHBORS = 15;
-
-	public static final double DEFAULT_MINIMUM_DISTANCE = 0.1d;
 
 	public static final boolean DEFAULT_STANDARDIZE_FEATURES = true;
 
+	private static final String NUMBER_OF_DIMENSIONS_SETTING = "NumberOfDimensions";
+
+	private static final String STANDARDIZE_FEATURES_SETTING = "StandardizeFeatures";
+
 	private int numberOfOutputDimensions;
-
-	private int numberOfNeighbors;
-
-	private double minimumDistance;
 
 	private boolean standardizeFeatures;
 
@@ -62,14 +64,12 @@ public class UmapFeatureSettings
 	 * Default values are:
 	 * <ul>
 	 *     <li>number of dimensions: {@value DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS}</li>
-	 *     <li>number of neighbors: {@value DEFAULT_NUMBER_OF_NEIGHBORS}</li>
-	 *     <li>minimum distance: {@value DEFAULT_MINIMUM_DISTANCE}</li>
 	 *     <li>standardize features: {@value DEFAULT_STANDARDIZE_FEATURES}</li>
 	 * </ul>
 	 */
-	public UmapFeatureSettings()
+	public CommonSettings()
 	{
-		this( DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS, DEFAULT_NUMBER_OF_NEIGHBORS, DEFAULT_MINIMUM_DISTANCE, DEFAULT_STANDARDIZE_FEATURES );
+		this( DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS, DEFAULT_STANDARDIZE_FEATURES );
 	}
 
 	/**
@@ -77,28 +77,15 @@ public class UmapFeatureSettings
 	 *
 	 * @param numberOfOutputDimensions the number of neighbors to consider for relative movement.
 	 */
-	public UmapFeatureSettings( final int numberOfOutputDimensions, final int numberOfNeighbors, final double minimumDistance,
-			final boolean standardizeFeatures )
+	public CommonSettings( final int numberOfOutputDimensions, final boolean standardizeFeatures )
 	{
 		this.numberOfOutputDimensions = numberOfOutputDimensions;
-		this.numberOfNeighbors = numberOfNeighbors;
-		this.minimumDistance = minimumDistance;
 		this.standardizeFeatures = standardizeFeatures;
 	}
 
 	public int getNumberOfOutputDimensions()
 	{
 		return numberOfOutputDimensions;
-	}
-
-	public int getNumberOfNeighbors()
-	{
-		return numberOfNeighbors;
-	}
-
-	public double getMinimumDistance()
-	{
-		return minimumDistance;
 	}
 
 	public boolean isStandardizeFeatures()
@@ -111,25 +98,37 @@ public class UmapFeatureSettings
 		this.numberOfOutputDimensions = numberOfOutputDimensions;
 	}
 
-	public void setNumberOfNeighbors( final int numberOfNeighbors )
-	{
-		this.numberOfNeighbors = numberOfNeighbors;
-	}
-
-	public void setMinimumDistance( final double minimumDistance )
-	{
-		this.minimumDistance = minimumDistance;
-	}
-
 	public void setStandardizeFeatures( final boolean standardizeFeatures )
 	{
 		this.standardizeFeatures = standardizeFeatures;
 	}
 
+	static CommonSettings loadSettingsFromPreferences( final PrefService prefs )
+	{
+		boolean standardize = prefs == null || prefs.getBoolean( CommonSettings.class, STANDARDIZE_FEATURES_SETTING,
+				CommonSettings.DEFAULT_STANDARDIZE_FEATURES );
+		int dimensions = prefs == null ? CommonSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS
+				: prefs.getInt( CommonSettings.class, NUMBER_OF_DIMENSIONS_SETTING,
+						CommonSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS );
+		return new CommonSettings( dimensions, standardize );
+	}
+
+	/**
+	 * Saves the dimensionality reduction settings to the user preferences.
+	 */
+	void saveSettingsToPreferences( final PrefService prefs )
+	{
+		logger.debug( "Save Dimensionality Reduction settings." );
+		if ( prefs == null )
+			return;
+		prefs.put( CommonSettings.class, STANDARDIZE_FEATURES_SETTING, isStandardizeFeatures() );
+		prefs.put( CommonSettings.class, NUMBER_OF_DIMENSIONS_SETTING, getNumberOfOutputDimensions() );
+	}
+
 	@Override
 	public String toString()
 	{
-		return "UmapFeatureSettings{" + "numberOfOutputDimensions=" + numberOfOutputDimensions + ", numberOfNeighbors=" + numberOfNeighbors
-				+ ", minimumDistance=" + minimumDistance + ", standardizeFeatures=" + standardizeFeatures + '}';
+		return "DimensionalityReductionSettings{" + "numberOfOutputDimensions=" + numberOfOutputDimensions + ", standardizeFeatures="
+				+ standardizeFeatures + '}';
 	}
 }

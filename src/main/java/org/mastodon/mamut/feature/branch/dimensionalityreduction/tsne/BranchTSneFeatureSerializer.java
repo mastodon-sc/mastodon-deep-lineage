@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.branch.dimensionalityreduction.tsne;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -45,28 +45,28 @@ import org.mastodon.mamut.model.branch.ModelBranchGraph;
 import org.scijava.plugin.Plugin;
 
 /**
- * De-/serializes {@link BranchUmapFeature}
+ * De-/serializes {@link BranchTSneFeature}
  */
 @Plugin( type = FeatureSerializer.class )
-public class BranchUmapFeatureSerializer implements BranchFeatureSerializer< BranchUmapFeature, BranchSpot, Spot >
+public class BranchTSneFeatureSerializer implements BranchFeatureSerializer< BranchTSneFeature, BranchSpot, Spot >
 {
 	@Override
-	public FeatureSpec< BranchUmapFeature, BranchSpot > getFeatureSpec()
+	public FeatureSpec< BranchTSneFeature, BranchSpot > getFeatureSpec()
 	{
-		return BranchUmapFeature.GENERIC_SPEC;
+		return BranchTSneFeature.GENERIC_SPEC;
 	}
 
 	@Override
-	public void serialize( final BranchUmapFeature feature, final ObjectToFileIdMap< Spot > idmap, final ObjectOutputStream oos,
+	public void serialize( final BranchTSneFeature feature, final ObjectToFileIdMap< Spot > idmap, final ObjectOutputStream oos,
 			final ModelBranchGraph branchGraph, final ModelGraph graph ) throws IOException
 	{
 		BranchOutputSerializerTools.serialize( feature, idmap, oos, branchGraph, graph );
 	}
 
 	@Override
-	public BranchUmapFeature deserialize( final FileIdToObjectMap< Spot > idmap, final ObjectInputStream ois,
+	public BranchTSneFeature deserialize( final FileIdToObjectMap< Spot > idmap, final ObjectInputStream ois,
 			final ModelBranchGraph branchGraph, final ModelGraph graph ) throws ClassNotFoundException, IOException
 	{
-		return BranchOutputSerializerTools.deserialize( idmap, ois, branchGraph, graph, BranchUmapFeature::new );
+		return BranchOutputSerializerTools.deserialize( idmap, ois, branchGraph, graph, BranchTSneFeature::new );
 	}
 }

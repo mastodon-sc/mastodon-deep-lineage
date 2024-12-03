@@ -28,28 +28,34 @@
  */
 package org.mastodon.mamut.feature.dimensionalityreduction.umap;
 
-import org.junit.jupiter.api.Test;
+import java.util.Random;
+
+import javax.swing.JPanel;
+
+import org.mastodon.mamut.feature.dimensionalityreduction.PlotPoints;
 import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
 
 import tagbio.umap.Umap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class UmapTest
+public class UmapDemo extends JPanel
 {
-	@Test
-	void test()
+
+	public static void main( final String[] args )
 	{
 		double[][] sampleData = RandomDataTools.generateSampleData();
-		Umap umap = UmapDemo.setUpUmap();
+		Umap umap = setUpUmap();
 		double[][] umapResult = umap.fitTransform( sampleData );
+		PlotPoints.plot( sampleData, umapResult, resultValues -> resultValues[ 0 ] > 0 );
+	}
 
-		assertEquals( umapResult.length, sampleData.length );
-		assertEquals( 2, umapResult[ 0 ].length );
-		for ( int i = 0; i < 50; i++ )
-			assertTrue( umapResult[ i ][ 0 ] < 0 );
-		for ( int i = 50; i < 150; i++ )
-			assertTrue( umapResult[ i ][ 0 ] > 0 );
+	static Umap setUpUmap()
+	{
+		Umap umap = new Umap();
+		umap.setVerbose( true );
+		umap.setNumberComponents( 2 );
+		umap.setMinDist( 0.1f );
+		umap.setNumberNearestNeighbours( 15 );
+		umap.setRandom( new Random( 42 ) );
+		return umap;
 	}
 }

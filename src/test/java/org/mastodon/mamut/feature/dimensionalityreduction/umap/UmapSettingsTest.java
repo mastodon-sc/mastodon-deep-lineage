@@ -28,28 +28,44 @@
  */
 package org.mastodon.mamut.feature.dimensionalityreduction.umap;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
 
-import tagbio.umap.Umap;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class UmapTest
+class UmapSettingsTest
 {
-	@Test
-	void test()
-	{
-		double[][] sampleData = RandomDataTools.generateSampleData();
-		Umap umap = UmapDemo.setUpUmap();
-		double[][] umapResult = umap.fitTransform( sampleData );
+	private UmapSettings umapSettings;
 
-		assertEquals( umapResult.length, sampleData.length );
-		assertEquals( 2, umapResult[ 0 ].length );
-		for ( int i = 0; i < 50; i++ )
-			assertTrue( umapResult[ i ][ 0 ] < 0 );
-		for ( int i = 50; i < 150; i++ )
-			assertTrue( umapResult[ i ][ 0 ] > 0 );
+	@BeforeEach
+	void setUp()
+	{
+		umapSettings = new UmapSettings();
+	}
+
+	@Test
+	void testGetNumberOfNeighbors()
+	{
+		assertEquals( UmapSettings.DEFAULT_NUMBER_OF_NEIGHBORS, umapSettings.getNumberOfNeighbors() );
+	}
+
+	@Test
+	void testGetMinimumDistance()
+	{
+		assertEquals( UmapSettings.DEFAULT_MINIMUM_DISTANCE, umapSettings.getMinimumDistance() );
+	}
+
+	@Test
+	void testSetNumberOfNeighbors()
+	{
+		umapSettings.setNumberOfNeighbors( 10 );
+		assertEquals( 10, umapSettings.getNumberOfNeighbors() );
+	}
+
+	@Test
+	void testSetMinimumDistance()
+	{
+		umapSettings.setMinimumDistance( 0.5 );
+		assertEquals( 0.5, umapSettings.getMinimumDistance() );
 	}
 }

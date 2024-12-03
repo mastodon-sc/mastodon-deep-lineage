@@ -26,47 +26,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.branch.dimensionalityreduction.tsne;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.io.FeatureSerializer;
-import org.mastodon.io.FileIdToObjectMap;
-import org.mastodon.io.ObjectToFileIdMap;
-import org.mastodon.mamut.feature.branch.BranchFeatureSerializer;
-import org.mastodon.mamut.feature.branch.dimensionalityreduction.BranchOutputSerializerTools;
-import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.Spot;
+import org.mastodon.RefPool;
+import org.mastodon.mamut.feature.dimensionalityreduction.tsne.feature.AbstractTSneFeature;
+import org.mastodon.mamut.feature.dimensionalityreduction.tsne.feature.AbstractTSneFeatureComputer;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
-import org.scijava.plugin.Plugin;
+import org.mastodon.properties.DoublePropertyMap;
+import org.scijava.Context;
 
-/**
- * De-/serializes {@link BranchUmapFeature}
- */
-@Plugin( type = FeatureSerializer.class )
-public class BranchUmapFeatureSerializer implements BranchFeatureSerializer< BranchUmapFeature, BranchSpot, Spot >
+public class BranchTSneFeatureComputer extends AbstractTSneFeatureComputer< BranchSpot, BranchLink, ModelBranchGraph >
 {
-	@Override
-	public FeatureSpec< BranchUmapFeature, BranchSpot > getFeatureSpec()
+
+	public BranchTSneFeatureComputer( final Model model, final Context context )
 	{
-		return BranchUmapFeature.GENERIC_SPEC;
+		super( model, context );
 	}
 
 	@Override
-	public void serialize( final BranchUmapFeature feature, final ObjectToFileIdMap< Spot > idmap, final ObjectOutputStream oos,
-			final ModelBranchGraph branchGraph, final ModelGraph graph ) throws IOException
+	protected AbstractTSneFeature< BranchSpot > createFeatureInstance( final List< DoublePropertyMap< BranchSpot > > umapOutputMaps )
 	{
-		BranchOutputSerializerTools.serialize( feature, idmap, oos, branchGraph, graph );
+		return new BranchTSneFeature( umapOutputMaps );
 	}
 
 	@Override
-	public BranchUmapFeature deserialize( final FileIdToObjectMap< Spot > idmap, final ObjectInputStream ois,
-			final ModelBranchGraph branchGraph, final ModelGraph graph ) throws ClassNotFoundException, IOException
+	protected RefPool< BranchSpot > getRefPool()
 	{
-		return BranchOutputSerializerTools.deserialize( idmap, ois, branchGraph, graph, BranchUmapFeature::new );
+		return model.getBranchGraph().vertices().getRefPool();
+	}
+
+	@Override
+	protected ReentrantReadWriteLock getLock( final ModelBranchGraph branchGraph )
+	{
+		return branchGraph.getLock();
+	}
+
+	@Override
+	protected Collection< BranchSpot > getVertices()
+	{
+		return model.getBranchGraph().vertices();
 	}
 }

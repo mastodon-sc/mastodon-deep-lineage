@@ -26,30 +26,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.dimensionalityreduction.ui;
 
-import org.junit.jupiter.api.Test;
-import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
+import mpicbg.spim.data.SpimDataException;
+import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.TestUtils;
+import org.mastodon.mamut.io.ProjectLoader;
+import org.scijava.Context;
 
-import tagbio.umap.Umap;
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+import java.io.File;
+import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class UmapTest
+public class DimensionalityReductionViewDemo
 {
-	@Test
-	void test()
-	{
-		double[][] sampleData = RandomDataTools.generateSampleData();
-		Umap umap = UmapDemo.setUpUmap();
-		double[][] umapResult = umap.fitTransform( sampleData );
 
-		assertEquals( umapResult.length, sampleData.length );
-		assertEquals( 2, umapResult[ 0 ].length );
-		for ( int i = 0; i < 50; i++ )
-			assertTrue( umapResult[ i ][ 0 ] < 0 );
-		for ( int i = 50; i < 150; i++ )
-			assertTrue( umapResult[ i ][ 0 ] > 0 );
+	public static void main( String[] args ) throws IOException, SpimDataException
+	{
+		// Set Windows Look and Feel
+		try
+		{
+			UIManager.setLookAndFeel( "com.sun.java.swing.plaf.windows.WindowsLookAndFeel" );
+		}
+		catch ( Exception ignored )
+		{
+			// ignore exception
+		}
+
+		try (Context context = new Context())
+		{
+			File tempFile1 = TestUtils.getTempFileCopy( "src/test/resources/org/mastodon/mamut/clustering/model1.mastodon", "model",
+					".mastodon" );
+			ProjectModel projectModel = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
+
+			DimensionalityReductionView dimensionalityReductionView = new DimensionalityReductionView( projectModel.getModel(), context );
+			dimensionalityReductionView.setVisible( true );
+			dimensionalityReductionView.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+		}
 	}
 }

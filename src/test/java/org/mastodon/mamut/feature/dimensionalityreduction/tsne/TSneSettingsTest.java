@@ -26,72 +26,65 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.dimensionalityreduction.tsne;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class UmapFeatureSettingsTest
+class TSneSettingsTest
 {
-	private UmapFeatureSettings umapFeatureSettings;
+	private TSneSettings tSneSettings;
 
 	@BeforeEach
 	void setUp()
 	{
-		umapFeatureSettings = new UmapFeatureSettings();
+		tSneSettings = new TSneSettings();
 	}
 
 	@Test
-	void getNumberOfOutputDimensions()
+	void getPerplexity()
 	{
-		assertEquals( UmapFeatureSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS, umapFeatureSettings.getNumberOfOutputDimensions() );
+		assertEquals( TSneSettings.DEFAULT_PERPLEXITY, tSneSettings.getPerplexity() );
 	}
 
 	@Test
-	void getNumberOfNeighbors()
+	void testGetMaxIterations()
 	{
-		assertEquals( UmapFeatureSettings.DEFAULT_NUMBER_OF_NEIGHBORS, umapFeatureSettings.getNumberOfNeighbors() );
+		assertEquals( TSneSettings.DEFAULT_MAX_ITERATIONS, tSneSettings.getMaxIterations() );
 	}
 
 	@Test
-	void getMinimumDistance()
+	void testSetPerplexity()
 	{
-		assertEquals( UmapFeatureSettings.DEFAULT_MINIMUM_DISTANCE, umapFeatureSettings.getMinimumDistance() );
+		tSneSettings.setPerplexity( 10 );
+		assertEquals( 10, tSneSettings.getPerplexity() );
 	}
 
 	@Test
-	void isStandardizeFeatures()
+	void testSetMaxIterations()
 	{
-		assertEquals( UmapFeatureSettings.DEFAULT_STANDARDIZE_FEATURES, umapFeatureSettings.isStandardizeFeatures() );
+		tSneSettings.setMaxIterations( 20 );
+		assertEquals( 20, tSneSettings.getMaxIterations() );
 	}
 
 	@Test
-	void setNumberOfOutputDimensions()
+	void testIsValidPerplexity()
 	{
-		umapFeatureSettings.setNumberOfOutputDimensions( 5 );
-		assertEquals( 5, umapFeatureSettings.getNumberOfOutputDimensions() );
+		assertFalse( tSneSettings.isValidPerplexity( 90 ) );
+		assertFalse( tSneSettings.isValidPerplexity( 0 ) );
+		assertFalse( tSneSettings.isValidPerplexity( -1 ) );
+		assertTrue( tSneSettings.isValidPerplexity( 91 ) );
 	}
 
 	@Test
-	void setNumberOfNeighbors()
+	void testIsValidMaxIterations()
 	{
-		umapFeatureSettings.setNumberOfNeighbors( 10 );
-		assertEquals( 10, umapFeatureSettings.getNumberOfNeighbors() );
-	}
-
-	@Test
-	void setMinimumDistance()
-	{
-		umapFeatureSettings.setMinimumDistance( 0.5 );
-		assertEquals( 0.5, umapFeatureSettings.getMinimumDistance() );
-	}
-
-	@Test
-	void setStandardizeFeatures()
-	{
-		umapFeatureSettings.setStandardizeFeatures( false );
-		assertFalse( umapFeatureSettings.isStandardizeFeatures() );
+		assertEquals( TSneSettings.DEFAULT_PERPLEXITY, tSneSettings.getMaxValidPerplexity( 91 ) );
+		assertEquals( 29, tSneSettings.getMaxValidPerplexity( 90 ) );
+		assertEquals( 3, tSneSettings.getMaxValidPerplexity( 10 ) );
 	}
 }

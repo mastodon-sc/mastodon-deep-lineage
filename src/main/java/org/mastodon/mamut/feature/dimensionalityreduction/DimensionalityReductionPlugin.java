@@ -26,12 +26,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.dimensionalityreduction;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.ui.UmapView;
+import org.mastodon.mamut.feature.dimensionalityreduction.ui.DimensionalityReductionView;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.AbstractContextual;
@@ -52,11 +52,11 @@ import static org.mastodon.app.ui.ViewMenuBuilder.menu;
 
 @SuppressWarnings( "unused" )
 @Plugin( type = MamutPlugin.class )
-public class UmapPlugin extends AbstractContextual implements MamutPlugin
+public class DimensionalityReductionPlugin extends AbstractContextual implements MamutPlugin
 {
-	private static final String ACTION_NAME = "UMAP";
+	private static final String DIMENSIONALITY_REDUCTION_ACTION_NAME = "Dimensionality reduction";
 
-	private static final String[] SHORT_CUT = { "ctrl alt U" };
+	private static final String[] DIMENSIONALITY_REDUCTION_SHORT_CUT = { "ctrl alt D" };
 
 	private final AbstractNamedAction action;
 
@@ -67,9 +67,9 @@ public class UmapPlugin extends AbstractContextual implements MamutPlugin
 	private CommandService commandService;
 
 	@SuppressWarnings( "unused" )
-	public UmapPlugin()
+	public DimensionalityReductionPlugin()
 	{
-		action = new RunnableAction( ACTION_NAME, this::showUmapDialog );
+		action = new RunnableAction( DIMENSIONALITY_REDUCTION_ACTION_NAME, this::showDimensionalityReductionDialog );
 	}
 
 	@Override
@@ -82,18 +82,18 @@ public class UmapPlugin extends AbstractContextual implements MamutPlugin
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
 		return Collections.singletonList(
-				menu( "Plugins", menu( "Compute feature", menu( "Dimensionality reduction", item( ACTION_NAME ) ) ) ) );
+				menu( "Plugins", menu( "Compute feature", item( DIMENSIONALITY_REDUCTION_ACTION_NAME ) ) ) );
 	}
 
 	@Override
 	public void installGlobalActions( Actions actions )
 	{
-		actions.namedAction( action, SHORT_CUT );
+		actions.namedAction( action, DIMENSIONALITY_REDUCTION_SHORT_CUT );
 	}
 
-	private void showUmapDialog()
+	private void showDimensionalityReductionDialog()
 	{
-		new UmapView( projectModel.getModel(), getContext() ).setVisible( true );
+		new DimensionalityReductionView( projectModel.getModel(), getContext() ).setVisible( true );
 	}
 
 	/*
@@ -110,7 +110,8 @@ public class UmapPlugin extends AbstractContextual implements MamutPlugin
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( ACTION_NAME, SHORT_CUT, "Uniform Manifold Approximation and Projection for Dimension Reduction." );
+			descriptions.add( DIMENSIONALITY_REDUCTION_ACTION_NAME, DIMENSIONALITY_REDUCTION_SHORT_CUT,
+					"Dimensionality Reduction of Feature Data using different algorithms, such as UMAP, t-SNE." );
 		}
 	}
 }

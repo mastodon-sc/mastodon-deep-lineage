@@ -26,30 +26,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.spot.dimensionalityreduction.tsne;
 
-import org.junit.jupiter.api.Test;
-import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-import tagbio.umap.Umap;
+import org.mastodon.collection.RefCollection;
+import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.io.FeatureSerializer;
+import org.mastodon.io.FileIdToObjectMap;
+import org.mastodon.io.ObjectToFileIdMap;
+import org.mastodon.mamut.feature.spot.dimensionalityreduction.SpotOutputFeatureSerializerTools;
+import org.mastodon.mamut.model.Spot;
+import org.scijava.plugin.Plugin;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class UmapTest
+/**
+ * De-/serializes {@link SpotTSneFeature}
+ */
+@Plugin( type = FeatureSerializer.class )
+public class SpotTSneFeatureSerializer implements FeatureSerializer< SpotTSneFeature, Spot >
 {
-	@Test
-	void test()
-	{
-		double[][] sampleData = RandomDataTools.generateSampleData();
-		Umap umap = UmapDemo.setUpUmap();
-		double[][] umapResult = umap.fitTransform( sampleData );
 
-		assertEquals( umapResult.length, sampleData.length );
-		assertEquals( 2, umapResult[ 0 ].length );
-		for ( int i = 0; i < 50; i++ )
-			assertTrue( umapResult[ i ][ 0 ] < 0 );
-		for ( int i = 50; i < 150; i++ )
-			assertTrue( umapResult[ i ][ 0 ] > 0 );
+	@Override
+	public FeatureSpec< SpotTSneFeature, Spot > getFeatureSpec()
+	{
+		return SpotTSneFeature.GENERIC_SPEC;
+	}
+
+	@Override
+	public void serialize( final SpotTSneFeature feature, final ObjectToFileIdMap< Spot > idMap, final ObjectOutputStream oos )
+			throws IOException
+	{
+		SpotOutputFeatureSerializerTools.serialize( feature, idMap, oos );
+	}
+
+	@Override
+	public SpotTSneFeature deserialize( final FileIdToObjectMap< Spot > idMap, final RefCollection< Spot > pool,
+			final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	{
+		return SpotOutputFeatureSerializerTools.deserialize( idMap, pool, ois, SpotTSneFeature::new );
 	}
 }

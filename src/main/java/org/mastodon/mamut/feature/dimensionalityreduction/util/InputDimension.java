@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap.util;
+package org.mastodon.mamut.feature.dimensionalityreduction.util;
 
 import net.imglib2.util.Cast;
 import net.imglib2.util.Util;
@@ -38,25 +38,30 @@ import org.mastodon.graph.Edges;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.LinkTargetIdFeature;
 import org.mastodon.mamut.feature.SpotTrackIDFeature;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeature;
+import org.mastodon.mamut.feature.dimensionalityreduction.AbstractOutputFeature;
 import org.mastodon.mamut.feature.spot.SpotBranchIDFeature;
 import org.mastodon.util.FeatureUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
 
 /**
- * Represents a UMAP input dimension for a given feature and a projection of that feature.
+ * Represents an input dimension for dimensionality reduction for a given feature and a projection of that feature.
  * <br>
  * This class encapsulates a feature and a projection of it, providing methods to
  * retrieve the projection and generate a string representation of them.
  *
  * @param <V> the type of vertex
  */
-public class UmapInputDimension< V extends Vertex< ? > >
+public class InputDimension< V extends Vertex< ? > >
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	private final Feature< ? > feature;
 
 	private final FeatureProjection< ? > featureProjection;
@@ -64,43 +69,44 @@ public class UmapInputDimension< V extends Vertex< ? > >
 	private final ToDoubleFunction< V > vertexValueFunction;
 
 	/**
-	 * Creates a new UMAP input dimension for the given vertex feature and projection.
+	 * Creates a new input dimension for the given vertex feature and projection.
 	 * <br>
 	 * The vertex value function is set to the value of the vertex feature projection for a given vertex.
 	 * @param vertexFeature the vertex feature
 	 * @param vertexProjection the projection of the vertex feature
-	 * @return a new UMAP input dimension
+	 * @return a new input dimension
 	 * @param <V> the type of vertex
 	 * @param <E> the type of edge
 	 */
-	public static < V extends Vertex< E >, E extends Edge< V > > UmapInputDimension< V >
+	public static < V extends Vertex< E >, E extends Edge< V > > InputDimension< V >
 			fromVertexFeature( final Feature< V > vertexFeature, final FeatureProjection< V > vertexProjection )
 	{
-		return new UmapInputDimension<>( vertexFeature, vertexProjection, vertexProjection::value );
+		return new InputDimension<>( vertexFeature, vertexProjection, vertexProjection::value );
 	}
 
 	/**
-	 * Creates a new UMAP input dimension for the given edge feature and projection.
+	 * Creates a new input dimension for the given edge feature and projection.
 	 * <br>
 	 * The vertex value function is set to the average of the edge feature projection values for the incoming edges of a given vertex.
 	 * @param edgeFeature the edge feature
 	 * @param edgeProjection the projection of the edge feature
-	 * @return a new UMAP input dimension
+	 * @return a new input dimension
 	 * @param <V> the type of vertex
 	 * @param <E> the type of edge
 	 */
-	public static < V extends Vertex< E >, E extends Edge< V > > UmapInputDimension< V > fromEdgeFeature( final Feature< E > edgeFeature,
+	public static < V extends Vertex< E >, E extends Edge< V > > InputDimension< V > fromEdgeFeature(
+			final Feature< E > edgeFeature,
 			final FeatureProjection< E > edgeProjection )
 	{
-		return new UmapInputDimension<>( edgeFeature, edgeProjection, edgeProjectionFunction( edgeProjection ) );
+		return new InputDimension<>( edgeFeature, edgeProjection, edgeProjectionFunction( edgeProjection ) );
 	}
 
 	/**
-	 * Creates a new UMAP input dimension for the given feature and projection.
+	 * Creates a new input dimension for the given feature and projection.
 	 * @param feature the vertex feature
 	 * @param projection the projection of the vertex feature
 	 */
-	private UmapInputDimension( final Feature< ? > feature, final FeatureProjection< ? > projection,
+	private InputDimension( final Feature< ? > feature, final FeatureProjection< ? > projection,
 			final ToDoubleFunction< V > vertexValueFunction
 	)
 	{
@@ -120,11 +126,11 @@ public class UmapInputDimension< V extends Vertex< ? > >
 	}
 
 	/**
-	 * Returns the value of the UMAP input dimension for the given vertex.
+	 * Returns the value of the input dimension for the given vertex.
 	 * <br>
 	 * The value is determined by the given vertex value function.
 	 * @param vertex the vertex
-	 * @return the value of the UMAP input dimension
+	 * @return the value of the input dimension
 	 */
 	public double getValue( final V vertex )
 	{
@@ -132,48 +138,48 @@ public class UmapInputDimension< V extends Vertex< ? > >
 	}
 
 	/**
-	 * Returns a list of UMAP input dimensions for the given feature model, vertex type and edge type.
+	 * Returns a list of input dimensions for the given feature model, vertex type and edge type.
 	 * <br>
 	 * This method collects all features of the given vertex type or edge type from the feature model and
-	 * creates a UMAP input dimension for each feature and projection.
+	 * creates a input dimension for each feature and projection.
 	 * @param featureModel the feature model
 	 * @param vertexType the vertex type, e.g. {@link org.mastodon.mamut.model.Spot} or {{@link org.mastodon.mamut.model.branch.BranchSpot}}
 	 * @param edgeType the edge type, e.g. {@link org.mastodon.mamut.model.Link} or {{@link org.mastodon.mamut.model.branch.BranchLink}}
-	 * @return a list of UMAP input dimensions
+	 * @return a list of input dimensions
 	 * @param <V> the type of vertex
 	 * @param <E> the type of edge
 	 */
-	public static < V extends Vertex< E >, E extends Edge< V > > List< UmapInputDimension< V > > getListFromFeatureModel(
+	public static < V extends Vertex< E >, E extends Edge< V > > List< InputDimension< V > > getListFromFeatureModel(
 			final FeatureModel featureModel, final Class< V > vertexType, final Class< E > edgeType )
 	{
-		List< UmapInputDimension< V > > umapInputDimensions = getVertexDimensions( featureModel, vertexType );
-		umapInputDimensions.addAll( getEdgeDimensions( featureModel, edgeType ) );
-		getEdgeDimensions( featureModel, edgeType );
-		return umapInputDimensions;
+		List< InputDimension< V > > inputDimensions = getVertexDimensions( featureModel, vertexType );
+		inputDimensions.addAll( getEdgeDimensions( featureModel, edgeType ) );
+		return inputDimensions;
 	}
 
-	private static < V extends Vertex< E >, E extends Edge< V > > List< UmapInputDimension< V > >
+	private static < V extends Vertex< E >, E extends Edge< V > > List< InputDimension< V > >
 			getVertexDimensions( final FeatureModel featureModel, final Class< V > vertexType )
 	{
-		List< UmapInputDimension< V > > umapInputDimensions = new ArrayList<>();
+		List< InputDimension< V > > inputDimensions = new ArrayList<>();
 		Collection< Feature< V > > vertexFeatures = FeatureUtils.collectFeatureMap( featureModel, vertexType ).values();
 		Collection< Class< ? extends Feature< V > > > excludedVertexFeatures = new ArrayList<>();
 		excludedVertexFeatures.add( Cast.unchecked( SpotTrackIDFeature.class ) );
 		excludedVertexFeatures.add( Cast.unchecked( SpotBranchIDFeature.class ) );
 		for ( Feature< V > feature : vertexFeatures )
 		{
-			if ( excludedVertexFeatures.contains( feature.getClass() ) || feature instanceof AbstractUmapFeature )
+			if ( excludedVertexFeatures.contains( feature.getClass() ) || feature instanceof AbstractOutputFeature )
 				continue;
 			for ( FeatureProjection< V > projection : feature.projections() )
-				umapInputDimensions.add( UmapInputDimension.fromVertexFeature( feature, projection ) );
+				inputDimensions.add( InputDimension.fromVertexFeature( feature, projection ) );
 		}
-		return umapInputDimensions;
+		logger.debug( "Found {} input dimensions for vertex type '{}'.", inputDimensions.size(), vertexType.getSimpleName() );
+		return inputDimensions;
 	}
 
-	private static < V extends Vertex< E >, E extends Edge< V > > List< UmapInputDimension< V > >
+	private static < V extends Vertex< E >, E extends Edge< V > > List< InputDimension< V > >
 			getEdgeDimensions( final FeatureModel featureModel, final Class< E > edgeType )
 	{
-		List< UmapInputDimension< V > > umapInputDimensions = new ArrayList<>();
+		List< InputDimension< V > > inputDimensions = new ArrayList<>();
 		Collection< Feature< E > > edgeFeatures = FeatureUtils.collectFeatureMap( featureModel, edgeType ).values();
 		Collection< Class< ? extends Feature< E > > > excludedEdgeFeatures = new ArrayList<>();
 		excludedEdgeFeatures.add( Cast.unchecked( LinkTargetIdFeature.class ) );
@@ -182,9 +188,10 @@ public class UmapInputDimension< V extends Vertex< ? > >
 			if ( excludedEdgeFeatures.contains( feature.getClass() ) )
 				continue;
 			for ( FeatureProjection< E > projection : feature.projections() )
-				umapInputDimensions.add( UmapInputDimension.fromEdgeFeature( feature, projection ) );
+				inputDimensions.add( InputDimension.fromEdgeFeature( feature, projection ) );
 		}
-		return umapInputDimensions;
+		logger.debug( "Found {} input dimensions for edge type '{}'.", inputDimensions.size(), edgeType.getSimpleName() );
+		return inputDimensions;
 	}
 
 	private static < V extends Vertex< E >, E extends Edge< V > > ToDoubleFunction< V > edgeProjectionFunction(

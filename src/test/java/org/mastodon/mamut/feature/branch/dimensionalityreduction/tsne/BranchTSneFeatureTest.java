@@ -26,9 +26,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.branch.dimensionalityreduction.tsne;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Supplier;
 
 import net.imglib2.util.Cast;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.feature.Dimension;
@@ -39,33 +51,23 @@ import org.mastodon.mamut.feature.AbstractFeatureTest;
 import org.mastodon.mamut.feature.FeatureComputerTestUtils;
 import org.mastodon.mamut.feature.FeatureSerializerTestUtils;
 import org.mastodon.mamut.feature.FeatureUtils;
-import org.mastodon.mamut.feature.branch.BranchDepthFeature;
-import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
+import org.mastodon.mamut.feature.branch.BranchDisplacementDurationFeature;
+import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph7;
 import org.mastodon.mamut.feature.branch.sinuosity.BranchSinuosityFeature;
+import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionAlgorithm;
 import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionController;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapSettings;
+import org.mastodon.mamut.feature.dimensionalityreduction.tsne.TSneSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.properties.IntPropertyMap;
 import org.scijava.Context;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
+public class BranchTSneFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
-	private BranchUmapFeature umapFeature;
+	private BranchTSneFeature tSneFeature;
 
-	private final ExampleGraph2 graph2 = new ExampleGraph2();
+	private final ExampleGraph7 graph7 = new ExampleGraph7();
 
 	private FeatureProjectionSpec spec0;
 
@@ -76,13 +78,13 @@ public class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
 	{
 		try (Context context = new Context())
 		{
-			Model model = graph2.getModel();
+			Model model = graph7.getModel();
 			FeatureModel featureModel = model.getFeatureModel();
 
 			// declare some features as input dimensions
-			BranchDepthFeature branchDepthFeature =
-					new BranchDepthFeature( new IntPropertyMap<>( model.getBranchGraph().vertices().getRefPool(), -1 ) );
-			featureModel.declareFeature( branchDepthFeature );
+			BranchDisplacementDurationFeature branchDisplacementDurationFeature = Cast.unchecked(
+					FeatureComputerTestUtils.getFeature( context, model, BranchDisplacementDurationFeature.SPEC ) );
+			featureModel.declareFeature( branchDisplacementDurationFeature );
 			BranchSinuosityFeature branchSinuosityFeature = Cast.unchecked(
 					FeatureComputerTestUtils.getFeature( context, model, BranchSinuosityFeature.BRANCH_SINUOSITY_FEATURE_SPEC ) );
 			featureModel.declareFeature( branchSinuosityFeature );
@@ -91,15 +93,16 @@ public class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
 
 			// set up the controller and compute the feature
 			Supplier< List< InputDimension< BranchSpot > > > inputDimensionsSupplier = () -> inputDimensions;
-			DimensionalityReductionController controller = new DimensionalityReductionController( graph2.getModel(), context );
-			UmapSettings umapSettings = controller.getUmapSettings();
-			umapSettings.setNumberOfNeighbors( 3 );
+			DimensionalityReductionController controller = new DimensionalityReductionController( graph7.getModel(), context );
+			TSneSettings tSneSettings = controller.getTSneSettings();
+			tSneSettings.setPerplexity( 10 );
 			controller.setModelGraph( false );
+			controller.setAlgorithm( DimensionalityReductionAlgorithm.TSNE );
 			controller.computeFeature( inputDimensionsSupplier );
-			umapFeature = FeatureUtils.getFeature( graph2.getModel(), BranchUmapFeature.BranchSpotUmapFeatureSpec.class );
-			assertNotNull( umapFeature );
-			spec0 = new FeatureProjectionSpec( umapFeature.getProjectionName( 0 ), Dimension.NONE );
-			spec1 = new FeatureProjectionSpec( umapFeature.getProjectionName( 1 ), Dimension.NONE );
+			tSneFeature = FeatureUtils.getFeature( graph7.getModel(), BranchTSneFeature.BranchSpotTSneFeatureSpec.class );
+			assertNotNull( tSneFeature );
+			spec0 = new FeatureProjectionSpec( tSneFeature.getProjectionName( 0 ), Dimension.NONE );
+			spec1 = new FeatureProjectionSpec( tSneFeature.getProjectionName( 1 ), Dimension.NONE );
 
 		}
 	}
@@ -108,44 +111,51 @@ public class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
 	@Override
 	public void testFeatureComputation()
 	{
-		assertNotNull( umapFeature );
-		FeatureProjection< BranchSpot > projection0 = getProjection( umapFeature, spec0 );
-		FeatureProjection< BranchSpot > projection1 = getProjection( umapFeature, spec1 );
-		assertFalse( Double.isNaN( projection0.value( graph2.branchSpotA ) ) );
-		assertNotEquals( 0, projection0.value( graph2.branchSpotA ) );
-		assertFalse( Double.isNaN( projection1.value( graph2.branchSpotA ) ) );
-		assertNotEquals( 0, projection1.value( graph2.branchSpotA ) );
+		assertNotNull( tSneFeature );
+		FeatureProjection< BranchSpot > projection0 = getProjection( tSneFeature, spec0 );
+		FeatureProjection< BranchSpot > projection1 = getProjection( tSneFeature, spec1 );
+		Iterator< BranchSpot > branchSpotIterator = graph7.getModel().getBranchGraph().vertices().iterator();
+		BranchSpot branchSpot = branchSpotIterator.next();
+		assertFalse( Double.isNaN( projection0.value( branchSpot ) ) );
+		assertNotEquals( 0, projection0.value( branchSpot ) );
+		assertFalse( Double.isNaN( projection1.value( branchSpot ) ) );
+		assertNotEquals( 0, projection1.value( branchSpot ) );
 	}
 
 	@Test
 	@Override
 	public void testFeatureSerialization() throws IOException
 	{
-		BranchUmapFeature umapFeatureReloaded;
+		BranchTSneFeature tSneFeatureReloaded;
 		try (Context context = new Context())
 		{
-			umapFeatureReloaded =
-					( BranchUmapFeature ) FeatureSerializerTestUtils.saveAndReload( context, graph2.getModel(), this.umapFeature );
+			tSneFeatureReloaded =
+					( BranchTSneFeature ) FeatureSerializerTestUtils.saveAndReload( context, graph7.getModel(), this.tSneFeature );
 		}
-		assertNotNull( umapFeatureReloaded );
+		assertNotNull( tSneFeatureReloaded );
+		Iterator< BranchSpot > branchSpotIterator = graph7.getModel().getBranchGraph().vertices().iterator();
+		BranchSpot branchSpot = branchSpotIterator.next();
 		// check that the feature has correct values after saving and reloading
-		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( this.umapFeature, umapFeatureReloaded,
-				Collections.singleton( graph2.branchSpotA ) ) );
+		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( this.tSneFeature, tSneFeatureReloaded,
+				Collections.singleton( branchSpot ) ) );
 	}
 
 	@Test
 	@Override
 	public void testFeatureInvalidate()
 	{
+		Iterator< BranchSpot > branchSpotIterator = graph7.getModel().getBranchGraph().vertices().iterator();
+		BranchSpot branchSpot = branchSpotIterator.next();
+
 		// test, if features are not NaN before invalidation
-		assertFalse( Double.isNaN( getProjection( umapFeature, spec0 ).value( graph2.branchSpotA ) ) );
-		assertFalse( Double.isNaN( getProjection( umapFeature, spec1 ).value( graph2.branchSpotA ) ) );
+		assertFalse( Double.isNaN( getProjection( tSneFeature, spec0 ).value( branchSpot ) ) );
+		assertFalse( Double.isNaN( getProjection( tSneFeature, spec1 ).value( branchSpot ) ) );
 
 		// invalidate feature
-		umapFeature.invalidate( graph2.branchSpotA );
+		tSneFeature.invalidate( branchSpot );
 
 		// test, if features are NaN after invalidation
-		assertTrue( Double.isNaN( getProjection( umapFeature, spec0 ).value( graph2.branchSpotA ) ) );
-		assertTrue( Double.isNaN( getProjection( umapFeature, spec1 ).value( graph2.branchSpotA ) ) );
+		assertTrue( Double.isNaN( getProjection( tSneFeature, spec0 ).value( branchSpot ) ) );
+		assertTrue( Double.isNaN( getProjection( tSneFeature, spec1 ).value( branchSpot ) ) );
 	}
 }

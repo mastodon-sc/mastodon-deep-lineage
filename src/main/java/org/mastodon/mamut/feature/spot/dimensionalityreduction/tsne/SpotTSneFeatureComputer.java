@@ -26,30 +26,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.spot.dimensionalityreduction.tsne;
 
-import org.junit.jupiter.api.Test;
-import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import tagbio.umap.Umap;
+import org.mastodon.RefPool;
+import org.mastodon.mamut.feature.dimensionalityreduction.tsne.feature.AbstractTSneFeature;
+import org.mastodon.mamut.feature.dimensionalityreduction.tsne.feature.AbstractTSneFeatureComputer;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.properties.DoublePropertyMap;
+import org.scijava.Context;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class UmapTest
+public class SpotTSneFeatureComputer extends AbstractTSneFeatureComputer< Spot, Link, ModelGraph >
 {
-	@Test
-	void test()
-	{
-		double[][] sampleData = RandomDataTools.generateSampleData();
-		Umap umap = UmapDemo.setUpUmap();
-		double[][] umapResult = umap.fitTransform( sampleData );
 
-		assertEquals( umapResult.length, sampleData.length );
-		assertEquals( 2, umapResult[ 0 ].length );
-		for ( int i = 0; i < 50; i++ )
-			assertTrue( umapResult[ i ][ 0 ] < 0 );
-		for ( int i = 50; i < 150; i++ )
-			assertTrue( umapResult[ i ][ 0 ] > 0 );
+	public SpotTSneFeatureComputer( final Model model, final Context context )
+	{
+		super( model, context );
+	}
+
+	@Override
+	protected AbstractTSneFeature< Spot > createFeatureInstance( final List< DoublePropertyMap< Spot > > outputMaps )
+	{
+		return new SpotTSneFeature( outputMaps );
+	}
+
+	@Override
+	protected RefPool< Spot > getRefPool()
+	{
+		return model.getGraph().vertices().getRefPool();
+	}
+
+	@Override
+	protected ReentrantReadWriteLock getLock( final ModelGraph graph )
+	{
+		return graph.getLock();
+	}
+
+	@Override
+	protected Collection< Spot > getVertices()
+	{
+		return model.getGraph().vertices();
 	}
 }
