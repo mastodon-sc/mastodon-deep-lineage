@@ -121,14 +121,7 @@
             <version>1.0</version>
         </dependency>
 
-        <!-- t-SNE -->
-        <dependency>
-            <groupId>com.github.lejon.T-SNE-Java</groupId>
-            <artifactId>tsne</artifactId>
-            <version>v2.6.4</version>
-        </dependency>
-
-        <!-- PCA -->
+        <!-- PCA, t-SNE -->
         <dependency>
             <groupId>com.github.haifengl</groupId>
             <artifactId>smile-core</artifactId>

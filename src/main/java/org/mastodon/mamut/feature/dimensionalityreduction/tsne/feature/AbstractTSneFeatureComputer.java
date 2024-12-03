@@ -32,11 +32,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import com.jujutsu.tsne.TSneConfiguration;
-import com.jujutsu.tsne.barneshut.BarnesHutTSne;
-import com.jujutsu.tsne.barneshut.ParallelBHTsne;
-import com.jujutsu.utils.TSneUtils;
-
 import org.mastodon.RefPool;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
@@ -50,6 +45,8 @@ import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import smile.manifold.TSNE;
 
 /**
  * Abstract class for computing t-SNE features in the Mastodon project.
@@ -98,14 +95,10 @@ public abstract class AbstractTSneFeatureComputer< V extends Vertex< E >, E exte
 					+ ") requires the perplexity (" + tSneSettings.getPerplexity() + ") to not be higher than ("
 					+ tSneSettings.getMaxValidPerplexity( rows ) + ")." );
 		}
-		TSneConfiguration tSneConfig =
-				TSneUtils.buildConfig( dataMatrix, settings.getNumberOfOutputDimensions(), TSneSettings.INITIAL_DIMENSIONS,
-						tSneSettings.getPerplexity(),
-						tSneSettings.getMaxIterations(), TSneSettings.USE_PCA, TSneSettings.THETA, false, true );
-
-		BarnesHutTSne tsne = new ParallelBHTsne();
 		logger.info( "Computing t-SNE. Data matrix has {} rows x {} columns.", dataMatrix.length, dataMatrix[ 0 ].length );
-		tSneResult = tsne.tsne( tSneConfig );
+		TSNE tsne = new TSNE( dataMatrix, settings.getNumberOfOutputDimensions(), tSneSettings.getPerplexity(), 200,
+				tSneSettings.getMaxIterations() );
+		tSneResult = tsne.coordinates;
 		logger.info( "Finished computing t-SNE. Results has {} rows x {} columns.", tSneResult.length,
 				tSneResult.length > 0 ? tSneResult[ 0 ].length : 0 );
 	}
