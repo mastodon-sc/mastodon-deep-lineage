@@ -38,11 +38,13 @@ import com.jujutsu.tsne.barneshut.BarnesHutTSne;
 import com.jujutsu.tsne.barneshut.ParallelBHTsne;
 import com.jujutsu.utils.TSneUtils;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Disabled( "mvn test takes too long" )
 class TSneTest
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );

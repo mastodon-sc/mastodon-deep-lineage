@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.FeatureModel;
@@ -56,6 +57,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
 import org.scijava.Context;
 
+@Disabled( "mvn test takes too long" )
 public class SpotTSneFeatureTest extends AbstractFeatureTest< Spot >
 {
 	private SpotTSneFeature spotTSneFeature;

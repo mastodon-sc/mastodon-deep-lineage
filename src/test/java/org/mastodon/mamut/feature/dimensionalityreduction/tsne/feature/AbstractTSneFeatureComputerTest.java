@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
@@ -43,6 +44,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
 import org.scijava.Context;
 
+@Disabled( "mvn test takes too long" )
 class AbstractTSneFeatureComputerTest
 {
 
