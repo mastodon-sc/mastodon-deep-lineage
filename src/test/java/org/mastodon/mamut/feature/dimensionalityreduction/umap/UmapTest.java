@@ -28,28 +28,41 @@
  */
 package org.mastodon.mamut.feature.dimensionalityreduction.umap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
+import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionTestUtils;
 import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import tagbio.umap.Umap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 class UmapTest
 {
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	@Test
 	void test()
 	{
-		double[][] sampleData = RandomDataTools.generateSampleData();
+		int numCluster1 = 50;
+		int numCluster2 = 100;
+		double[][] sampleData = RandomDataTools.generateSampleData( numCluster1, numCluster2 );
 		Umap umap = UmapDemo.setUpUmap();
+		long t0 = System.currentTimeMillis();
 		double[][] umapResult = umap.fitTransform( sampleData );
+		logger.info( "UMAP took {} ms", System.currentTimeMillis() - t0 );
 
 		assertEquals( umapResult.length, sampleData.length );
 		assertEquals( 2, umapResult[ 0 ].length );
-		for ( int i = 0; i < 50; i++ )
-			assertTrue( umapResult[ i ][ 0 ] > 0 );
-		for ( int i = 50; i < 150; i++ )
-			assertTrue( umapResult[ i ][ 0 ] < 0 );
+
+		double[][] umapResult1 = Arrays.copyOfRange( umapResult, 0, numCluster1 );
+		double[][] umapResult2 = Arrays.copyOfRange( umapResult, numCluster1, numCluster1 + numCluster2 );
+
+		DimensionalityReductionTestUtils.testNonOverlappingClusters( umapResult1, umapResult2 );
+
 	}
 }
