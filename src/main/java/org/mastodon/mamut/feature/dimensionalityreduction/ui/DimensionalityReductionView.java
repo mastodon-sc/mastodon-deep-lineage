@@ -229,9 +229,9 @@ public class DimensionalityReductionView extends JFrame
 		canvas.add( new JLabel( "Graph type:" ), "split 3" );
 		canvas.add( modelGraphRadioButton );
 		canvas.add( branchGraphRadioButton, "wrap" );
-		canvas.add( new JLabel( "Algorithm:" ), SPLIT_2 );
-		canvas.add( umapRadioButton, "wrap" );
-		//canvas.add( tsneRadioButton, "wrap" );
+		canvas.add( new JLabel( "Algorithm:" ), "split 3" );
+		canvas.add( umapRadioButton );
+		canvas.add( tsneRadioButton, "wrap" );
 		canvas.add( standardizeFeaturesCheckBox, "wrap" );
 		canvas.add( new JLabel( "Number of dimensions:" ), SPLIT_2 );
 		canvas.add( numberOfDimensionsInput, WMIN_35_WRAP );
