@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -89,6 +89,8 @@ public class DimensionalityReductionView extends JFrame
 
 	private final JRadioButton tsneRadioButton;
 
+	private final JRadioButton pcaRadioButton;
+
 	private final JCheckBox standardizeFeaturesCheckBox;
 
 	private final JSpinner numberOfDimensionsInput;
@@ -135,6 +137,7 @@ public class DimensionalityReductionView extends JFrame
 
 		umapRadioButton = new JRadioButton( "UMAP" );
 		tsneRadioButton = new JRadioButton( "t-SNE" );
+		pcaRadioButton = new JRadioButton( "PCA" );
 
 		// Common settings
 		standardizeFeaturesCheckBox = new JCheckBox( "Standardize features" );
@@ -168,6 +171,7 @@ public class DimensionalityReductionView extends JFrame
 		DimensionalityReductionAlgorithm algorithm = controller.getAlgorithm();
 		umapRadioButton.setSelected( algorithm == DimensionalityReductionAlgorithm.UMAP );
 		tsneRadioButton.setSelected( algorithm == DimensionalityReductionAlgorithm.TSNE );
+		pcaRadioButton.setSelected( algorithm == DimensionalityReductionAlgorithm.PCA );
 		CommonSettings settings = controller.getCommonSettings();
 		UmapSettings umapSettings = controller.getUmapSettings();
 		TSneSettings tSneSettings = controller.getTSneSettings();
@@ -194,10 +198,12 @@ public class DimensionalityReductionView extends JFrame
 
 		umapRadioButton.addActionListener( e -> updateAlgorithmSettings() );
 		tsneRadioButton.addActionListener( e -> updateAlgorithmSettings() );
+		pcaRadioButton.addActionListener( e -> updateAlgorithmSettings() );
 
 		ButtonGroup algorithmGroup = new ButtonGroup();
 		algorithmGroup.add( umapRadioButton );
 		algorithmGroup.add( tsneRadioButton );
+		algorithmGroup.add( pcaRadioButton );
 
 		CommonSettings commonSettings = controller.getCommonSettings();
 		UmapSettings umapSettings = controller.getUmapSettings();
@@ -226,12 +232,13 @@ public class DimensionalityReductionView extends JFrame
 	{
 		add( canvas, BorderLayout.CENTER );
 
-		canvas.add( new JLabel( "Graph type:" ), "split 3" );
+		canvas.add( new JLabel( "Graph type:" ), "split 4" );
 		canvas.add( modelGraphRadioButton );
 		canvas.add( branchGraphRadioButton, "wrap" );
-		canvas.add( new JLabel( "Algorithm:" ), "split 3" );
+		canvas.add( new JLabel( "Algorithm:" ), "split 4" );
 		canvas.add( umapRadioButton );
-		canvas.add( tsneRadioButton, "wrap" );
+		canvas.add( tsneRadioButton );
+		canvas.add( pcaRadioButton, "wrap" );
 		canvas.add( standardizeFeaturesCheckBox, "wrap" );
 		canvas.add( new JLabel( "Number of dimensions:" ), SPLIT_2 );
 		canvas.add( numberOfDimensionsInput, WMIN_35_WRAP );
@@ -282,8 +289,10 @@ public class DimensionalityReductionView extends JFrame
 		DimensionalityReductionAlgorithm algorithm;
 		if ( umapRadioButton.isSelected() )
 			algorithm = DimensionalityReductionAlgorithm.UMAP;
-		else
+		else if ( tsneRadioButton.isSelected() )
 			algorithm = DimensionalityReductionAlgorithm.TSNE;
+		else
+			algorithm = DimensionalityReductionAlgorithm.PCA;
 		controller.setAlgorithm( algorithm );
 		addAlgorithmSpecificSettings( algorithm );
 		revalidate();
@@ -306,6 +315,10 @@ public class DimensionalityReductionView extends JFrame
 			algorithmSpecificSettingsPanel.add( perplexityInput, WMIN_35_WRAP );
 			algorithmSpecificSettingsPanel.add( new JLabel( "Maximum number of iterations:" ), SPLIT_2 );
 			algorithmSpecificSettingsPanel.add( maxIterationsInput, WMIN_35_WRAP );
+			break;
+		case PCA:
+			algorithmSpecificSettingsPanel.add( new JLabel( "" ), "wrap" );
+			algorithmSpecificSettingsPanel.add( new JLabel( "" ), "wrap" );
 			break;
 		default:
 			break;
