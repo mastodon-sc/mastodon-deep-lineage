@@ -10,7 +10,7 @@
 
     <groupId>org.mastodon</groupId>
     <artifactId>mastodon-deep-lineage</artifactId>
-    <version>0.4.2-SNAPSHOT</version>
+    <version>0.4.2</version>
 
     <properties>
         <package-name>org.mastodon</package-name>
@@ -185,7 +185,7 @@
     <scm>
         <connection>scm:git:https:github.com/mastodon-sc/mastodon-deep-lineage</connection>
         <developerConnection>scm:git:git@github.com:mastodon-sc/mastodon-deep-lineage</developerConnection>
-        <tag>HEAD</tag>
+        <tag>mastodon-deep-lineage-0.4.2</tag>
         <url>https://github.com/mastodon-sc/mastodon-deep-lineage</url>
     </scm>
     <issueManagement>
