@@ -34,7 +34,7 @@ import org.mastodon.graph.algorithm.traversal.DepthFirstIterator;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.clustering.config.ClusteringMethod;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
-import org.mastodon.mamut.clustering.multiproject.ClassifiableProject;
+import org.mastodon.mamut.clustering.multiproject.ClusterableProject;
 import org.mastodon.mamut.clustering.multiproject.ExternalProjects;
 import org.mastodon.mamut.clustering.util.HierarchicalClusteringResult;
 import org.mastodon.mamut.clustering.config.CropCriteria;
@@ -145,7 +145,7 @@ public class ClusterLineagesController
 		try
 		{
 			running = true;
-			return runClassification();
+			return runClustering();
 		}
 		finally
 		{
@@ -153,7 +153,7 @@ public class ClusterLineagesController
 		}
 	}
 
-	private String runClassification()
+	private String runClustering()
 	{
 		referenceProjectModel.getBranchGraphSync().sync();
 		ReentrantReadWriteLock.ReadLock lock = referenceModel.getGraph().getLock().readLock();
@@ -161,16 +161,16 @@ public class ClusterLineagesController
 		String createdTagSetName;
 		try
 		{
-			Pair< List< ClassifiableProject >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
-			List< ClassifiableProject > rootsMatrix = rootsAndDistances.getLeft();
+			Pair< List< ClusterableProject >, double[][] > rootsAndDistances = getRootsAndDistanceMatrix();
+			List< ClusterableProject > rootsMatrix = rootsAndDistances.getLeft();
 			double[][] distances = rootsAndDistances.getRight();
-			ClassifiableProject referenceProject = rootsMatrix.get( 0 );
+			ClusterableProject referenceProject = rootsMatrix.get( 0 );
 			HierarchicalClusteringResult< BranchSpotTree > hierarchicalClusteringResult =
-					classifyLineageTrees( referenceProject.getTrees(), distances );
+					clusterLineageTrees( referenceProject.getTrees(), distances );
 			Function< BranchSpotTree, BranchSpot > branchSpotProvider = BranchSpotTree::getBranchSpot;
-			createdTagSetName = applyClassification( hierarchicalClusteringResult, referenceModel, branchSpotProvider );
+			createdTagSetName = applyTagSet( hierarchicalClusteringResult, referenceModel, branchSpotProvider );
 			if ( addTagSetToExternalProjects && rootsMatrix.size() > 1 )
-				classifyExternalProjects( rootsMatrix, distances );
+				clusterExternalProjects( rootsMatrix, distances );
 			if ( showDendrogram )
 				showDendrogram( hierarchicalClusteringResult );
 		}
@@ -181,21 +181,21 @@ public class ClusterLineagesController
 		return createdTagSetName;
 	}
 
-	private void classifyExternalProjects( final List< ClassifiableProject > rootsMatrix, final double[][] distances )
+	private void clusterExternalProjects( final List< ClusterableProject > rootsMatrix, final double[][] distances )
 	{
 		Function< BranchSpotTree, BranchSpot > branchSpotProvider;
 		for ( int i = 1; i < rootsMatrix.size(); i++ ) // NB: start at 1 to skip reference project
 		{
-			ClassifiableProject project = rootsMatrix.get( i );
+			ClusterableProject project = rootsMatrix.get( i );
 			HierarchicalClusteringResult< BranchSpotTree > hierarchicalClusteringResult =
-					classifyLineageTrees( project.getTrees(), distances );
+					clusterLineageTrees( project.getTrees(), distances );
 			ProjectModel projectModel = project.getProjectModel();
 			Model model = projectModel.getModel();
 			File file = project.getFile();
 			branchSpotProvider = branchSpotTree -> model.getBranchGraph().vertices().stream()
 					.filter( ( branchSpot -> branchSpot.getFirstLabel().equals( branchSpotTree.getName() ) ) )
 					.findFirst().orElse( null );
-			applyClassification( hierarchicalClusteringResult, model, branchSpotProvider );
+			applyTagSet( hierarchicalClusteringResult, model, branchSpotProvider );
 			try
 			{
 				ProjectSaver.saveProject( file, projectModel );
@@ -208,10 +208,10 @@ public class ClusterLineagesController
 		}
 	}
 
-	private Pair< List< ClassifiableProject >, double[][] > getRootsAndDistanceMatrix()
+	private Pair< List< ClusterableProject >, double[][] > getRootsAndDistanceMatrix()
 	{
 		List< BranchSpotTree > roots = getRoots();
-		ClassifiableProject referenceProject = new ClassifiableProject( null, referenceProjectModel, roots );
+		ClusterableProject referenceProject = new ClusterableProject( null, referenceProjectModel, roots );
 		if ( externalProjects.isEmpty() )
 		{
 			double[][] distances = HierarchicalClusteringUtils.getDistanceMatrix( roots, similarityMeasure );
@@ -219,7 +219,7 @@ public class ClusterLineagesController
 		}
 
 		List< String > commonRootNames = findCommonRootNames();
-		List< ClassifiableProject > projects = new ArrayList<>();
+		List< ClusterableProject > projects = new ArrayList<>();
 
 		keepCommonRootsAndSort( roots, commonRootNames );
 		projects.add( referenceProject );
@@ -227,9 +227,9 @@ public class ClusterLineagesController
 		{
 			List< BranchSpotTree > externalRoots = getRoots( project.getValue() );
 			keepCommonRootsAndSort( externalRoots, commonRootNames );
-			projects.add( new ClassifiableProject( project.getKey(), project.getValue(), externalRoots ) );
+			projects.add( new ClusterableProject( project.getKey(), project.getValue(), externalRoots ) );
 		}
-		List< List< BranchSpotTree > > treeMatrix = projects.stream().map( ClassifiableProject::getTrees ).collect( Collectors.toList() );
+		List< List< BranchSpotTree > > treeMatrix = projects.stream().map( ClusterableProject::getTrees ).collect( Collectors.toList() );
 		return Pair.of( projects, HierarchicalClusteringUtils.getAverageDistanceMatrix( treeMatrix, similarityMeasure ) );
 	}
 
@@ -290,7 +290,7 @@ public class ClusterLineagesController
 		dendrogramView.setVisible( true );
 	}
 
-	private HierarchicalClusteringResult< BranchSpotTree > classifyLineageTrees( final List< BranchSpotTree > roots,
+	private HierarchicalClusteringResult< BranchSpotTree > clusterLineageTrees( final List< BranchSpotTree > roots,
 			final double[][] distances )
 	{
 		if ( roots.size() != distances.length )
@@ -307,9 +307,8 @@ public class ClusterLineagesController
 		return result;
 	}
 
-	private String applyClassification( final HierarchicalClusteringResult< BranchSpotTree > hierarchicalClusteringResult,
-			final Model model,
-			final Function< BranchSpotTree, BranchSpot > branchSpotProvider )
+	private String applyTagSet( final HierarchicalClusteringResult< BranchSpotTree > hierarchicalClusteringResult,
+			final Model model, final Function< BranchSpotTree, BranchSpot > branchSpotProvider )
 	{
 		String tagSetName = getTagSetName();
 		List< HierarchicalClusteringResult.Group< BranchSpotTree > > groups = hierarchicalClusteringResult.getGroups();
