@@ -169,7 +169,16 @@ public class BranchSpotTree implements Tree< Double >, HasName
 		private String getTagLabel()
 		{
 			Spot ref = model.getGraph().vertexRef();
-			String tagLabel = LegacyTagSetUtils.getTagLabel( model, branchSpot, tagSet, ref );
+			String tagLabel = null;
+			try
+			{
+				// TODO: this try-catch block is a workaround. It will not be needed anymore after mastodon-core beta-34
+				tagLabel = LegacyTagSetUtils.getTagLabel( model, branchSpot, tagSet, ref );
+			}
+			catch ( NullPointerException e )
+			{
+				// happens, when the branchSpot is not in the model anymore
+			}
 			model.getGraph().releaseRef( ref );
 			if ( tagLabel == null )
 				tagLabel = "";
