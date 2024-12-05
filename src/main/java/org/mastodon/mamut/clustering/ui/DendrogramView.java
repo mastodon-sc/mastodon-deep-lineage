@@ -28,16 +28,19 @@
  */
 package org.mastodon.mamut.clustering.ui;
 
-import net.miginfocom.swing.MigLayout;
-import org.mastodon.mamut.clustering.util.HierarchicalClusteringResult;
-import org.mastodon.mamut.model.Model;
-import org.mastodon.model.tag.TagSetModel;
-import org.mastodon.model.tag.TagSetStructure;
-import org.mastodon.ui.util.ExtensionFileFilter;
-import org.mastodon.ui.util.FileChooser;
-import org.scijava.prefs.PrefService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.ObjIntConsumer;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -50,24 +53,25 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
-import java.awt.Color;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.ObjIntConsumer;
+
+import net.miginfocom.swing.MigLayout;
+
+import org.mastodon.mamut.clustering.util.HierarchicalClusteringResult;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.model.tag.TagSetModel;
+import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.ui.util.ExtensionFileFilter;
+import org.mastodon.ui.util.FileChooser;
+import org.scijava.prefs.PrefService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class that represents a UI view of a dendrogram.<br>
  * It encapsulates a {@link HierarchicalClusteringResult} object and a headline that write the parameters that were used for it.
  * @param <T> the type of the objects that are clustered
  */
-public class DendrogramView< T > implements TagSetModel.TagSetModelListener
+public class DendrogramView< T > extends JFrame implements TagSetModel.TagSetModelListener
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
@@ -92,8 +96,6 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 	private final Model model;
 
 	private final PrefService prefs;
-
-	private final JFrame frame;
 
 	private final JPanel canvas = new JPanel( new MigLayout( "fill" ) );
 
@@ -126,21 +128,23 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 			final PrefService prefs,
 			final String projectName )
 	{
+		super( "Hierarchical clustering of lineage trees" );
+
 		this.hierarchicalClusteringResult = hierarchicalClusteringResult;
 		this.model = model;
 		this.prefs = prefs;
 		this.projectName = projectName;
 
-		frame = new JFrame( "Hierarchical clustering of lineage trees" );
-		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
+
 		int minHeight = 50;
 		int initialDendrogramHeight = hierarchicalClusteringResult == null ? minHeight
 				: ( hierarchicalClusteringResult.getObjectCount() ) * getDefaultFontHeight() + DendrogramPanel.DENDROGRAM_VERTICAL_OFFSET;
 		initialDendrogramHeight += 200;
 		initialDendrogramHeight = Math.min( initialDendrogramHeight, 1000 );
-		frame.setSize( 1000, initialDendrogramHeight );
-		frame.setLayout( new MigLayout( "insets 10, fill" ) );
-		frame.add( canvas, "grow" );
+		setSize( 1000, initialDendrogramHeight );
+		setLayout( new MigLayout( "insets 10, fill" ) );
+		add( canvas, "grow" );
+		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
 
 		headlineLabel = new JLabel( headline );
 		dendrogramPanel = new DendrogramPanel<>( hierarchicalClusteringResult );
@@ -151,14 +155,6 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 		initCanvas();
 		if ( null != model )
 			this.model.getTagSetModel().listeners().add( this );
-	}
-
-	/**
-	 * Sets the visibility of the frame to {@code true}.
-	 */
-	public void show()
-	{
-		frame.setVisible( true );
 	}
 
 	public JPanel getCanvas()
@@ -214,8 +210,10 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 
 	private void initBehavior()
 	{
-		showThresholdCheckBox.addActionListener( ignore -> showThreshold( showThresholdCheckBox.isSelected() ) );
-		showMedianCheckBox.addActionListener( ignore -> showMedian( showMedianCheckBox.isSelected() ) );
+		ActionListener showThresholdListener = ignore -> showThreshold( showThresholdCheckBox.isSelected() );
+		showThresholdCheckBox.addActionListener( showThresholdListener );
+		ActionListener showMedianListener = ignore -> showMedian( showMedianCheckBox.isSelected() );
+		showMedianCheckBox.addActionListener( showMedianListener );
 		ActionListener tagSetListener = event -> {
 			selectedTagSet =
 					tagSetComboBox.getSelectedItem() == null ? null : ( ( TagSetElement ) tagSetComboBox.getSelectedItem() ).tagSet;
@@ -225,7 +223,24 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 		showTagLabelsCheckBox.addActionListener( tagSetListener );
 		tagSetComboBox.addActionListener( tagSetListener );
 		JPopupMenu popupMenu = new PopupMenu();
-		menuButton.addActionListener( event -> popupMenu.show( menuButton, 0, menuButton.getHeight() ) );
+		ActionListener menuListener = event -> popupMenu.show( menuButton, 0, menuButton.getHeight() );
+		menuButton.addActionListener( menuListener );
+
+		addWindowListener( new WindowAdapter()
+		{
+			@Override
+			public void windowClosing( WindowEvent windowEvent )
+			{
+				showThresholdCheckBox.removeActionListener( showThresholdListener );
+				showMedianCheckBox.removeActionListener( showMedianListener );
+				showRootLabelsCheckBox.removeActionListener( tagSetListener );
+				showTagLabelsCheckBox.removeActionListener( tagSetListener );
+				tagSetComboBox.removeActionListener( tagSetListener );
+				menuButton.removeActionListener( menuListener );
+				if ( null != model )
+					model.getTagSetModel().listeners().remove( DendrogramView.this );
+			}
+		} );
 	}
 
 	private void showThreshold( final boolean showThreshold )
@@ -333,7 +348,7 @@ public class DendrogramView< T > implements TagSetModel.TagSetModelListener
 
 		private void chooseFileAndExport( final String extension, final String fileName, final ObjIntConsumer< File > exportFunction )
 		{
-			File chosenFile = FileChooser.chooseFile( frame, fileName + '.' + extension,
+			File chosenFile = FileChooser.chooseFile( this, fileName + '.' + extension,
 					new ExtensionFileFilter( extension ), "Save dendrogram to " + extension, FileChooser.DialogType.SAVE );
 			if ( chosenFile != null )
 			{

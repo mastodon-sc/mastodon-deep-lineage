@@ -286,7 +286,7 @@ public class ClusterLineagesController
 		String header = "<html><body>Dendrogram of hierarchical clustering of lineages<br>" + getParameters() + "</body></html>";
 		DendrogramView< BranchSpotTree > dendrogramView =
 				new DendrogramView<>( hierarchicalClusteringResult, header, referenceModel, prefs, referenceProjectModel.getProjectName() );
-		dendrogramView.show();
+		dendrogramView.setVisible( true );
 	}
 
 	private HierarchicalClusteringResult< BranchSpotTree > classifyLineageTrees( final List< BranchSpotTree > roots,
