@@ -35,9 +35,9 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Small helper class to hold a project file, its {@link ProjectModel} and the trees that are to be classified.
+ * Small helper class to hold a project file, its {@link ProjectModel} and the trees that are to be clustered.
  */
-public class ClassifiableProject
+public class ClusterableProject
 {
 	private final File file;
 
@@ -45,7 +45,7 @@ public class ClassifiableProject
 
 	private final List< BranchSpotTree > trees;
 
-	public ClassifiableProject( final File file, final ProjectModel projectModel, final List< BranchSpotTree > trees )
+	public ClusterableProject( final File file, final ProjectModel projectModel, final List< BranchSpotTree > trees )
 	{
 		this.file = file;
 		this.projectModel = projectModel;
