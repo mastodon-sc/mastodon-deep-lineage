@@ -155,6 +155,7 @@ public class ClusterLineagesController
 
 	private String runClassification()
 	{
+		referenceProjectModel.getBranchGraphSync().sync();
 		ReentrantReadWriteLock.ReadLock lock = referenceModel.getGraph().getLock().readLock();
 		lock.lock();
 		String createdTagSetName;
