@@ -588,11 +588,16 @@ Tree2
 ## Dimensionality reduction
 
 For visualizing high-dimensional data, e.g. in two dimensions, potentially getting more insights into your data, you can
-reduce the dimensionality of the measurements, using this algorithm:
+reduce the dimensionality of the measurements, using these algorithms:
 
 * UMAP
     * [Uniform Manifold Approximation Projection (UMAP)](https://arxiv.org/abs/1802.03426)
-    * [UMAP Python implementation](https://umap-learn.readthedocs.io/en/latest/)
+  * Further reading: [UMAP Python implementation](https://umap-learn.readthedocs.io/en/latest/)
+* t-SNE
+    * [t-distributed Stochastic Neighbor Embedding (t-SNE)](https://lvdmaaten.github.io/tsne/)
+    * This [t-SNE Java implementation](https://haifengl.github.io/manifold.html#t-sne) is used.
+    * Further
+      reading: [t-SNE Python implementation](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html)
 
 ### Usage
 
@@ -643,6 +648,17 @@ By default, all measurements are selected in the box.
 * Minimum distance: The minimum distance that points are allowed to be apart from each other in the low dimensional
   representation. This parameter controls how tightly UMAP is allowed to pack points together.
   Further reading: [Minimum Distance](https://umap-learn.readthedocs.io/en/latest/parameters.html#min-dist).
+
+#### t-SNE Parameters
+
+* Perplexity: The perplexity is related to the number of nearest neighbors that are used in other manifold learning
+  algorithms. Larger datasets usually require a larger perplexity. The recommended range is between 5 and 50.
+  Further
+  reading: [Perplexity](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html#sklearn.manifold.TSNE).
+* Maximum number of iterations: The maximum number of iterations for the optimization. The default is 1000. More
+  iterations will give more accurate results, but will also take longer to compute.
+  Further
+  reading: [Maximum Number of Iterations](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html#sklearn.manifold.TSNE).
 
 When you are done with the selection, click on `Compute`.
 The resulting values will be added as additional columns to the selected table.
@@ -729,7 +745,7 @@ the Mastodon repository.
       channel is used to check, if the dimensions of the label image in ImageJ match the dimensions of the image data in
       Mastodon.
   * ![plugin_import_example_8.png](doc/import/label_image/plugin_import_example_08.png)
-    * Click `OK` and the spots are imported into Mastodon.
+      * Click `OK` and the spots are imported into Mastodon.
   * ![plugin_import_example_4.png](doc/import/label_image/plugin_import_example_04.png)
 
 #### Label image as BDV channel
@@ -751,7 +767,7 @@ the Mastodon repository.
 * Import the image sequence encoding the label images into ImageJ contained in folder: `Fluo-C3DL-MDA231/01_ERR_SEG/`
     * Set the dimensions of the label image to 512x512x1x30x12 (XYCTZ) using `Image > Properties`
   * ![plugin_import_example_3.png](doc/import/label_image/plugin_import_example_03.png)
-    * Merge the 2 images into a single image using the `Image > Color > Merge Channels...` command
+      * Merge the 2 images into a single image using the `Image > Color > Merge Channels...` command
   * ![plugin_import_example_5.png](doc/import/label_image/plugin_import_example_05.png)
 * Open Mastodon from Fiji and create a new project with merged image
     * `Plugins > Mastodon > new Mastodon project > Use an image opened in ImageJ > Create`
@@ -764,7 +780,7 @@ the Mastodon repository.
     * Select the BDV channel containing the label image that has been used to create the segmented label image. This is
       used to check, if the dimensions of the label image and the image data in BDV match, which is required.
   * ![plugin_import_example_9.png](doc/import/label_image/plugin_import_example_08.png)
-    * Click `OK` and the spots are imported into Mastodon.
+      * Click `OK` and the spots are imported into Mastodon.
   * ![plugin_import_example_7.png](doc/import/label_image/plugin_import_example_07.png)
 
 ## Export
