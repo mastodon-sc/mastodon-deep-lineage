@@ -308,6 +308,7 @@ reduce the dimensionality of the measurements, using these algorithms:
 
 * UMAP
     * [Uniform Manifold Approximation Projection (UMAP)](https://arxiv.org/abs/1802.03426)
+  * This [UMAP Java implementation](https://haifengl.github.io/manifold.html#umap) is used.
   * Further reading: [UMAP Python implementation](https://umap-learn.readthedocs.io/en/latest/)
 * t-SNE
     * [t-distributed Stochastic Neighbor Embedding (t-SNE)](https://lvdmaaten.github.io/tsne/)
@@ -343,7 +344,7 @@ If they are selected, the algorithm will use the link feature value of its incom
 all incoming edges, if there is more than one incoming edge.
 
 The dialog will look like this:
-![umap_dialog.png](doc/dimensionalityreduction/umap_dialog.png)
+![dialog.png](doc/dimensionalityreduction/dialog.png)
 
 By default, all measurements are selected in the box.
 
