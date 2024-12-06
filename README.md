@@ -304,14 +304,11 @@ Tree2
 ## Dimensionality reduction
 
 For visualizing high-dimensional data, e.g. in two dimensions, potentially getting more insights into your data, you can
-reduce the dimensionality of the measurements, using these algorithms:
+reduce the dimensionality of the measurements, using this algorithm:
 
 * UMAP
     * [Uniform Manifold Approximation Projection (UMAP)](https://arxiv.org/abs/1802.03426)
     * [UMAP Python implementation](https://umap-learn.readthedocs.io/en/latest/)
-* t-SNE
-    * [t-distributed Stochastic Neighbor Embedding (t-SNE)](https://lvdmaaten.github.io/tsne/)
-    * [t-SNE Python implementation](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html)
 
 ### Usage
 
@@ -362,17 +359,6 @@ By default, all measurements are selected in the box.
 * Minimum distance: The minimum distance that points are allowed to be apart from each other in the low dimensional
   representation. This parameter controls how tightly UMAP is allowed to pack points together.
   Further reading: [Minimum Distance](https://umap-learn.readthedocs.io/en/latest/parameters.html#min-dist).
-
-#### t-SNE Parameters
-
-* Perplexity: The perplexity is related to the number of nearest neighbors that are used in other manifold learning
-  algorithms. Larger datasets usually require a larger perplexity. The recommended range is between 5 and 50.
-  Further
-  reading: [Perplexity](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html#sklearn.manifold.TSNE).
-* Maximum number of iterations: The maximum number of iterations for the optimization. The default is 1000. More
-  iterations will give more accurate results, but will also take longer to compute.
-  Further
-  reading: [Maximum Number of Iterations](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html#sklearn.manifold.TSNE).
 
 When you are done with the selection, click on `Compute`.
 The resulting values will be added as additional columns to the selected table.
