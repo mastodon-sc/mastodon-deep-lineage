@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,32 +26,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction;
+package org.mastodon.mamut.feature.branch.dimensionalityreduction.pca;
 
-public enum DimensionalityReductionAlgorithm
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.mastodon.RefPool;
+import org.mastodon.mamut.feature.dimensionalityreduction.pca.AbstractPcaFeature;
+import org.mastodon.mamut.feature.dimensionalityreduction.pca.AbstractPcaFeatureComputer;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.branch.BranchLink;
+import org.mastodon.mamut.model.branch.BranchSpot;
+import org.mastodon.mamut.model.branch.ModelBranchGraph;
+import org.mastodon.properties.DoublePropertyMap;
+import org.scijava.Context;
+
+public class BranchPcaFeatureComputer extends AbstractPcaFeatureComputer< BranchSpot, BranchLink, ModelBranchGraph >
 {
-	UMAP( "UMAP", "Uniform Manifold Approximation and Projection for Dimension Reduction." ),
-	TSNE( "t-SNE", "t-distributed Stochastic Neighbor Embedding." ),
-	PCA( "PCA", "Principal Component Analysis." ),;
 
-	private final String name;
-
-	private final String description;
-
-	DimensionalityReductionAlgorithm( final String name, final String description )
+	public BranchPcaFeatureComputer( final Model model, final Context context )
 	{
-		this.name = name;
-		this.description = description;
-	}
-
-	public String getDescription()
-	{
-		return description;
+		super( model, context );
 	}
 
 	@Override
-	public String toString()
+	protected AbstractPcaFeature< BranchSpot > createFeatureInstance( final List< DoublePropertyMap< BranchSpot > > umapOutputMaps )
 	{
-		return name;
+		return new BranchPcaFeature( umapOutputMaps );
+	}
+
+	@Override
+	protected RefPool< BranchSpot > getRefPool()
+	{
+		return model.getBranchGraph().vertices().getRefPool();
+	}
+
+	@Override
+	protected ReentrantReadWriteLock getLock( final ModelBranchGraph branchGraph )
+	{
+		return branchGraph.getLock();
+	}
+
+	@Override
+	protected Collection< BranchSpot > getVertices()
+	{
+		return model.getBranchGraph().vertices();
 	}
 }

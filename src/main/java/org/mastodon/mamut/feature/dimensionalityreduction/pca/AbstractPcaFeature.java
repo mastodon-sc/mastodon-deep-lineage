@@ -26,25 +26,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.tsne;
+package org.mastodon.mamut.feature.dimensionalityreduction.pca;
 
-import org.mastodon.mamut.feature.dimensionalityreduction.PlotPoints;
-import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
+import java.util.List;
 
-import smile.manifold.TSNE;
+import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.feature.dimensionalityreduction.AbstractOutputFeature;
+import org.mastodon.properties.DoublePropertyMap;
 
-public class TSneDemo
+/**
+ * This generic feature is used to store the PCA outputs.
+ * <br>
+ * The PCA outputs are stored in a list of {@link DoublePropertyMap}s. The size of the list is equal to the number of dimensions of the PCA output.
+ */
+public abstract class AbstractPcaFeature< V extends Vertex< ? > > extends AbstractOutputFeature< V >
 {
-	public static void main( final String[] args )
+	private static final String PROJECTION_NAME_TEMPLATE = "PCA%d";
+
+	protected static final String HELP_STRING =
+			"Computes the PCA according to the selected input dimensions and the number of target dimensions.";
+
+	protected AbstractPcaFeature( final List< DoublePropertyMap< V > > outputMaps )
 	{
-		double[][] inputData = RandomDataTools.generateSampleData();
-		double[][] tsneResult = setUpTSne( inputData );
-		PlotPoints.plot( inputData, tsneResult, resultValues -> resultValues[ 1 ] > 0 );
+		super( outputMaps );
 	}
 
-	static double[][] setUpTSne( double[][] inputData )
+	@Override
+	protected String getProjectionNameTemplate()
 	{
-		TSNE tsne = new TSNE( inputData, 2, 30d, 200, 1000 );
-		return tsne.coordinates;
+		return PROJECTION_NAME_TEMPLATE;
 	}
 }
