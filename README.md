@@ -598,6 +598,11 @@ reduce the dimensionality of the measurements, using these algorithms:
     * This [t-SNE Java implementation](https://haifengl.github.io/manifold.html#t-sne) is used.
     * Further
       reading: [t-SNE Python implementation](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html)
+* PCA
+    * [Principal Component analysis](https://en.wikipedia.org/wiki/Principal_component_analysis)
+    * This [PCA Java implementation](https://haifengl.github.io/manifold.html#pca) is used.
+    * Further
+      reading: [PCA Python implementation](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html)
 
 ### Usage
 
