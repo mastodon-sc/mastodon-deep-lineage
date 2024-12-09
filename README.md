@@ -627,7 +627,7 @@ If they are selected, the algorithm will use the link feature value of its incom
 all incoming edges, if there is more than one incoming edge.
 
 The dialog will look like this:
-![umap_dialog.png](doc/dimensionalityreduction/umap_dialog.png)
+![umap_dialog.png](doc/dimensionalityreduction/dialog.png)
 
 By default, all measurements are selected in the box.
 
