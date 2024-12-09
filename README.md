@@ -592,6 +592,7 @@ reduce the dimensionality of the measurements, using these algorithms:
 
 * UMAP
     * [Uniform Manifold Approximation Projection (UMAP)](https://arxiv.org/abs/1802.03426)
+  * This [UMAP Java implementation](https://github.com/tag-bio/umap-java) is used.
   * Further reading: [UMAP Python implementation](https://umap-learn.readthedocs.io/en/latest/)
 * t-SNE
     * [t-distributed Stochastic Neighbor Embedding (t-SNE)](https://lvdmaaten.github.io/tsne/)
