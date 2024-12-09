@@ -26,25 +26,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.tsne;
+package org.mastodon.mamut.feature.spot.dimensionalityreduction.pca;
 
-import org.mastodon.mamut.feature.dimensionalityreduction.PlotPoints;
-import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-import smile.manifold.TSNE;
+import org.mastodon.collection.RefCollection;
+import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.io.FeatureSerializer;
+import org.mastodon.io.FileIdToObjectMap;
+import org.mastodon.io.ObjectToFileIdMap;
+import org.mastodon.mamut.feature.spot.dimensionalityreduction.SpotOutputFeatureSerializerTools;
+import org.mastodon.mamut.model.Spot;
+import org.scijava.plugin.Plugin;
 
-public class TSneDemo
+/**
+ * De-/serializes {@link SpotPcaFeature}
+ */
+@Plugin( type = FeatureSerializer.class )
+public class SpotPcaFeatureSerializer implements FeatureSerializer< SpotPcaFeature, Spot >
 {
-	public static void main( final String[] args )
+
+	@Override
+	public FeatureSpec< SpotPcaFeature, Spot > getFeatureSpec()
 	{
-		double[][] inputData = RandomDataTools.generateSampleData();
-		double[][] tsneResult = setUpTSne( inputData );
-		PlotPoints.plot( inputData, tsneResult, resultValues -> resultValues[ 1 ] > 0 );
+		return SpotPcaFeature.GENERIC_SPEC;
 	}
 
-	static double[][] setUpTSne( double[][] inputData )
+	@Override
+	public void serialize( final SpotPcaFeature feature, final ObjectToFileIdMap< Spot > idMap, final ObjectOutputStream oos )
+			throws IOException
 	{
-		TSNE tsne = new TSNE( inputData, 2, 30d, 200, 1000 );
-		return tsne.coordinates;
+		SpotOutputFeatureSerializerTools.serialize( feature, idMap, oos );
+	}
+
+	@Override
+	public SpotPcaFeature deserialize( final FileIdToObjectMap< Spot > idMap, final RefCollection< Spot > pool,
+			final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	{
+		return SpotOutputFeatureSerializerTools.deserialize( idMap, pool, ois, SpotPcaFeature::new );
 	}
 }
