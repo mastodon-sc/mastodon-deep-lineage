@@ -62,12 +62,6 @@
             <version>${mastodon.version}</version>
         </dependency>
 
-        <!-- include simple logging facade for logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-
         <!-- include logback-classic at test runtime -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
