@@ -12,3 +12,6 @@ buildNumber.properties
 /logs/
 /mastodon-deep-lineage.iml
 .vscode/settings.json
+/src/test/resources/org/mastodon/mamut/feature/dimensionalityreduction/mnist_784.csv
+/src/test/resources/org/mastodon/mamut/feature/dimensionalityreduction/mnist2500_X.txt
+/src/test/resources/org/mastodon/mamut/feature/dimensionalityreduction/mnist2500_labels.txt
