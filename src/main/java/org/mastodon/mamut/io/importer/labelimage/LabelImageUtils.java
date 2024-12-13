@@ -215,7 +215,7 @@ public class LabelImageUtils
 				cov[ i ][ i ] += SINGLE_PIXEL_COVARIANCE;
 			if ( mean.length == 2 ) // NB: 2D case, add a third dimension with 0 covariance
 			{
-				mean = new double[] { mean[ 0 ], mean[ 1 ], 1 };
+				mean = new double[] { mean[ 0 ], mean[ 1 ], 0 };
 				cov = new double[][] {
 						{ cov[ 0 ][ 0 ], cov[ 0 ][ 1 ], 0 },
 						{ cov[ 1 ][ 0 ], cov[ 1 ][ 1 ], 0 },
