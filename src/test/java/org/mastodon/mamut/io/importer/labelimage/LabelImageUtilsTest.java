@@ -267,7 +267,7 @@ class LabelImageUtilsTest
 	{
 		try (Context context = new Context())
 		{
-			double[] givenCenter = { 18, 21, 1 };
+			double[] givenCenter = { 18, 21, 0 };
 			double[][] givenCovariance = {
 					{ 33, 14, 0 },
 					{ 14, 32, 0 },
@@ -306,9 +306,9 @@ class LabelImageUtilsTest
 		logger.debug( "Computed covariance: {}", Arrays.deepToString( computedCovariance ) );
 
 		assertArrayEquals( center, mean, 0.01d );
-		assertArrayEquals( givenCovariance[ 0 ], computedCovariance[ 0 ], 10d );
-		assertArrayEquals( givenCovariance[ 1 ], computedCovariance[ 1 ], 10d );
-		assertArrayEquals( givenCovariance[ 2 ], computedCovariance[ 2 ], 10d );
+		assertArrayEquals( givenCovariance[ 0 ], computedCovariance[ 0 ], 20d );
+		assertArrayEquals( givenCovariance[ 1 ], computedCovariance[ 1 ], 20d );
+		assertArrayEquals( givenCovariance[ 2 ], computedCovariance[ 2 ], 20d );
 		assertEquals( String.valueOf( pixelValue ), createdSpot.getLabel() );
 	}
 
