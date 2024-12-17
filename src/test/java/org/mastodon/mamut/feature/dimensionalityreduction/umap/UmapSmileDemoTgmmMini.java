@@ -26,6 +26,7 @@ public class UmapSmileDemoTgmmMini
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
+	/*
 	public static void main( String[] args ) throws IOException, CsvValidationException
 	{
 		File file = new File( "src/test/resources/org/mastodon/mamut/feature/dimensionalityreduction/tgmm-mini-spot.csv" );
@@ -47,13 +48,13 @@ public class UmapSmileDemoTgmmMini
 			long t0 = System.currentTimeMillis();
 			double[][] result = setUpUmap( inputData );
 			logger.info( "UMAP took {} ms", System.currentTimeMillis() - t0 );
-
+	
 			double[][] resultScaled = Arrays.stream( result ).map( row -> Arrays.stream( row ).map( value -> value * 10d ).toArray() )
 					.toArray( double[][]::new );
 			PlotPoints.plot( null, resultScaled, null );
 		}
 	}
-
+	
 	static double[][] setUpUmap( double[][] data )
 	{
 		int iterations = data.length < 10_000 ? 500 : 200; // https://github.com/lmcinnes/umap/blob/a012b9d8751d98b94935ca21f278a54b3c3e1b7f/umap/umap_.py#L1073
@@ -61,4 +62,6 @@ public class UmapSmileDemoTgmmMini
 		int nNeighbors = 15;
 		return UMAP.of( data, MathEx::distance, nNeighbors, 2, iterations, 1, minDist, 1.0, 5, 1 );
 	}
+	
+	 */
 }

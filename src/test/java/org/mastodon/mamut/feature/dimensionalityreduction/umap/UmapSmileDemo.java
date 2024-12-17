@@ -10,6 +10,7 @@ import smile.math.MathEx;
 
 public class UmapSmileDemo
 {
+	/*
 	public static void main( final String[] args )
 	{
 		int numCluster1 = 50;
@@ -19,7 +20,7 @@ public class UmapSmileDemo
 		double[][] result = Arrays.stream( umapResult ).map( row -> Arrays.stream( row ).toArray() ).toArray( double[][]::new );
 		PlotPoints.plot( sampleData, result, resultValues -> resultValues[ 0 ] > 1 );
 	}
-
+	
 	static double[][] setUpUmap( final double[][] sampleData )
 	{
 		int iterations = sampleData.length < 10_000 ? 500 : 200; // https://github.com/lmcinnes/umap/blob/a012b9d8751d98b94935ca21f278a54b3c3e1b7f/umap/umap_.py#L1073
@@ -27,4 +28,6 @@ public class UmapSmileDemo
 		int nNeighbors = 15;
 		return UMAP.of( sampleData, MathEx::distance, nNeighbors, 2, iterations, 1, minDist, 1.0, 5, 1 );
 	}
+	
+	 */
 }
