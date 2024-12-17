@@ -26,25 +26,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.tsne;
+package org.mastodon.mamut.feature.spot.dimensionalityreduction.pca;
 
-import org.mastodon.mamut.feature.dimensionalityreduction.PlotPoints;
-import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import smile.manifold.TSNE;
+import org.mastodon.RefPool;
+import org.mastodon.mamut.feature.dimensionalityreduction.pca.AbstractPcaFeature;
+import org.mastodon.mamut.feature.dimensionalityreduction.pca.AbstractPcaFeatureComputer;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.properties.DoublePropertyMap;
+import org.scijava.Context;
 
-public class TSneDemo
+public class SpotPcaFeatureComputer extends AbstractPcaFeatureComputer< Spot, Link, ModelGraph >
 {
-	public static void main( final String[] args )
+
+	public SpotPcaFeatureComputer( final Model model, final Context context )
 	{
-		double[][] inputData = RandomDataTools.generateSampleData();
-		double[][] tsneResult = setUpTSne( inputData );
-		PlotPoints.plot( inputData, tsneResult, resultValues -> resultValues[ 1 ] > 0 );
+		super( model, context );
 	}
 
-	static double[][] setUpTSne( double[][] inputData )
+	@Override
+	protected AbstractPcaFeature< Spot > createFeatureInstance( final List< DoublePropertyMap< Spot > > outputMaps )
 	{
-		TSNE tsne = new TSNE( inputData, 2, 30d, 200, 1000 );
-		return tsne.coordinates;
+		return new SpotPcaFeature( outputMaps );
+	}
+
+	@Override
+	protected RefPool< Spot > getRefPool()
+	{
+		return model.getGraph().vertices().getRefPool();
+	}
+
+	@Override
+	protected ReentrantReadWriteLock getLock( final ModelGraph graph )
+	{
+		return graph.getLock();
+	}
+
+	@Override
+	protected Collection< Spot > getVertices()
+	{
+		return model.getGraph().vertices();
 	}
 }

@@ -11,3 +11,6 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 /logs/
 /mastodon-deep-lineage.iml
+/src/test/resources/org/mastodon/mamut/feature/dimensionalityreduction/mnist_784.csv
+/src/test/resources/org/mastodon/mamut/feature/dimensionalityreduction/mnist2500_X.txt
+/src/test/resources/org/mastodon/mamut/feature/dimensionalityreduction/mnist2500_labels.txt
