@@ -114,14 +114,14 @@
             <artifactId>jfreesvg</artifactId>
         </dependency>
 
-        <!-- UMAP -->
+        <!-- UMAP (production) -->
         <dependency>
             <groupId>tech.molecules</groupId>
             <artifactId>external-umap-java</artifactId>
             <version>1.0</version>
         </dependency>
 
-        <!-- PCA, t-SNE -->
+        <!-- PCA, t-SNE (production), UMAP (tests only) -->
         <dependency>
             <groupId>com.github.haifengl</groupId>
             <artifactId>smile-core</artifactId>
