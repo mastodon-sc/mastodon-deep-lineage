@@ -57,8 +57,7 @@ public class BranchTimepointsFeatureComputer implements MamutFeatureComputer
 		if ( null == output )
 			output = new BranchTimepointsFeature(
 					new IntPropertyMap<>( branchGraph.vertices().getRefPool(), -1 ),
-					new IntPropertyMap<>( branchGraph.vertices().getRefPool(), -1 ),
-					model.getSpaceUnits() );
+					new IntPropertyMap<>( branchGraph.vertices().getRefPool(), -1 ) );
 	}
 
 	@Override

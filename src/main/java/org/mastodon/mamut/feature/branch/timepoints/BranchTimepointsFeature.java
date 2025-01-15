@@ -148,17 +148,13 @@ public class BranchTimepointsFeature implements Feature< BranchSpot >
 
 	final IntPropertyMap< BranchSpot > endTimepointsMap;
 
-	final String lengthUnits;
-
-	BranchTimepointsFeature( final IntPropertyMap< BranchSpot > startTimepointsMap, final IntPropertyMap< BranchSpot > endTimepointsMap,
-			final String lengthUnits )
+	BranchTimepointsFeature( final IntPropertyMap< BranchSpot > startTimepointsMap, final IntPropertyMap< BranchSpot > endTimepointsMap )
 	{
 		this.startTimepointsMap = startTimepointsMap;
 		this.endTimepointsMap = endTimepointsMap;
-		this.lengthUnits = lengthUnits;
 		this.projectionMap = new LinkedHashMap<>( 2 );
 		projectionMap.put( key( START_PROJECTION_SPEC ),
-				FeatureProjections.project( key( START_PROJECTION_SPEC ), startTimepointsMap, lengthUnits ) );
+				FeatureProjections.project( key( START_PROJECTION_SPEC ), startTimepointsMap, Dimension.NONE_UNITS ) );
 		projectionMap.put( key( END_PROJECTION_SPEC ),
 				FeatureProjections.project( key( END_PROJECTION_SPEC ), endTimepointsMap, Dimension.NONE_UNITS ) );
 	}

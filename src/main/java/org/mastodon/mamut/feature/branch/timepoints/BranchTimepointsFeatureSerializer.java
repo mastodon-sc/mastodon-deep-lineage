@@ -67,13 +67,12 @@ public class BranchTimepointsFeatureSerializer
 		final IntPropertyMap< Spot > endTimepointMap = new IntPropertyMap<>( graph.vertices(), -1 );
 		final IntPropertyMapSerializer< Spot > startTimepointSerializer = new IntPropertyMapSerializer<>( startTimepointMap );
 		final IntPropertyMapSerializer< Spot > endTimepointSerializer = new IntPropertyMapSerializer<>( endTimepointMap );
-		final String units = ois.readUTF();
 		startTimepointSerializer.readPropertyMap( idmap, ois );
 		endTimepointSerializer.readPropertyMap( idmap, ois );
 
 		// Map to branch-link -> val.
 		return new BranchTimepointsFeature( BranchFeatureSerializer.mapToBranchSpotMap( startTimepointMap, branchGraph ),
-				BranchFeatureSerializer.mapToBranchSpotMap( endTimepointMap, branchGraph ), units );
+				BranchFeatureSerializer.mapToBranchSpotMap( endTimepointMap, branchGraph ) );
 	}
 
 	@Override
@@ -90,7 +89,6 @@ public class BranchTimepointsFeatureSerializer
 				BranchFeatureSerializer.branchSpotMapToMap( feature.endTimepointsMap, branchGraph, graph );
 		final IntPropertyMapSerializer< Spot > startTimepointSerializer = new IntPropertyMapSerializer<>( startTimepointMap );
 		final IntPropertyMapSerializer< Spot > entTimepointsSerializer = new IntPropertyMapSerializer<>( endTimepointsMap );
-		oos.writeUTF( feature.lengthUnits );
 		startTimepointSerializer.writePropertyMap( idmap, oos );
 		entTimepointsSerializer.writePropertyMap( idmap, oos );
 	}
