@@ -49,7 +49,7 @@ import java.util.List;
  */
 public class SpotUmapFeature extends AbstractUmapFeature< Spot >
 {
-	public static final String KEY = "Spot Umap outputs";
+	public static final String KEY = "Spot Umap output";
 
 	private final SpotUmapFeatureSpec adaptedSpec;
 

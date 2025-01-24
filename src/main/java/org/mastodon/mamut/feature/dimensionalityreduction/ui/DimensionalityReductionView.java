@@ -117,6 +117,8 @@ public class DimensionalityReductionView extends JFrame
 
 	private static final String PANEL_CONSTRAINTS = "span, growx, pushx, growy, pushy, wrap";
 
+	private static final int MINIMUM_NUMBER_OF_DIMENSIONS = 1;
+
 	public DimensionalityReductionView( final Model model, final Context context )
 	{
 		this.featureModel = model.getFeatureModel();
@@ -320,7 +322,7 @@ public class DimensionalityReductionView extends JFrame
 	{
 		int maximumNumberOfDimensions = Math.max( 2, inputDimensionsPanel.getNumberOfFeatures() );
 		int numberOfDimensions = Math.min( controller.getCommonSettings().getNumberOfOutputDimensions(), maximumNumberOfDimensions );
-		return new SpinnerNumberModel( numberOfDimensions, CommonSettings.DEFAULT_NUMBER_OF_OUTPUT_DIMENSIONS,
+		return new SpinnerNumberModel( numberOfDimensions, MINIMUM_NUMBER_OF_DIMENSIONS,
 				maximumNumberOfDimensions, 1 );
 	}
 
