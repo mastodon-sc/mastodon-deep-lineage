@@ -1,0 +1,13 @@
+name: stardist
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - cudatoolkit=11.2
+  - cudnn=8.1.0
+  - pip
+  - pip:
+      - numpy<2
+      - tensorflow==2.10
+      - stardist==0.8.5
+      - appose
