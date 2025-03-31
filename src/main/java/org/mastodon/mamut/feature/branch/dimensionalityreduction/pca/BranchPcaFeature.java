@@ -2,7 +2,7 @@
  * #%L
  * mastodon-deep-lineage
  * %%
- * Copyright (C) 2022 - 2025 Stefan Hahmann
+ * Copyright (C) 2022 - 2024 Stefan Hahmann
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,54 +26,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.dimensionalityreduction.umap;
+package org.mastodon.mamut.feature.branch.dimensionalityreduction.pca;
+
+import java.util.List;
 
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeature;
+import org.mastodon.mamut.feature.dimensionalityreduction.pca.AbstractPcaFeature;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
 
-import java.util.List;
-
 /**
- * Represents a UMAP feature for BranchSpots in the Mastodon project.
+ * Represents a PCA feature for BranchSpots in the Mastodon project.
  * <br>
- * This feature is used to store the UMAP outputs for BranchSpots.
+ * This feature is used to store the PCA outputs for BranchSpots.
  * <br>
- * The UMAP outputs are stored in a list of {@link DoublePropertyMap}s. The size of the list is equal to the number of dimensions of the UMAP output.
+ * The PCA outputs are stored in a list of {@link DoublePropertyMap}s. The size of the list is equal to the number of dimensions of the PCA output.
  */
-public class BranchUmapFeature extends AbstractUmapFeature< BranchSpot >
+public class BranchPcaFeature extends AbstractPcaFeature< BranchSpot >
 {
-	public static final String KEY = "Branch UMAP output";
+	public static final String KEY = "Branch PCA outputs";
 
-	private final BranchSpotUmapFeatureSpec adaptedSpec;
+	private final BranchSpotPcaFeatureSpec adaptedSpec;
 
-	public static final BranchSpotUmapFeatureSpec GENERIC_SPEC = new BranchSpotUmapFeatureSpec();
+	public static final BranchSpotPcaFeatureSpec GENERIC_SPEC = new BranchSpotPcaFeatureSpec();
 
-	public BranchUmapFeature( final List< DoublePropertyMap< BranchSpot > > umapOutputMaps )
+	public BranchPcaFeature( final List< DoublePropertyMap< BranchSpot > > outputMaps )
 	{
-		super( umapOutputMaps );
+		super( outputMaps );
 		FeatureProjectionSpec[] projectionSpecs =
 				projectionMap.keySet().stream().map( FeatureProjectionKey::getSpec ).toArray( FeatureProjectionSpec[]::new );
-		this.adaptedSpec = new BranchSpotUmapFeatureSpec( projectionSpecs );
+		this.adaptedSpec = new BranchSpotPcaFeatureSpec( projectionSpecs );
 	}
 
 	@Plugin( type = FeatureSpec.class )
-	public static class BranchSpotUmapFeatureSpec extends FeatureSpec< BranchUmapFeature, BranchSpot >
+	public static class BranchSpotPcaFeatureSpec extends FeatureSpec< BranchPcaFeature, BranchSpot >
 	{
-		public BranchSpotUmapFeatureSpec()
+		public BranchSpotPcaFeatureSpec()
 		{
-			super( KEY, HELP_STRING, BranchUmapFeature.class, BranchSpot.class, Multiplicity.SINGLE );
+			super( KEY, HELP_STRING, BranchPcaFeature.class, BranchSpot.class, Multiplicity.SINGLE );
 		}
 
-		public BranchSpotUmapFeatureSpec( final FeatureProjectionSpec... projectionSpecs )
+		public BranchSpotPcaFeatureSpec( final FeatureProjectionSpec... projectionSpecs )
 		{
-			super( KEY, HELP_STRING, BranchUmapFeature.class, BranchSpot.class, Multiplicity.SINGLE, projectionSpecs );
+			super( KEY, HELP_STRING, BranchPcaFeature.class, BranchSpot.class, Multiplicity.SINGLE, projectionSpecs );
 		}
 	}
 
