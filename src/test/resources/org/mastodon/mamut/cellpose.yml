@@ -1,0 +1,14 @@
+name: cellpose
+channels:
+  - nvidia
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - cellpose[gui]
+      - appose
+  - pytorch
+  - pytorch-cuda=11.8
+  - numpy=2.0.2
