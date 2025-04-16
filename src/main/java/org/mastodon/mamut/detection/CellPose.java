@@ -33,6 +33,7 @@ public class CellPose extends Segmentation3D
 	{
 		return "import numpy as np" + "\n"
 				+ "from cellpose import models" + "\n"
+				+ "import appose" + "\n"
 				+ "import logging" + "\n\n"
 				+ "image_ndarray = image.ndarray()" + "\n"
 				+ "logging.info(\"Image shape: \", image.shape)" + "\n"
