@@ -34,11 +34,11 @@ public class DetectionDemo
 			// Display the first image in a new BDV instance
 			BdvStackSource< ? > bdvSource1 = BdvFunctions.show( img, "Original Image" );
 
-			// Add the second image as a second channel in the same BDV instance
+			// Add star dist segmentation as a second channel in the same BDV instance
 			if ( starDistSegmentation != null )
 				BdvFunctions.show( starDistSegmentation, "StarDist Segmentation", Bdv.options().addTo( bdvSource1.getBdvHandle() ) );
 
-			// Add the third image as a second channel in the same BDV instance
+			// Add cellpose segmentation as a second channel in the same BDV instance
 			if ( cellPoseSegmentation != null )
 				BdvFunctions.show( cellPoseSegmentation, "CellPose Segmentation", Bdv.options().addTo( bdvSource1.getBdvHandle() ) );
 		}
