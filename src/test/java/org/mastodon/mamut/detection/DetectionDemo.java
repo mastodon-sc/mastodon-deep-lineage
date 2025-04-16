@@ -1,5 +1,7 @@
 package org.mastodon.mamut.detection;
 
+import java.io.IOException;
+
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -19,11 +21,13 @@ public class DetectionDemo
 		try
 		{
 			long startTime = System.currentTimeMillis();
-			Img< FloatType > starDistSegmentation = Segmentation3D.segmentImage( img, Algorithm.STAR_DIST_3D, starDistModelPath );
+			StarDist3D starDist3D = new StarDist3D( starDistModelPath );
+			Img< FloatType > starDistSegmentation = starDist3D.segmentImage( img );
 			long endTime = System.currentTimeMillis();
 			System.out.println( "StarDist segmentation time: " + ( endTime - startTime ) + " ms" );
 			startTime = System.currentTimeMillis();
-			Img< FloatType > cellPoseSegmentation = Segmentation3D.segmentImage( img, Algorithm.CELL_POSE, null );
+			CellPose cellPose = new CellPose( CellPose.MODEL_TYPE.CYTO );
+			Img< FloatType > cellPoseSegmentation = cellPose.segmentImage( img );
 			endTime = System.currentTimeMillis();
 			System.out.println( "CellPose segmentation time: " + ( endTime - startTime ) + " ms" );
 
@@ -38,7 +42,7 @@ public class DetectionDemo
 			if ( cellPoseSegmentation != null )
 				BdvFunctions.show( cellPoseSegmentation, "CellPose Segmentation", Bdv.options().addTo( bdvSource1.getBdvHandle() ) );
 		}
-		catch ( InterruptedException e )
+		catch ( InterruptedException | IOException e )
 		{
 			System.err.println( e.getMessage() );
 		}

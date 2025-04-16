@@ -1,63 +1,37 @@
 package org.mastodon.mamut.detection;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.nio.file.Files;
-
-import org.apposed.appose.Appose;
-import org.apposed.appose.Environment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class StarDist3D
+public class StarDist3D extends Segmentation3D
 {
-	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+	private final String starDistModelPath;
 
-	// private constructor to prevent instantiation
-	private StarDist3D()
-	{}
-
-	static Environment setUpEnv() throws IOException
+	public StarDist3D( final String starDistModelPath )
 	{
-		Environment env;
-		try
-		{
-			File envFile = Files.createTempFile( "env", "yml" ).toFile();
-			try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
-			{
-				writer.write( "name: stardist\n" );
-				writer.write( "channels:\n" );
-				writer.write( "  - conda-forge\n" );
-				writer.write( "dependencies:\n" );
-				writer.write( "  - python=3.10\n" );
-				writer.write( "  - cudatoolkit=11.2\n" );
-				writer.write( "  - cudnn=8.1.0\n" );
-				writer.write( "  - numpy<1.24\n" );
-				writer.write( "  - pip\n" );
-				writer.write( "  - pip:\n" );
-				writer.write( "    - numpy<1.24\n" );
-				writer.write( "    - tensorflow==2.10\n" );
-				writer.write( "    - stardist==0.8.5\n" );
-				writer.write( "    - appose\n" );
-			}
-			envFile.deleteOnExit();
-			env = Appose.file( envFile, "environment.yml" ).logDebug().build();
-		}
-		catch ( IOException e )
-		{
-			logger.error( "Could not create temporary yml file: {}", e.getMessage(), e );
-			return null;
-		}
-		logger.info( "Python environment created" );
-		return env;
+		this.starDistModelPath = starDistModelPath;
 	}
 
-	static String generateScript( final String starDistModelPath )
+	@Override
+	String generateEnvFileContent()
 	{
-		String script = "import numpy as np" + "\n"
+		return "name: stardist\n"
+				+ "channels:\n"
+				+ "  - conda-forge\n"
+				+ "dependencies:\n"
+				+ "  - python=3.10\n"
+				+ "  - cudatoolkit=11.2\n"
+				+ "  - cudnn=8.1.0\n"
+				+ "  - numpy<1.24\n"
+				+ "  - pip\n"
+				+ "  - pip:\n"
+				+ "    - numpy<1.24\n"
+				+ "    - tensorflow==2.10\n"
+				+ "    - stardist==0.8.5\n"
+				+ "    - appose\n";
+	}
+
+	@Override
+	String generateScript()
+	{
+		return "import numpy as np" + "\n"
 				+ "import appose" + "\n"
 				+ "from csbdeep.utils import normalize" + "\n"
 				+ "from stardist.models import StarDist3D" + "\n"
@@ -76,7 +50,5 @@ public class StarDist3D
 				+ "shared = appose.NDArray(image.dtype, image.shape)" + "\n"
 				+ "shared.ndarray()[:] = label_image" + "\n"
 				+ "task.outputs['label_image'] = shared" + "\n";
-		logger.info( "Script: {}", script );
-		return script;
 	}
 }

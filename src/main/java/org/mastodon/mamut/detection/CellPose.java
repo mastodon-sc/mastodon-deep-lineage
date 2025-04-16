@@ -1,72 +1,42 @@
 package org.mastodon.mamut.detection;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.nio.file.Files;
-
-import org.apposed.appose.Appose;
-import org.apposed.appose.Environment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class CellPose
+public class CellPose extends Segmentation3D
 {
-	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+	private final MODEL_TYPE modelType;
 
-	// private constructor to prevent instantiation
-	private CellPose()
+	public CellPose( final MODEL_TYPE modelType )
 	{
-
+		this.modelType = modelType;
 	}
 
-	static Environment setUpEnv() throws IOException
+	@Override
+	String generateEnvFileContent()
 	{
-		Environment env;
-		try
-		{
-			File envFile = Files.createTempFile( "env", "yml" ).toFile();
-			try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
-			{
-				writer.write( "name: cellpose\n" );
-				writer.write( "channels:\n" );
-				writer.write( "  - nvidia\n" );
-				writer.write( "  - pytorch\n" );
-				writer.write( "  - conda-forge\n" );
-				writer.write( "dependencies:\n" );
-				writer.write( "  - python=3.10\n" );
-				writer.write( "  - pip\n" );
-				writer.write( "  - pip:\n" );
-				writer.write( "    - cellpose[gui]\n" );
-				writer.write( "    - appose\n" );
-				writer.write( "  - pytorch\n" );
-				writer.write( "  - pytorch-cuda=11.8\n" );
-				writer.write( "  - numpy=2.0.2\n" );
-			}
-			envFile.deleteOnExit();
-			env = Appose.file( envFile, "environment.yml" ).logDebug().build();
-		}
-		catch ( IOException e )
-		{
-			logger.error( "Could not create temporary yml file: {}", e.getMessage(), e );
-			return null;
-		}
-		logger.info( "Python environment created" );
-		return env;
+		return "name: cellpose\n"
+				+ "channels:\n"
+				+ "  - nvidia\n"
+				+ "  - pytorch\n"
+				+ "  - conda-forge\n"
+				+ "dependencies:\n"
+				+ "  - python=3.10\n"
+				+ "  - pip\n"
+				+ "  - pip:\n"
+				+ "    - cellpose[gui]\n"
+				+ "    - appose\n"
+				+ "  - pytorch\n"
+				+ "  - pytorch-cuda=11.8\n"
+				+ "  - numpy=2.0.2\n";
 	}
 
-	static String generateScript()
+	@Override
+	String generateScript()
 	{
-
-		String script = "import numpy as np" + "\n"
+		return "import numpy as np" + "\n"
 				+ "from cellpose import models" + "\n"
-				+ "import logging" + "\n"
+				+ "import logging" + "\n\n"
 				+ "narr = image.ndarray()" + "\n"
 				+ "print(\"Image shape: \", image.shape)" + "\n"
-				+ "model = models.Cellpose(model_type=model_type, gpu=True)" + "\n\n"
-				+ "logging.info(\"Starting Cellpose segmentation...\")" + "\n"
+				+ "model = models.Cellpose(model_type=" + modelType + ", gpu=True)" + "\n\n"
 				+ "logging.info(\"Starting Cellpose segmentation...\")" + "\n\n"
 				+ "segmentation, flows, styles, diams = model.eval(image, diameter=None, channels=[0, 0], do_3D=True, anisotropy=1.0, z_axis=0, normalize=True)"
 				+ "\n"
@@ -74,7 +44,59 @@ public class CellPose
 				+ "shared = appose.NDArray(image.dtype, image.shape)" + "\n"
 				+ "shared.ndarray()[:] = segmentation" + "\n"
 				+ "task.outputs['label_image'] = shared" + "\n";
-		logger.info( "Script: {}", script );
-		return script;
+	}
+
+	public enum MODEL_TYPE
+	{
+		CYTO3( "cyto3" ),
+		NUCLEI( "nuclei" ),
+		CYTO2_CP3( "cyto2_cp3" ),
+		TISSUENET_CP3( "tissuenet_cp3" ),
+		LIVECELL_CP3( "livecell_cp3" ),
+		YEAST_PHCP3( "yeast_PhC_cp3" ),
+		YEAST_BFCP3( "yeast_BF_cp3" ),
+		BACT_PHASE_CP3( "bact_phase_cp3" ),
+		BACT_FLUOR_CP3( "bact_fluor_cp3" ),
+		DEEPBACS_CP3( "deepbacs_cp3" ),
+		CYTO2( "cyto2" ),
+		CYTO( "cyto" ),
+		CPX( "CPx" ),
+		TRANSFORMER_CP3( "transformer_cp3" ),
+		NEURIPS_CELLPOSE_DEFAULT( "neurips_cellpose_default" ),
+		NEURIPS_CELLPOSE_TRANSFORMER( "neurips_cellpose_transformer" ),
+		NEURIPS_GRAYSCALE_CYTO2( "neurips_grayscale_cyto2" ),
+		CP( "CP" ),
+		CPX2( "CPx" ),
+		TN1( "TN1" ),
+		TN2( "TN2" ),
+		TN3( "TN3" ),
+		LC1( "LC1" ),
+		LC2( "LC2" ),
+		LC3( "LC3" ),
+		LC4( "LC4" );
+
+		private final String modelName;
+
+		MODEL_TYPE( final String modelName )
+		{
+			this.modelName = modelName;
+		}
+
+		public String getModelName()
+		{
+			return modelName;
+		}
+
+		public static MODEL_TYPE fromString( final String modelName )
+		{
+			for ( MODEL_TYPE type : MODEL_TYPE.values() )
+			{
+				if ( type.modelName.equalsIgnoreCase( modelName ) )
+				{
+					return type;
+				}
+			}
+			throw new IllegalArgumentException( "No enum constant for model name: " + modelName );
+		}
 	}
 }

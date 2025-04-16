@@ -1,7 +1,13 @@
 package org.mastodon.mamut.detection;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,42 +16,53 @@ import net.imglib2.appose.ShmImg;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 
+import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.NDArray;
 import org.apposed.appose.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Segmentation3D
+public abstract class Segmentation3D
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	// private constructor to prevent instantiation
-	private Segmentation3D()
-	{}
+	abstract String generateEnvFileContent();
 
-	public static Img< FloatType > segmentImage( final Img< FloatType > inputImage, final Algorithm algorithm, final String modelPath )
-			throws InterruptedException
+	abstract String generateScript();
+
+	private Environment setUpEnv()
 	{
-		Img< FloatType > sharedMemoryImage = ShmImg.copyOf( inputImage );
+		logger.info( "Setting up environment" );
 		Environment environment;
 		try
 		{
-			switch ( algorithm )
+			File envFile = Files.createTempFile( "env", "yml" ).toFile();
+			String content = generateEnvFileContent();
+			try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
 			{
-			case STAR_DIST_3D:
-				environment = StarDist3D.setUpEnv();
-				break;
-			case CELL_POSE:
-				environment = CellPose.setUpEnv();
-				break;
-			default:
-				throw new IllegalArgumentException( "Unknown algorithm: " + algorithm );
+				writer.write( content );
 			}
+			envFile.deleteOnExit();
+			logEnvFile( envFile );
+			environment = Appose.file( envFile, "environment.yml" ).logDebug().build();
 		}
 		catch ( IOException e )
 		{
-			logger.error( "Could not create python environment for segmentation: {}", e.getMessage(), e );
+			logger.error( "Could not create temporary yml file: {}", e.getMessage(), e );
+			return null;
+		}
+		logger.info( "Python environment created" );
+		return environment;
+	}
+
+	public Img< FloatType > segmentImage( final Img< FloatType > inputImage ) throws InterruptedException, IOException
+	{
+		Img< FloatType > sharedMemoryImage = ShmImg.copyOf( inputImage );
+		Environment environment = setUpEnv();
+		if ( environment == null )
+		{
+			logger.error( "Could not create python environment" );
 			return null;
 		}
 		try (Service python = environment.python())
@@ -54,20 +71,11 @@ public class Segmentation3D
 			final Map< String, Object > inputs = new HashMap<>();
 			inputs.put( "image", NDArrays.asNDArray( sharedMemoryImage ) );
 
-			String script;
-			switch ( algorithm )
-			{
-			case STAR_DIST_3D:
-				script = StarDist3D.generateScript( modelPath );
-				break;
-			case CELL_POSE:
-				script = CellPose.generateScript();
-				break;
-			default:
-				throw new IllegalArgumentException( "Unknown algorithm: " + algorithm );
-			}
+			String script = generateScript();
+			logger.info( "Script: {}", script );
 			// Run the script!
 			Service.Task task = python.task( script, inputs );
+			python.debug( logger::info );
 			task.waitFor();
 			// Verify that it worked.
 			if ( task.status != Service.TaskStatus.COMPLETE )
@@ -81,10 +89,23 @@ public class Segmentation3D
 		{
 			logger.error( "Could not create python service: {}", e.getMessage(), e );
 		}
-		catch ( InterruptedException e )
-		{
-			throw e;
-		}
 		return null;
+	}
+
+	private static void logEnvFile( final File envFile )
+	{
+		// Read the file to check its contents
+		try (BufferedReader reader = new BufferedReader( new FileReader( envFile ) ))
+		{
+			String line;
+			while ( ( line = reader.readLine() ) != null )
+			{
+				logger.info( line );
+			}
+		}
+		catch ( IOException e )
+		{
+			logger.debug( "Error reading env file: {}", e.getMessage() );
+		}
 	}
 }
