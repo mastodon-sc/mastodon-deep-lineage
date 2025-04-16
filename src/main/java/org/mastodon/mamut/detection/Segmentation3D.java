@@ -72,7 +72,7 @@ public abstract class Segmentation3D
 			inputs.put( "image", NDArrays.asNDArray( sharedMemoryImage ) );
 
 			String script = generateScript();
-			logger.info( "Script: {}", script );
+			logger.info( "Script: \n{}", script );
 			// Run the script!
 			Service.Task task = python.task( script, inputs );
 			python.debug( logger::info );
@@ -98,10 +98,12 @@ public abstract class Segmentation3D
 		try (BufferedReader reader = new BufferedReader( new FileReader( envFile ) ))
 		{
 			String line;
+			String content = "";
 			while ( ( line = reader.readLine() ) != null )
 			{
-				logger.info( line );
+				content += line + "\n";
 			}
+			logger.info( "Environment file content:\n{}", content );
 		}
 		catch ( IOException e )
 		{
