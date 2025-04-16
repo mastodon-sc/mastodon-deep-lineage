@@ -36,7 +36,7 @@ public class CellPose extends Segmentation3D
 				+ "import logging" + "\n\n"
 				+ "narr = image.ndarray()" + "\n"
 				+ "print(\"Image shape: \", image.shape)" + "\n"
-				+ "model = models.Cellpose(model_type=" + modelType + ", gpu=True)" + "\n\n"
+				+ "model = models.Cellpose(model_type=" + modelType.getModelName() + ", gpu=True)" + "\n\n"
 				+ "logging.info(\"Starting Cellpose segmentation...\")" + "\n\n"
 				+ "segmentation, flows, styles, diams = model.eval(image, diameter=None, channels=[0, 0], do_3D=True, anisotropy=1.0, z_axis=0, normalize=True)"
 				+ "\n"
