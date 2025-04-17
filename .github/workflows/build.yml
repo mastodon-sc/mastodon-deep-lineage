@@ -22,6 +22,7 @@ jobs:
           java-version: '8'
           distribution: 'zulu'
           cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
       - name: Set up CI environment
         run: .github/setup.sh
       - name: Execute the build

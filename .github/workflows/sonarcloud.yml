@@ -45,7 +45,7 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
           cache: 'maven'
-
+          cache-dependency-path: '**/pom.xml'
       - name: Jacoco Report and SonarCloud Analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information
