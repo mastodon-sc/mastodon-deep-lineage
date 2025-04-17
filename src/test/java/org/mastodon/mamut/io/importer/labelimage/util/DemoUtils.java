@@ -45,7 +45,7 @@ import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.io.ProjectSaver;
-import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
+import org.mastodon.mamut.util.LabelImageUtils;
 import org.mastodon.mamut.io.importer.labelimage.math.CovarianceMatrix;
 import org.mastodon.mamut.io.importer.labelimage.math.MeansVector;
 import org.mastodon.mamut.io.project.MamutProject;

@@ -30,7 +30,7 @@ package org.mastodon.mamut.io.importer.labelimage.ui;
 
 import net.imagej.ImgPlus;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
+import org.mastodon.mamut.util.LabelImageUtils;
 import org.scijava.ItemIO;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;

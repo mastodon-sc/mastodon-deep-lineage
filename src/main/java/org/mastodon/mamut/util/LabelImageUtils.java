@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.io.importer.labelimage;
+package org.mastodon.mamut.util;
 
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
@@ -48,7 +48,6 @@ import org.mastodon.mamut.io.importer.labelimage.math.MeansVector;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.app.StatusService;
 import org.slf4j.Logger;
