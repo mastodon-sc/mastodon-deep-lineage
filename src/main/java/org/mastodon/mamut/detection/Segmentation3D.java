@@ -89,6 +89,10 @@ public abstract class Segmentation3D
 		{
 			logger.error( "Could not create python service: {}", e.getMessage(), e );
 		}
+		catch ( InterruptedException e )
+		{
+			logger.error( "Python interrupted: {}", e.getMessage(), e );
+		}
 		return null;
 	}
 
