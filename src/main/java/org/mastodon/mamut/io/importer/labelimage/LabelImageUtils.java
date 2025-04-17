@@ -199,58 +199,67 @@ public class LabelImageUtils
 			final AffineTransform3D transform, final double scaleFactor )
 	{
 		int count = 0;
-		// combine the sums into mean and covariance matrices, then add the corresponding spot
-		for ( final Label label : labels )
+		final ReentrantReadWriteLock lock = graph.getLock();
+		lock.writeLock().lock();
+		try
 		{
-			// skip labels that are not present in the image or do not have at least 1 pixel
-			if ( label == null || label.numPixels < 1 )
-				continue;
-			double[] mean = label.covariances.getMeans();
-			double[][] cov;
-			if ( label.numPixels == 1 )
-				cov = new double[ mean.length ][ mean.length ];
-			else
-				cov = label.covariances.get();
-			for ( int i = 0; i < cov.length; i++ )
-				cov[ i ][ i ] += SINGLE_PIXEL_COVARIANCE;
-			if ( mean.length == 2 ) // NB: 2D case, add a third dimension with 0 covariance
+			// combine the sums into mean and covariance matrices, then add the corresponding spot
+			for ( final Label label : labels )
 			{
-				mean = new double[] { mean[ 0 ], mean[ 1 ], 0 };
-				cov = new double[][] {
-						{ cov[ 0 ][ 0 ], cov[ 0 ][ 1 ], 0 },
-						{ cov[ 1 ][ 0 ], cov[ 1 ][ 1 ], 0 },
-						{ 0, 0, 1 }
+				// skip labels that are not present in the image or do not have at least 1 pixel
+				if ( label == null || label.numPixels < 1 )
+					continue;
+				double[] mean = label.covariances.getMeans();
+				double[][] cov;
+				if ( label.numPixels == 1 )
+					cov = new double[ mean.length ][ mean.length ];
+				else
+					cov = label.covariances.get();
+				for ( int i = 0; i < cov.length; i++ )
+					cov[ i ][ i ] += SINGLE_PIXEL_COVARIANCE;
+				if ( mean.length == 2 ) // NB: 2D case, add a third dimension with 0 covariance
+				{
+					mean = new double[] { mean[ 0 ], mean[ 1 ], 0 };
+					cov = new double[][] {
+							{ cov[ 0 ][ 0 ], cov[ 0 ][ 1 ], 0 },
+							{ cov[ 1 ][ 0 ], cov[ 1 ][ 1 ], 0 },
+							{ 0, 0, 1 }
+					};
+				}
+				// transform ellipsoid center to mastodon coordinate system
+				transform.apply( mean, mean );
+				// scale ellipsoid axes to desired factor
+				scale( cov, scaleFactor );
+
+				// transform ellipsoid axes to mastodon coordinate system
+				double[][] transformMatrix = new double[ 3 ][ 4 ];
+				transform.toMatrix( transformMatrix );
+				double[][] matrix3x3 = {
+						{ transformMatrix[ 0 ][ 0 ], transformMatrix[ 0 ][ 1 ], transformMatrix[ 0 ][ 2 ] },
+						{ transformMatrix[ 1 ][ 0 ], transformMatrix[ 1 ][ 1 ], transformMatrix[ 1 ][ 2 ] },
+						{ transformMatrix[ 2 ][ 0 ], transformMatrix[ 2 ][ 1 ], transformMatrix[ 2 ][ 2 ] }
 				};
-			}
-			// transform ellipsoid center to mastodon coordinate system
-			transform.apply( mean, mean );
-			// scale ellipsoid axes to desired factor
-			scale( cov, scaleFactor );
+				double[][] temp = new double[ 3 ][ 3 ];
+				double[][] covTransformed = new double[ 3 ][ 3 ];
+				LinAlgHelpers.mult( matrix3x3, cov, temp );
+				LinAlgHelpers.multABT( temp, matrix3x3, covTransformed );
 
-			// transform ellipsoid axes to mastodon coordinate system
-			double[][] transformMatrix = new double[ 3 ][ 4 ];
-			transform.toMatrix( transformMatrix );
-			double[][] matrix3x3 = {
-					{ transformMatrix[ 0 ][ 0 ], transformMatrix[ 0 ][ 1 ], transformMatrix[ 0 ][ 2 ] },
-					{ transformMatrix[ 1 ][ 0 ], transformMatrix[ 1 ][ 1 ], transformMatrix[ 1 ][ 2 ] },
-					{ transformMatrix[ 2 ][ 0 ], transformMatrix[ 2 ][ 1 ], transformMatrix[ 2 ][ 2 ] }
-			};
-			double[][] temp = new double[ 3 ][ 3 ];
-			double[][] covTransformed = new double[ 3 ][ 3 ];
-			LinAlgHelpers.mult( matrix3x3, cov, temp );
-			LinAlgHelpers.multABT( temp, matrix3x3, covTransformed );
-
-			try
-			{
-				Spot spot = graph.addVertex().init( frameId, mean, covTransformed );
-				spot.setLabel( String.valueOf( label.value ) );
-				count++;
+				try
+				{
+					Spot spot = graph.addVertex().init( frameId, mean, covTransformed );
+					spot.setLabel( String.valueOf( label.value ) );
+					count++;
+				}
+				catch ( Exception e )
+				{
+					logger.trace( "Could not add vertex to graph. Mean: {}, Covariance: {}", Arrays.toString( mean ),
+							Arrays.deepToString( covTransformed ) );
+				}
 			}
-			catch ( Exception e )
-			{
-				logger.trace( "Could not add vertex to graph. Mean: {}, Covariance: {}", Arrays.toString( mean ),
-						Arrays.deepToString( covTransformed ) );
-			}
+		}
+		finally
+		{
+			lock.writeLock().unlock();
 		}
 		logger.debug( "Added {} spot(s) to frame {}", count, frameId );
 		return count;
