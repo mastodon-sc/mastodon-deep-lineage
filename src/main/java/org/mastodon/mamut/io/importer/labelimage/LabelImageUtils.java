@@ -132,7 +132,7 @@ public class LabelImageUtils
 	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @return the number of spots created.
 	 */
-	private static int createSpotsForFrame( final ModelGraph graph, final RandomAccessibleInterval< RealType< ? > > frame,
+	private static int createSpotsForFrame( final ModelGraph graph, final RandomAccessibleInterval< ? extends RealType< ? > > frame,
 			final int frameId, final AffineTransform3D transform, final double scaleFactor )
 	{
 		logger.debug( "Computing mean, covariance of all labels at frame {}", frameId );
@@ -164,11 +164,11 @@ public class LabelImageUtils
 	 * @return A pair of values (min, max) that represent the minimum and maximum pixel values in the image
 	 * @author Noam Dori
 	 */
-	private static Pair< Integer, Integer > getPixelValueInterval( final RandomAccessibleInterval< RealType< ? > > frame )
+	private static Pair< Integer, Integer > getPixelValueInterval( final RandomAccessibleInterval< ? extends RealType< ? > > frame )
 	{
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
-		Cursor< RealType< ? > > cursor = Views.iterable( frame ).cursor();
+		Cursor< ? extends RealType< ? > > cursor = Views.iterable( frame ).cursor();
 		while ( cursor.hasNext() )
 		{
 			int val = ( int ) cursor.next().getRealDouble();
@@ -262,12 +262,12 @@ public class LabelImageUtils
 	 * @param minimumLabelValue the minimum value of the pixels in the image.
 	 * @param numLabels the number of labels in the frame.
 	 */
-	private static Label[] extractLabelsFromFrame( final RandomAccessibleInterval< RealType< ? > > frame, int minimumLabelValue,
+	private static Label[] extractLabelsFromFrame( final RandomAccessibleInterval< ? extends RealType< ? > > frame, int minimumLabelValue,
 			int numLabels )
 	{
 		Label[] labels = new Label[ numLabels ];
 		// read all pixels of the picture to sum everything up
-		Cursor< RealType< ? > > cursor = Views.iterable( frame ).cursor();
+		Cursor< ? extends RealType< ? > > cursor = Views.iterable( frame ).cursor();
 		int[] pixel = new int[ cursor.numDimensions() ];
 		while ( cursor.hasNext() )
 		{
