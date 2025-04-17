@@ -11,10 +11,12 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.appose.NDArrays;
 import net.imglib2.appose.ShmImg;
 import net.imglib2.img.Img;
-import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
 
 import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
@@ -56,9 +58,9 @@ public abstract class Segmentation3D
 		return environment;
 	}
 
-	public Img< FloatType > segmentImage( final Img< FloatType > inputImage ) throws InterruptedException, IOException
+	public < T extends NativeType< T > & RealType< T > > Img< T > segmentImage( final RandomAccessibleInterval< T > inputImage )
 	{
-		Img< FloatType > sharedMemoryImage = ShmImg.copyOf( inputImage );
+		Img< T > sharedMemoryImage = ShmImg.copyOf( inputImage );
 		Environment environment = setUpEnv();
 		if ( environment == null )
 		{
