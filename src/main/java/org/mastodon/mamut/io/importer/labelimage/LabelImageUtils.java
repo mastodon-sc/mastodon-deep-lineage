@@ -201,6 +201,7 @@ public class LabelImageUtils
 		int count = 0;
 		final ReentrantReadWriteLock lock = graph.getLock();
 		lock.writeLock().lock();
+		final Spot ref = graph.vertexRef();
 		try
 		{
 			// combine the sums into mean and covariance matrices, then add the corresponding spot
@@ -246,7 +247,7 @@ public class LabelImageUtils
 
 				try
 				{
-					Spot spot = graph.addVertex().init( frameId, mean, covTransformed );
+					Spot spot = graph.addVertex( ref ).init( frameId, mean, covTransformed );
 					spot.setLabel( String.valueOf( label.value ) );
 					count++;
 				}
@@ -260,6 +261,7 @@ public class LabelImageUtils
 		finally
 		{
 			lock.writeLock().unlock();
+			graph.releaseRef( ref );
 		}
 		logger.debug( "Added {} spot(s) to frame {}", count, frameId );
 		return count;
