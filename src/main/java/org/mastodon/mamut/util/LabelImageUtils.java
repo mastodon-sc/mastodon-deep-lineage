@@ -167,7 +167,7 @@ public class LabelImageUtils
 	{
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
-		Cursor< ? extends RealType< ? > > cursor = Views.iterable( frame ).cursor();
+		Cursor< ? extends RealType< ? > > cursor = frame.cursor();
 		while ( cursor.hasNext() )
 		{
 			int val = ( int ) cursor.next().getRealDouble();
@@ -277,7 +277,7 @@ public class LabelImageUtils
 	{
 		Label[] labels = new Label[ numLabels ];
 		// read all pixels of the picture to sum everything up
-		Cursor< ? extends RealType< ? > > cursor = Views.iterable( frame ).cursor();
+		Cursor< ? extends RealType< ? > > cursor = frame.cursor();
 		int[] pixel = new int[ cursor.numDimensions() ];
 		while ( cursor.hasNext() )
 		{
