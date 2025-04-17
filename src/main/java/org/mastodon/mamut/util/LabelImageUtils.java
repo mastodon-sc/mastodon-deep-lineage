@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.io.importer.labelimage;
+package org.mastodon.mamut.util;
 
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
@@ -48,7 +48,6 @@ import org.mastodon.mamut.io.importer.labelimage.math.MeansVector;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.util.LineageTreeUtils;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.scijava.app.StatusService;
 import org.slf4j.Logger;
@@ -132,7 +131,7 @@ public class LabelImageUtils
 	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @return the number of spots created.
 	 */
-	private static int createSpotsForFrame( final ModelGraph graph, final RandomAccessibleInterval< RealType< ? > > frame,
+	public static int createSpotsForFrame( final ModelGraph graph, final RandomAccessibleInterval< ? extends RealType< ? > > frame,
 			final int frameId, final AffineTransform3D transform, final double scaleFactor )
 	{
 		logger.debug( "Computing mean, covariance of all labels at frame {}", frameId );
@@ -164,11 +163,11 @@ public class LabelImageUtils
 	 * @return A pair of values (min, max) that represent the minimum and maximum pixel values in the image
 	 * @author Noam Dori
 	 */
-	private static Pair< Integer, Integer > getPixelValueInterval( final RandomAccessibleInterval< RealType< ? > > frame )
+	private static Pair< Integer, Integer > getPixelValueInterval( final RandomAccessibleInterval< ? extends RealType< ? > > frame )
 	{
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
-		Cursor< RealType< ? > > cursor = Views.iterable( frame ).cursor();
+		Cursor< ? extends RealType< ? > > cursor = frame.cursor();
 		while ( cursor.hasNext() )
 		{
 			int val = ( int ) cursor.next().getRealDouble();
@@ -199,58 +198,69 @@ public class LabelImageUtils
 			final AffineTransform3D transform, final double scaleFactor )
 	{
 		int count = 0;
-		// combine the sums into mean and covariance matrices, then add the corresponding spot
-		for ( final Label label : labels )
+		final ReentrantReadWriteLock lock = graph.getLock();
+		lock.writeLock().lock();
+		final Spot ref = graph.vertexRef();
+		try
 		{
-			// skip labels that are not present in the image or do not have at least 1 pixel
-			if ( label == null || label.numPixels < 1 )
-				continue;
-			double[] mean = label.covariances.getMeans();
-			double[][] cov;
-			if ( label.numPixels == 1 )
-				cov = new double[ mean.length ][ mean.length ];
-			else
-				cov = label.covariances.get();
-			for ( int i = 0; i < cov.length; i++ )
-				cov[ i ][ i ] += SINGLE_PIXEL_COVARIANCE;
-			if ( mean.length == 2 ) // NB: 2D case, add a third dimension with 0 covariance
+			// combine the sums into mean and covariance matrices, then add the corresponding spot
+			for ( final Label label : labels )
 			{
-				mean = new double[] { mean[ 0 ], mean[ 1 ], 0 };
-				cov = new double[][] {
-						{ cov[ 0 ][ 0 ], cov[ 0 ][ 1 ], 0 },
-						{ cov[ 1 ][ 0 ], cov[ 1 ][ 1 ], 0 },
-						{ 0, 0, 1 }
+				// skip labels that are not present in the image or do not have at least 1 pixel
+				if ( label == null || label.numPixels < 1 )
+					continue;
+				double[] mean = label.covariances.getMeans();
+				double[][] cov;
+				if ( label.numPixels == 1 )
+					cov = new double[ mean.length ][ mean.length ];
+				else
+					cov = label.covariances.get();
+				for ( int i = 0; i < cov.length; i++ )
+					cov[ i ][ i ] += SINGLE_PIXEL_COVARIANCE;
+				if ( mean.length == 2 ) // NB: 2D case, add a third dimension with 0 covariance
+				{
+					mean = new double[] { mean[ 0 ], mean[ 1 ], 0 };
+					cov = new double[][] {
+							{ cov[ 0 ][ 0 ], cov[ 0 ][ 1 ], 0 },
+							{ cov[ 1 ][ 0 ], cov[ 1 ][ 1 ], 0 },
+							{ 0, 0, 1 }
+					};
+				}
+				// transform ellipsoid center to mastodon coordinate system
+				transform.apply( mean, mean );
+				// scale ellipsoid axes to desired factor
+				scale( cov, scaleFactor );
+
+				// transform ellipsoid axes to mastodon coordinate system
+				double[][] transformMatrix = new double[ 3 ][ 4 ];
+				transform.toMatrix( transformMatrix );
+				double[][] matrix3x3 = {
+						{ transformMatrix[ 0 ][ 0 ], transformMatrix[ 0 ][ 1 ], transformMatrix[ 0 ][ 2 ] },
+						{ transformMatrix[ 1 ][ 0 ], transformMatrix[ 1 ][ 1 ], transformMatrix[ 1 ][ 2 ] },
+						{ transformMatrix[ 2 ][ 0 ], transformMatrix[ 2 ][ 1 ], transformMatrix[ 2 ][ 2 ] }
 				};
-			}
-			// transform ellipsoid center to mastodon coordinate system
-			transform.apply( mean, mean );
-			// scale ellipsoid axes to desired factor
-			scale( cov, scaleFactor );
+				double[][] temp = new double[ 3 ][ 3 ];
+				double[][] covTransformed = new double[ 3 ][ 3 ];
+				LinAlgHelpers.mult( matrix3x3, cov, temp );
+				LinAlgHelpers.multABT( temp, matrix3x3, covTransformed );
 
-			// transform ellipsoid axes to mastodon coordinate system
-			double[][] transformMatrix = new double[ 3 ][ 4 ];
-			transform.toMatrix( transformMatrix );
-			double[][] matrix3x3 = {
-					{ transformMatrix[ 0 ][ 0 ], transformMatrix[ 0 ][ 1 ], transformMatrix[ 0 ][ 2 ] },
-					{ transformMatrix[ 1 ][ 0 ], transformMatrix[ 1 ][ 1 ], transformMatrix[ 1 ][ 2 ] },
-					{ transformMatrix[ 2 ][ 0 ], transformMatrix[ 2 ][ 1 ], transformMatrix[ 2 ][ 2 ] }
-			};
-			double[][] temp = new double[ 3 ][ 3 ];
-			double[][] covTransformed = new double[ 3 ][ 3 ];
-			LinAlgHelpers.mult( matrix3x3, cov, temp );
-			LinAlgHelpers.multABT( temp, matrix3x3, covTransformed );
-
-			try
-			{
-				Spot spot = graph.addVertex().init( frameId, mean, covTransformed );
-				spot.setLabel( String.valueOf( label.value ) );
-				count++;
+				try
+				{
+					Spot spot = graph.addVertex( ref ).init( frameId, mean, covTransformed );
+					spot.setLabel( String.valueOf( label.value ) );
+					count++;
+				}
+				catch ( Exception e )
+				{
+					logger.trace( "Could not add vertex to graph. Mean: {}, Covariance: {}", Arrays.toString( mean ),
+							Arrays.deepToString( covTransformed ) );
+				}
 			}
-			catch ( Exception e )
-			{
-				logger.trace( "Could not add vertex to graph. Mean: {}, Covariance: {}", Arrays.toString( mean ),
-						Arrays.deepToString( covTransformed ) );
-			}
+		}
+		finally
+		{
+			lock.writeLock().unlock();
+			graph.releaseRef( ref );
 		}
 		logger.debug( "Added {} spot(s) to frame {}", count, frameId );
 		return count;
@@ -262,12 +272,12 @@ public class LabelImageUtils
 	 * @param minimumLabelValue the minimum value of the pixels in the image.
 	 * @param numLabels the number of labels in the frame.
 	 */
-	private static Label[] extractLabelsFromFrame( final RandomAccessibleInterval< RealType< ? > > frame, int minimumLabelValue,
+	private static Label[] extractLabelsFromFrame( final RandomAccessibleInterval< ? extends RealType< ? > > frame, int minimumLabelValue,
 			int numLabels )
 	{
 		Label[] labels = new Label[ numLabels ];
 		// read all pixels of the picture to sum everything up
-		Cursor< RealType< ? > > cursor = Views.iterable( frame ).cursor();
+		Cursor< ? extends RealType< ? > > cursor = frame.cursor();
 		int[] pixel = new int[ cursor.numDimensions() ];
 		while ( cursor.hasNext() )
 		{

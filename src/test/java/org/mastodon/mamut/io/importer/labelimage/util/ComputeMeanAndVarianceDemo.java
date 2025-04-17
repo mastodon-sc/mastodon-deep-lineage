@@ -38,7 +38,7 @@ import net.imglib2.util.LinAlgHelpers;
 import net.imglib2.util.Pair;
 import net.imglib2.util.StopWatch;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
+import org.mastodon.mamut.util.LabelImageUtils;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
 

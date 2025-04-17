@@ -34,7 +34,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.real.FloatType;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.io.importer.labelimage.LabelImageUtils;
+import org.mastodon.mamut.util.LabelImageUtils;
 import org.mastodon.mamut.model.Model;
 import org.scijava.Context;
 
