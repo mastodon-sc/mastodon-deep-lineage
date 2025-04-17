@@ -132,7 +132,7 @@ public class LabelImageUtils
 	 * @param scaleFactor the scale factor to use for the ellipsoid. 1 means 2.2σ and is the default.
 	 * @return the number of spots created.
 	 */
-	private static int createSpotsForFrame( final ModelGraph graph, final RandomAccessibleInterval< ? extends RealType< ? > > frame,
+	public static int createSpotsForFrame( final ModelGraph graph, final RandomAccessibleInterval< ? extends RealType< ? > > frame,
 			final int frameId, final AffineTransform3D transform, final double scaleFactor )
 	{
 		logger.debug( "Computing mean, covariance of all labels at frame {}", frameId );
