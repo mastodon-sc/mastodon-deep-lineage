@@ -16,7 +16,6 @@ import net.imglib2.appose.NDArrays;
 import net.imglib2.appose.ShmImg;
 import net.imglib2.img.Img;
 import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
 
 import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
@@ -58,7 +57,7 @@ public abstract class Segmentation3D
 		return environment;
 	}
 
-	public < T extends NativeType< T > & RealType< T > > Img< T > segmentImage( final RandomAccessibleInterval< T > inputImage )
+	public < T extends NativeType< T > > Img< T > segmentImage( final RandomAccessibleInterval< T > inputImage )
 	{
 		Img< T > sharedMemoryImage = ShmImg.copyOf( inputImage );
 		Environment environment = setUpEnv();
