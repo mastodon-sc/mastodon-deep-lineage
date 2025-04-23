@@ -1,10 +1,10 @@
 package org.mastodon.mamut.detection;
 
-public class CellPose extends Segmentation3D
+public class Cellpose extends Segmentation3D
 {
 	private final MODEL_TYPE modelType;
 
-	public CellPose( final MODEL_TYPE modelType )
+	public Cellpose( final MODEL_TYPE modelType )
 	{
 		this.modelType = modelType;
 	}
