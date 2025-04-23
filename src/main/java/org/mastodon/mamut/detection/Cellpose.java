@@ -88,6 +88,12 @@ public class Cellpose extends Segmentation3D
 			return modelName;
 		}
 
+		@Override
+		public String toString()
+		{
+			return modelName;
+		}
+
 		public static MODEL_TYPE fromString( final String modelName )
 		{
 			for ( MODEL_TYPE type : MODEL_TYPE.values() )
