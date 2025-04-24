@@ -10,6 +10,8 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.appose.NDArrays;
@@ -22,6 +24,7 @@ import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.NDArray;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +90,12 @@ public abstract class Segmentation3D
 			Service.Task task = python.task( script, inputs );
 			stopWatch.split();
 			logger.info( "Time until python task: {} ms", stopWatch.formatSplitTime() );
+			task.listen( taskEvent -> {
+				if ( Objects.requireNonNull( taskEvent.responseType ) == Service.ResponseType.UPDATE )
+				{
+					logger.info( "Python task update: {}", task.message );
+				}
+			} );
 			task.waitFor();
 			// Verify that it worked.
 			if ( task.status != Service.TaskStatus.COMPLETE )
