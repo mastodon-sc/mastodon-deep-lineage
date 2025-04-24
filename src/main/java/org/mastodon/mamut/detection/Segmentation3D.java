@@ -17,6 +17,7 @@ import net.imglib2.appose.ShmImg;
 import net.imglib2.img.Img;
 import net.imglib2.type.NativeType;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.NDArray;
@@ -59,8 +60,14 @@ public abstract class Segmentation3D
 
 	public < T extends NativeType< T > > Img< T > segmentImage( final RandomAccessibleInterval< T > inputImage )
 	{
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
 		Img< T > sharedMemoryImage = ShmImg.copyOf( inputImage );
+		stopWatch.split();
+		logger.info( "Time until copy image to shared memory: {} ms", stopWatch.formatSplitTime() );
 		Environment environment = setUpEnv();
+		stopWatch.split();
+		logger.info( "Time until set up environment: {} ms", stopWatch.formatSplitTime() );
 		if ( environment == null )
 		{
 			logger.error( "Could not create python environment" );
@@ -71,17 +78,21 @@ public abstract class Segmentation3D
 			// Store the image into a map of inputs to the Python script.
 			final Map< String, Object > inputs = new HashMap<>();
 			inputs.put( "image", NDArrays.asNDArray( sharedMemoryImage ) );
-
+			stopWatch.split();
+			logger.info( "Time until create inputs: {} ms", stopWatch.formatSplitTime() );
 			String script = generateScript();
-			logger.info( "Script: \n{}", script );
+			logger.trace( "Script: \n{}", script );
+			python.debug( logger::info );
 			// Run the script!
 			Service.Task task = python.task( script, inputs );
-			python.debug( System.out::println );
+			stopWatch.split();
+			logger.info( "Time until python task: {} ms", stopWatch.formatSplitTime() );
 			task.waitFor();
 			// Verify that it worked.
 			if ( task.status != Service.TaskStatus.COMPLETE )
 				throw new PythonRuntimeException( "Python task failed with error: " + task.error );
-			logger.info( "Python task completed." );
+			stopWatch.stop();
+			logger.info( "Python task completed. Total time {} ms", stopWatch.formatTime() );
 			NDArray labelImageArray = ( NDArray ) task.outputs.get( "label_image" );
 			return new ShmImg<>( labelImageArray );
 		}
@@ -102,12 +113,12 @@ public abstract class Segmentation3D
 		try (BufferedReader reader = new BufferedReader( new FileReader( envFile ) ))
 		{
 			String line;
-			String content = "";
+			StringBuilder content = new StringBuilder();
 			while ( ( line = reader.readLine() ) != null )
 			{
-				content += line + "\n";
+				content.append( line ).append( "\n" );
 			}
-			logger.info( "Environment file content:\n{}", content );
+			logger.trace( "Environment file content:\n{}", content );
 		}
 		catch ( IOException e )
 		{
