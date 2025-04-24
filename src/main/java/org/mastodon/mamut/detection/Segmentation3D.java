@@ -76,13 +76,12 @@ public abstract class Segmentation3D
 			logger.info( "Script: \n{}", script );
 			// Run the script!
 			Service.Task task = python.task( script, inputs );
-			python.debug( logger::info );
+			python.debug( System.out::println );
 			task.waitFor();
 			// Verify that it worked.
 			if ( task.status != Service.TaskStatus.COMPLETE )
 				throw new PythonRuntimeException( "Python task failed with error: " + task.error );
-
-			logger.info( "Python task completed" );
+			logger.info( "Python task completed." );
 			NDArray labelImageArray = ( NDArray ) task.outputs.get( "label_image" );
 			return new ShmImg<>( labelImageArray );
 		}
