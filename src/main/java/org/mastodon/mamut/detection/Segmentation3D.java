@@ -38,7 +38,6 @@ public abstract class Segmentation3D
 
 	private Environment setUpEnv()
 	{
-		logger.info( "Setting up environment" );
 		Environment environment;
 		try
 		{
@@ -57,7 +56,6 @@ public abstract class Segmentation3D
 			logger.error( "Could not create temporary yml file: {}", e.getMessage(), e );
 			return null;
 		}
-		logger.info( "Python environment created" );
 		return environment;
 	}
 
@@ -67,10 +65,10 @@ public abstract class Segmentation3D
 		stopWatch.start();
 		Img< T > sharedMemoryImage = ShmImg.copyOf( inputImage );
 		stopWatch.split();
-		logger.info( "Time until copy image to shared memory: {} ms", stopWatch.formatSplitTime() );
+		logger.info( "Copied image to shared memory. Time elapsed: {} ms", stopWatch.formatSplitTime() );
 		Environment environment = setUpEnv();
 		stopWatch.split();
-		logger.info( "Time until set up environment: {} ms", stopWatch.formatSplitTime() );
+		logger.info( "Set up environment. Time elapsed: {} ms", stopWatch.formatSplitTime() );
 		if ( environment == null )
 		{
 			logger.error( "Could not create python environment" );
@@ -82,20 +80,14 @@ public abstract class Segmentation3D
 			final Map< String, Object > inputs = new HashMap<>();
 			inputs.put( "image", NDArrays.asNDArray( sharedMemoryImage ) );
 			stopWatch.split();
-			logger.info( "Time until create inputs: {} ms", stopWatch.formatSplitTime() );
+			logger.info( "Created inputs. Time elapsed: {} ms", stopWatch.formatSplitTime() );
 			String script = generateScript();
 			logger.trace( "Script: \n{}", script );
-			python.debug( logger::info );
 			// Run the script!
 			Service.Task task = python.task( script, inputs );
 			stopWatch.split();
-			logger.info( "Time until python task: {} ms", stopWatch.formatSplitTime() );
-			task.listen( taskEvent -> {
-				if ( Objects.requireNonNull( taskEvent.responseType ) == Service.ResponseType.UPDATE )
-				{
-					logger.info( "Python task update: {}", task.message );
-				}
-			} );
+			logger.info( "Created python task. Time elapsed: {} ms", stopWatch.formatSplitTime() );
+			task.listen( getTaskListener( stopWatch, task ) );
 			task.waitFor();
 			// Verify that it worked.
 			if ( task.status != Service.TaskStatus.COMPLETE )
@@ -114,6 +106,27 @@ public abstract class Segmentation3D
 			logger.error( "Python interrupted: {}", e.getMessage(), e );
 		}
 		return null;
+	}
+
+	private Consumer< TaskEvent > getTaskListener( final StopWatch stopWatch, final Service.Task task )
+	{
+		return taskEvent -> {
+			switch ( taskEvent.responseType )
+			{
+			case UPDATE:
+				stopWatch.split();
+				logger.info( "Task update: {}. Time elapsed: {}", task.message, stopWatch.formatSplitTime() );
+				break;
+			case LAUNCH:
+				stopWatch.split();
+				logger.info( "Task launched. Time elapsed: {}", stopWatch.formatSplitTime() );
+				break;
+			case COMPLETION:
+				stopWatch.split();
+				logger.info( "Task completed. Time elapsed: {}", stopWatch.formatSplitTime() );
+				break;
+			}
+		};
 	}
 
 	private static void logEnvFile( final File envFile )
