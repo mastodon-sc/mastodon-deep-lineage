@@ -39,7 +39,6 @@ import static org.mastodon.tracking.detection.DetectorKeys.KEY_SETUP_ID;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.CellposeDetectorDescriptor.KEY_MODEL_TYPE;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +70,7 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 	@Override
 	public void compute( final List< SourceAndConverter< ? > > sources, final ModelGraph graph )
 	{
+		System.out.println( "Cellpose detector starting..." );
 		/*
 		 * The abstract class `AbstractSpotDetectorOp` we inherit provides
 		 * several useful fields that are used to store settings, communicate
@@ -148,7 +148,6 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		{
 			for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
 			{
-				System.out.println( "timepoint=" + timepoint );
 				// We use the `statusService to show progress.
 				statusService.showProgress( timepoint - minTimepoint + 1, maxTimepoint - minTimepoint + 1 );
 
@@ -203,7 +202,9 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		}
 		catch ( Exception e )
 		{
+			ok = false;
 			errorMessage = "Cellpose failed: " + e.getMessage();
+			return;
 		}
 
 		/*

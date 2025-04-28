@@ -37,8 +37,6 @@ public abstract class Segmentation3D implements AutoCloseable
 
 	private final Service pythonWorker;
 
-	private final String script;
-
 	private final Map< String, Object > inputs;
 
 	private final StopWatch stopWatch;
@@ -47,6 +45,7 @@ public abstract class Segmentation3D implements AutoCloseable
 	{
 		this.stopWatch = StopWatch.createStarted();
 		Environment environment = setUpEnv();
+		stopWatch.split();
 		logger.info( "Set up environment. Time elapsed: {}", stopWatch.formatSplitTime() );
 		if ( environment == null )
 		{
@@ -54,9 +53,7 @@ public abstract class Segmentation3D implements AutoCloseable
 			throw new RuntimeException( "Could not create python environment" );
 		}
 		this.pythonWorker = environment.python();
-		this.script = generateScript();
 		this.inputs = new HashMap<>();
-
 	}
 
 	@Override
@@ -93,6 +90,7 @@ public abstract class Segmentation3D implements AutoCloseable
 
 	public < T extends NativeType< T > > Img< T > segmentImage( final RandomAccessibleInterval< T > inputImage ) throws IOException
 	{
+		String script = generateScript();
 		try (ShmImg< T > sharedMemoryImage = ShmImg.copyOf( inputImage ))
 		{
 			stopWatch.split();
