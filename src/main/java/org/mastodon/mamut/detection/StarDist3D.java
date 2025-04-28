@@ -1,11 +1,14 @@
 package org.mastodon.mamut.detection;
 
+import java.io.IOException;
+
 public class StarDist3D extends Segmentation3D
 {
 	private final String starDistModelPath;
 
-	public StarDist3D( final String starDistModelPath )
+	public StarDist3D( final String starDistModelPath ) throws IOException
 	{
+		super();
 		this.starDistModelPath = starDistModelPath;
 	}
 

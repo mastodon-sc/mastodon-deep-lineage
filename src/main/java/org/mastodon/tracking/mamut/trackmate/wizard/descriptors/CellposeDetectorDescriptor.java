@@ -65,7 +65,7 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 
 	private Settings settings;
 
-	private final static String KEY_MODEL_TYPE = "cellposeModelType";
+	public final static String KEY_MODEL_TYPE = "cellposeModelType";
 
 	private static final Icon PREVIEW_ICON =
 			new ImageIcon( Objects.requireNonNull( Wizard.class.getResource( "led-icon-eye-green.png" ) ) );

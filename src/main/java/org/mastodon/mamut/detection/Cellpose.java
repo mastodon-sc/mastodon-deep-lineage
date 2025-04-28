@@ -1,11 +1,14 @@
 package org.mastodon.mamut.detection;
 
+import java.io.IOException;
+
 public class Cellpose extends Segmentation3D
 {
 	private final MODEL_TYPE modelType;
 
-	public Cellpose( final MODEL_TYPE modelType )
+	public Cellpose( final MODEL_TYPE modelType ) throws IOException
 	{
+		super();
 		this.modelType = modelType;
 	}
 

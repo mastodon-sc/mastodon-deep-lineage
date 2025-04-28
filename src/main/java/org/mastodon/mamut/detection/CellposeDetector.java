@@ -37,7 +37,9 @@ import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_RADIUS;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_SETUP_ID;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.CellposeDetectorDescriptor.KEY_MODEL_TYPE;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +111,7 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		 */
 		final StringBuilder errorHolder = new StringBuilder();
 		boolean good;
-		good = checkParameter( settings, KEY_RADIUS, Double.class, errorHolder );
+		good = checkParameter( settings, KEY_MODEL_TYPE, Cellpose.MODEL_TYPE.class, errorHolder );
 		good = good & checkParameter( settings, KEY_SETUP_ID, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MIN_TIMEPOINT, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MAX_TIMEPOINT, Integer.class, errorHolder );
@@ -123,12 +125,8 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		final int minTimepoint = ( int ) settings.get( KEY_MIN_TIMEPOINT );
 		final int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );
 		final int setup = ( int ) settings.get( KEY_SETUP_ID );
-		final double radius = ( double ) settings.get( KEY_RADIUS );
+		final Cellpose.MODEL_TYPE modelType = ( Cellpose.MODEL_TYPE ) settings.get( KEY_MODEL_TYPE );
 
-		if ( radius <= 0 )
-		{
-			errorMessage = "Radius is equal to or smaller than 0: " + radius;
-		}
 		if ( setup < 0 || setup >= sources.size() )
 		{
 			errorMessage = "The parameter " + KEY_SETUP_ID + " is not in the range of available sources ("
@@ -145,58 +143,67 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 
 		// The `statusService` can be used to show short messages.
 		statusService.showStatus( "Detecting spots using Cellpose." );
-		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
+
+		try (Cellpose cellpose = new Cellpose( modelType ))
 		{
-			// We use the `statusService to show progress.
-			statusService.showProgress( timepoint - minTimepoint + 1, maxTimepoint - minTimepoint + 1 );
+			for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
+			{
+				System.out.println( "timepoint=" + timepoint );
+				// We use the `statusService to show progress.
+				statusService.showProgress( timepoint - minTimepoint + 1, maxTimepoint - minTimepoint + 1 );
 
-			/*
-			 * The detection process can be canceled. For instance, if the user
-			 * clicks on the 'cancel' button, this class will be notified via
-			 * the `isCanceled()` method.
-			 * 
-			 * You can check if the process has been canceled as you wish (you
-			 * can even ignore it), but we recommend checking every time-point.
-			 */
-			if ( isCanceled() )
-				break; // Exit but don't fail.
+				/*
+				 * The detection process can be canceled. For instance, if the user
+				 * clicks on the 'cancel' button, this class will be notified via
+				 * the `isCanceled()` method.
+				 *
+				 * You can check if the process has been canceled as you wish (you
+				 * can even ignore it), but we recommend checking every time-point.
+				 */
+				if ( isCanceled() )
+					break; // Exit but don't fail.
 
-			/*
-			 * Important: With the image data structure we use, some time-points
-			 * may be devoid of a certain source. We need to test for this, and
-			 * should it be the case, to skip the time-point.
-			 * 
-			 * Again, there is a utility function to do this:
-			 */
-			if ( !DetectionUtil.isPresent( sources, setup, timepoint ) )
-				continue;
+				/*
+				 * Important: With the image data structure we use, some time-points
+				 * may be devoid of a certain source. We need to test for this, and
+				 * should it be the case, to skip the time-point.
+				 *
+				 * Again, there is a utility function to do this:
+				 */
+				if ( !DetectionUtil.isPresent( sources, setup, timepoint ) )
+					continue;
 
-			/*
-			 * Now here is the part specific to our dummy detector. First we get
-			 * the source for the current channel (or setup) at the desired
-			 * time-point. In BDV jargon, this is a source.
-			 */
-			final Source< ? > source = sources.get( setup ).getSpimSource();
+				/*
+				 * Now here is the part specific to our dummy detector. First we get
+				 * the source for the current channel (or setup) at the desired
+				 * time-point. In BDV jargon, this is a source.
+				 */
+				final Source< ? > source = sources.get( setup ).getSpimSource();
 
-			/*
-			 * This source has possibly several resolution levels. And for your
-			 * own real detector, it might be very interesting to work on a
-			 * lower resolution (higher level). Check the DogDetectorOp code for
-			 * instance. For us, we don't even care for pixels, we just want to
-			 * have the image boundary from the highest resolution (level 0).
-			 */
-			final int level = 0;
-			final RandomAccessibleInterval< ? > image = source.getSource( timepoint, level );
-			/*
-			 * This is the 3D image of the current time-point, specified
-			 * channel. It always 3D. If the source is 2D, the 3rd dimension
-			 * will have a size of 1.
-			 */
+				/*
+				 * This source has possibly several resolution levels. And for your
+				 * own real detector, it might be very interesting to work on a
+				 * lower resolution (higher level). Check the DogDetectorOp code for
+				 * instance. For us, we don't even care for pixels, we just want to
+				 * have the image boundary from the highest resolution (level 0).
+				 */
+				final int level = 0;
+				final RandomAccessibleInterval< ? > image = source.getSource( timepoint, level );
+				/*
+				 * This is the 3D image of the current time-point, specified
+				 * channel. It is always 3D. If the source is 2D, the 3rd dimension
+				 * will have a size of 1.
+				 */
 
-			final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
-			Cellpose cellPose = new Cellpose( Cellpose.MODEL_TYPE.CYTO );
-			Img< ? > segmentation = cellPose.segmentImage( Cast.unchecked( image ) );
-			LabelImageUtils.createSpotsForFrame( graph, Cast.unchecked( segmentation ), timepoint, transform, 1d );
+				Img< ? > segmentation = cellpose.segmentImage( Cast.unchecked( image ) );
+
+				final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
+				LabelImageUtils.createSpotsForFrame( graph, Cast.unchecked( segmentation ), timepoint, transform, 1d );
+			}
+		}
+		catch ( Exception e )
+		{
+			errorMessage = "Cellpose failed: " + e.getMessage();
 		}
 
 		/*
