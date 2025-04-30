@@ -129,7 +129,7 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 			SpinnerNumberModel model = new SpinnerNumberModel( 0.0, 0.0, 10.0, 0.1 );
 			cellProbabilityThreshold = new JSpinner( model );
 
-			JLabel cellProbLabel = new JLabel( "Cell probability threshold (0 ... many detections - 10 ... few detections):" );
+			JLabel cellProbLabel = new JLabel( "Cell probability threshold:\n0 ... many detections\n10 ... few detections" );
 			add( cellProbLabel, "align left, wmin 200, wrap" );
 			add( cellProbabilityThreshold, "align left, grow" );
 
@@ -180,11 +180,11 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 			modelType = Cellpose.MODEL_TYPE.fromString( String.valueOf( modelTypeObject ) );
 		// Get the cell probability threshold.
 		final Object cellprobThresholdObject = detectorSettings.get( KEY_CELL_PROBABILITY_THRESHOLD );
-		final float cellprobThreshold;
+		final double cellprobThreshold;
 		if ( null == cellprobThresholdObject )
 			cellprobThreshold = 0; // default
 		else
-			cellprobThreshold = Float.parseFloat( String.valueOf( cellprobThresholdObject ) );
+			cellprobThreshold = Double.parseDouble( String.valueOf( cellprobThresholdObject ) );
 		// Get the anisotropy.
 		final Object respectAnisotropyObject = detectorSettings.get( KEY_RESPECT_ANISOTROPY );
 		final boolean respectAnisotropy;
