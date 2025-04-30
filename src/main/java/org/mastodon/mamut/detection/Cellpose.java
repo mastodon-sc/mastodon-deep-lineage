@@ -69,16 +69,6 @@ public class Cellpose extends Segmentation3D
 				+ "shared.ndarray()[:] = segmentation" + "\n"
 				+ "task.update(message=\"NDArray filled\")" + "\n"
 				+ "task.outputs['label_image'] = shared" + "\n";
-
-		// diameter=None,
-		// channels=[0, 0],
-		// do_3D=True,  # Enable 3D processing
-		// anisotropy=5.0,  # find out from spim data and set to actual value, allow user to reset to 1.0 and inform user that actual anisotropy leads to better results, but is slower
-		// z_axis=0, # find out from spim data
-		// normalize=True,
-		// batch_size=8,
-		// flow3D_smooth=0, # if do_3D and flow3D_smooth>0, smooth flows with gaussian filter of this stddev. Defaults to 0.
-		// cellprob_threshold=3 # allow user input between 0 and 10 (float, optional): all pixels with value above threshold kept for masks, decrease to find more and larger masks. Defaults to 0.0.
 	}
 
 	public enum MODEL_TYPE
