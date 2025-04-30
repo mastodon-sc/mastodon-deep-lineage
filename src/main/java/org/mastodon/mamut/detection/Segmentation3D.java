@@ -47,13 +47,13 @@ public abstract class Segmentation3D implements AutoCloseable
 	{
 		this.stopWatch = StopWatch.createStarted();
 		Environment environment = setUpEnv();
-		stopWatch.split();
-		logger.info( "Set up environment. Time elapsed: {}", stopWatch.formatSplitTime() );
 		if ( environment == null )
 		{
 			logger.error( "Could not create python environment" );
 			throw new RuntimeException( "Could not create python environment" );
 		}
+		stopWatch.split();
+		logger.info( "Set up environment. Path: {}. Time elapsed: {}", environment.base(), stopWatch.formatSplitTime() );
 		this.pythonWorker = environment.python();
 		this.inputs = new HashMap<>();
 	}
