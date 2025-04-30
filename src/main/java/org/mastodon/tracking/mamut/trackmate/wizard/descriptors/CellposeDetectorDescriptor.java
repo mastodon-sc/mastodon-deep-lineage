@@ -151,7 +151,7 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 	public void setTrackMate( final TrackMate trackmate )
 	{
 		/*
-		 * This method is called when the panel is shown, when the user 'enters'
+		 * This method is called when the panel is shown when the user 'enters'
 		 * the config panel. It receives the instance of TrackMate that will run
 		 * the detection, and that this panel needs to configure. We use the
 		 * method for two things:
@@ -161,7 +161,6 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 		 * values set by the user on the panel when they 'leave' the panel, so
 		 * we store a reference to it in the descriptor.
 		 */
-
 		this.settings = trackmate.getSettings();
 
 		/*
@@ -169,7 +168,6 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 		 * default ones, or the one that were set previously. For this, we read
 		 * these values from the TrackMate instance we receive.
 		 */
-
 		if ( null == settings )
 			return;
 

@@ -71,44 +71,12 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 	@Override
 	public void compute( final List< SourceAndConverter< ? > > sources, final ModelGraph graph )
 	{
-		/*
-		 * The abstract class `AbstractSpotDetectorOp` we inherit provides
-		 * several useful fields that are used to store settings, communicate
-		 * success or failure with an error message, or sends messages to the
-		 * user interface.
-		 * 
-		 * The first one is the `ok` flag, that states whether the computation
-		 * finished successfully. If not, a meaningful error message should be
-		 * provided in the `errorMessage` field. The user interface will use
-		 * them.
-		 * 
-		 * We start by settings the `ok` flag to false. If we break before the
-		 * end, this will signal something wrong happened.
-		 */
 		ok = false;
 
-		/*
-		 * And we clear the status display.
-		 */
+		// And we clear the status display.
 		statusService.clearStatus();
 
-		/*
-		 * A. Read the settings map, and check validity.
-		 * 
-		 * Let's be a bit thorough with this part.
-		 * 
-		 * The `settings` variable (stored in the mother abstract class) is a
-		 * `Map<String, Object>` that will be passed with all the settings the
-		 * user will specify, either programmatically or in the wizard. For our
-		 * dummy detector example, we have 5 parameters: 1. the number of spots
-		 * we will create, 2. their radius, 3. with respect to what source of
-		 * channel, 4. and 5. the min and max time-points we will process.
-		 * 
-		 * To check that they are present in the map and of the right class, we
-		 * use a utility function defined in `LinkingUtils` that accepts the
-		 * settings map, the key of the parameter to test, its desired class,
-		 * and a holder to store error messages. It goes like this:
-		 */
+		// A. Read the settings map, and check validity.
 		final StringBuilder errorHolder = new StringBuilder();
 		boolean good;
 		good = checkParameter( settings, KEY_MODEL_TYPE, Cellpose.MODEL_TYPE.class, errorHolder );
@@ -122,8 +90,8 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 			errorMessage = errorHolder.toString();
 			return;
 		}
-		// Now we are sure that they are here, and of the right class.
 
+		// Now we are sure that they are here, and of the right class.
 		final int minTimepoint = ( int ) settings.get( KEY_MIN_TIMEPOINT );
 		final int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );
 		final int setup = ( int ) settings.get( KEY_SETUP_ID );
@@ -155,24 +123,9 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 				// We use the `statusService to show progress.
 				statusService.showProgress( timepoint - minTimepoint + 1, maxTimepoint - minTimepoint + 1 );
 
-				/*
-				 * The detection process can be canceled. For instance, if the user
-				 * clicks on the 'cancel' button, this class will be notified via
-				 * the `isCanceled()` method.
-				 *
-				 * You can check if the process has been canceled as you wish (you
-				 * can even ignore it), but we recommend checking every time-point.
-				 */
 				if ( isCanceled() )
 					break; // Exit but don't fail.
 
-				/*
-				 * Important: With the image data structure we use, some time-points
-				 * may be devoid of a certain source. We need to test for this, and
-				 * should it be the case, to skip the time-point.
-				 *
-				 * Again, there is a utility function to do this:
-				 */
 				if ( !DetectionUtil.isPresent( sources, setup, timepoint ) )
 					continue;
 
@@ -192,6 +145,7 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 				 */
 				final int level = 0;
 				final RandomAccessibleInterval< ? > image = source.getSource( timepoint, level );
+
 				/*
 				 * This is the 3D image of the current time-point, specified
 				 * channel. It is always 3D. If the source is 2D, the 3rd dimension
