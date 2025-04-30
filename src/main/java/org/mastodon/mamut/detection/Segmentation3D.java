@@ -62,7 +62,7 @@ public abstract class Segmentation3D implements AutoCloseable
 	public void close() throws Exception
 	{
 		stopWatch.stop();
-		logger.info( "Segmentation completed, stopping python process. Time elapsed: {}", stopWatch.formatTime() );
+		logger.info( "Segmentation finished, stopping python process. Time elapsed: {}", stopWatch.formatTime() );
 		if ( pythonWorker != null )
 			pythonWorker.close();
 	}
