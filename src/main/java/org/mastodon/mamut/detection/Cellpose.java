@@ -6,6 +6,12 @@ public class Cellpose extends Segmentation3D
 {
 	private final MODEL_TYPE modelType;
 
+	private double anisotropy = 1;
+
+	private double cellprobThreshold = 0;
+
+	private boolean is3D = true;
+
 	public Cellpose( final MODEL_TYPE modelType ) throws IOException
 	{
 		super();
@@ -39,18 +45,40 @@ public class Cellpose extends Segmentation3D
 				+ "import appose" + "\n\n"
 				+ "task.update(message=\"Imports completed\")" + "\n"
 				+ "image_ndarray = image.ndarray()" + "\n"
-				+ "task.update(message=\"Image converted\")" + "\n"
+				+ "task.update(message=\"Image converted, Image shape: \" + \",\".join(str(dim) for dim in image.shape))" + "\n"
 				+ "model = models.Cellpose(model_type=\"" + modelType.getModelName() + "\", gpu=True)" + "\n\n"
 				+ "task.update(message=\"Model loaded\")" + "\n"
 				+ "\n\n"
-				+ "segmentation, flows, styles, diams = model.eval(image_ndarray, diameter=None, channels=[0, 0], do_3D=True, anisotropy=1.0, z_axis=0, normalize=True)"
+				+ "segmentation, flows, styles, diams = model.eval("
+				+ "image_ndarray, "
+				+ "diameter=None, "
+				+ "channels=[0, 0], "
+				+ "do_3D=" + is3DParam() + ", "
+				+ "anisotropy=" + anisotropyParam() + ", "
+				+ "z_axis=0, "
+				+ "normalize=True, "
+				+ "batch_size=8, "
+				+ "flow3D_smooth=0, "
+				+ "cellprob_threshold=" + cellprobThreshold + ")" + "\n"
 				+ "\n\n"
-				+ "task.update(message=\"Segmentation completed\")" + "\n"
+				+ "task.update(message=\"Segmentation completed, Segmentation shape: \" + \",\".join(str(dim) for dim in segmentation.shape))"
+				+ "\n"
+				+ "\n"
 				+ "shared = appose.NDArray(image.dtype, image.shape)" + "\n"
 				+ "task.update(message=\"NDArray created\")" + "\n"
 				+ "shared.ndarray()[:] = segmentation" + "\n"
 				+ "task.update(message=\"NDArray filled\")" + "\n"
 				+ "task.outputs['label_image'] = shared" + "\n";
+
+		// diameter=None,
+		// channels=[0, 0],
+		// do_3D=True,  # Enable 3D processing
+		// anisotropy=5.0,  # find out from spim data and set to actual value, allow user to reset to 1.0 and inform user that actual anisotropy leads to better results, but is slower
+		// z_axis=0, # find out from spim data
+		// normalize=True,
+		// batch_size=8,
+		// flow3D_smooth=0, # if do_3D and flow3D_smooth>0, smooth flows with gaussian filter of this stddev. Defaults to 0.
+		// cellprob_threshold=3 # allow user input between 0 and 10 (float, optional): all pixels with value above threshold kept for masks, decrease to find more and larger masks. Defaults to 0.0.
 	}
 
 	public enum MODEL_TYPE
@@ -111,5 +139,45 @@ public class Cellpose extends Segmentation3D
 			}
 			throw new IllegalArgumentException( "No enum constant for model name: " + modelName );
 		}
+	}
+
+	public double getAnisotropy()
+	{
+		return anisotropy;
+	}
+
+	public void setAnisotropy( final double anisotropy )
+	{
+		this.anisotropy = anisotropy;
+	}
+
+	public double getCellprobThreshold()
+	{
+		return cellprobThreshold;
+	}
+
+	public void setCellprobThreshold( final double cellprobThreshold )
+	{
+		this.cellprobThreshold = cellprobThreshold;
+	}
+
+	public boolean is3D()
+	{
+		return is3D;
+	}
+
+	public void set3D( final boolean is3D )
+	{
+		this.is3D = is3D;
+	}
+
+	private String is3DParam()
+	{
+		return is3D ? "True" : "False";
+	}
+
+	private String anisotropyParam()
+	{
+		return is3D() ? String.valueOf( anisotropy ) : "1.0";
 	}
 }

@@ -37,9 +37,12 @@ import java.util.Objects;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import net.imagej.ops.OpService;
@@ -66,6 +69,10 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 	private Settings settings;
 
 	public final static String KEY_MODEL_TYPE = "cellposeModelType";
+
+	public final static String KEY_CELL_PROBABILITY_THRESHOLD = "cellposeCellProbabilityThreshold";
+
+	public final static String KEY_RESPECT_ANISOTROPY = "cellposeRespectAnisotropy";
 
 	private static final Icon PREVIEW_ICON =
 			new ImageIcon( Objects.requireNonNull( Wizard.class.getResource( "led-icon-eye-green.png" ) ) );
@@ -97,9 +104,13 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 
 		private final JComboBox< Cellpose.MODEL_TYPE > modelType;
 
+		private final JSpinner cellProbabilityThreshold;
+
+		private final JCheckBox respectAnisotropy = new JCheckBox( "Respect anisotropy" );
+
 		private final JButton preview = new JButton( "Preview", PREVIEW_ICON );
 
-		private final JLabel info = new JLabel( "test info", JLabel.RIGHT );
+		private final JLabel info = new JLabel( "", JLabel.RIGHT );
 
 		private ConfigPanel()
 		{
@@ -114,6 +125,15 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 			add( modelTypeLabel, "align left, wrap" );
 			modelType = new JComboBox<>( Cellpose.MODEL_TYPE.values() );
 			add( modelType, "align left, grow" );
+
+			SpinnerNumberModel model = new SpinnerNumberModel( 0.0, 0.0, 10.0, 0.1 );
+			cellProbabilityThreshold = new JSpinner( model );
+
+			JLabel cellProbLabel = new JLabel( "Cell probability threshold (0 ... many detections - 10 ... few detections):" );
+			add( cellProbLabel, "align left, wmin 200, wrap" );
+			add( cellProbabilityThreshold, "align left, grow" );
+
+			add( respectAnisotropy, "align left, wrap" );
 
 			preview.addActionListener( ( e ) -> preview() );
 			add( preview, "align right, wrap" );
@@ -151,16 +171,33 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 
 		// Get the values.
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
+		// Get the model type.
 		final Cellpose.MODEL_TYPE modelType;
 		final Object modelTypeObject = detectorSettings.get( KEY_MODEL_TYPE );
 		if ( null == modelTypeObject )
 			modelType = Cellpose.MODEL_TYPE.CYTO; // default
 		else
 			modelType = Cellpose.MODEL_TYPE.fromString( String.valueOf( modelTypeObject ) );
+		// Get the cell probability threshold.
+		final Object cellprobThresholdObject = detectorSettings.get( KEY_CELL_PROBABILITY_THRESHOLD );
+		final float cellprobThreshold;
+		if ( null == cellprobThresholdObject )
+			cellprobThreshold = 0; // default
+		else
+			cellprobThreshold = Float.parseFloat( String.valueOf( cellprobThresholdObject ) );
+		// Get the anisotropy.
+		final Object respectAnisotropyObject = detectorSettings.get( KEY_RESPECT_ANISOTROPY );
+		final boolean respectAnisotropy;
+		if ( null == respectAnisotropyObject )
+			respectAnisotropy = true; // default
+		else
+			respectAnisotropy = Boolean.parseBoolean( String.valueOf( respectAnisotropyObject ) );
 
 		// Show them in the config panel.
 		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
 		panel.modelType.setSelectedItem( modelType );
+		panel.cellProbabilityThreshold.setValue( cellprobThreshold );
+		panel.respectAnisotropy.setSelected( respectAnisotropy );
 	}
 
 	@Override
@@ -176,6 +213,8 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_MODEL_TYPE, panel.modelType.getSelectedItem() );
+		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, panel.cellProbabilityThreshold.getValue() );
+		detectorSettings.put( KEY_RESPECT_ANISOTROPY, panel.respectAnisotropy.isSelected() );
 	}
 
 	@Override
@@ -237,5 +276,7 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_MODEL_TYPE, panel.modelType.getSelectedItem() );
+		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, panel.cellProbabilityThreshold.getValue() );
+		detectorSettings.put( KEY_RESPECT_ANISOTROPY, panel.respectAnisotropy.isSelected() );
 	}
 }

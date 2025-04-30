@@ -30,14 +30,14 @@ package org.mastodon.mamut.detection;
 
 import static org.mastodon.tracking.detection.DetectorKeys.DEFAULT_MAX_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.DEFAULT_MIN_TIMEPOINT;
-import static org.mastodon.tracking.detection.DetectorKeys.DEFAULT_RADIUS;
 import static org.mastodon.tracking.detection.DetectorKeys.DEFAULT_SETUP_ID;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MAX_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
-import static org.mastodon.tracking.detection.DetectorKeys.KEY_RADIUS;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_SETUP_ID;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.CellposeDetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.CellposeDetectorDescriptor.KEY_MODEL_TYPE;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.CellposeDetectorDescriptor.KEY_RESPECT_ANISOTROPY;
 
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +70,6 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 	@Override
 	public void compute( final List< SourceAndConverter< ? > > sources, final ModelGraph graph )
 	{
-		System.out.println( "Cellpose detector starting..." );
 		/*
 		 * The abstract class `AbstractSpotDetectorOp` we inherit provides
 		 * several useful fields that are used to store settings, communicate
@@ -115,6 +114,8 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		good = good & checkParameter( settings, KEY_SETUP_ID, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MIN_TIMEPOINT, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MAX_TIMEPOINT, Integer.class, errorHolder );
+		good = good & checkParameter( settings, KEY_CELL_PROBABILITY_THRESHOLD, Double.class, errorHolder );
+		good = good & checkParameter( settings, KEY_RESPECT_ANISOTROPY, Boolean.class, errorHolder );
 		if ( !good )
 		{
 			errorMessage = errorHolder.toString();
@@ -126,6 +127,8 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		final int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );
 		final int setup = ( int ) settings.get( KEY_SETUP_ID );
 		final Cellpose.MODEL_TYPE modelType = ( Cellpose.MODEL_TYPE ) settings.get( KEY_MODEL_TYPE );
+		final double cellProbabilityThreshold = ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD );
+		final boolean respectAnisotropy = ( boolean ) settings.get( KEY_RESPECT_ANISOTROPY );
 
 		if ( setup < 0 || setup >= sources.size() )
 		{
@@ -193,7 +196,12 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 				 * channel. It is always 3D. If the source is 2D, the 3rd dimension
 				 * will have a size of 1.
 				 */
-
+				double[] voxelDimensions = source.getVoxelDimensions().dimensionsAsDoubleArray();
+				boolean is3D = voxelDimensions.length == 3;
+				cellpose.set3D( is3D );
+				double anisotropy = respectAnisotropy ? getAnisotropy( voxelDimensions ) : 1.0;
+				cellpose.setAnisotropy( ( float ) anisotropy );
+				cellpose.setCellprobThreshold( cellProbabilityThreshold );
 				Img< ? > segmentation = cellpose.segmentImage( Cast.unchecked( image ) );
 
 				final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
@@ -225,7 +233,33 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		defaultSettings.put( KEY_SETUP_ID, DEFAULT_SETUP_ID );
 		defaultSettings.put( KEY_MIN_TIMEPOINT, DEFAULT_MIN_TIMEPOINT );
 		defaultSettings.put( KEY_MAX_TIMEPOINT, DEFAULT_MAX_TIMEPOINT );
-		defaultSettings.put( KEY_RADIUS, DEFAULT_RADIUS );
+		defaultSettings.put( KEY_MODEL_TYPE, Cellpose.MODEL_TYPE.CYTO );
+		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, 0d );
 		return defaultSettings;
 	}
+
+	private double getAnisotropy( double[] voxelSizes )
+	{
+		if ( voxelSizes == null || voxelSizes.length == 0 )
+		{
+			throw new IllegalArgumentException( "Array must not be empty" );
+		}
+
+		double highestValue = voxelSizes[ 0 ];
+		double lowestValue = voxelSizes[ 0 ];
+
+		for ( double value : voxelSizes )
+		{
+			if ( value > highestValue )
+				highestValue = value;
+			if ( value < lowestValue )
+				lowestValue = value;
+		}
+
+		if ( lowestValue == 0 )
+			throw new ArithmeticException( "Voxel size of zero detected. This is not allowed." );
+
+		return highestValue / lowestValue;
+	}
+
 }

@@ -93,6 +93,7 @@ public abstract class Segmentation3D implements AutoCloseable
 	public < T extends NativeType< T > > Img< T > segmentImage( final RandomAccessibleInterval< T > inputImage ) throws IOException
 	{
 		String script = generateScript();
+		logger.trace( "Running script:\n{}", script );
 		long[] dimensions = inputImage.dimensionsAsLongArray();
 		String dimensionsAsString = Arrays.stream( dimensions ).mapToObj( String::valueOf ).collect( Collectors.joining( ", " ) );
 		logger.info( "Segmenting image with {} dimensions: ({})", inputImage.numDimensions(), dimensionsAsString );
@@ -100,9 +101,10 @@ public abstract class Segmentation3D implements AutoCloseable
 		{
 			stopWatch.split();
 			logger.info( "Copied image to shared memory. Time elapsed: {}", stopWatch.formatSplitTime() );
-			inputs.put( "image", NDArrays.asNDArray( sharedMemoryImage ) );
+			NDArray ndArray = NDArrays.asNDArray( sharedMemoryImage );
 			stopWatch.split();
-			logger.info( "Converted image to nd array. Time elapsed: {}", stopWatch.formatSplitTime() );
+			logger.info( "Converted image to nd array: {}, Time elapsed: {}", ndArray, stopWatch.formatSplitTime() );
+			inputs.put( "image", ndArray );
 
 			Service.Task task = pythonWorker.task( script, inputs );
 			stopWatch.split();
