@@ -137,6 +137,7 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 			add( respectAnisotropy, "align left, wrap" );
 			String respectAnisotropyText =
 					"<html>Respecting anisotropy may take significantly more time,<br>but can lead to better detection results.</html>";
+			add( new JLabel( respectAnisotropyText ), "align left, wmin 200, grow" );
 
 			preview.addActionListener( ( e ) -> preview() );
 			add( preview, "align right, wrap" );
