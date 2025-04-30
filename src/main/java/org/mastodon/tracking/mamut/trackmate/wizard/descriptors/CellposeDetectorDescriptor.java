@@ -185,7 +185,7 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 		final Object cellprobThresholdObject = detectorSettings.get( KEY_CELL_PROBABILITY_THRESHOLD );
 		final double cellprobThreshold;
 		if ( null == cellprobThresholdObject )
-			cellprobThreshold = 0; // default
+			cellprobThreshold = 3d; // default
 		else
 			cellprobThreshold = Double.parseDouble( String.valueOf( cellprobThresholdObject ) );
 		// Get the anisotropy.
