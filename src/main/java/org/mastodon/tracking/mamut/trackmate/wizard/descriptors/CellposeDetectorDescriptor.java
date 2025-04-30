@@ -129,12 +129,14 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 			SpinnerNumberModel model = new SpinnerNumberModel( 0.0, 0.0, 10.0, 0.1 );
 			cellProbabilityThreshold = new JSpinner( model );
 
-			String cellProbText = "<html>Cell probability threshold:<br>0 ... many detections<br>10 ... few detections</html>";
+			String cellProbText = "<html>Cell probability threshold:<br>0 ... more detections<br>10 ... less detections</html>";
 			JLabel cellProbLabel = new JLabel( cellProbText );
 			add( cellProbLabel, "align left, wmin 200, wrap" );
 			add( cellProbabilityThreshold, "align left, grow" );
 
 			add( respectAnisotropy, "align left, wrap" );
+			String respectAnisotropyText =
+					"<html>Respecting anisotropy may take significantly more time,<br>but can lead to better detection results.</html>";
 
 			preview.addActionListener( ( e ) -> preview() );
 			add( preview, "align right, wrap" );
