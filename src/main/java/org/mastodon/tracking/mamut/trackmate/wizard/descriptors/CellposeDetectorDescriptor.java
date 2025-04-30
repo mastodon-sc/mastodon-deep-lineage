@@ -219,6 +219,13 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 		detectorSettings.put( KEY_MODEL_TYPE, panel.modelType.getSelectedItem() );
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, panel.cellProbabilityThreshold.getValue() );
 		detectorSettings.put( KEY_RESPECT_ANISOTROPY, panel.respectAnisotropy.isSelected() );
+
+		logger.info( String.format( "  - model type: %s\n", settings.values.getDetectorSettings().get( KEY_MODEL_TYPE ) ) );
+		logger.info( String.format( "  - cell probability threshold: %s\n",
+				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
+		logger.info( String.format( "  - respect anisotropy: %s\n", settings.values.getDetectorSettings().get( KEY_RESPECT_ANISOTROPY ) ) );
+
+		logger.info( "" );
 	}
 
 	@Override
