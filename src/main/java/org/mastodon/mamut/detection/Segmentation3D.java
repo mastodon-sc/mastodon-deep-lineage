@@ -8,9 +8,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.appose.NDArrays;
@@ -91,6 +93,9 @@ public abstract class Segmentation3D implements AutoCloseable
 	public < T extends NativeType< T > > Img< T > segmentImage( final RandomAccessibleInterval< T > inputImage ) throws IOException
 	{
 		String script = generateScript();
+		long[] dimensions = inputImage.dimensionsAsLongArray();
+		String dimensionsAsString = Arrays.stream( dimensions ).mapToObj( String::valueOf ).collect( Collectors.joining( ", " ) );
+		logger.info( "Segmenting image with {} dimensions: ({})", inputImage.numDimensions(), dimensionsAsString );
 		try (ShmImg< T > sharedMemoryImage = ShmImg.copyOf( inputImage ))
 		{
 			stopWatch.split();
