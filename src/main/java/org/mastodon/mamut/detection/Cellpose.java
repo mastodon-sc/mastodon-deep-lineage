@@ -30,7 +30,7 @@ public class Cellpose extends Segmentation3D
 				+ "  - python=3.10\n"
 				+ "  - pip\n"
 				+ "  - pip:\n"
-				+ "    - cellpose[gui]\n"
+				+ "    - cellpose\n"
 				+ "    - appose\n"
 				+ "  - pytorch\n"
 				+ "  - pytorch-cuda=11.8\n"
