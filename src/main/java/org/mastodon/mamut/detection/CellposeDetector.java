@@ -39,6 +39,7 @@ import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.CellposeD
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.CellposeDetectorDescriptor.KEY_MODEL_TYPE;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.CellposeDetectorDescriptor.KEY_RESPECT_ANISOTROPY;
 
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,8 @@ import org.mastodon.tracking.mamut.detection.AbstractSpotDetectorOp;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
@@ -70,6 +73,8 @@ import bdv.viewer.SourceAndConverter;
 		+ "</html>" )
 public class CellposeDetector extends AbstractSpotDetectorOp
 {
+
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	@Override
 	public void compute( final List< SourceAndConverter< ? > > sources, final ModelGraph graph )
@@ -170,6 +175,7 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		{
 			ok = false;
 			errorMessage = "Cellpose failed: " + e.getMessage();
+			logger.error( "Cellpose failed: {}", e.getMessage() );
 			return;
 		}
 
