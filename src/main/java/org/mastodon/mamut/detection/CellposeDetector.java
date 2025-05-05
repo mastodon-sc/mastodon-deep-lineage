@@ -60,9 +60,12 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 
 @Plugin( type = SpotDetectorOp.class, priority = Priority.LOW, name = "Cellpose detector", description = "<html>"
-		+ "This detector uses Cellpose for segmentation. "
-		+ "Spots are subsequently derived from the segmentation by fitting of ellipsoids to the pixel clouds of the detected objects.<br>"
-		+ "Different Cellpose models can be used for different types of images.<br><br>"
+		+ "This detector uses Cellpose for segmentation. Cellpose has been published in:<br>"
+		+ "<i>Cellpose: a generalist algorithm for cellular segmentation </i> - "
+		+ "<i>Stringer et al.</i>, 2021, Nature Methods.<br><br>"
+		+ "After the segmentation, spots are derived by fitting of ellipsoids to the pixel clouds of the detected objects.<br>"
+		+ "Different Cellpose models can be used for different types of images. A cell probability threshold can be set to allow more/less sensitive detection.<br>"
+		+ "For 3D data, anisotropy can be respected.<br><br>"
 		+ "<strong>When this detection method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~7GB hard disk space.</strong><br>"
 		+ "</html>" )
 public class CellposeDetector extends AbstractSpotDetectorOp
