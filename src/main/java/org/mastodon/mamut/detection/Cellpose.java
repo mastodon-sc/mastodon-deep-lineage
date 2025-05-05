@@ -42,25 +42,16 @@ public class Cellpose extends Segmentation3D
 	{
 		return "import numpy as np" + "\n"
 				+ "from cellpose import models" + "\n"
-				+ "import appose" + "\n\n"
+				+ "import appose" + "\n"
+				+ "\n"
 				+ "task.update(message=\"Imports completed\")" + "\n"
 				+ "image_ndarray = image.ndarray()" + "\n"
 				+ "task.update(message=\"Image converted, Image shape: \" + \",\".join(str(dim) for dim in image.shape))" + "\n"
-				+ "model = models.Cellpose(model_type=\"" + modelType.getModelName() + "\", gpu=True)" + "\n\n"
+				+ getLoadModelCommand()
 				+ "task.update(message=\"Model loaded\")" + "\n"
-				+ "\n\n"
-				+ "segmentation, flows, styles, diams = model.eval("
-				+ "image_ndarray, "
-				+ "diameter=None, "
-				+ "channels=[0, 0], "
-				+ "do_3D=" + is3DParam() + ", "
-				+ "anisotropy=" + anisotropyParam() + ", "
-				+ "z_axis=0, "
-				+ "normalize=True, "
-				+ "batch_size=8, "
-				+ "flow3D_smooth=0, "
-				+ "cellprob_threshold=" + cellprobThreshold + ")" + "\n"
-				+ "\n\n"
+				+ "\n"
+				+ getEvaluateModelCommand()
+				+ "\n"
 				+ "task.update(message=\"Segmentation completed, Segmentation shape: \" + \",\".join(str(dim) for dim in segmentation.shape))"
 				+ "\n"
 				+ "\n"
@@ -73,43 +64,51 @@ public class Cellpose extends Segmentation3D
 
 	public enum MODEL_TYPE
 	{
-		CYTO3( "cyto3" ),
-		NUCLEI( "nuclei" ),
-		CYTO2_CP3( "cyto2_cp3" ),
-		TISSUENET_CP3( "tissuenet_cp3" ),
-		LIVECELL_CP3( "livecell_cp3" ),
-		YEAST_PHCP3( "yeast_PhC_cp3" ),
-		YEAST_BFCP3( "yeast_BF_cp3" ),
-		BACT_PHASE_CP3( "bact_phase_cp3" ),
-		BACT_FLUOR_CP3( "bact_fluor_cp3" ),
-		DEEPBACS_CP3( "deepbacs_cp3" ),
-		CYTO2( "cyto2" ),
-		CYTO( "cyto" ),
-		CPX( "CPx" ),
-		TRANSFORMER_CP3( "transformer_cp3" ),
-		NEURIPS_CELLPOSE_DEFAULT( "neurips_cellpose_default" ),
-		NEURIPS_CELLPOSE_TRANSFORMER( "neurips_cellpose_transformer" ),
-		NEURIPS_GRAYSCALE_CYTO2( "neurips_grayscale_cyto2" ),
-		CP( "CP" ),
-		CPX2( "CPx" ),
-		TN1( "TN1" ),
-		TN2( "TN2" ),
-		TN3( "TN3" ),
-		LC1( "LC1" ),
-		LC2( "LC2" ),
-		LC3( "LC3" ),
-		LC4( "LC4" );
+		CYTO3( "cyto3", true ),
+		NUCLEI( "nuclei", true ),
+		CYTO2_CP3( "cyto2_cp3", false ),
+		TISSUENET_CP3( "tissuenet_cp3", false ),
+		LIVECELL_CP3( "livecell_cp3", false ),
+		YEAST_PHCP3( "yeast_PhC_cp3", false ),
+		YEAST_BFCP3( "yeast_BF_cp3", false ),
+		BACT_PHASE_CP3( "bact_phase_cp3", false ),
+		BACT_FLUOR_CP3( "bact_fluor_cp3", false ),
+		DEEPBACS_CP3( "deepbacs_cp3", false ),
+		CYTO2( "cyto2", true ),
+		CYTO( "cyto", true ),
+		CPX( "CPx", false ),
+		TRANSFORMER_CP3( "transformer_cp3", false ),
+		NEURIPS_CELLPOSE_DEFAULT( "neurips_cellpose_default", false ),
+		NEURIPS_CELLPOSE_TRANSFORMER( "neurips_cellpose_transformer", false ),
+		NEURIPS_GRAYSCALE_CYTO2( "neurips_grayscale_cyto2", false ),
+		CP( "CP", false ),
+		CPX2( "CPx", false ),
+		TN1( "TN1", false ),
+		TN2( "TN2", false ),
+		TN3( "TN3", false ),
+		LC1( "LC1", false ),
+		LC2( "LC2", false ),
+		LC3( "LC3", false ),
+		LC4( "LC4", false );
 
 		private final String modelName;
 
-		MODEL_TYPE( final String modelName )
+		private final boolean hasSizeModel;
+
+		MODEL_TYPE( final String modelName, final boolean hasSizeModel )
 		{
 			this.modelName = modelName;
+			this.hasSizeModel = hasSizeModel;
 		}
 
 		public String getModelName()
 		{
 			return modelName;
+		}
+
+		public boolean hasSizeModel()
+		{
+			return hasSizeModel;
 		}
 
 		@Override
@@ -169,5 +168,29 @@ public class Cellpose extends Segmentation3D
 	private String anisotropyParam()
 	{
 		return is3D() ? String.valueOf( anisotropy ) : "1.0";
+	}
+
+	private String getLoadModelCommand()
+	{
+		if ( modelType.hasSizeModel() )
+			return "model = models.Cellpose(model_type=\"" + modelType.getModelName() + "\", gpu=True)" + "\n";
+		else
+			return "model = models.CellposeModel(model_type=\"" + modelType.getModelName() + "\", gpu=True)" + "\n";
+	}
+
+	private String getEvaluateModelCommand()
+	{
+		String diams = modelType.hasSizeModel() ? ", diams" : "";
+		return "segmentation, flows, styles" + diams + " = model.eval("
+				+ "image_ndarray, "
+				+ "diameter=None, "
+				+ "channels=[0, 0], "
+				+ "do_3D=" + is3DParam() + ", "
+				+ "anisotropy=" + anisotropyParam() + ", "
+				+ "z_axis=0, "
+				+ "normalize=True, "
+				+ "batch_size=8, "
+				+ "flow3D_smooth=0, "
+				+ "cellprob_threshold=" + cellprobThreshold + ")" + "\n";
 	}
 }
