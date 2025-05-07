@@ -55,6 +55,7 @@ public abstract class Segmentation3D implements AutoCloseable
 		stopWatch.split();
 		logger.info( "Set up environment. Path: {}. Time elapsed: {}", environment.base(), stopWatch.formatSplitTime() );
 		this.pythonWorker = environment.python();
+		this.pythonWorker.debug( logger::debug );
 		this.inputs = new HashMap<>();
 	}
 
