@@ -35,9 +35,9 @@ import static org.mastodon.tracking.detection.DetectorKeys.KEY_MAX_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_SETUP_ID;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.CellposeDetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.CellposeDetectorDescriptor.KEY_MODEL_TYPE;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.CellposeDetectorDescriptor.KEY_RESPECT_ANISOTROPY;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_RESPECT_ANISOTROPY;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_MODEL_TYPE;
 
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
@@ -49,8 +49,8 @@ import net.imglib2.img.Img;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Cast;
 
-import org.mastodon.mamut.util.LabelImageUtils;
 import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.util.LabelImageUtils;
 import org.mastodon.tracking.detection.DetectionUtil;
 import org.mastodon.tracking.mamut.detection.AbstractSpotDetectorOp;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 
-@Plugin( type = SpotDetectorOp.class, priority = Priority.LOW, name = "Cellpose detector", description = "<html>"
+@Plugin( type = SpotDetectorOp.class, priority = Priority.LOW, name = "Cellpose3 detector", description = "<html>"
 		+ "This detector uses Cellpose for segmentation. Cellpose has been published in:<br>"
 		+ "<i>Cellpose: a generalist algorithm for cellular segmentation </i> - "
 		+ "<i>Stringer et al.</i>, 2021, Nature Methods.<br><br>"
@@ -71,7 +71,7 @@ import bdv.viewer.SourceAndConverter;
 		+ "For 3D data, anisotropy can be respected.<br><br>"
 		+ "<strong>When this detection method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~7GB hard disk space.</strong><br>"
 		+ "</html>" )
-public class CellposeDetector extends AbstractSpotDetectorOp
+public class Cellpose3Detector extends AbstractSpotDetectorOp
 {
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
@@ -87,7 +87,7 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		// A. Read the settings map, and check validity.
 		final StringBuilder errorHolder = new StringBuilder();
 		boolean good;
-		good = checkParameter( settings, KEY_MODEL_TYPE, Cellpose.MODEL_TYPE.class, errorHolder );
+		good = checkParameter( settings, KEY_MODEL_TYPE, Cellpose3.MODEL_TYPE.class, errorHolder );
 		good = good & checkParameter( settings, KEY_SETUP_ID, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MIN_TIMEPOINT, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MAX_TIMEPOINT, Integer.class, errorHolder );
@@ -103,7 +103,7 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		final int minTimepoint = ( int ) settings.get( KEY_MIN_TIMEPOINT );
 		final int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );
 		final int setup = ( int ) settings.get( KEY_SETUP_ID );
-		final Cellpose.MODEL_TYPE modelType = ( Cellpose.MODEL_TYPE ) settings.get( KEY_MODEL_TYPE );
+		final Cellpose3.MODEL_TYPE modelType = ( Cellpose3.MODEL_TYPE ) settings.get( KEY_MODEL_TYPE );
 		final double cellProbabilityThreshold = ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD );
 		final boolean respectAnisotropy = ( boolean ) settings.get( KEY_RESPECT_ANISOTROPY );
 
@@ -122,9 +122,9 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		// Now we are sure they are valid.
 
 		// The `statusService` can be used to show short messages.
-		statusService.showStatus( "Detecting spots using Cellpose." );
+		statusService.showStatus( "Detecting spots using Cellpose3." );
 
-		try (Cellpose cellpose = new Cellpose( modelType ))
+		try (Cellpose3 cellpose = new Cellpose3( modelType ))
 		{
 			for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
 			{
@@ -197,7 +197,7 @@ public class CellposeDetector extends AbstractSpotDetectorOp
 		defaultSettings.put( KEY_SETUP_ID, DEFAULT_SETUP_ID );
 		defaultSettings.put( KEY_MIN_TIMEPOINT, DEFAULT_MIN_TIMEPOINT );
 		defaultSettings.put( KEY_MAX_TIMEPOINT, DEFAULT_MAX_TIMEPOINT );
-		defaultSettings.put( KEY_MODEL_TYPE, Cellpose.MODEL_TYPE.CYTO );
+		defaultSettings.put( KEY_MODEL_TYPE, Cellpose3.MODEL_TYPE.CYTO3 );
 		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, 0d );
 		return defaultSettings;
 	}

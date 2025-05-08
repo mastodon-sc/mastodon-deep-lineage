@@ -2,17 +2,15 @@ package org.mastodon.mamut.detection;
 
 import java.io.IOException;
 
-public class Cellpose extends Segmentation3D
+public class Cellpose4 extends Segmentation3D
 {
 	private final MODEL_TYPE modelType;
-
-	private double anisotropy = 1;
 
 	private double cellprobThreshold = 0;
 
 	private boolean is3D = true;
 
-	public Cellpose( final MODEL_TYPE modelType ) throws IOException
+	public Cellpose4( final MODEL_TYPE modelType ) throws IOException
 	{
 		super();
 		this.modelType = modelType;
@@ -21,7 +19,7 @@ public class Cellpose extends Segmentation3D
 	@Override
 	String generateEnvFileContent()
 	{
-		return "name: cellpose\n"
+		return "name: cellpose4\n"
 				+ "channels:\n"
 				+ "  - nvidia\n"
 				+ "  - pytorch\n"
@@ -30,7 +28,7 @@ public class Cellpose extends Segmentation3D
 				+ "  - python=3.10\n"
 				+ "  - pip\n"
 				+ "  - pip:\n"
-				+ "    - cellpose\n"
+				+ "    - cellpose==4.0.2\n"
 				+ "    - appose\n"
 				+ "  - pytorch\n"
 				+ "  - pytorch-cuda=11.8\n"
@@ -64,52 +62,44 @@ public class Cellpose extends Segmentation3D
 
 	public enum MODEL_TYPE
 	{
-		CELLPOSE_SAM( "cpsam", true ),
-		CYTO3( "cyto3", true ),
-		NUCLEI( "nuclei", true ),
-		CYTO2_CP3( "cyto2_cp3", false ),
-		TISSUENET_CP3( "tissuenet_cp3", false ),
-		LIVECELL_CP3( "livecell_cp3", false ),
-		YEAST_PHCP3( "yeast_PhC_cp3", false ),
-		YEAST_BFCP3( "yeast_BF_cp3", false ),
-		BACT_PHASE_CP3( "bact_phase_cp3", false ),
-		BACT_FLUOR_CP3( "bact_fluor_cp3", false ),
-		DEEPBACS_CP3( "deepbacs_cp3", false ),
-		CYTO2( "cyto2", true ),
-		CYTO( "cyto", true ),
-		CPX( "CPx", false ),
-		TRANSFORMER_CP3( "transformer_cp3", false ),
-		NEURIPS_CELLPOSE_DEFAULT( "neurips_cellpose_default", false ),
-		NEURIPS_CELLPOSE_TRANSFORMER( "neurips_cellpose_transformer", false ),
-		NEURIPS_GRAYSCALE_CYTO2( "neurips_grayscale_cyto2", false ),
-		CP( "CP", false ),
-		CPX2( "CPx", false ),
-		TN1( "TN1", false ),
-		TN2( "TN2", false ),
-		TN3( "TN3", false ),
-		LC1( "LC1", false ),
-		LC2( "LC2", false ),
-		LC3( "LC3", false ),
-		LC4( "LC4", false );
+		CPSAM( "cpsam" ),
+		CYTO3( "cyto3" ),
+		NUCLEI( "nuclei" ),
+		CYTO2_CP3( "cyto2_cp3" ),
+		TISSUENET_CP3( "tissuenet_cp3" ),
+		LIVECELL_CP3( "livecell_cp3" ),
+		YEAST_PHCP3( "yeast_PhC_cp3" ),
+		YEAST_BFCP3( "yeast_BF_cp3" ),
+		BACT_PHASE_CP3( "bact_phase_cp3" ),
+		BACT_FLUOR_CP3( "bact_fluor_cp3" ),
+		DEEPBACS_CP3( "deepbacs_cp3" ),
+		CYTO2( "cyto2" ),
+		CYTO( "cyto" ),
+		CPX( "CPx" ),
+		TRANSFORMER_CP3( "transformer_cp3" ),
+		NEURIPS_CELLPOSE_DEFAULT( "neurips_cellpose_default" ),
+		NEURIPS_CELLPOSE_TRANSFORMER( "neurips_cellpose_transformer" ),
+		NEURIPS_GRAYSCALE_CYTO2( "neurips_grayscale_cyto2" ),
+		CP( "CP" ),
+		CPX2( "CPx" ),
+		TN1( "TN1" ),
+		TN2( "TN2" ),
+		TN3( "TN3" ),
+		LC1( "LC1" ),
+		LC2( "LC2" ),
+		LC3( "LC3" ),
+		LC4( "LC4" );
 
 		private final String modelName;
 
-		private final boolean hasSizeModel;
-
-		MODEL_TYPE( final String modelName, final boolean hasSizeModel )
+		MODEL_TYPE( final String modelName )
 		{
 			this.modelName = modelName;
-			this.hasSizeModel = hasSizeModel;
 		}
 
 		public String getModelName()
 		{
 			return modelName;
-		}
-
-		public boolean hasSizeModel()
-		{
-			return hasSizeModel;
 		}
 
 		@Override
@@ -129,16 +119,6 @@ public class Cellpose extends Segmentation3D
 			}
 			throw new IllegalArgumentException( "No enum constant for model name: " + modelName );
 		}
-	}
-
-	public double getAnisotropy()
-	{
-		return anisotropy;
-	}
-
-	public void setAnisotropy( final double anisotropy )
-	{
-		this.anisotropy = anisotropy;
 	}
 
 	public double getCellprobThreshold()
@@ -166,11 +146,6 @@ public class Cellpose extends Segmentation3D
 		return is3D ? "True" : "False";
 	}
 
-	private String anisotropyParam()
-	{
-		return is3D() ? String.valueOf( anisotropy ) : "1.0";
-	}
-
 	private String getLoadModelCommand()
 	{
 		return "model = models.CellposeModel(pretrained_model=\"" + modelType.getModelName() + "\", gpu=True)" + "\n";
@@ -178,13 +153,10 @@ public class Cellpose extends Segmentation3D
 
 	private String getEvaluateModelCommand()
 	{
-		String diams = modelType.hasSizeModel() ? ", diams" : "";
-		return "segmentation, flows, styles" + diams + " = model.eval("
+		return "segmentation, flows, styles = model.eval("
 				+ "image_ndarray, "
 				+ "diameter=None, "
-				+ "channels=[0, 0], "
 				+ "do_3D=" + is3DParam() + ", "
-				+ "anisotropy=" + anisotropyParam() + ", "
 				+ "z_axis=0, "
 				+ "normalize=True, "
 				+ "batch_size=8, "

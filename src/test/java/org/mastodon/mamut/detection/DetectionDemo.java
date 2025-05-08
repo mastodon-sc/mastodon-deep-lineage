@@ -22,7 +22,7 @@ public class DetectionDemo
 		Img< FloatType > img = imgOpener.openImgs( filePath, new FloatType() ).get( 0 );
 		// Display the first image in a new BDV instance
 		BdvStackSource< ? > bdvSource1 = BdvFunctions.show( img, "Original Image" );
-		try (Cellpose cellpose = new Cellpose( Cellpose.MODEL_TYPE.CYTO ))
+		try (Cellpose4 cellpose = new Cellpose4( Cellpose4.MODEL_TYPE.CYTO ))
 		{
 			long startTime = System.currentTimeMillis();
 			Img< FloatType > cellposeSegmentation = cellpose.segmentImage( img );

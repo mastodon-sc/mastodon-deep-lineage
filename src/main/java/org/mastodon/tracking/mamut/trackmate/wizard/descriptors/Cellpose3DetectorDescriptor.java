@@ -49,8 +49,8 @@ import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
 
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.detection.Cellpose;
-import org.mastodon.mamut.detection.CellposeDetector;
+import org.mastodon.mamut.detection.Cellpose3;
+import org.mastodon.mamut.detection.Cellpose3Detector;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.mastodon.tracking.mamut.trackmate.Settings;
@@ -62,17 +62,17 @@ import org.mastodon.views.bdv.ViewerFrameMamut;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = SpotDetectorDescriptor.class, name = "Cellpose spot detector configuration descriptor" )
-public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
+@Plugin( type = SpotDetectorDescriptor.class, name = "Cellpose3 spot detector configuration descriptor" )
+public class Cellpose3DetectorDescriptor extends SpotDetectorDescriptor
 {
 
 	private Settings settings;
 
-	public final static String KEY_MODEL_TYPE = "cellposeModelType";
+	public final static String KEY_MODEL_TYPE = "cellpose3ModelType";
 
-	public final static String KEY_CELL_PROBABILITY_THRESHOLD = "cellposeCellProbabilityThreshold";
+	public final static String KEY_CELL_PROBABILITY_THRESHOLD = "cellpose3CellProbabilityThreshold";
 
-	public final static String KEY_RESPECT_ANISOTROPY = "cellposeRespectAnisotropy";
+	public final static String KEY_RESPECT_ANISOTROPY = "cellpose3RespectAnisotropy";
 
 	private static final Icon PREVIEW_ICON =
 			new ImageIcon( Objects.requireNonNull( Wizard.class.getResource( "led-icon-eye-green.png" ) ) );
@@ -83,12 +83,12 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 
 	private final Model previewModel;
 
-	private static final String IDENTIFIER = "Configure Cellpose detector";
+	private static final String IDENTIFIER = "Configure Cellpose3 detector";
 
 	@Parameter
 	private OpService ops;
 
-	public CellposeDetectorDescriptor()
+	public Cellpose3DetectorDescriptor()
 
 	{
 		this.panelIdentifier = IDENTIFIER;
@@ -102,7 +102,7 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 	private class ConfigPanel extends JPanel
 	{
 
-		private final JComboBox< Cellpose.MODEL_TYPE > modelType;
+		private final JComboBox< Cellpose3.MODEL_TYPE > modelType;
 
 		private final JSpinner cellProbabilityThreshold;
 
@@ -116,14 +116,14 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 		{
 			setLayout( new MigLayout( "wrap 1", "[grow]", "[]20[]" ) );
 
-			JLabel headlineLabel = new JLabel( "Configure cellpose detector" );
+			JLabel headlineLabel = new JLabel( "Configure cellpose3 detector" );
 			headlineLabel.setHorizontalAlignment( SwingConstants.LEFT );
 			headlineLabel.setFont( getFont().deriveFont( Font.BOLD ) );
 			add( headlineLabel, "growx" );
 
 			JLabel modelTypeLabel = new JLabel( "Model type:" );
 			add( modelTypeLabel, "align left, wrap" );
-			modelType = new JComboBox<>( Cellpose.MODEL_TYPE.values() );
+			modelType = new JComboBox<>( Cellpose3.MODEL_TYPE.values() );
 			add( modelType, "align left, grow" );
 
 			SpinnerNumberModel model = new SpinnerNumberModel( 0.0, 0.0, 10.0, 0.1 );
@@ -174,12 +174,12 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 		// Get the values.
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		// Get the model type.
-		final Cellpose.MODEL_TYPE modelType;
+		final Cellpose3.MODEL_TYPE modelType;
 		final Object modelTypeObject = detectorSettings.get( KEY_MODEL_TYPE );
 		if ( null == modelTypeObject )
-			modelType = Cellpose.MODEL_TYPE.CYTO; // default
+			modelType = Cellpose3.MODEL_TYPE.CYTO3; // default
 		else
-			modelType = Cellpose.MODEL_TYPE.fromString( String.valueOf( modelTypeObject ) );
+			modelType = Cellpose3.MODEL_TYPE.fromString( String.valueOf( modelTypeObject ) );
 		// Get the cell probability threshold.
 		final Object cellprobThresholdObject = detectorSettings.get( KEY_CELL_PROBABILITY_THRESHOLD );
 		final double cellprobThreshold;
@@ -229,7 +229,7 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 	@Override
 	public Collection< Class< ? extends SpotDetectorOp > > getTargetClasses()
 	{
-		return Collections.singleton( CellposeDetector.class );
+		return Collections.singleton( Cellpose3Detector.class );
 	}
 
 	@Override
@@ -250,7 +250,7 @@ public class CellposeDetectorDescriptor extends SpotDetectorDescriptor
 		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
 		panel.preview.setEnabled( false );
 		final JLabelLogger previewLogger = new JLabelLogger( panel.info );
-		new Thread( () -> executePreview( currentTimepoint, previewLogger, panel ), "Cellpose detector preview thread" ).start();
+		new Thread( () -> executePreview( currentTimepoint, previewLogger, panel ), "Cellpose3 detector preview thread" ).start();
 
 	}
 
