@@ -64,6 +64,7 @@ public class Cellpose extends Segmentation3D
 
 	public enum MODEL_TYPE
 	{
+		CELLPOSE_SAM( "cpsam", true ),
 		CYTO3( "cyto3", true ),
 		NUCLEI( "nuclei", true ),
 		CYTO2_CP3( "cyto2_cp3", false ),
@@ -172,10 +173,7 @@ public class Cellpose extends Segmentation3D
 
 	private String getLoadModelCommand()
 	{
-		if ( modelType.hasSizeModel() )
-			return "model = models.Cellpose(model_type=\"" + modelType.getModelName() + "\", gpu=True)" + "\n";
-		else
-			return "model = models.CellposeModel(model_type=\"" + modelType.getModelName() + "\", gpu=True)" + "\n";
+		return "model = models.CellposeModel(pretrained_model=\"" + modelType.getModelName() + "\", gpu=True)" + "\n";
 	}
 
 	private String getEvaluateModelCommand()
