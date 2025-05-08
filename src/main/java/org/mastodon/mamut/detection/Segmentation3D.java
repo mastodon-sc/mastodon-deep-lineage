@@ -81,7 +81,10 @@ public abstract class Segmentation3D implements AutoCloseable
 			}
 			envFile.deleteOnExit();
 			logEnvFile( envFile );
-			environment = Appose.file( envFile, "environment.yml" ).logDebug().build();
+			environment = Appose.file( envFile, "environment.yml" )
+					.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
+					.subscribeOutput( msg -> logger.info( msg.isEmpty() ? "." : msg ) )
+					.subscribeError( msg -> logger.error( msg.isEmpty() ? "." : msg ) ).build();
 		}
 		catch ( IOException e )
 		{
