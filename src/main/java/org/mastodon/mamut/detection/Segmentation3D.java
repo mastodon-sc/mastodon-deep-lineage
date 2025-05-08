@@ -103,7 +103,7 @@ public abstract class Segmentation3D implements AutoCloseable
 	public < T extends NativeType< T > > Img< T > segmentImage( final RandomAccessibleInterval< T > inputImage ) throws IOException
 	{
 		String script = generateScript();
-		logger.trace( "Running script:\n{}", script );
+		logger.debug( "Running script:\n{}", script );
 		long[] dimensions = inputImage.dimensionsAsLongArray();
 		String dimensionsAsString = Arrays.stream( dimensions ).mapToObj( String::valueOf ).collect( Collectors.joining( ", " ) );
 		logger.info( "Segmenting image with {} dimensions: ({})", inputImage.numDimensions(), dimensionsAsString );
