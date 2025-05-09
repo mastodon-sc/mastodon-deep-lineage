@@ -36,7 +36,6 @@ import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_SETUP_ID;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose4DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose4DetectorDescriptor.KEY_MODEL_TYPE;
 
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
@@ -66,7 +65,7 @@ import bdv.viewer.SourceAndConverter;
 		+ "<i>Cellpose: a generalist algorithm for cellular segmentation </i> - "
 		+ "<i>Stringer et al.</i>, 2021, Nature Methods.<br><br>"
 		+ "After the segmentation, spots are derived by fitting of ellipsoids to the pixel clouds of the detected objects.<br>"
-		+ "Different Cellpose models can be used for different types of images. A cell probability threshold can be set to allow more/less sensitive detection.<br><br>"
+		+ "A cell probability threshold can be set to allow more/less sensitive detection.<br><br>"
 		+ "<strong>When this detection method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~7GB hard disk space.</strong><br>"
 		+ "</html>" )
 public class Cellpose4Detector extends AbstractSpotDetectorOp
@@ -85,8 +84,7 @@ public class Cellpose4Detector extends AbstractSpotDetectorOp
 		// A. Read the settings map, and check validity.
 		final StringBuilder errorHolder = new StringBuilder();
 		boolean good;
-		good = checkParameter( settings, KEY_MODEL_TYPE, Cellpose4.MODEL_TYPE.class, errorHolder );
-		good = good & checkParameter( settings, KEY_SETUP_ID, Integer.class, errorHolder );
+		good = checkParameter( settings, KEY_SETUP_ID, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MIN_TIMEPOINT, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MAX_TIMEPOINT, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_CELL_PROBABILITY_THRESHOLD, Double.class, errorHolder );
@@ -100,7 +98,6 @@ public class Cellpose4Detector extends AbstractSpotDetectorOp
 		final int minTimepoint = ( int ) settings.get( KEY_MIN_TIMEPOINT );
 		final int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );
 		final int setup = ( int ) settings.get( KEY_SETUP_ID );
-		final Cellpose4.MODEL_TYPE modelType = ( Cellpose4.MODEL_TYPE ) settings.get( KEY_MODEL_TYPE );
 		final double cellProbabilityThreshold = ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD );
 
 		if ( setup < 0 || setup >= sources.size() )
@@ -120,7 +117,7 @@ public class Cellpose4Detector extends AbstractSpotDetectorOp
 		// The `statusService` can be used to show short messages.
 		statusService.showStatus( "Detecting spots using Cellpose." );
 
-		try (Cellpose4 cellpose = new Cellpose4( modelType ))
+		try (Cellpose4 cellpose = new Cellpose4())
 		{
 			for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
 			{
@@ -191,7 +188,6 @@ public class Cellpose4Detector extends AbstractSpotDetectorOp
 		defaultSettings.put( KEY_SETUP_ID, DEFAULT_SETUP_ID );
 		defaultSettings.put( KEY_MIN_TIMEPOINT, DEFAULT_MIN_TIMEPOINT );
 		defaultSettings.put( KEY_MAX_TIMEPOINT, DEFAULT_MAX_TIMEPOINT );
-		defaultSettings.put( KEY_MODEL_TYPE, Cellpose4.MODEL_TYPE.CYTO );
 		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, 0d );
 		return defaultSettings;
 	}

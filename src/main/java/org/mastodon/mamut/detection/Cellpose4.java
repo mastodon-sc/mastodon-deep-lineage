@@ -4,16 +4,13 @@ import java.io.IOException;
 
 public class Cellpose4 extends Segmentation3D
 {
-	private final MODEL_TYPE modelType;
-
 	private double cellprobThreshold = 0;
 
 	private boolean is3D = true;
 
-	public Cellpose4( final MODEL_TYPE modelType ) throws IOException
+	public Cellpose4() throws IOException
 	{
 		super();
-		this.modelType = modelType;
 	}
 
 	@Override
@@ -60,67 +57,6 @@ public class Cellpose4 extends Segmentation3D
 				+ "task.outputs['label_image'] = shared" + "\n";
 	}
 
-	public enum MODEL_TYPE
-	{
-		CPSAM( "cpsam" ),
-		CYTO3( "cyto3" ),
-		NUCLEI( "nuclei" ),
-		CYTO2_CP3( "cyto2_cp3" ),
-		TISSUENET_CP3( "tissuenet_cp3" ),
-		LIVECELL_CP3( "livecell_cp3" ),
-		YEAST_PHCP3( "yeast_PhC_cp3" ),
-		YEAST_BFCP3( "yeast_BF_cp3" ),
-		BACT_PHASE_CP3( "bact_phase_cp3" ),
-		BACT_FLUOR_CP3( "bact_fluor_cp3" ),
-		DEEPBACS_CP3( "deepbacs_cp3" ),
-		CYTO2( "cyto2" ),
-		CYTO( "cyto" ),
-		CPX( "CPx" ),
-		TRANSFORMER_CP3( "transformer_cp3" ),
-		NEURIPS_CELLPOSE_DEFAULT( "neurips_cellpose_default" ),
-		NEURIPS_CELLPOSE_TRANSFORMER( "neurips_cellpose_transformer" ),
-		NEURIPS_GRAYSCALE_CYTO2( "neurips_grayscale_cyto2" ),
-		CP( "CP" ),
-		CPX2( "CPx" ),
-		TN1( "TN1" ),
-		TN2( "TN2" ),
-		TN3( "TN3" ),
-		LC1( "LC1" ),
-		LC2( "LC2" ),
-		LC3( "LC3" ),
-		LC4( "LC4" );
-
-		private final String modelName;
-
-		MODEL_TYPE( final String modelName )
-		{
-			this.modelName = modelName;
-		}
-
-		public String getModelName()
-		{
-			return modelName;
-		}
-
-		@Override
-		public String toString()
-		{
-			return modelName;
-		}
-
-		public static MODEL_TYPE fromString( final String modelName )
-		{
-			for ( MODEL_TYPE type : MODEL_TYPE.values() )
-			{
-				if ( type.modelName.equalsIgnoreCase( modelName ) )
-				{
-					return type;
-				}
-			}
-			throw new IllegalArgumentException( "No enum constant for model name: " + modelName );
-		}
-	}
-
 	public double getCellprobThreshold()
 	{
 		return cellprobThreshold;
@@ -148,7 +84,7 @@ public class Cellpose4 extends Segmentation3D
 
 	private String getLoadModelCommand()
 	{
-		return "model = models.CellposeModel(pretrained_model=\"" + modelType.getModelName() + "\", gpu=True)" + "\n";
+		return "model = models.CellposeModel(gpu=True)" + "\n";
 	}
 
 	private String getEvaluateModelCommand()

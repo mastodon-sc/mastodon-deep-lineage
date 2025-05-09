@@ -37,7 +37,6 @@ import java.util.Objects;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -48,7 +47,6 @@ import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
 
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.detection.Cellpose4;
 import org.mastodon.mamut.detection.Cellpose4Detector;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
@@ -66,8 +64,6 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 {
 
 	private Settings settings;
-
-	public final static String KEY_MODEL_TYPE = "cellpose4ModelType";
 
 	public final static String KEY_CELL_PROBABILITY_THRESHOLD = "cellpose4CellProbabilityThreshold";
 
@@ -98,9 +94,6 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 	 */
 	private class ConfigPanel extends JPanel
 	{
-
-		private final JComboBox< Cellpose4.MODEL_TYPE > modelType;
-
 		private final JSpinner cellProbabilityThreshold;
 
 		private final JButton preview = new JButton( "Preview", PREVIEW_ICON );
@@ -115,11 +108,6 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 			headlineLabel.setHorizontalAlignment( SwingConstants.LEFT );
 			headlineLabel.setFont( getFont().deriveFont( Font.BOLD ) );
 			add( headlineLabel, "growx" );
-
-			JLabel modelTypeLabel = new JLabel( "Model type:" );
-			add( modelTypeLabel, "align left, wrap" );
-			modelType = new JComboBox<>( Cellpose4.MODEL_TYPE.values() );
-			add( modelType, "align left, grow" );
 
 			SpinnerNumberModel model = new SpinnerNumberModel( 0.0, 0.0, 10.0, 0.1 );
 			cellProbabilityThreshold = new JSpinner( model );
@@ -163,13 +151,6 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 
 		// Get the values.
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
-		// Get the model type.
-		final Cellpose4.MODEL_TYPE modelType;
-		final Object modelTypeObject = detectorSettings.get( KEY_MODEL_TYPE );
-		if ( null == modelTypeObject )
-			modelType = Cellpose4.MODEL_TYPE.CPSAM; // default
-		else
-			modelType = Cellpose4.MODEL_TYPE.fromString( String.valueOf( modelTypeObject ) );
 		// Get the cell probability threshold.
 		final Object cellprobThresholdObject = detectorSettings.get( KEY_CELL_PROBABILITY_THRESHOLD );
 		final double cellprobThreshold;
@@ -180,7 +161,6 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 
 		// Show them in the config panel.
 		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
-		panel.modelType.setSelectedItem( modelType );
 		panel.cellProbabilityThreshold.setValue( cellprobThreshold );
 	}
 
@@ -196,10 +176,7 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 
 		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
-		detectorSettings.put( KEY_MODEL_TYPE, panel.modelType.getSelectedItem() );
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, panel.cellProbabilityThreshold.getValue() );
-
-		logger.info( String.format( "  - model type: %s\n", settings.values.getDetectorSettings().get( KEY_MODEL_TYPE ) ) );
 		logger.info( String.format( "  - cell probability threshold: %s\n",
 				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
 
@@ -264,7 +241,6 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 
 		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
-		detectorSettings.put( KEY_MODEL_TYPE, panel.modelType.getSelectedItem() );
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, panel.cellProbabilityThreshold.getValue() );
 	}
 }
