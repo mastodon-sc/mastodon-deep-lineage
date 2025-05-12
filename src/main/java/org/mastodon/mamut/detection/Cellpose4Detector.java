@@ -36,6 +36,7 @@ import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_SETUP_ID;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose4DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose4DetectorDescriptor.KEY_FLOW_THRESHOLD;
 
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
@@ -88,6 +89,7 @@ public class Cellpose4Detector extends AbstractSpotDetectorOp
 		good = good & checkParameter( settings, KEY_MIN_TIMEPOINT, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MAX_TIMEPOINT, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_CELL_PROBABILITY_THRESHOLD, Double.class, errorHolder );
+		good = good & checkParameter( settings, KEY_FLOW_THRESHOLD, Double.class, errorHolder );
 		if ( !good )
 		{
 			errorMessage = errorHolder.toString();
@@ -99,6 +101,7 @@ public class Cellpose4Detector extends AbstractSpotDetectorOp
 		final int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );
 		final int setup = ( int ) settings.get( KEY_SETUP_ID );
 		final double cellProbabilityThreshold = ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD );
+		final double flowThreshold = ( double ) settings.get( KEY_FLOW_THRESHOLD );
 
 		if ( setup < 0 || setup >= sources.size() )
 		{
@@ -156,6 +159,7 @@ public class Cellpose4Detector extends AbstractSpotDetectorOp
 				boolean is3D = voxelDimensions.length == 3;
 				cellpose.set3D( is3D );
 				cellpose.setCellprobThreshold( cellProbabilityThreshold );
+				cellpose.setFlowThreshold( flowThreshold );
 				Img< ? > segmentation = cellpose.segmentImage( Cast.unchecked( image ) );
 
 				final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
@@ -188,7 +192,8 @@ public class Cellpose4Detector extends AbstractSpotDetectorOp
 		defaultSettings.put( KEY_SETUP_ID, DEFAULT_SETUP_ID );
 		defaultSettings.put( KEY_MIN_TIMEPOINT, DEFAULT_MIN_TIMEPOINT );
 		defaultSettings.put( KEY_MAX_TIMEPOINT, DEFAULT_MAX_TIMEPOINT );
-		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, 0d );
+		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, Cellpose4.DEFAULT_CELLPROB_THRESHOLD );
+		defaultSettings.put( KEY_FLOW_THRESHOLD, Cellpose4.DEFAULT_FLOW_THRESHOLD );
 		return defaultSettings;
 	}
 }

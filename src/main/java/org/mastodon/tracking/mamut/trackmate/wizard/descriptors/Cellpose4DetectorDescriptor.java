@@ -47,6 +47,7 @@ import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
 
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.detection.Cellpose4;
 import org.mastodon.mamut.detection.Cellpose4Detector;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
@@ -66,6 +67,8 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 	private Settings settings;
 
 	public final static String KEY_CELL_PROBABILITY_THRESHOLD = "cellpose4CellProbabilityThreshold";
+
+	public final static String KEY_FLOW_THRESHOLD = "cellpose4flowThreshold";
 
 	private static final Icon PREVIEW_ICON =
 			new ImageIcon( Objects.requireNonNull( Wizard.class.getResource( "led-icon-eye-green.png" ) ) );
@@ -96,6 +99,8 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 	{
 		private final JSpinner cellProbabilityThreshold;
 
+		private final JSpinner flowThreshold;
+
 		private final JButton preview = new JButton( "Preview", PREVIEW_ICON );
 
 		private final JLabel info = new JLabel( "", JLabel.RIGHT );
@@ -109,13 +114,22 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 			headlineLabel.setFont( getFont().deriveFont( Font.BOLD ) );
 			add( headlineLabel, "growx" );
 
-			SpinnerNumberModel model = new SpinnerNumberModel( 0.0, 0.0, 10.0, 0.1 );
-			cellProbabilityThreshold = new JSpinner( model );
+			SpinnerNumberModel cellProbabilityModel = new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 );
+			cellProbabilityThreshold = new JSpinner( cellProbabilityModel );
 
-			String cellProbText = "<html>Cell probability threshold:<br>0 ... more detections<br>10 ... less detections</html>";
+			String cellProbText =
+					"<html>Cell probability threshold:<br>0 ... more detections<br>6 ... less detections (in dim regions)</html>";
 			JLabel cellProbLabel = new JLabel( cellProbText );
 			add( cellProbLabel, "align left, wmin 200, wrap" );
 			add( cellProbabilityThreshold, "align left, grow" );
+
+			SpinnerNumberModel flowModel = new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 );
+			flowThreshold = new JSpinner( flowModel );
+
+			String flowText = "<html>Flow threshold:<br>0 ... less (ill shaped) detections<br>6 ... more detections</html>";
+			JLabel flowLabel = new JLabel( flowText );
+			add( flowLabel, "align left, wmin 200, wrap" );
+			add( flowThreshold, "align left, grow" );
 
 			preview.addActionListener( ( e ) -> preview() );
 			add( preview, "align right, wrap" );
@@ -155,13 +169,22 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 		final Object cellprobThresholdObject = detectorSettings.get( KEY_CELL_PROBABILITY_THRESHOLD );
 		final double cellprobThreshold;
 		if ( null == cellprobThresholdObject )
-			cellprobThreshold = 3d; // default
+			cellprobThreshold = Cellpose4.DEFAULT_CELLPROB_THRESHOLD; // default
 		else
 			cellprobThreshold = Double.parseDouble( String.valueOf( cellprobThresholdObject ) );
+
+		// Get the flow threshold.
+		final Object flowThresholdObject = detectorSettings.get( KEY_FLOW_THRESHOLD );
+		final double flowThreshold;
+		if ( null == flowThresholdObject )
+			flowThreshold = Cellpose4.DEFAULT_FLOW_THRESHOLD; // default
+		else
+			flowThreshold = Double.parseDouble( String.valueOf( flowThresholdObject ) );
 
 		// Show them in the config panel.
 		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
 		panel.cellProbabilityThreshold.setValue( cellprobThreshold );
+		panel.flowThreshold.setValue( flowThreshold );
 	}
 
 	@Override
@@ -179,8 +202,9 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, panel.cellProbabilityThreshold.getValue() );
 		logger.info( String.format( "  - cell probability threshold: %s\n",
 				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
-
-		logger.info( "" );
+		detectorSettings.put( KEY_FLOW_THRESHOLD, panel.flowThreshold.getValue() );
+		logger.info( String.format( "  - flow threshold: %s\n",
+				settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
 	}
 
 	@Override
@@ -242,5 +266,6 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, panel.cellProbabilityThreshold.getValue() );
+		detectorSettings.put( KEY_FLOW_THRESHOLD, panel.flowThreshold.getValue() );
 	}
 }
