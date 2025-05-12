@@ -10,7 +10,13 @@ public class Cellpose3 extends Segmentation3D
 
 	private double cellprobThreshold = 0;
 
+	private double flowThreshold = 0;
+
 	private boolean is3D = true;
+
+	public final static double DEFAULT_CELLPROB_THRESHOLD = 3d;
+
+	public final static double DEFAULT_FLOW_THRESHOLD = 0.4d;
 
 	public Cellpose3( final MODEL_TYPE modelType ) throws IOException
 	{
@@ -150,6 +156,16 @@ public class Cellpose3 extends Segmentation3D
 		this.cellprobThreshold = cellprobThreshold;
 	}
 
+	public double getFlowThreshold()
+	{
+		return flowThreshold;
+	}
+
+	public void setFlowThreshold( final double flowThreshold )
+	{
+		this.flowThreshold = flowThreshold;
+	}
+
 	public boolean is3D()
 	{
 		return is3D;
@@ -191,6 +207,7 @@ public class Cellpose3 extends Segmentation3D
 				+ "normalize=True, "
 				+ "batch_size=8, "
 				+ "flow3D_smooth=0, "
+				+ "flow_threshold=" + flowThreshold + ", "
 				+ "cellprob_threshold=" + cellprobThreshold + ")" + "\n";
 	}
 }

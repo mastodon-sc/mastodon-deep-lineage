@@ -72,6 +72,8 @@ public class Cellpose3DetectorDescriptor extends SpotDetectorDescriptor
 
 	public final static String KEY_CELL_PROBABILITY_THRESHOLD = "cellpose3CellProbabilityThreshold";
 
+	public final static String KEY_FLOW_THRESHOLD = "cellpose3FlowThreshold";
+
 	public final static String KEY_RESPECT_ANISOTROPY = "cellpose3RespectAnisotropy";
 
 	private static final Icon PREVIEW_ICON =
@@ -106,6 +108,8 @@ public class Cellpose3DetectorDescriptor extends SpotDetectorDescriptor
 
 		private final JSpinner cellProbabilityThreshold;
 
+		private final JSpinner flowThreshold;
+
 		private final JCheckBox respectAnisotropy = new JCheckBox( "Respect anisotropy" );
 
 		private final JButton preview = new JButton( "Preview", PREVIEW_ICON );
@@ -126,13 +130,23 @@ public class Cellpose3DetectorDescriptor extends SpotDetectorDescriptor
 			modelType = new JComboBox<>( Cellpose3.MODEL_TYPE.values() );
 			add( modelType, "align left, grow" );
 
-			SpinnerNumberModel model = new SpinnerNumberModel( 0.0, 0.0, 10.0, 0.1 );
+			SpinnerNumberModel model = new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 );
 			cellProbabilityThreshold = new JSpinner( model );
 
-			String cellProbText = "<html>Cell probability threshold:<br>0 ... more detections<br>10 ... less detections</html>";
+			String cellProbText =
+					"<html>Cell probability threshold:<br>0 ... more detections<br>6 ... less detections (in dim regions)</html>";
 			JLabel cellProbLabel = new JLabel( cellProbText );
 			add( cellProbLabel, "align left, wmin 200, wrap" );
 			add( cellProbabilityThreshold, "align left, grow" );
+
+			SpinnerNumberModel flowModel = new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 );
+			flowThreshold = new JSpinner( flowModel );
+
+			String flowText =
+					"<html>Flow threshold:<br>0 ... less (ill shaped) detections<br>6 ... more detections</html>";
+			JLabel flowLabel = new JLabel( flowText );
+			add( flowLabel, "align left, wmin 200, wrap" );
+			add( flowThreshold, "align left, grow" );
 
 			add( respectAnisotropy, "align left, wrap" );
 			String respectAnisotropyText =
@@ -184,9 +198,18 @@ public class Cellpose3DetectorDescriptor extends SpotDetectorDescriptor
 		final Object cellprobThresholdObject = detectorSettings.get( KEY_CELL_PROBABILITY_THRESHOLD );
 		final double cellprobThreshold;
 		if ( null == cellprobThresholdObject )
-			cellprobThreshold = 3d; // default
+			cellprobThreshold = Cellpose3.DEFAULT_CELLPROB_THRESHOLD;
 		else
 			cellprobThreshold = Double.parseDouble( String.valueOf( cellprobThresholdObject ) );
+
+		// Get the flow threshold.
+		final Object flowThresholdObject = detectorSettings.get( KEY_FLOW_THRESHOLD );
+		final double flowThreshold;
+		if ( null == flowThresholdObject )
+			flowThreshold = Cellpose3.DEFAULT_FLOW_THRESHOLD;
+		else
+			flowThreshold = Double.parseDouble( String.valueOf( flowThresholdObject ) );
+
 		// Get the anisotropy.
 		final Object respectAnisotropyObject = detectorSettings.get( KEY_RESPECT_ANISOTROPY );
 		final boolean respectAnisotropy;
@@ -199,6 +222,7 @@ public class Cellpose3DetectorDescriptor extends SpotDetectorDescriptor
 		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
 		panel.modelType.setSelectedItem( modelType );
 		panel.cellProbabilityThreshold.setValue( cellprobThreshold );
+		panel.flowThreshold.setValue( flowThreshold );
 		panel.respectAnisotropy.setSelected( respectAnisotropy );
 	}
 
@@ -216,14 +240,14 @@ public class Cellpose3DetectorDescriptor extends SpotDetectorDescriptor
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_MODEL_TYPE, panel.modelType.getSelectedItem() );
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, panel.cellProbabilityThreshold.getValue() );
+		detectorSettings.put( KEY_FLOW_THRESHOLD, panel.flowThreshold.getValue() );
 		detectorSettings.put( KEY_RESPECT_ANISOTROPY, panel.respectAnisotropy.isSelected() );
 
 		logger.info( String.format( "  - model type: %s\n", settings.values.getDetectorSettings().get( KEY_MODEL_TYPE ) ) );
 		logger.info( String.format( "  - cell probability threshold: %s\n",
 				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
+		logger.info( String.format( "  - flow threshold: %s\n", settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
 		logger.info( String.format( "  - respect anisotropy: %s\n", settings.values.getDetectorSettings().get( KEY_RESPECT_ANISOTROPY ) ) );
-
-		logger.info( "" );
 	}
 
 	@Override
@@ -286,6 +310,7 @@ public class Cellpose3DetectorDescriptor extends SpotDetectorDescriptor
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_MODEL_TYPE, panel.modelType.getSelectedItem() );
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, panel.cellProbabilityThreshold.getValue() );
+		detectorSettings.put( KEY_FLOW_THRESHOLD, panel.flowThreshold.getValue() );
 		detectorSettings.put( KEY_RESPECT_ANISOTROPY, panel.respectAnisotropy.isSelected() );
 	}
 }

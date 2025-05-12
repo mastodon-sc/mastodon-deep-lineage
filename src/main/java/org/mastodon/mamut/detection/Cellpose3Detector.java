@@ -38,6 +38,7 @@ import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_RESPECT_ANISOTROPY;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_MODEL_TYPE;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_FLOW_THRESHOLD;
 
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
@@ -92,6 +93,7 @@ public class Cellpose3Detector extends AbstractSpotDetectorOp
 		good = good & checkParameter( settings, KEY_MIN_TIMEPOINT, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MAX_TIMEPOINT, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_CELL_PROBABILITY_THRESHOLD, Double.class, errorHolder );
+		good = good & checkParameter( settings, KEY_FLOW_THRESHOLD, Double.class, errorHolder );
 		good = good & checkParameter( settings, KEY_RESPECT_ANISOTROPY, Boolean.class, errorHolder );
 		if ( !good )
 		{
@@ -105,6 +107,7 @@ public class Cellpose3Detector extends AbstractSpotDetectorOp
 		final int setup = ( int ) settings.get( KEY_SETUP_ID );
 		final Cellpose3.MODEL_TYPE modelType = ( Cellpose3.MODEL_TYPE ) settings.get( KEY_MODEL_TYPE );
 		final double cellProbabilityThreshold = ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD );
+		final double flowThreshold = ( double ) settings.get( KEY_FLOW_THRESHOLD );
 		final boolean respectAnisotropy = ( boolean ) settings.get( KEY_RESPECT_ANISOTROPY );
 
 		if ( setup < 0 || setup >= sources.size() )
@@ -165,6 +168,7 @@ public class Cellpose3Detector extends AbstractSpotDetectorOp
 				double anisotropy = respectAnisotropy ? getAnisotropy( voxelDimensions ) : 1.0;
 				cellpose.setAnisotropy( ( float ) anisotropy );
 				cellpose.setCellprobThreshold( cellProbabilityThreshold );
+				cellpose.setFlowThreshold( flowThreshold );
 				Img< ? > segmentation = cellpose.segmentImage( Cast.unchecked( image ) );
 
 				final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
@@ -198,7 +202,9 @@ public class Cellpose3Detector extends AbstractSpotDetectorOp
 		defaultSettings.put( KEY_MIN_TIMEPOINT, DEFAULT_MIN_TIMEPOINT );
 		defaultSettings.put( KEY_MAX_TIMEPOINT, DEFAULT_MAX_TIMEPOINT );
 		defaultSettings.put( KEY_MODEL_TYPE, Cellpose3.MODEL_TYPE.CYTO3 );
-		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, 0d );
+		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, Cellpose3.DEFAULT_CELLPROB_THRESHOLD );
+		defaultSettings.put( KEY_FLOW_THRESHOLD, Cellpose3.DEFAULT_FLOW_THRESHOLD );
+		defaultSettings.put( KEY_RESPECT_ANISOTROPY, true );
 		return defaultSettings;
 	}
 
