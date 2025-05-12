@@ -155,9 +155,7 @@ public class Cellpose4Detector extends AbstractSpotDetectorOp
 				 * channel. It is always 3D. If the source is 2D, the 3rd dimension
 				 * will have a size of 1.
 				 */
-				double[] voxelDimensions = source.getVoxelDimensions().dimensionsAsDoubleArray();
-				boolean is3D = voxelDimensions.length == 3;
-				cellpose.set3D( is3D );
+				cellpose.set3D( is3D( image ) );
 				cellpose.setCellprobThreshold( cellProbabilityThreshold );
 				cellpose.setFlowThreshold( flowThreshold );
 				Img< ? > segmentation = cellpose.segmentImage( Cast.unchecked( image ) );
@@ -195,5 +193,22 @@ public class Cellpose4Detector extends AbstractSpotDetectorOp
 		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, Cellpose4.DEFAULT_CELLPROB_THRESHOLD );
 		defaultSettings.put( KEY_FLOW_THRESHOLD, Cellpose4.DEFAULT_FLOW_THRESHOLD );
 		return defaultSettings;
+	}
+
+	private boolean is3D( final RandomAccessibleInterval< ? > image )
+	{
+		long[] dimensions = image.dimensionsAsLongArray();
+		if ( dimensions.length <= 2 )
+			return false;
+		else
+		{
+			int nonPlaneDimensionCount = 0;
+			for ( final long dimension : dimensions )
+			{
+				if ( dimension > 1 )
+					nonPlaneDimensionCount++;
+			}
+			return nonPlaneDimensionCount > 2;
+		}
 	}
 }

@@ -163,8 +163,7 @@ public class Cellpose3Detector extends AbstractSpotDetectorOp
 				 * will have a size of 1.
 				 */
 				double[] voxelDimensions = source.getVoxelDimensions().dimensionsAsDoubleArray();
-				boolean is3D = voxelDimensions.length == 3;
-				cellpose.set3D( is3D );
+				cellpose.set3D( is3D( image ) );
 				double anisotropy = respectAnisotropy ? getAnisotropy( voxelDimensions ) : 1.0;
 				cellpose.setAnisotropy( ( float ) anisotropy );
 				cellpose.setCellprobThreshold( cellProbabilityThreshold );
@@ -230,6 +229,23 @@ public class Cellpose3Detector extends AbstractSpotDetectorOp
 			throw new ArithmeticException( "Voxel size of zero detected. This is not allowed." );
 
 		return highestValue / lowestValue;
+	}
+
+	private boolean is3D( final RandomAccessibleInterval< ? > image )
+	{
+		long[] dimensions = image.dimensionsAsLongArray();
+		if ( dimensions.length <= 2 )
+			return false;
+		else
+		{
+			int nonPlaneDimensionCount = 0;
+			for ( final long dimension : dimensions )
+			{
+				if ( dimension > 1 )
+					nonPlaneDimensionCount++;
+			}
+			return nonPlaneDimensionCount > 2;
+		}
 	}
 
 }
