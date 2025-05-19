@@ -39,8 +39,8 @@ public class Cellpose3 extends Segmentation3D
 				+ "    - cellpose==3.1.1.2\n"
 				+ "    - appose\n"
 				+ "  - pytorch\n"
-				+ "  - pytorch-cuda=11.8\n"
-				+ "  - numpy=2.0.2\n";
+				+ "  - pytorch-cuda\n"
+				+ "  - numpy\n";
 	}
 
 	@Override
