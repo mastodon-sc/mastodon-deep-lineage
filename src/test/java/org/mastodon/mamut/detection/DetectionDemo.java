@@ -36,10 +36,10 @@ public class DetectionDemo
 		{
 			throw new RuntimeException( e );
 		}
-		try (StarDist3D starDist3D = new StarDist3D( starDistModelPath ))
+		try (StarDist starDist = new StarDist( null ))
 		{
 			long startTime = System.currentTimeMillis();
-			Img< FloatType > starDistSegmentation = starDist3D.segmentImage( img );
+			Img< FloatType > starDistSegmentation = starDist.segmentImage( img );
 			long endTime = System.currentTimeMillis();
 			System.out.println( "StarDist segmentation time: " + ( endTime - startTime ) + " ms" );
 			// Add star dist segmentation as a third channel in the same BDV instance
