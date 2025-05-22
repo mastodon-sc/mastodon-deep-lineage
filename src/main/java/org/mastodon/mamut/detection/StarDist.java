@@ -140,7 +140,7 @@ public class StarDist extends Segmentation3D
 				+ "guessed_tiles = model._guess_n_tiles(image_normalized)" + "\n"
 				+ "task.update(message=\"Guessed tiles: \" + str(guessed_tiles))" + "\n"
 				+ "\n"
-				+ "label_image, details = model.predict_instances(image_normalized, axes='ZYX', n_tiles=guessed_tiles)" + "\n"
+				+ getPredictionCommand()
 				+ "shared = appose.NDArray(image.dtype, image.shape)" + "\n"
 				+ "shared.ndarray()[:] = label_image" + "\n"
 				+ "task.outputs['label_image'] = shared" + "\n";
@@ -162,6 +162,26 @@ public class StarDist extends Segmentation3D
 		if ( modelType.is2D() )
 			return "from stardist.models import StarDist2D" + "\n ";
 		return "from stardist.models import StarDist3D" + "\n ";
+	}
+
+	private String getPredictionCommand()
+	{
+		String axes;
+		if ( modelType.getModelPath() == null )
+		{
+			if ( dataIs2D )
+				axes = "YX";
+			else
+				axes = "ZYX";
+		}
+		else
+		{
+			if ( modelType.is2D() )
+				axes = "YX";
+			else
+				axes = "ZYX";
+		}
+		return "label_image, details = model.predict_instances(image_normalized, axes='" + axes + "', n_tiles=guessed_tiles)" + "\n";
 	}
 
 	private String getLoadModelCommand()
