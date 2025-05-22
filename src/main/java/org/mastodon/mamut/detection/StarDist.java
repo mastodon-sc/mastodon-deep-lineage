@@ -129,9 +129,9 @@ public class StarDist extends Segmentation3D
 				+ "\n"
 				+ "task.update(message=\"Imports completed\")" + "\n"
 				+ "np.random.seed(6)" + "\n"
-				+ "axes_normalize = (0, 1, 2)" + "\n"
+				+ getAxesNormalizeCommand()
 				+ "\n"
-				+ "task.update(message=\"Loading StarDist pretrained 3D model\")" + "\n"
+				+ "task.update(message=\"Loading StarDist pretrained model\")" + "\n"
 				+ getLoadModelCommand()
 				+ "image_ndarray = image.ndarray()" + "\n"
 				+ "image_normalized = normalize(image_ndarray, 1, 99.8, axis=axes_normalize)" + "\n"
@@ -167,6 +167,19 @@ public class StarDist extends Segmentation3D
 		if ( modelType.is2D() )
 			return "from stardist.models import StarDist2D" + "\n ";
 		return "from stardist.models import StarDist3D" + "\n ";
+	}
+
+	private String getAxesNormalizeCommand()
+	{
+		if ( modelType.getModelPath() == null )
+		{
+			if ( dataIs2D )
+				return "axes_normalize = (0, 1)" + "\n ";
+			return "axes_normalize = (0, 1, 2)" + "\n ";
+		}
+		if ( modelType.is2D() )
+			return "axes_normalize = (0, 1)" + "\n ";
+		return "axes_normalize = (0, 1, 2)" + "\n ";
 	}
 
 	private String getPredictionCommand()
