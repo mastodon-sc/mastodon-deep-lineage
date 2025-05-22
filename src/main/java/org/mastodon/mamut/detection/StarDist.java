@@ -174,11 +174,11 @@ public class StarDist extends Segmentation3D
 		if ( modelType.getModelPath() == null )
 		{
 			if ( dataIs2D )
-				return "axes_normalize = (0, 1)" + "\n ";
+				return "axes_normalize = (0, 1, 2)" + "\n ";
 			return "axes_normalize = (0, 1, 2)" + "\n ";
 		}
 		if ( modelType.is2D() )
-			return "axes_normalize = (0, 1)" + "\n ";
+			return "axes_normalize = (0, 1, 2)" + "\n ";
 		return "axes_normalize = (0, 1, 2)" + "\n ";
 	}
 
@@ -188,14 +188,14 @@ public class StarDist extends Segmentation3D
 		if ( modelType.getModelPath() == null )
 		{
 			if ( dataIs2D )
-				axes = "YX";
+				axes = "ZYX";
 			else
 				axes = "ZYX";
 		}
 		else
 		{
 			if ( modelType.is2D() )
-				axes = "YX";
+				axes = "ZYX";
 			else
 				axes = "ZYX";
 		}
