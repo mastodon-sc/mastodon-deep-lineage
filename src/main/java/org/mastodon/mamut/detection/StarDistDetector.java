@@ -38,7 +38,7 @@ import bdv.viewer.SourceAndConverter;
 		+ "<i>Uwe Schmidt, Martin Weigert, Coleman Broaddus, and Gene Myers</i>, International Conference on Medical Image Computing and Computer-Assisted Intervention (MICCAI), Granada, Spain, 2018.<br><br>"
 		+ "After the segmentation, spots are derived by fitting of ellipsoids to the pixel clouds of the detected objects.<br>"
 		+ "A cell probability threshold can be set to allow more/less sensitive detection.<br><br>"
-		+ "<strong>When this detection method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~7GB hard disk space.</strong><br>"
+		+ "<strong>When this detection method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~5.5GB hard disk space.</strong><br>"
 		+ "</html>" )
 public class StarDistDetector extends AbstractSpotDetectorOp
 {

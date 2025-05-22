@@ -67,7 +67,7 @@ import bdv.viewer.SourceAndConverter;
 		+ "<i>Stringer et al.</i>, 2021, Nature Methods.<br><br>"
 		+ "After the segmentation, spots are derived by fitting of ellipsoids to the pixel clouds of the detected objects.<br>"
 		+ "A cell probability threshold can be set to allow more/less sensitive detection.<br><br>"
-		+ "<strong>When this detection method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~7GB hard disk space.</strong><br>"
+		+ "<strong>When this detection method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~9GB hard disk space.</strong><br>"
 		+ "</html>" )
 public class Cellpose4Detector extends AbstractSpotDetectorOp
 {

@@ -70,7 +70,7 @@ import bdv.viewer.SourceAndConverter;
 		+ "After the segmentation, spots are derived by fitting of ellipsoids to the pixel clouds of the detected objects.<br>"
 		+ "Different Cellpose models can be used for different types of images. A cell probability threshold can be set to allow more/less sensitive detection.<br>"
 		+ "For 3D data, anisotropy can be respected.<br><br>"
-		+ "<strong>When this detection method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~7GB hard disk space.</strong><br>"
+		+ "<strong>When this detection method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~7.5GB hard disk space.</strong><br>"
 		+ "</html>" )
 public class Cellpose3Detector extends AbstractSpotDetectorOp
 {
