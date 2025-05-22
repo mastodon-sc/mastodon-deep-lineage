@@ -134,6 +134,7 @@ public class StarDistDetector extends AbstractSpotDetectorOp
 				 * channel. It is always 3D. If the source is 2D, the 3rd dimension
 				 * will have a size of 1.
 				 */
+				starDist.setDataIs2D( !isData3D );
 				Img< ? > segmentation = starDist.segmentImage( Cast.unchecked( image ) );
 
 				final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );

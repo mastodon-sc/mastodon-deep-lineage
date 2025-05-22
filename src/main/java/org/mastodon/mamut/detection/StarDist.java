@@ -151,6 +151,11 @@ public class StarDist extends Segmentation3D
 		return modelType;
 	}
 
+	public void setDataIs2D( final boolean dataIs2D )
+	{
+		this.dataIs2D = dataIs2D;
+	}
+
 	private String getImportStarDistCommand()
 	{
 		if ( modelType.getModelPath() == null )
