@@ -171,35 +171,12 @@ public class StarDist extends Segmentation3D
 
 	private String getAxesNormalizeCommand()
 	{
-		if ( modelType.getModelPath() == null )
-		{
-			if ( dataIs2D )
-				return "axes_normalize = (0, 1, 2)" + "\n ";
-			return "axes_normalize = (0, 1, 2)" + "\n ";
-		}
-		if ( modelType.is2D() )
-			return "axes_normalize = (0, 1, 2)" + "\n ";
 		return "axes_normalize = (0, 1, 2)" + "\n ";
 	}
 
 	private String getPredictionCommand()
 	{
-		String axes;
-		if ( modelType.getModelPath() == null )
-		{
-			if ( dataIs2D )
-				axes = "ZYX";
-			else
-				axes = "ZYX";
-		}
-		else
-		{
-			if ( modelType.is2D() )
-				axes = "ZYX";
-			else
-				axes = "ZYX";
-		}
-		return "label_image, details = model.predict_instances(image_normalized, axes='" + axes + "', n_tiles=guessed_tiles)" + "\n";
+		return "label_image, details = model.predict_instances(image_normalized, axes='ZYX', n_tiles=guessed_tiles)" + "\n";
 	}
 
 	private String getLoadModelCommand()
