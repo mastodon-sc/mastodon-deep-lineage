@@ -198,7 +198,7 @@ public class StarDist extends Segmentation3D
 	{
 		PLANT_NUCLEI_3D( "StarDist Plant Nuclei 3D ResNet", "stardist-plant-nuclei-3d", false ),
 		FLUO_2D( "StarDist Fluorescence Nuclei Segmentation", "stardist-fluo-2d", true ),
-		H_E( "StarDist H&E Nuclei Segmentation", "stardist-h-e-nuclei", true ),
+		// H_E( "StarDist H&E Nuclei Segmentation", "stardist-h-e-nuclei", true ), // NB: operates on 3 input channels
 		DEMO( "StarDist Demo", null, null );
 
 		private final String modelName;
