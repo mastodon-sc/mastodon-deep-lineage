@@ -73,7 +73,8 @@ public abstract class Segmentation3D implements AutoCloseable
 		Environment environment;
 		try
 		{
-			File envFile = Files.createTempFile( "env", "yml" ).toFile();
+			File envFile = File.createTempFile( "env", "yml", new File( "/appose-env-files" ) ); // Compliant
+
 			String content = generateEnvFileContent();
 			try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
 			{
