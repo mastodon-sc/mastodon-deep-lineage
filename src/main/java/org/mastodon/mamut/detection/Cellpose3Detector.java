@@ -88,7 +88,7 @@ public class Cellpose3Detector extends AbstractSpotDetectorOp
 		// A. Read the settings map, and check validity.
 		final StringBuilder errorHolder = new StringBuilder();
 		boolean good;
-		good = checkParameter( settings, KEY_MODEL_TYPE, Cellpose3.MODEL_TYPE.class, errorHolder );
+		good = checkParameter( settings, KEY_MODEL_TYPE, Cellpose3.ModelType.class, errorHolder );
 		good = good & checkParameter( settings, KEY_SETUP_ID, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MIN_TIMEPOINT, Integer.class, errorHolder );
 		good = good & checkParameter( settings, KEY_MAX_TIMEPOINT, Integer.class, errorHolder );
@@ -105,7 +105,7 @@ public class Cellpose3Detector extends AbstractSpotDetectorOp
 		final int minTimepoint = ( int ) settings.get( KEY_MIN_TIMEPOINT );
 		final int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );
 		final int setup = ( int ) settings.get( KEY_SETUP_ID );
-		final Cellpose3.MODEL_TYPE modelType = ( Cellpose3.MODEL_TYPE ) settings.get( KEY_MODEL_TYPE );
+		final Cellpose3.ModelType modelType = ( Cellpose3.ModelType ) settings.get( KEY_MODEL_TYPE );
 		final double cellProbabilityThreshold = ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD );
 		final double flowThreshold = ( double ) settings.get( KEY_FLOW_THRESHOLD );
 		final boolean respectAnisotropy = ( boolean ) settings.get( KEY_RESPECT_ANISOTROPY );
@@ -200,7 +200,7 @@ public class Cellpose3Detector extends AbstractSpotDetectorOp
 		defaultSettings.put( KEY_SETUP_ID, DEFAULT_SETUP_ID );
 		defaultSettings.put( KEY_MIN_TIMEPOINT, DEFAULT_MIN_TIMEPOINT );
 		defaultSettings.put( KEY_MAX_TIMEPOINT, DEFAULT_MAX_TIMEPOINT );
-		defaultSettings.put( KEY_MODEL_TYPE, Cellpose3.MODEL_TYPE.CYTO3 );
+		defaultSettings.put( KEY_MODEL_TYPE, Cellpose3.ModelType.CYTO3 );
 		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, Cellpose3.DEFAULT_CELLPROB_THRESHOLD );
 		defaultSettings.put( KEY_FLOW_THRESHOLD, Cellpose3.DEFAULT_FLOW_THRESHOLD );
 		defaultSettings.put( KEY_RESPECT_ANISOTROPY, true );

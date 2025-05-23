@@ -104,7 +104,7 @@ public class Cellpose3DetectorDescriptor extends SpotDetectorDescriptor
 	private class ConfigPanel extends JPanel
 	{
 
-		private final JComboBox< Cellpose3.MODEL_TYPE > modelType;
+		private final JComboBox< Cellpose3.ModelType > modelType;
 
 		private final JSpinner cellProbabilityThreshold;
 
@@ -127,7 +127,7 @@ public class Cellpose3DetectorDescriptor extends SpotDetectorDescriptor
 
 			JLabel modelTypeLabel = new JLabel( "Model type:" );
 			add( modelTypeLabel, "align left, wrap" );
-			modelType = new JComboBox<>( Cellpose3.MODEL_TYPE.values() );
+			modelType = new JComboBox<>( Cellpose3.ModelType.values() );
 			add( modelType, "align left, grow" );
 
 			SpinnerNumberModel model = new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 );
@@ -188,12 +188,12 @@ public class Cellpose3DetectorDescriptor extends SpotDetectorDescriptor
 		// Get the values.
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		// Get the model type.
-		final Cellpose3.MODEL_TYPE modelType;
+		final Cellpose3.ModelType modelType;
 		final Object modelTypeObject = detectorSettings.get( KEY_MODEL_TYPE );
 		if ( null == modelTypeObject )
-			modelType = Cellpose3.MODEL_TYPE.CYTO3; // default
+			modelType = Cellpose3.ModelType.CYTO3; // default
 		else
-			modelType = Cellpose3.MODEL_TYPE.fromString( String.valueOf( modelTypeObject ) );
+			modelType = Cellpose3.ModelType.fromString( String.valueOf( modelTypeObject ) );
 		// Get the cell probability threshold.
 		final Object cellprobThresholdObject = detectorSettings.get( KEY_CELL_PROBABILITY_THRESHOLD );
 		final double cellprobThreshold;

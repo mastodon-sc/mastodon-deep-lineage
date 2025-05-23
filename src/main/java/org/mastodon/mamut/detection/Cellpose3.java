@@ -4,10 +4,10 @@ import java.io.IOException;
 
 public class Cellpose3 extends Cellpose
 {
-	private final MODEL_TYPE modelType;
+	private final ModelType modelType;
 	private double anisotropy = 1;
 
-	public Cellpose3( final MODEL_TYPE modelType ) throws IOException
+	public Cellpose3( final ModelType modelType ) throws IOException
 	{
 		super();
 		this.modelType = modelType;
@@ -74,7 +74,7 @@ public class Cellpose3 extends Cellpose
 				+ "  - numpy\n";
 	}
 
-	public enum MODEL_TYPE
+	public enum ModelType
 	{
 		CYTO3( "cyto3", true ),
 		NUCLEI( "nuclei", true ),
@@ -103,7 +103,7 @@ public class Cellpose3 extends Cellpose
 		private final String modelName;
 		private final boolean hasSizeModel;
 
-		MODEL_TYPE( final String modelName, final boolean hasSizeModel )
+		ModelType( final String modelName, final boolean hasSizeModel )
 		{
 			this.modelName = modelName;
 			this.hasSizeModel = hasSizeModel;
@@ -125,9 +125,9 @@ public class Cellpose3 extends Cellpose
 			return modelName;
 		}
 
-		public static MODEL_TYPE fromString( final String modelName )
+		public static ModelType fromString( final String modelName )
 		{
-			for ( MODEL_TYPE type : MODEL_TYPE.values() )
+			for ( ModelType type : ModelType.values() )
 			{
 				if ( type.modelName.equalsIgnoreCase( modelName ) )
 				{
