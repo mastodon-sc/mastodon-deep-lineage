@@ -1,4 +1,4 @@
-package org.mastodon.mamut.detection;
+package org.mastodon.mamut.detection.cellpose;
 
 import java.io.IOException;
 
@@ -31,7 +31,7 @@ public class Cellpose4 extends Cellpose
 	}
 
 	@Override
-	String generateEnvFileContent()
+	protected String generateEnvFileContent()
 	{
 		return "name: cellpose4\n"
 				+ "channels:\n"

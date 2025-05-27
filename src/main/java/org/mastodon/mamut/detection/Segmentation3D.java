@@ -33,9 +33,9 @@ public abstract class Segmentation3D implements AutoCloseable
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	abstract String generateEnvFileContent();
+	protected abstract String generateEnvFileContent();
 
-	abstract String generateScript();
+	protected abstract String generateScript();
 
 	private final Service pythonWorker;
 

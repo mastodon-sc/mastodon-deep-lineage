@@ -1,4 +1,4 @@
-package org.mastodon.mamut.detection;
+package org.mastodon.mamut.detection.stardist;
 
 
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_MODEL_TYPE;
@@ -11,6 +11,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.util.Cast;
 
+import org.mastodon.mamut.detection.AbstractDetector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor;
 import org.scijava.Priority;

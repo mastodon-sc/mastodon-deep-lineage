@@ -1,6 +1,8 @@
-package org.mastodon.mamut.detection;
+package org.mastodon.mamut.detection.cellpose;
 
 import java.io.IOException;
+
+import org.mastodon.mamut.detection.Segmentation3D;
 
 public abstract class Cellpose extends Segmentation3D
 {
@@ -59,7 +61,7 @@ public abstract class Cellpose extends Segmentation3D
 	protected abstract String getEvaluateModelCommand();
 
 	@Override
-	String generateScript()
+	protected String generateScript()
 	{
 		return "import numpy as np" + "\n"
 				+ "from cellpose import models" + "\n"

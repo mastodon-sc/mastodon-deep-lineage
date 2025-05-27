@@ -1,4 +1,4 @@
-package org.mastodon.mamut.detection;
+package org.mastodon.mamut.detection.stardist;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import java.util.Map;
 
 import net.imglib2.util.Cast;
 
+import org.mastodon.mamut.detection.Segmentation3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +102,7 @@ public class StarDist extends Segmentation3D
 	}
 
 	@Override
-	String generateEnvFileContent()
+	protected String generateEnvFileContent()
 	{
 		return "name: stardist\n"
 				+ "channels:\n"
@@ -120,7 +121,7 @@ public class StarDist extends Segmentation3D
 	}
 
 	@Override
-	String generateScript()
+	protected String generateScript()
 	{
 		return "import numpy as np" + "\n"
 				+ "import appose" + "\n"

@@ -5,6 +5,9 @@ import java.io.IOException;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 
+import org.mastodon.mamut.detection.cellpose.Cellpose4;
+import org.mastodon.mamut.detection.stardist.StarDist;
+
 import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvStackSource;

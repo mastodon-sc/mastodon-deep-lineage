@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.mastodon.mamut.detection.Cellpose4;
-import org.mastodon.mamut.detection.Cellpose4Detector;
+import org.mastodon.mamut.detection.cellpose.Cellpose4;
+import org.mastodon.mamut.detection.cellpose.Cellpose4Detector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.scijava.plugin.Plugin;
 

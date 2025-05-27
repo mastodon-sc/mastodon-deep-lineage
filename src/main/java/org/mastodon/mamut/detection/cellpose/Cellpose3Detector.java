@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.detection;
+package org.mastodon.mamut.detection.cellpose;
 
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_RESPECT_ANISOTROPY;
@@ -41,6 +41,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.util.Cast;
 
+import org.mastodon.mamut.detection.AbstractDetector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;

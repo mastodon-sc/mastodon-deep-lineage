@@ -8,8 +8,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
-import org.mastodon.mamut.detection.Cellpose3;
-import org.mastodon.mamut.detection.Cellpose3Detector;
+import org.mastodon.mamut.detection.cellpose.Cellpose3;
+import org.mastodon.mamut.detection.cellpose.Cellpose3Detector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.scijava.plugin.Plugin;
 

@@ -10,8 +10,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
-import org.mastodon.mamut.detection.StarDist;
-import org.mastodon.mamut.detection.StarDistDetector;
+import org.mastodon.mamut.detection.stardist.StarDist;
+import org.mastodon.mamut.detection.stardist.StarDistDetector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.scijava.plugin.Plugin;
 
