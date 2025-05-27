@@ -28,6 +28,7 @@ class Cellpose3DetectorTest
 		{
 			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
 			SphereRenderer.renderSphere( new int[] { 5, 5, 5 }, 5, 100, img );
+			context.inject( detector );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
 			detector.getDefaultSettings().put( DetectorKeys.KEY_MIN_TIMEPOINT, 0 );
 			detector.getDefaultSettings().put( DetectorKeys.KEY_MAX_TIMEPOINT, 0 );
