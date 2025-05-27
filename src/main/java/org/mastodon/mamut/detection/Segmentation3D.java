@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +76,14 @@ public abstract class Segmentation3D implements AutoCloseable
 		Environment environment;
 		try
 		{
-			File envFile = File.createTempFile( "env", "yml" );
+			File envFileDirectory = Paths.get( System.getProperty( "user.home" ), ".local", "share", "appose" ).toFile();
+			if ( !envFileDirectory.exists() && !envFileDirectory.mkdirs() )
+			{
+				logger.error( "Failed to create environment directory: {}", envFileDirectory.getAbsolutePath() );
+				throw new UncheckedIOException( "Failed to create environment directory: " + envFileDirectory.getAbsolutePath(),
+						new IOException() );
+			}
+			File envFile = File.createTempFile( "env", "yml", envFileDirectory );
 			String content = generateEnvFileContent();
 			try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
 			{
