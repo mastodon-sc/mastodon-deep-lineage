@@ -1,168 +1,42 @@
-/*-
- * #%L
- * Mastodon
- * %%
- * Copyright (C) 2023 - 2025 Tobias Pietzsch, Jean-Yves Tinevez
- * %%
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- * #L%
- */
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors;
 
-import java.awt.Font;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
-
-import net.imagej.ops.OpService;
-import net.miginfocom.swing.MigLayout;
-
-import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.detection.Cellpose4;
 import org.mastodon.mamut.detection.Cellpose4Detector;
-import org.mastodon.mamut.model.Model;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
-import org.mastodon.tracking.mamut.trackmate.Settings;
-import org.mastodon.tracking.mamut.trackmate.TrackMate;
-import org.mastodon.tracking.mamut.trackmate.wizard.Wizard;
-import org.mastodon.tracking.mamut.trackmate.wizard.util.WizardUtils;
-import org.mastodon.views.bdv.SharedBigDataViewerData;
-import org.mastodon.views.bdv.ViewerFrameMamut;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = SpotDetectorDescriptor.class, name = "Cellpose4 spot detector configuration descriptor" )
-public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
+public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 {
-
-	private Settings settings;
 
 	public final static String KEY_CELL_PROBABILITY_THRESHOLD = "cellpose4CellProbabilityThreshold";
 
 	public final static String KEY_FLOW_THRESHOLD = "cellpose4flowThreshold";
 
-	private static final Icon PREVIEW_ICON =
-			new ImageIcon( Objects.requireNonNull( Wizard.class.getResource( "led-icon-eye-green.png" ) ) );
-
-	private ProjectModel appModel;
-
-	private ViewerFrameMamut viewFrame;
-
-	private final Model previewModel;
-
-	private static final String IDENTIFIER = "Configure Cellpose4 detector";
-
-	@Parameter
-	private OpService ops;
-
-	public Cellpose4DetectorDescriptor()
-
+	@Override
+	protected void persistSettings()
 	{
-		this.panelIdentifier = IDENTIFIER;
-		this.targetPanel = new ConfigPanel();
-		this.previewModel = new Model();
-	}
-
-	/*
-	 * The UI part, as a private class.
-	 */
-	private class ConfigPanel extends JPanel
-	{
-		private final JSpinner cellProbabilityThreshold;
-
-		private final JSpinner flowThreshold;
-
-		private final JButton preview = new JButton( "Preview", PREVIEW_ICON );
-
-		private final JLabel info = new JLabel( "", JLabel.RIGHT );
-
-		private ConfigPanel()
-		{
-			setLayout( new MigLayout( "wrap 1", "[grow]", "[]20[]" ) );
-
-			JLabel headlineLabel = new JLabel( "Configure cellpose4 detector" );
-			headlineLabel.setHorizontalAlignment( SwingConstants.LEFT );
-			headlineLabel.setFont( getFont().deriveFont( Font.BOLD ) );
-			add( headlineLabel, "growx" );
-
-			SpinnerNumberModel cellProbabilityModel = new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 );
-			cellProbabilityThreshold = new JSpinner( cellProbabilityModel );
-
-			String cellProbText =
-					"<html>Cell probability threshold:<br>0 ... more detections<br>6 ... less detections (in dim regions)</html>";
-			JLabel cellProbLabel = new JLabel( cellProbText );
-			add( cellProbLabel, "align left, wmin 200, wrap" );
-			add( cellProbabilityThreshold, "align left, grow" );
-
-			SpinnerNumberModel flowModel = new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 );
-			flowThreshold = new JSpinner( flowModel );
-
-			String flowText = "<html>Flow threshold:<br>0 ... less (ill shaped) detections<br>6 ... more detections</html>";
-			JLabel flowLabel = new JLabel( flowText );
-			add( flowLabel, "align left, wmin 200, wrap" );
-			add( flowThreshold, "align left, grow" );
-
-			preview.addActionListener( ( e ) -> preview() );
-			add( preview, "align right, wrap" );
-
-			info.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
-			add( info, "align right, wrap" );
-		}
+		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
+		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, this.cellProbabilityThreshold.getValue() );
+		detectorSettings.put( KEY_FLOW_THRESHOLD, this.flowThreshold.getValue() );
 	}
 
 	@Override
-	public void setTrackMate( final TrackMate trackmate )
+	protected void logSettings()
 	{
-		/*
-		 * This method is called when the panel is shown when the user 'enters'
-		 * the config panel. It receives the instance of TrackMate that will run
-		 * the detection, and that this panel needs to configure. We use the
-		 * method for two things:
-		 * 
-		 * 1/ Get the settings map to configure. The TrackMate instance stores
-		 * the detector settings in a map. We will need to update it with the
-		 * values set by the user on the panel when they 'leave' the panel, so
-		 * we store a reference to it in the descriptor.
-		 */
-		this.settings = trackmate.getSettings();
+		logger.info( String.format( "  - cell probability threshold: %s\n",
+				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
+		logger.info( String.format( "  - flow threshold: %s\n",
+				settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
+	}
 
-		/*
-		 * 2/ We want to display the detector settings values, either the
-		 * default ones, or the one that were set previously. For this, we read
-		 * these values from the TrackMate instance we receive.
-		 */
-		if ( null == settings )
-			return;
-
+	@Override
+	protected void getSettingsAndUpdateConfigPanel()
+	{
 		// Get the values.
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		// Get the cell probability threshold.
@@ -181,91 +55,49 @@ public class Cellpose4DetectorDescriptor extends SpotDetectorDescriptor
 		else
 			flowThreshold = Double.parseDouble( String.valueOf( flowThresholdObject ) );
 
-		// Show them in the config panel.
-		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
-		panel.cellProbabilityThreshold.setValue( cellprobThreshold );
-		panel.flowThreshold.setValue( flowThreshold );
+		// Update them in the config panel.
+		this.cellProbabilityThreshold.setValue( cellprobThreshold );
+		this.flowThreshold.setValue( flowThreshold );
 	}
 
 	@Override
-	public void aboutToHidePanel()
+	protected String getDetectorName()
 	{
-		if ( null != viewFrame )
-			viewFrame.dispose();
-		viewFrame = null;
+		return "Cellpose4";
+	}
 
+	@Override
+	protected void addModelTypeSelection( final ConfigPanel panel )
+	{
+		// No model type selection for Cellpose4.
+	}
+
+	@Override
+	protected void addRespectAnisotropyCheckbox( final ConfigPanel panel )
+	{
+		// No respect anisotropy checkbox for Cellpose4.
+	}
+
+	@Override
+	protected void configureDetectorSpecificFields( final ConfigPanel panel )
+	{
+		super.configureDetectorSpecificFields( panel );
+	}
+
+	@Override
+	protected void grabSettings()
+	{
 		if ( null == settings )
 			return;
 
-		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
-		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, panel.cellProbabilityThreshold.getValue() );
-		logger.info( String.format( "  - cell probability threshold: %s\n",
-				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
-		detectorSettings.put( KEY_FLOW_THRESHOLD, panel.flowThreshold.getValue() );
-		logger.info( String.format( "  - flow threshold: %s\n",
-				settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
+		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, cellProbabilityThreshold.getValue() );
+		detectorSettings.put( KEY_FLOW_THRESHOLD, flowThreshold.getValue() );
 	}
 
 	@Override
 	public Collection< Class< ? extends SpotDetectorOp > > getTargetClasses()
 	{
 		return Collections.singleton( Cellpose4Detector.class );
-	}
-
-	@Override
-	public void setAppModel( final ProjectModel appModel )
-	{
-		this.appModel = appModel;
-	}
-
-	private void preview()
-	{
-		if ( null == appModel )
-			return;
-
-		final SharedBigDataViewerData shared = appModel.getSharedBdvData();
-		viewFrame = WizardUtils.previewFrame( viewFrame, shared, previewModel );
-		final int currentTimepoint = viewFrame.getViewerPanel().state().getCurrentTimepoint();
-
-		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
-		panel.preview.setEnabled( false );
-		final JLabelLogger previewLogger = new JLabelLogger( panel.info );
-		new Thread( () -> executePreview( currentTimepoint, previewLogger, panel ), "Cellpose4 detector preview thread" ).start();
-
-	}
-
-	private void executePreview( final int currentTimepoint, final JLabelLogger previewLogger, final ConfigPanel panel )
-	{
-		try
-		{
-			grabSettings();
-			final boolean ok =
-					WizardUtils.executeDetectionPreview( previewModel, settings, ops, currentTimepoint, previewLogger, statusService );
-			if ( !ok )
-				return;
-
-			final int nSpots = WizardUtils.countSpotsIn( previewModel, currentTimepoint );
-			panel.info.setText( "Found " + nSpots + " spots in time-point " + currentTimepoint );
-		}
-		finally
-		{
-			panel.preview.setEnabled( true );
-		}
-	}
-
-	/**
-	 * Update the settings field of this descriptor with the values set on the
-	 * GUI.
-	 */
-	private void grabSettings()
-	{
-		if ( null == settings )
-			return;
-
-		final ConfigPanel panel = ( ConfigPanel ) targetPanel;
-		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
-		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, panel.cellProbabilityThreshold.getValue() );
-		detectorSettings.put( KEY_FLOW_THRESHOLD, panel.flowThreshold.getValue() );
 	}
 }
