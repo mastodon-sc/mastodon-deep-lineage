@@ -39,6 +39,7 @@ public abstract class AbstractDetector extends AbstractSpotDetectorOp
 		if ( !validateSettings( errorHolder ) )
 		{
 			errorMessage = errorHolder.toString();
+			logger.error( "Invalid settings for {}: {}", getDetectorName(), errorMessage );
 			return;
 		}
 
@@ -47,16 +48,20 @@ public abstract class AbstractDetector extends AbstractSpotDetectorOp
 		final int maxTimepoint = ( int ) settings.get( DetectorKeys.KEY_MAX_TIMEPOINT );
 		final int setup = ( int ) settings.get( DetectorKeys.KEY_SETUP_ID );
 
+		logger.info( "Settings contain, minTimepoint: {}, maxTimepoint: {} and setup {}", minTimepoint, maxTimepoint, setup );
+
 		if ( setup < 0 || setup >= sources.size() )
 		{
 			errorMessage = "The parameter " + DetectorKeys.KEY_SETUP_ID + " is not in the range of available sources ("
 					+ sources.size() + "): " + setup;
+			logger.error( "Invalid setup ID: {}", errorMessage );
 			return;
 		}
 		if ( maxTimepoint < minTimepoint )
 		{
 			errorMessage = "Min time-point should be smaller than or equal to max time-point, but was min = "
 					+ minTimepoint + " and max = " + maxTimepoint;
+			logger.error( "Invalid time-point range: {}", errorMessage );
 			return;
 		}
 		// Now we are sure the settings are valid.
