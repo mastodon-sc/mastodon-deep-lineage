@@ -1,8 +1,10 @@
-package org.mastodon.tracking.mamut.trackmate.wizard.descriptors;
+package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+
+import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDetectorDescriptor;
 
 public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDescriptor
 {

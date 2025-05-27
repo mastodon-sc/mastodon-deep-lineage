@@ -1,4 +1,4 @@
-package org.mastodon.tracking.mamut.trackmate.wizard.descriptors;
+package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.mastodon.mamut.detection.cellpose.Cellpose4Detector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
+import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDetectorDescriptor;
+import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.SpotDetectorDescriptor;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = SpotDetectorDescriptor.class, name = "Cellpose4 spot detector configuration descriptor" )
@@ -69,13 +71,13 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 	}
 
 	@Override
-	protected void addModelTypeSelection( final ConfigPanel panel )
+	protected void addModelTypeSelection( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
 	{
 		// No model type selection for Cellpose4.
 	}
 
 	@Override
-	protected void addRespectAnisotropyCheckbox( final ConfigPanel panel )
+	protected void addRespectAnisotropyCheckbox( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
 	{
 		// No respect anisotropy checkbox for Cellpose4.
 	}

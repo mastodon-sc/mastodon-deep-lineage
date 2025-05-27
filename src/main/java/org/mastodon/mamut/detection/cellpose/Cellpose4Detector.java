@@ -31,8 +31,8 @@ package org.mastodon.mamut.detection.cellpose;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose4DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose4DetectorDescriptor.KEY_FLOW_THRESHOLD;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor.KEY_FLOW_THRESHOLD;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package org.mastodon.tracking.mamut.trackmate.wizard.descriptors;
+package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
@@ -14,6 +14,8 @@ import javax.swing.JLabel;
 import org.mastodon.mamut.detection.cellpose.Cellpose3;
 import org.mastodon.mamut.detection.cellpose.Cellpose3Detector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
+import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDetectorDescriptor;
+import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.SpotDetectorDescriptor;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = SpotDetectorDescriptor.class, name = "Cellpose3 spot detector configuration descriptor" )
@@ -101,7 +103,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 	}
 
 	@Override
-	protected void addModelTypeSelection( final ConfigPanel panel )
+	protected void addModelTypeSelection( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
 	{
 		modelTypeSelection = new JComboBox<>( Cellpose3.ModelType.values() );
 		JLabel modelTypeLabel = new JLabel( "Model type:" );
@@ -110,7 +112,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 	}
 
 	@Override
-	protected void addRespectAnisotropyCheckbox( final ConfigPanel panel )
+	protected void addRespectAnisotropyCheckbox( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
 	{
 		respectAnisotropyCheckbox = new JCheckBox( "Respect anisotropy" );
 		panel.add( respectAnisotropyCheckbox, "align left, wrap" );

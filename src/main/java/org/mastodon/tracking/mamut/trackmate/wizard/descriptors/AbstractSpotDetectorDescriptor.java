@@ -40,7 +40,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 	private static final Icon PREVIEW_ICON =
 			new ImageIcon( Objects.requireNonNull( Wizard.class.getResource( "led-icon-eye-green.png" ) ) );
 
-	AbstractSpotDetectorDescriptor()
+	protected AbstractSpotDetectorDescriptor()
 	{
 		this.panelIdentifier = "Configure " + getDetectorName() + " detector";
 		this.targetPanel = new ConfigPanel();

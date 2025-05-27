@@ -32,10 +32,10 @@ import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_TH
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose3.ModelType.CYTO3;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_RESPECT_ANISOTROPY;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_MODEL_TYPE;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_FLOW_THRESHOLD;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_RESPECT_ANISOTROPY;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_MODEL_TYPE;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_FLOW_THRESHOLD;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
