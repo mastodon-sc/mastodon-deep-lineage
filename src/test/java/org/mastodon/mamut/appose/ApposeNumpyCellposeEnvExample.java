@@ -1,4 +1,4 @@
-package org.mastodon.mamut;
+package org.mastodon.mamut.appose;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,7 +18,7 @@ import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 
-public class ApposeFailingInputExample
+public class ApposeNumpyCellposeEnvExample
 {
 	public static void main( String[] args ) throws IOException, InterruptedException
 	{
@@ -28,25 +28,34 @@ public class ApposeFailingInputExample
 		File envFile = Files.createTempFile( "env", "yml" ).toFile();
 		try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
 		{
-			writer.write( "name: example\n" );
+			writer.write( "name: cellpose\n" );
 			writer.write( "channels:\n" );
+			writer.write( "  - nvidia\n" );
+			writer.write( "  - pytorch\n" );
 			writer.write( "  - conda-forge\n" );
 			writer.write( "dependencies:\n" );
 			writer.write( "  - python=3.10\n" );
-			writer.write( "  - numpy\n" );
-			writer.write( "  - scikit-image\n" );
 			writer.write( "  - pip\n" );
 			writer.write( "  - pip:\n" );
+			writer.write( "    - cellpose\n" );
 			writer.write( "    - appose\n" );
+			writer.write( "  - pytorch\n" );
+			writer.write( "  - pytorch-cuda=11.8\n" );
 		}
 		envFile.deleteOnExit();
 		Environment env = Appose.file( envFile, "environment.yml" ).logDebug().build();
 		System.out.println( "Created environment" );
 
-		String script = "import skimage\n";
+		String script = "import numpy" + "\n"
+				+ "from cellpose import models" + "\n"
+				+ "import appose" + "\n"
+				+ "task.update(message=\"Imports completed\")" + "\n"
+				+ "\n";
 
 		try (Service python = env.python())
 		{
+			python.debug( System.out::println );
+
 			// Store our Img into a map of inputs to the Python script.
 			final Map< String, Object > inputs = new HashMap<>();
 			inputs.put( "image", NDArrays.asNDArray( shmImg ) );

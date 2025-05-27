@@ -1,4 +1,4 @@
-package org.mastodon.mamut;
+package org.mastodon.mamut.appose;
 
 import java.io.BufferedWriter;
 import java.io.File;
