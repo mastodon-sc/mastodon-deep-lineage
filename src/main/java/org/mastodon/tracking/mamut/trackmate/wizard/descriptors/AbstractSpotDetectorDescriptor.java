@@ -109,30 +109,11 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 		getSettingsAndUpdateConfigPanel();
 	}
 
-	private void executePreview( final int currentTimepoint, final JLabelLogger previewLogger, final ConfigPanel panel )
-	{
-		try
-		{
-			grabSettings();
-			final boolean ok =
-					WizardUtils.executeDetectionPreview( previewModel, settings, ops, currentTimepoint, previewLogger, statusService );
-			if ( !ok )
-				return;
-
-			final int nSpots = WizardUtils.countSpotsIn( previewModel, currentTimepoint );
-			panel.info.setText( "Found " + nSpots + " spots in time-point " + currentTimepoint );
-		}
-		finally
-		{
-			panel.preview.setEnabled( true );
-		}
-	}
-
 	protected class ConfigPanel extends JPanel
 	{
 		private final JButton preview = new JButton( "Preview", PREVIEW_ICON );
 
-		private final JLabel info = new JLabel( "", JLabel.RIGHT );
+		private final JLabel info = new JLabel( "", SwingConstants.RIGHT );
 
 		protected ConfigPanel()
 		{
@@ -145,7 +126,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 
 			configureDetectorSpecificFields( this );
 
-			preview.addActionListener( ( e ) -> preview() );
+			preview.addActionListener( e -> preview() );
 			add( preview, "align right, wrap" );
 
 			info.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
@@ -165,6 +146,25 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 			panel.preview.setEnabled( false );
 			final SpotDetectorDescriptor.JLabelLogger previewLogger = new SpotDetectorDescriptor.JLabelLogger( panel.info );
 			new Thread( () -> executePreview( currentTimepoint, previewLogger, panel ), "StarDist detector preview thread" ).start();
+		}
+
+		private void executePreview( final int currentTimepoint, final JLabelLogger previewLogger, final ConfigPanel panel )
+		{
+			try
+			{
+				grabSettings();
+				final boolean ok =
+						WizardUtils.executeDetectionPreview( previewModel, settings, ops, currentTimepoint, previewLogger, statusService );
+				if ( !ok )
+					return;
+
+				final int nSpots = WizardUtils.countSpotsIn( previewModel, currentTimepoint );
+				panel.info.setText( "Found " + nSpots + " spots in time-point " + currentTimepoint );
+			}
+			finally
+			{
+				panel.preview.setEnabled( true );
+			}
 		}
 	}
 }

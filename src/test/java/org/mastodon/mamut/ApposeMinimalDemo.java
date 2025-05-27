@@ -7,7 +7,7 @@ import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 
-public class ApposeMinimalTest
+public class ApposeMinimalDemo
 {
 	public static void main( String[] args ) throws InterruptedException, IOException
 	{

@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,17 +42,18 @@ public abstract class Segmentation3D implements AutoCloseable
 
 	private final StopWatch stopWatch;
 
-	public Segmentation3D() throws IOException
+	protected Segmentation3D() throws IOException
 	{
 		this.stopWatch = StopWatch.createStarted();
 		Environment environment = setUpEnv();
 		if ( environment == null )
 		{
 			logger.error( "Could not create python environment" );
-			throw new RuntimeException( "Could not create python environment" );
+			throw new PythonRuntimeException( "Could not create python environment" );
 		}
 		stopWatch.split();
-		logger.info( "Set up environment. Path: {}. Time elapsed: {}", environment.base(), stopWatch.formatSplitTime() );
+		if ( logger.isInfoEnabled() )
+			logger.info( "Set up environment. Path: {}. Time elapsed: {}", environment.base(), stopWatch.formatSplitTime() );
 		this.pythonWorker = environment.python();
 		this.pythonWorker.debug( logger::debug );
 		this.inputs = new HashMap<>();
@@ -63,7 +63,8 @@ public abstract class Segmentation3D implements AutoCloseable
 	public void close() throws Exception
 	{
 		stopWatch.stop();
-		logger.info( "Segmentation finished, stopping python process. Time elapsed: {}", stopWatch.formatTime() );
+		if ( logger.isInfoEnabled() )
+			logger.info( "Segmentation finished, stopping python process. Time elapsed: {}", stopWatch.formatTime() );
 		if ( pythonWorker != null )
 			pythonWorker.close();
 	}
@@ -74,7 +75,6 @@ public abstract class Segmentation3D implements AutoCloseable
 		try
 		{
 			File envFile = File.createTempFile( "env", "yml" );
-
 			String content = generateEnvFileContent();
 			try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
 			{
@@ -111,15 +111,18 @@ public abstract class Segmentation3D implements AutoCloseable
 		try (ShmImg< T > sharedMemoryImage = ShmImg.copyOf( inputImage ))
 		{
 			stopWatch.split();
-			logger.info( "Copied image to shared memory. Time elapsed: {}", stopWatch.formatSplitTime() );
+			if ( logger.isInfoEnabled() )
+				logger.info( "Copied image to shared memory. Time elapsed: {}", stopWatch.formatSplitTime() );
 			NDArray ndArray = NDArrays.asNDArray( sharedMemoryImage );
 			stopWatch.split();
-			logger.info( "Converted image to nd array: {}, Time elapsed: {}", ndArray, stopWatch.formatSplitTime() );
+			if ( logger.isInfoEnabled() )
+				logger.info( "Converted image to nd array: {}, Time elapsed: {}", ndArray, stopWatch.formatSplitTime() );
 			inputs.put( "image", ndArray );
 
 			Service.Task task = pythonWorker.task( script, inputs );
 			stopWatch.split();
-			logger.info( "Created python task. Time elapsed: {}", stopWatch.formatSplitTime() );
+			if ( logger.isInfoEnabled() )
+				logger.info( "Created python task. Time elapsed: {}", stopWatch.formatSplitTime() );
 			task.listen( getTaskListener( stopWatch, task ) );
 			try
 			{
@@ -128,17 +131,20 @@ public abstract class Segmentation3D implements AutoCloseable
 			catch ( InterruptedException e )
 			{
 				logger.error( "Task interrupted: {}", e.getMessage(), e );
+				Thread.currentThread().interrupt();
 				return null;
 			}
 			// Verify that it worked.
 			if ( task.status != Service.TaskStatus.COMPLETE )
 				throw new PythonRuntimeException( "Python task failed with error: " + task.error );
 			stopWatch.split();
-			logger.info( "Python task completed. Total time {}", stopWatch.formatSplitTime() );
+			if ( logger.isInfoEnabled() )
+				logger.info( "Python task completed. Total time {}", stopWatch.formatSplitTime() );
 			NDArray segmentedImageArray = ( NDArray ) task.outputs.get( "label_image" );
 			ShmImg< T > segmentedImage = new ShmImg<>( segmentedImageArray );
 			stopWatch.split();
-			logger.info( "Converted output to image. Time elapsed: {}", stopWatch.formatSplitTime() );
+			if ( logger.isInfoEnabled() )
+				logger.info( "Converted output to image. Time elapsed: {}", stopWatch.formatSplitTime() );
 			return segmentedImage;
 		}
 	}
@@ -159,6 +165,9 @@ public abstract class Segmentation3D implements AutoCloseable
 			case COMPLETION:
 				stopWatch.split();
 				logger.info( "Task completed. Time elapsed: {}", stopWatch.formatSplitTime() );
+				break;
+			default:
+				logger.warn( "Unhandled task event: {}.", taskEvent.responseType );
 				break;
 			}
 		};

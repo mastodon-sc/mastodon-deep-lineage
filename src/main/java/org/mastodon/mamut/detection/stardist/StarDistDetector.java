@@ -42,6 +42,16 @@ public class StarDistDetector extends AbstractDetector
 	{
 		try (StarDist starDist = new StarDist( ( StarDist.ModelType ) settings.get( KEY_MODEL_TYPE ) ))
 		{
+			boolean isData3D = is3D( image );
+			Boolean isModelType2D = starDist.getModelType().is2D();
+			if ( isModelType2D != null )
+			{
+				if ( isData3D && isModelType2D )
+					throw new StarDistModelException( "StarDist model type is 2D, but the image is 3D. Please select a 3D model type." );
+				if ( !isData3D && !isModelType2D )
+					throw new StarDistModelException( "StarDist model type is 3D, but the image is 2D. Please select a 2D model type." );
+			}
+			starDist.setDataIs2D( !isData3D );
 			return starDist.segmentImage( Cast.unchecked( image ) );
 		}
 		catch ( Exception e )

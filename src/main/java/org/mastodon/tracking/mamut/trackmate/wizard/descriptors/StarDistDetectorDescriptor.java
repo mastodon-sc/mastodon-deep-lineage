@@ -18,7 +18,7 @@ import org.scijava.plugin.Plugin;
 @Plugin( type = SpotDetectorDescriptor.class, name = "StarDist spot detector configuration descriptor" )
 public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 {
-	public final static String KEY_MODEL_TYPE = "starDistModelType";
+	public static final String KEY_MODEL_TYPE = "starDistModelType";
 
 	private JComboBox< StarDist.ModelType > modelTypeSelection;
 
@@ -32,7 +32,7 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 	@Override
 	protected void logSettings()
 	{
-		logger.info( String.format( "  - model type: %s\n", settings.values.getDetectorSettings().get( KEY_MODEL_TYPE ) ) );
+		logger.info( String.format( "  - model type: %s%n", settings.values.getDetectorSettings().get( KEY_MODEL_TYPE ) ) );
 	}
 
 	@Override

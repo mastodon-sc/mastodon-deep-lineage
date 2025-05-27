@@ -1,5 +1,8 @@
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors;
 
+import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
+import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -16,36 +19,36 @@ import org.scijava.plugin.Plugin;
 @Plugin( type = SpotDetectorDescriptor.class, name = "Cellpose3 spot detector configuration descriptor" )
 public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 {
-	public final static String KEY_MODEL_TYPE = "cellpose3ModelType";
+	public static final String KEY_MODEL_TYPE = "cellpose3ModelType";
 
-	public final static String KEY_CELL_PROBABILITY_THRESHOLD = "cellpose3CellProbabilityThreshold";
+	public static final String KEY_CELL_PROBABILITY_THRESHOLD = "cellpose3CellProbabilityThreshold";
 
-	public final static String KEY_FLOW_THRESHOLD = "cellpose3FlowThreshold";
+	public static final String KEY_FLOW_THRESHOLD = "cellpose3FlowThreshold";
 
-	public final static String KEY_RESPECT_ANISOTROPY = "cellpose3RespectAnisotropy";
+	public static final String KEY_RESPECT_ANISOTROPY = "cellpose3RespectAnisotropy";
 
-	private JComboBox< Cellpose3.ModelType > modelType;
+	private JComboBox< Cellpose3.ModelType > modelTypeSelection;
 
-	private JCheckBox respectAnisotropy;
+	private JCheckBox respectAnisotropyCheckbox;
 
 	@Override
 	protected void persistSettings()
 	{
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
-		detectorSettings.put( KEY_MODEL_TYPE, modelType.getSelectedItem() );
+		detectorSettings.put( KEY_MODEL_TYPE, modelTypeSelection.getSelectedItem() );
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, cellProbabilityThreshold.getValue() );
 		detectorSettings.put( KEY_FLOW_THRESHOLD, flowThreshold.getValue() );
-		detectorSettings.put( KEY_RESPECT_ANISOTROPY, respectAnisotropy.isSelected() );
+		detectorSettings.put( KEY_RESPECT_ANISOTROPY, respectAnisotropyCheckbox.isSelected() );
 	}
 
 	@Override
 	protected void logSettings()
 	{
-		logger.info( String.format( "  - model type: %s\n", settings.values.getDetectorSettings().get( KEY_MODEL_TYPE ) ) );
-		logger.info( String.format( "  - cell probability threshold: %s\n",
+		logger.info( String.format( "  - model type: %s%n", settings.values.getDetectorSettings().get( KEY_MODEL_TYPE ) ) );
+		logger.info( String.format( "  - cell probability threshold: %s%n",
 				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
-		logger.info( String.format( "  - flow threshold: %s\n", settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
-		logger.info( String.format( "  - respect anisotropy: %s\n", settings.values.getDetectorSettings().get( KEY_RESPECT_ANISOTROPY ) ) );
+		logger.info( String.format( "  - flow threshold: %s%n", settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
+		logger.info( String.format( "  - respect anisotropy: %s%n", settings.values.getDetectorSettings().get( KEY_RESPECT_ANISOTROPY ) ) );
 	}
 
 	@Override
@@ -64,7 +67,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 		final Object cellprobThresholdObject = detectorSettings.get( KEY_CELL_PROBABILITY_THRESHOLD );
 		final double cellprobThreshold;
 		if ( null == cellprobThresholdObject )
-			cellprobThreshold = Cellpose3.DEFAULT_CELLPROB_THRESHOLD;
+			cellprobThreshold = DEFAULT_CELLPROB_THRESHOLD;
 		else
 			cellprobThreshold = Double.parseDouble( String.valueOf( cellprobThresholdObject ) );
 
@@ -72,7 +75,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 		final Object flowThresholdObject = detectorSettings.get( KEY_FLOW_THRESHOLD );
 		final double flowThreshold;
 		if ( null == flowThresholdObject )
-			flowThreshold = Cellpose3.DEFAULT_FLOW_THRESHOLD;
+			flowThreshold = DEFAULT_FLOW_THRESHOLD;
 		else
 			flowThreshold = Double.parseDouble( String.valueOf( flowThresholdObject ) );
 
@@ -85,10 +88,10 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 			respectAnisotropy = Boolean.parseBoolean( String.valueOf( respectAnisotropyObject ) );
 
 		// Update them in the config panel.
-		this.modelType.setSelectedItem( modelType );
+		this.modelTypeSelection.setSelectedItem( modelType );
 		this.cellProbabilityThreshold.setValue( cellprobThreshold );
 		this.flowThreshold.setValue( flowThreshold );
-		this.respectAnisotropy.setSelected( respectAnisotropy );
+		this.respectAnisotropyCheckbox.setSelected( respectAnisotropy );
 	}
 
 	@Override
@@ -100,26 +103,20 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 	@Override
 	protected void addModelTypeSelection( final ConfigPanel panel )
 	{
-		modelType = new JComboBox<>( Cellpose3.ModelType.values() );
+		modelTypeSelection = new JComboBox<>( Cellpose3.ModelType.values() );
 		JLabel modelTypeLabel = new JLabel( "Model type:" );
 		panel.add( modelTypeLabel, "align left, wrap" );
-		panel.add( modelType, "align left, grow" );
+		panel.add( modelTypeSelection, "align left, grow" );
 	}
 
 	@Override
 	protected void addRespectAnisotropyCheckbox( final ConfigPanel panel )
 	{
-		respectAnisotropy = new JCheckBox( "Respect anisotropy" );
-		panel.add( respectAnisotropy, "align left, wrap" );
+		respectAnisotropyCheckbox = new JCheckBox( "Respect anisotropy" );
+		panel.add( respectAnisotropyCheckbox, "align left, wrap" );
 		String respectAnisotropyText =
 				"<html>Respecting anisotropy may take significantly more time,<br>but can lead to better detection results.</html>";
 		panel.add( new JLabel( respectAnisotropyText ), "align left, wmin 200, grow" );
-	}
-
-	@Override
-	protected void configureDetectorSpecificFields( final ConfigPanel panel )
-	{
-		super.configureDetectorSpecificFields( panel );
 	}
 
 	@Override
@@ -129,10 +126,10 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 			return;
 
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
-		detectorSettings.put( KEY_MODEL_TYPE, modelType.getSelectedItem() );
+		detectorSettings.put( KEY_MODEL_TYPE, modelTypeSelection.getSelectedItem() );
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, cellProbabilityThreshold.getValue() );
 		detectorSettings.put( KEY_FLOW_THRESHOLD, flowThreshold.getValue() );
-		detectorSettings.put( KEY_RESPECT_ANISOTROPY, respectAnisotropy.isSelected() );
+		detectorSettings.put( KEY_RESPECT_ANISOTROPY, respectAnisotropyCheckbox.isSelected() );
 	}
 
 	@Override

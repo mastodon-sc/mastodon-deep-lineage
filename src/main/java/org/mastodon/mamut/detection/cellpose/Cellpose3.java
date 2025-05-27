@@ -13,11 +13,6 @@ public class Cellpose3 extends Cellpose
 		this.modelType = modelType;
 	}
 
-	public double getAnisotropy()
-	{
-		return anisotropy;
-	}
-
 	public void setAnisotropy( final double anisotropy )
 	{
 		this.anisotropy = anisotropy;

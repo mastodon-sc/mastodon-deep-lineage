@@ -12,28 +12,18 @@ public abstract class Cellpose extends Segmentation3D
 
 	protected boolean is3D = true;
 
-	public final static double DEFAULT_CELLPROB_THRESHOLD = 3d;
+	public static final double DEFAULT_CELLPROB_THRESHOLD = 3d;
 
-	public final static double DEFAULT_FLOW_THRESHOLD = 0.4d;
+	public static final double DEFAULT_FLOW_THRESHOLD = 0.4d;
 
-	public Cellpose() throws IOException
+	protected Cellpose() throws IOException
 	{
 		super();
-	}
-
-	public double getCellprobThreshold()
-	{
-		return cellprobThreshold;
 	}
 
 	public void setCellprobThreshold( final double cellprobThreshold )
 	{
 		this.cellprobThreshold = cellprobThreshold;
-	}
-
-	public double getFlowThreshold()
-	{
-		return flowThreshold;
 	}
 
 	public void setFlowThreshold( final double flowThreshold )

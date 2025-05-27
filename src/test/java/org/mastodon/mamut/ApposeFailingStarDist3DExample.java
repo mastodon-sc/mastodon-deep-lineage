@@ -47,14 +47,12 @@ public class ApposeFailingStarDist3DExample
 		Environment env = Appose.file( envFile, "environment.yml" ).logDebug().build();
 		System.out.println( "Created environment" );
 
-		StringBuilder sb = new StringBuilder();
-		sb.append( "import skimage" ).append( "\n" );
-		sb.append( "import numpy as np" ).append( "\n" );
-		sb.append( "import appose" ).append( "\n" );
-		sb.append( "from csbdeep.utils import normalize" ).append( "\n" );
-		sb.append( "from stardist.models import StarDist3D" ).append( "\n\n" ); // With this line, the python task runs forever
-
-		String script = sb.toString();
+		String script = "import skimage" + "\n"
+				+ "import numpy as np" + "\n"
+				+ "import appose" + "\n"
+				+ "from csbdeep.utils import normalize" + "\n"
+				+ "from stardist.models import StarDist3D" + "\n\n" // With this line, the python task runs forever
+		;
 
 		try (Service python = env.python())
 		{
@@ -78,10 +76,12 @@ public class ApposeFailingStarDist3DExample
 				case FAILURE:
 					System.out.println( "Task failed: " + task.error );
 					break;
+				default:
+					System.out.println( "Unknown task event: " + event.responseType );
+					break;
 				}
 			} );
 			task.start();
-			Thread.sleep( 5_000 );
 
 			if ( !task.status.isFinished() )
 			{

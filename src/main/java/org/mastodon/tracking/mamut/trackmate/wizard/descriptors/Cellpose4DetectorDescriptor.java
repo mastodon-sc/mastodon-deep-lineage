@@ -1,10 +1,12 @@
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors;
 
+import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
+import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.mastodon.mamut.detection.cellpose.Cellpose4;
 import org.mastodon.mamut.detection.cellpose.Cellpose4Detector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.scijava.plugin.Plugin;
@@ -13,9 +15,9 @@ import org.scijava.plugin.Plugin;
 public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 {
 
-	public final static String KEY_CELL_PROBABILITY_THRESHOLD = "cellpose4CellProbabilityThreshold";
+	public static final String KEY_CELL_PROBABILITY_THRESHOLD = "cellpose4CellProbabilityThreshold";
 
-	public final static String KEY_FLOW_THRESHOLD = "cellpose4flowThreshold";
+	public static final String KEY_FLOW_THRESHOLD = "cellpose4flowThreshold";
 
 	@Override
 	protected void persistSettings()
@@ -28,9 +30,9 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 	@Override
 	protected void logSettings()
 	{
-		logger.info( String.format( "  - cell probability threshold: %s\n",
+		logger.info( String.format( "  - cell probability threshold: %s%n",
 				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
-		logger.info( String.format( "  - flow threshold: %s\n",
+		logger.info( String.format( "  - flow threshold: %s%n",
 				settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
 	}
 
@@ -43,7 +45,7 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 		final Object cellprobThresholdObject = detectorSettings.get( KEY_CELL_PROBABILITY_THRESHOLD );
 		final double cellprobThreshold;
 		if ( null == cellprobThresholdObject )
-			cellprobThreshold = Cellpose4.DEFAULT_CELLPROB_THRESHOLD; // default
+			cellprobThreshold = DEFAULT_CELLPROB_THRESHOLD; // default
 		else
 			cellprobThreshold = Double.parseDouble( String.valueOf( cellprobThresholdObject ) );
 
@@ -51,7 +53,7 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 		final Object flowThresholdObject = detectorSettings.get( KEY_FLOW_THRESHOLD );
 		final double flowThreshold;
 		if ( null == flowThresholdObject )
-			flowThreshold = Cellpose4.DEFAULT_FLOW_THRESHOLD; // default
+			flowThreshold = DEFAULT_FLOW_THRESHOLD; // default
 		else
 			flowThreshold = Double.parseDouble( String.valueOf( flowThresholdObject ) );
 
@@ -76,12 +78,6 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 	protected void addRespectAnisotropyCheckbox( final ConfigPanel panel )
 	{
 		// No respect anisotropy checkbox for Cellpose4.
-	}
-
-	@Override
-	protected void configureDetectorSpecificFields( final ConfigPanel panel )
-	{
-		super.configureDetectorSpecificFields( panel );
 	}
 
 	@Override

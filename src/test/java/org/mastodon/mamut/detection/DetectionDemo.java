@@ -20,7 +20,6 @@ public class DetectionDemo
 		String filePath = "/home/pol_bia/stha735e/Documents/Mastodon/1135_n_stain_TO-PRO-3.tif";
 		//String filePath =
 		//		"D:\\DeepLineage\\Datasets\\StarDist Plant Nuclei 3D\\Training image dataset_Tiff Files\\1135\\1135_n_stain_TO-PRO-3.tif";
-		String starDistModelPath = "/home/pol_bia/stha735e/StarDist";
 		ImgOpener imgOpener = new ImgOpener();
 		Img< FloatType > img = imgOpener.openImgs( filePath, new FloatType() ).get( 0 );
 		// Display the first image in a new BDV instance

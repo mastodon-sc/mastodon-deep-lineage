@@ -2,6 +2,7 @@ package org.mastodon.mamut.detection.stardist;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import io.bioimage.modelrunner.bioimageio.BioimageioRepo;
 import io.bioimage.modelrunner.bioimageio.description.ModelDescriptor;
-import io.bioimage.modelrunner.bioimageio.description.exceptions.ModelSpecsException;
 import io.bioimage.modelrunner.utils.JSONUtils;
 
 public class StarDist extends Segmentation3D
@@ -39,13 +39,11 @@ public class StarDist extends Segmentation3D
 		else
 		{
 			File directory = starDistModelRoot.toFile();
-			if ( !directory.exists() )
+			if ( !directory.exists() && !directory.mkdirs() )
 			{
-				if ( !directory.mkdirs() )
-				{
-					throw new RuntimeException( "Failed to create environment directory: " + directory );
-				}
+				throw new UncheckedIOException( "Failed to create environment directory: " + directory, new IOException() );
 			}
+
 			if ( directory.isDirectory() )
 			{
 				File[] files = directory.listFiles();
@@ -73,10 +71,6 @@ public class StarDist extends Segmentation3D
 					{
 						logger.info( "Exception while downloading model: {}", e.getMessage() );
 					}
-					catch ( ModelSpecsException e )
-					{
-						logger.info( "Exception while creating config.json: {}", e.getMessage() );
-					}
 				}
 			}
 			else
@@ -92,7 +86,7 @@ public class StarDist extends Segmentation3D
 	}
 
 	private static void createConfigFromBioimageio( final ModelDescriptor descriptor, final String modelDir )
-			throws IOException, ModelSpecsException
+			throws IOException
 	{
 		Map< String, Object > stardistMap = Cast.unchecked( descriptor.getConfig().getSpecMap().get( "stardist" ) );
 		Map< String, Object > stardistConfig = Cast.unchecked( stardistMap.get( "config" ) );
@@ -165,7 +159,7 @@ public class StarDist extends Segmentation3D
 				return "from stardist.models import StarDist2D" + "\n ";
 			return "from stardist.models import StarDist3D" + "\n ";
 		}
-		if ( modelType.is2D() )
+		if ( Boolean.TRUE.equals( modelType.is2D() ) )
 			return "from stardist.models import StarDist2D" + "\n ";
 		return "from stardist.models import StarDist3D" + "\n ";
 	}
@@ -189,7 +183,7 @@ public class StarDist extends Segmentation3D
 			else
 				return "model = StarDist3D.from_pretrained('3D_demo')" + "\n";
 		}
-		String starDistModel = modelType.is2D() ? "StarDist2D" : "StarDist3D";
+		String starDistModel = Boolean.TRUE.equals( modelType.is2D() ) ? "StarDist2D" : "StarDist3D";
 		return "model = " + starDistModel + "(None, name='" + installationFolderName + "', basedir=r\"models" + File.separator
 				+ modelType.getModelPath() + "\")"
 				+ "\n";

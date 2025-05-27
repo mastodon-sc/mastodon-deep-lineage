@@ -5,14 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
-
-import net.imglib2.appose.NDArrays;
-import net.imglib2.appose.ShmImg;
-import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.type.numeric.real.FloatType;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.apposed.appose.Appose;

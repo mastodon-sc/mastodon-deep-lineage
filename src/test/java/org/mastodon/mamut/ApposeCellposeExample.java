@@ -8,7 +8,6 @@ import java.util.Map;
 import net.imglib2.appose.NDArrays;
 import net.imglib2.appose.ShmImg;
 import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.real.FloatType;
 
 import org.apposed.appose.Appose;
@@ -25,30 +24,25 @@ public class ApposeCellposeExample
 		// Specify the path to the TIFF file
 		String filePath = "target/test-classes/org/mastodon/mamut/nuclei_3d.tif";
 		ImgOpener imgOpener = new ImgOpener();
-		// Img< FloatType > img = imgOpener.openImgs( filePath, new FloatType() ).get( 0 );
-		Img< FloatType > img = ArrayImgs.floats( 20, 20, 20 );
+		Img< FloatType > img = imgOpener.openImgs( filePath, new FloatType() ).get( 0 );
 		Img< FloatType > shmImg = ShmImg.copyOf( img );
 
-		StringBuilder sb = new StringBuilder();
-		//sb.append( "import numpy as np" ).append( "\n" );
-		//sb.append( "from cellpose import models" ).append( "\n" );
-		sb.append( "import logging" ).append( "\n" );
-		//sb.append( "narr = image.ndarray()" ).append( "\n" );
-
-		//sb.append( "print(\"Image shape: \", image.shape)" ).append( "\n" );
-		//sb.append( "model = models.Cellpose(model_type=model_type, gpu=True)" ).append( "\n\n" );
-		//sb.append( "logging.info(\"Starting Cellpose segmentation...\")" ).append( "\n" );
-
-		//sb.append( "logging.info(\"Starting Cellpose segmentation...\")" ).append( "\n\n" );
-		//sb.append(
-		//		"segmentation, flows, styles, diams = model.eval(image, diameter=None, channels=[0, 0],do_3D=True, anisotropy=1.0, z_axis=0, normalize=True)" )
-		//		.append( "\n" );
-		//sb.append( "logging.info(\"Segmentation complete.\")" ).append( "\n" );
-		//sb.append( "shared = appose.NDArray(image.dtype, image.shape)" ).append( "\n" );
-		//sb.append( "shared.ndarray()[:] = segmentation" ).append( "\n" );
-		//sb.append( "task.outputs['label_image'] = shared" ).append( "\n" );
-
-		String script = sb.toString();
+		String script = "import numpy as np" + "\n"
+				+ "from cellpose import models" + "\n"
+				+ "import logging" + "\n"
+				+ "narr = image.ndarray()" + "\n"
+				+ "print(\"Image shape: \", image.shape)" + "\n"
+				+ "model = models.Cellpose(model_type=model_type, gpu=True)" + "\n"
+				+ "\n"
+				+ "logging.info(\"Starting Cellpose segmentation...\")" + "\n"
+				+ "logging.info(\"Starting Cellpose segmentation...\")" + "\n"
+				+ "\n"
+				+ "segmentation, flows, styles, diams = model.eval(image, diameter=None, channels=[0, 0],do_3D=True, anisotropy=1.0, z_axis=0, normalize=True)"
+				+ "\n"
+				+ "logging.info(\"Segmentation complete.\")" + "\n"
+				+ "shared = appose.NDArray(image.dtype, image.shape)" + "\n"
+				+ "shared.ndarray()[:] = segmentation" + "\n"
+				+ "task.outputs['label_image'] = shared" + "\n";
 
 		String envYmlPath = "target/test-classes/org/mastodon/mamut/cellpose.yml";
 		File envYmlFile = new File( envYmlPath );
@@ -63,8 +57,7 @@ public class ApposeCellposeExample
 			inputs.put( "image", NDArrays.asNDArray( shmImg ) );
 
 			// Run the script!
-			// Service.Task task = python.task( script, inputs );
-			Service.Task task = python.task( script );
+			Service.Task task = python.task( script, inputs );
 			task.waitFor();
 
 			// Verify that it worked.
@@ -78,9 +71,9 @@ public class ApposeCellposeExample
 			// Access the `label_image` output NDArray.
 			NDArray labelImageArray = ( NDArray ) task.outputs.get( "label_image" );
 			// Wrap the NDArray to an Img.
-			Img< FloatType > labelImage = new ShmImg<>( labelImageArray );
 
-			// System.out.println( "label image size: " + labelImage.size() );
+			Img< FloatType > labelImage = new ShmImg<>( labelImageArray );
+			System.out.println( "label image size: " + labelImage.size() );
 		}
 	}
 }

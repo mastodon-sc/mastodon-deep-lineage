@@ -28,6 +28,9 @@
  */
 package org.mastodon.mamut.detection.cellpose;
 
+import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
+import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
+import static org.mastodon.mamut.detection.cellpose.Cellpose3.ModelType.CYTO3;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_RESPECT_ANISOTROPY;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.Cellpose3DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
@@ -95,9 +98,9 @@ public class Cellpose3Detector extends AbstractDetector
 	@Override
 	protected void addSpecificDefaultSettings( final Map< String, Object > defaultSettings )
 	{
-		defaultSettings.put( KEY_MODEL_TYPE, Cellpose3.ModelType.CYTO3 );
-		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, Cellpose3.DEFAULT_CELLPROB_THRESHOLD );
-		defaultSettings.put( KEY_FLOW_THRESHOLD, Cellpose3.DEFAULT_FLOW_THRESHOLD );
+		defaultSettings.put( KEY_MODEL_TYPE, CYTO3 );
+		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, DEFAULT_CELLPROB_THRESHOLD );
+		defaultSettings.put( KEY_FLOW_THRESHOLD, DEFAULT_FLOW_THRESHOLD );
 		defaultSettings.put( KEY_RESPECT_ANISOTROPY, true );
 	}
 
