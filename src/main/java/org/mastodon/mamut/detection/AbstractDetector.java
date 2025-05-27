@@ -102,6 +102,9 @@ public abstract class AbstractDetector extends AbstractSpotDetectorOp
 
 				final Img< ? > segmentation = performSegmentation( image, voxelDimensions );
 
+				if ( segmentation == null )
+					return;
+
 				final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
 				LabelImageUtils.createSpotsForFrame( graph, Cast.unchecked( segmentation ), timepoint, transform, 1d );
 			}
