@@ -1,5 +1,11 @@
 package org.mastodon.mamut.detection.cellpose;
 
+import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_FLOW_THRESHOLD;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_MODEL_TYPE;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_RESPECT_ANISOTROPY;
+
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,14 +40,20 @@ class Cellpose3DetectorTest
 			SphereRenderer.renderSphere( new int[] { 5, 5, 5 }, 5, 100, img );
 			context.inject( detector ); // make sure the detector is initialized with the context
 
+			// set up the detector settings
+			Map< String, Object > settings = new HashMap<>();
+			settings.put( KEY_MODEL_TYPE, Cellpose3.ModelType.CYTO3 );
+			settings.put( KEY_CELL_PROBABILITY_THRESHOLD, Cellpose.DEFAULT_CELLPROB_THRESHOLD );
+			settings.put( KEY_FLOW_THRESHOLD, Cellpose.DEFAULT_FLOW_THRESHOLD );
+			settings.put( KEY_RESPECT_ANISOTROPY, true );
+			settings.put( DetectorKeys.KEY_MIN_TIMEPOINT, 0 );
+			settings.put( DetectorKeys.KEY_MAX_TIMEPOINT, 0 );
+			settings.put( DetectorKeys.KEY_SETUP_ID, 0 );
+
 			// make settings available for the detector
 			Field settingsField = ReflectionUtils.findFields( Cellpose3Detector.class, f -> f.getName().equals( "settings" ),
 					ReflectionUtils.HierarchyTraversalMode.TOP_DOWN ).get( 0 );
 			settingsField.setAccessible( true );
-			Map< String, Object > settings = new HashMap<>();
-			settings.put( DetectorKeys.KEY_MIN_TIMEPOINT, 0 );
-			settings.put( DetectorKeys.KEY_MAX_TIMEPOINT, 0 );
-			settings.put( DetectorKeys.KEY_SETUP_ID, 0 );
 			settingsField.set( detector, settings );
 
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
