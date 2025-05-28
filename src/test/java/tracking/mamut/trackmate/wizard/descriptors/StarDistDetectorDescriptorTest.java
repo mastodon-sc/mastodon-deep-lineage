@@ -1,0 +1,40 @@
+package tracking.mamut.trackmate.wizard.descriptors;
+
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.type.numeric.real.FloatType;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.tracking.mamut.trackmate.Settings;
+import org.mastodon.tracking.mamut.trackmate.TrackMate;
+import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor;
+import org.scijava.Context;
+
+class StarDistDetectorDescriptorTest
+{
+	@Test
+	void testDescriptor()
+	{
+		Assertions.assertDoesNotThrow(
+				() -> {
+					StarDistDetectorDescriptor descriptor = new StarDistDetectorDescriptor();
+					try (Context context = new Context())
+					{
+						descriptor.setContext( context );
+						Model model = new Model();
+						Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
+						ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
+						descriptor.aboutToHidePanel();
+						descriptor.setAppModel( projectModel );
+						Settings settings = new Settings();
+						TrackMate trackMate = new TrackMate( settings, model, projectModel.getSelectionModel() );
+						descriptor.setTrackMate( trackMate );
+					}
+				}
+		);
+	}
+}
