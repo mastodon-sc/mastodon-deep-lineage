@@ -28,7 +28,6 @@ import org.scijava.Context;
 class Cellpose3DetectorTest
 {
 
-	@Disabled( "This test runs too long" )
 	@Test
 	void testCompute3D() throws IllegalAccessException
 	{

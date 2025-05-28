@@ -26,7 +26,6 @@ import io.scif.img.ImgOpener;
 
 class StarDistDetectorTest
 {
-	@Disabled( "This test runs too long" )
 	@Test
 	void testCompute3D() throws IllegalAccessException, URISyntaxException
 	{
