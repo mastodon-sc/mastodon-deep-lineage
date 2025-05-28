@@ -111,7 +111,8 @@ public class StarDist extends Segmentation
 				+ "    - numpy<1.24\n"
 				+ "    - tensorflow==2.10\n"
 				+ "    - stardist==0.8.5\n"
-				+ "    - appose\n";
+				// + "    - appose\n";
+				+ "    - git+https://github.com/apposed/appose-python.git@efe6dadb2242ca45820fcbb7aeea2096f99f9cb2\n"; // contains a bug fix to run appose on Windows
 	}
 
 	@Override
