@@ -49,9 +49,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Plugin( type = SpotDetectorOp.class, priority = Priority.LOW, name = "Cellpose4 detector", description = "<html>"
-		+ "This detector uses Cellpose for segmentation. Cellpose has been published in:<br>"
-		+ "<i>Cellpose: a generalist algorithm for cellular segmentation </i> - "
-		+ "<i>Stringer et al.</i>, 2021, Nature Methods.<br><br>"
+		+ "This detector uses Cellpose SAM for segmentation. Cellpose SAM has been published in:<br>"
+		+ "<i>Cellpose-SAM: superhuman generalization for cellular segmentation. </i> - "
+		+ "<i>Pachitariu, M., Rariden, M., & Stringer, C.</i>, 2025, bioRxiv.<br><br>"
 		+ "After the segmentation, spots are derived by fitting of ellipsoids to the pixel clouds of the detected objects.<br>"
 		+ "A cell probability threshold can be set to allow more/less sensitive detection.<br><br>"
 		+ "<strong>When this detection method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~9GB hard disk space.</strong><br>"
