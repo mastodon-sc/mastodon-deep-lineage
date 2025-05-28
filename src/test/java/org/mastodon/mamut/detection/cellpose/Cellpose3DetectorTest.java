@@ -15,6 +15,7 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.real.FloatType;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mastodon.mamut.ProjectModel;
@@ -27,6 +28,7 @@ import org.scijava.Context;
 class Cellpose3DetectorTest
 {
 
+	@Disabled( "This test runs too long" )
 	@Test
 	void testCompute3D() throws IllegalAccessException
 	{

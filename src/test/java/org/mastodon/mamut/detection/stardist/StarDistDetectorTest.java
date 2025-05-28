@@ -29,17 +29,23 @@ class StarDistDetectorTest
 	void testCompute3D() throws IllegalAccessException, URISyntaxException
 	{
 		StarDistDetector detector = new StarDistDetector();
-		Model model = new Model();
+		Model model3d = new Model();
+		Model model2d = new Model();
 
 		try (Context context = new Context())
 		{
 			ImgOpener imgOpener = new ImgOpener();
-			URL url = getClass().getClassLoader().getResource( "org/mastodon/mamut/appose/nuclei_3d.tif" );
-			Assertions.assertNotNull( url, "Resource not found" );
+			URL url3d = getClass().getClassLoader().getResource( "org/mastodon/mamut/appose/nuclei_3d.tif" );
+			URL url2d = getClass().getClassLoader().getResource( "org/mastodon/mamut/appose/blobs.tif" );
+			Assertions.assertNotNull( url3d, "Resource not found" );
+			Assertions.assertNotNull( url2d, "Resource not found" );
 
-			File file = new File( url.toURI() );
-			Assertions.assertTrue( file.exists(), "File does not exist" );
-			Img< FloatType > img = imgOpener.openImgs( file.getAbsolutePath(), new FloatType() ).get( 0 );
+			File file3d = new File( url3d.toURI() );
+			File file2d = new File( url2d.toURI() );
+			Assertions.assertTrue( file3d.exists(), "File does not exist" );
+			Assertions.assertTrue( file2d.exists(), "File does not exist" );
+			Img< FloatType > img3d = imgOpener.openImgs( file3d.getAbsolutePath(), new FloatType() ).get( 0 );
+			Img< FloatType > img2d = imgOpener.openImgs( file2d.getAbsolutePath(), new FloatType() ).get( 0 );
 			context.inject( detector ); // make sure the detector is initialized with the context
 
 			// set up the detector settings
@@ -55,10 +61,14 @@ class StarDistDetectorTest
 			settingsField.setAccessible( true );
 			settingsField.set( detector, settings );
 
-			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
-			Assertions.assertEquals( 0, model.getGraph().vertices().size() ); // before detection
-			detector.compute( Collections.singletonList( projectModel.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
-			Assertions.assertNotEquals( 0, model.getGraph().vertices().size() ); // after detection
+			ProjectModel projectModel3d = DemoUtils.wrapAsAppModel( img3d, model3d, context );
+			ProjectModel projectModel2d = DemoUtils.wrapAsAppModel( img2d, model2d, context );
+			Assertions.assertEquals( 0, model3d.getGraph().vertices().size() ); // before detection
+			Assertions.assertEquals( 0, model2d.getGraph().edges().size() ); // before detection
+			detector.compute( Collections.singletonList( projectModel3d.getSharedBdvData().getSources().get( 0 ) ), model3d.getGraph() );
+			Assertions.assertEquals( 13, model3d.getGraph().vertices().size() ); // after detection
+			detector.compute( Collections.singletonList( projectModel2d.getSharedBdvData().getSources().get( 0 ) ), model2d.getGraph() );
+			Assertions.assertNotEquals( 0, model2d.getGraph().vertices().size() ); // after detection
 		}
 	}
 }
