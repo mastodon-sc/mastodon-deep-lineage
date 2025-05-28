@@ -1,6 +1,5 @@
 package org.mastodon.mamut.detection.cellpose;
 
-import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_FLOW_THRESHOLD;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_MODEL_TYPE;
@@ -29,7 +28,7 @@ class Cellpose3DetectorTest
 {
 
 	@Test
-	void testCompute() throws IllegalAccessException
+	void testCompute3D() throws IllegalAccessException
 	{
 		Cellpose3Detector detector = new Cellpose3Detector();
 		Model model = new Model();
