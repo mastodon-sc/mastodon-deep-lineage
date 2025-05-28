@@ -78,7 +78,7 @@ class StarDistDetectorTest
 			model = new Model();
 			Assertions.assertEquals( 0, model.getGraph().vertices().size() ); // before detection
 			detector.compute( Collections.singletonList( projectModel.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
-			Assertions.assertNotEquals( 0, model.getGraph().edges().size() ); // before detection
+			Assertions.assertEquals( 30, model.getGraph().edges().size() ); // before detection
 
 			// 2d
 			model = new Model();
