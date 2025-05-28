@@ -145,7 +145,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 			final ConfigPanel panel = ( ConfigPanel ) targetPanel;
 			panel.preview.setEnabled( false );
 			final SpotDetectorDescriptor.JLabelLogger previewLogger = new SpotDetectorDescriptor.JLabelLogger( panel.info );
-			new Thread( () -> executePreview( currentTimepoint, previewLogger, panel ), "StarDist detector preview thread" ).start();
+			new Thread( () -> executePreview( currentTimepoint, previewLogger, panel ), "Spot detector preview thread" ).start();
 		}
 
 		private void executePreview( final int currentTimepoint, final JLabelLogger previewLogger, final ConfigPanel panel )
