@@ -13,6 +13,8 @@ import org.mastodon.tracking.mamut.trackmate.Settings;
 import org.mastodon.tracking.mamut.trackmate.TrackMate;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor;
 import org.scijava.Context;
+import org.scijava.log.LogService;
+import org.scijava.log.Logger;
 
 class Cellpose4DetectorDescriptorTest
 {
@@ -25,6 +27,8 @@ class Cellpose4DetectorDescriptorTest
 					try (Context context = new Context())
 					{
 						descriptor.setContext( context );
+						Logger logger = context.getService( LogService.class );
+						descriptor.setLogger( logger );
 						Model model = new Model();
 						Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
 						ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
