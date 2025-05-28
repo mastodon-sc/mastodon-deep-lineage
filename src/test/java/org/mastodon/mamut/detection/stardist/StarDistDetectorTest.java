@@ -83,7 +83,7 @@ class StarDistDetectorTest
 			ProjectModel projectModel2d = DemoUtils.wrapAsAppModel( img2d, model, context );
 			Assertions.assertEquals( 56, model.getGraph().vertices().size() ); // after detection
 			detector.compute( Collections.singletonList( projectModel2d.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
-			Assertions.assertNotEquals( 121, model.getGraph().vertices().size() ); // after detection
+			Assertions.assertEquals( 121, model.getGraph().vertices().size() ); // after detection
 		}
 	}
 }

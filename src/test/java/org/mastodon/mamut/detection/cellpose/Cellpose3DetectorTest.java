@@ -88,7 +88,7 @@ class Cellpose3DetectorTest
 			ProjectModel projectModel2d = DemoUtils.wrapAsAppModel( img2d, model, context );
 			Assertions.assertEquals( 36, model.getGraph().vertices().size() ); // after detection
 			detector.compute( Collections.singletonList( projectModel2d.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
-			Assertions.assertNotEquals( 86, model.getGraph().vertices().size() ); // after detection
+			Assertions.assertEquals( 90, model.getGraph().vertices().size() ); // after detection
 		}
 	}
 }
