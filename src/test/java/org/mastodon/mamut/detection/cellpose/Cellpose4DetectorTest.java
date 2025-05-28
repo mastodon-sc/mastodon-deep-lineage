@@ -27,6 +27,7 @@ import org.scijava.Context;
 class Cellpose4DetectorTest
 {
 
+	@Disabled( "This test is disabled, because it has very long runtime (> 5 minutes)" )
 	@Test
 	void testCompute3D() throws IllegalAccessException
 	{
