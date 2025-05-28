@@ -28,11 +28,11 @@ class StarDistDetectorDescriptorTest
 						Model model = new Model();
 						Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
 						ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
-						descriptor.aboutToHidePanel();
-						descriptor.setAppModel( projectModel );
 						Settings settings = new Settings();
 						TrackMate trackMate = new TrackMate( settings, model, projectModel.getSelectionModel() );
+						descriptor.setAppModel( projectModel );
 						descriptor.setTrackMate( trackMate );
+						descriptor.aboutToHidePanel();
 					}
 				}
 		);
