@@ -35,8 +35,8 @@ class Cellpose4DetectorTest
 
 		try (Context context = new Context())
 		{
-			Img< FloatType > img = ArrayImgs.floats( 6, 6, 6 );
-			SphereRenderer.renderSphere( new int[] { 3, 3, 3 }, 3, 100, img );
+			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
+			SphereRenderer.renderSphere( new int[] { 5, 5, 5 }, 5, 100, img );
 			context.inject( detector ); // make sure the detector is initialized with the context
 
 			// set up the detector settings
