@@ -5,7 +5,10 @@ import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_MODEL_TYPE;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_RESPECT_ANISOTROPY;
 
+import java.io.File;
 import java.lang.reflect.Field;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,25 +22,38 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.detection.stardist.StarDist;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.io.importer.labelimage.util.SphereRenderer;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.tracking.detection.DetectorKeys;
+import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor;
 import org.scijava.Context;
+
+import io.scif.img.ImgOpener;
 
 class Cellpose3DetectorTest
 {
 
 	@Test
-	void testCompute3D() throws IllegalAccessException
+	void testCompute3D() throws IllegalAccessException, URISyntaxException
 	{
 		Cellpose3Detector detector = new Cellpose3Detector();
-		Model model = new Model();
 
 		try (Context context = new Context())
 		{
-			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
-			SphereRenderer.renderSphere( new int[] { 5, 5, 5 }, 5, 100, img );
+			ImgOpener imgOpener = new ImgOpener();
+			URL url3d = getClass().getClassLoader().getResource( "org/mastodon/mamut/appose/nuclei_3d.tif" );
+			URL url2d = getClass().getClassLoader().getResource( "org/mastodon/mamut/appose/blobs.tif" );
+			Assertions.assertNotNull( url3d, "Resource not found" );
+			Assertions.assertNotNull( url2d, "Resource not found" );
+
+			File file3d = new File( url3d.toURI() );
+			File file2d = new File( url2d.toURI() );
+			Assertions.assertTrue( file3d.exists(), "File does not exist" );
+			Assertions.assertTrue( file2d.exists(), "File does not exist" );
+			Img< FloatType > img3d = imgOpener.openImgs( file3d.getAbsolutePath(), new FloatType() ).get( 0 );
+			Img< FloatType > img2d = imgOpener.openImgs( file2d.getAbsolutePath(), new FloatType() ).get( 0 );
 			context.inject( detector ); // make sure the detector is initialized with the context
 
 			// set up the detector settings
@@ -56,10 +72,30 @@ class Cellpose3DetectorTest
 			settingsField.setAccessible( true );
 			settingsField.set( detector, settings );
 
-			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, model, context );
+			// test with 3D model type
+			Model model = new Model();
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img3d, model, context );
 			Assertions.assertEquals( 0, model.getGraph().vertices().size() ); // before detection
 			detector.compute( Collections.singletonList( projectModel.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
-			Assertions.assertEquals( 1, model.getGraph().vertices().size() ); // after detection
+			Assertions.assertEquals( 13, model.getGraph().vertices().size() ); // after detection
+
+			// test re-use of the same model
+			Assertions.assertEquals( 13, model.getGraph().vertices().size() ); // before detection
+			detector.compute( Collections.singletonList( projectModel.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
+			Assertions.assertEquals( 26, model.getGraph().vertices().size() ); // after detection
+
+			// test with DEMO model type
+			settings.put( StarDistDetectorDescriptor.KEY_MODEL_TYPE, StarDist.ModelType.DEMO );
+			// 3d
+			Assertions.assertEquals( 26, model.getGraph().vertices().size() ); // before detection
+			detector.compute( Collections.singletonList( projectModel.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
+			Assertions.assertEquals( 56, model.getGraph().vertices().size() ); // before detection
+
+			// 2d
+			ProjectModel projectModel2d = DemoUtils.wrapAsAppModel( img2d, model, context );
+			Assertions.assertEquals( 56, model.getGraph().vertices().size() ); // after detection
+			detector.compute( Collections.singletonList( projectModel2d.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
+			Assertions.assertNotEquals( 121, model.getGraph().vertices().size() ); // after detection
 		}
 	}
 }
