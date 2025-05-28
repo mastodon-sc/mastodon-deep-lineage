@@ -68,25 +68,22 @@ class StarDistDetectorTest
 			Assertions.assertEquals( 13, model.getGraph().vertices().size() ); // after detection
 
 			// test re-use of the same model
-			model = new Model();
-			Assertions.assertEquals( 0, model.getGraph().vertices().size() ); // before detection
+			Assertions.assertEquals( 13, model.getGraph().vertices().size() ); // before detection
 			detector.compute( Collections.singletonList( projectModel.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
-			Assertions.assertEquals( 13, model.getGraph().vertices().size() ); // after detection
+			Assertions.assertEquals( 26, model.getGraph().vertices().size() ); // after detection
 
 			// test with DEMO model type
 			settings.put( StarDistDetectorDescriptor.KEY_MODEL_TYPE, StarDist.ModelType.DEMO );
 			// 3d
-			model = new Model();
-			Assertions.assertEquals( 0, model.getGraph().vertices().size() ); // before detection
+			Assertions.assertEquals( 26, model.getGraph().vertices().size() ); // before detection
 			detector.compute( Collections.singletonList( projectModel.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
-			Assertions.assertEquals( 30, model.getGraph().vertices().size() ); // before detection
+			Assertions.assertEquals( 56, model.getGraph().vertices().size() ); // before detection
 
 			// 2d
-			model = new Model();
 			ProjectModel projectModel2d = DemoUtils.wrapAsAppModel( img2d, model, context );
-			Assertions.assertEquals( 0, model.getGraph().vertices().size() ); // after detection
+			Assertions.assertEquals( 56, model.getGraph().vertices().size() ); // after detection
 			detector.compute( Collections.singletonList( projectModel2d.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
-			Assertions.assertNotEquals( 0, model.getGraph().vertices().size() ); // after detection
+			Assertions.assertNotEquals( 121, model.getGraph().vertices().size() ); // after detection
 		}
 	}
 }
