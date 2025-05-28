@@ -10,7 +10,7 @@ import java.util.Map;
 
 import net.imglib2.util.Cast;
 
-import org.mastodon.mamut.detection.Segmentation3D;
+import org.mastodon.mamut.detection.Segmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +18,7 @@ import io.bioimage.modelrunner.bioimageio.BioimageioRepo;
 import io.bioimage.modelrunner.bioimageio.description.ModelDescriptor;
 import io.bioimage.modelrunner.utils.JSONUtils;
 
-public class StarDist extends Segmentation3D
+public class StarDist extends Segmentation
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 

@@ -30,7 +30,7 @@ import org.apposed.appose.TaskEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Segmentation3D implements AutoCloseable
+public abstract class Segmentation implements AutoCloseable
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
@@ -44,7 +44,7 @@ public abstract class Segmentation3D implements AutoCloseable
 
 	private final StopWatch stopWatch;
 
-	protected Segmentation3D() throws IOException
+	protected Segmentation() throws IOException
 	{
 		this.stopWatch = StopWatch.createStarted();
 		Environment environment = setUpEnv();

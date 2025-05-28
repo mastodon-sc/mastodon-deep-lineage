@@ -2,9 +2,9 @@ package org.mastodon.mamut.detection.cellpose;
 
 import java.io.IOException;
 
-import org.mastodon.mamut.detection.Segmentation3D;
+import org.mastodon.mamut.detection.Segmentation;
 
-public abstract class Cellpose extends Segmentation3D
+public abstract class Cellpose extends Segmentation
 {
 	protected double cellprobThreshold = 0;
 
