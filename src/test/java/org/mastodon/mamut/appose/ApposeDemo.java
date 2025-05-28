@@ -52,7 +52,7 @@ public class ApposeDemo
 
 		System.out.println( "Script: " + script );
 
-		String envYmlPath = "target/test-classes/org/mastodon/mamut/stardist.yml";
+		String envYmlPath = "target/test-classes/org/mastodon/mamut/appose/stardist.yml";
 		File envYmlFile = new File( envYmlPath );
 		System.out.println( "env yml file: " + envYmlFile.getAbsoluteFile() );
 		Environment env = Appose.file( envYmlFile, "environment.yml" ).logDebug().build();

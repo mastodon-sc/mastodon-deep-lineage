@@ -22,7 +22,7 @@ public class ApposeCellposeExample
 	public static void main( String[] args ) throws IOException, InterruptedException
 	{
 		// Specify the path to the TIFF file
-		String filePath = "target/test-classes/org/mastodon/mamut/nuclei_3d.tif";
+		String filePath = "target/test-classes/org/mastodon/mamut/appose/nuclei_3d.tif";
 		ImgOpener imgOpener = new ImgOpener();
 		Img< FloatType > img = imgOpener.openImgs( filePath, new FloatType() ).get( 0 );
 		Img< FloatType > shmImg = ShmImg.copyOf( img );
@@ -44,7 +44,7 @@ public class ApposeCellposeExample
 				+ "shared.ndarray()[:] = segmentation" + "\n"
 				+ "task.outputs['label_image'] = shared" + "\n";
 
-		String envYmlPath = "target/test-classes/org/mastodon/mamut/cellpose.yml";
+		String envYmlPath = "target/test-classes/org/mastodon/mamut/appose/cellpose.yml";
 		File envYmlFile = new File( envYmlPath );
 		System.out.println( envYmlFile.getAbsoluteFile() );
 		Environment env = Appose.file( envYmlFile, "environment.yml" ).logDebug().build();
