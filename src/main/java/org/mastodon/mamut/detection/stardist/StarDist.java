@@ -40,41 +40,42 @@ public class StarDist extends Segmentation
 		{
 			File directory = starDistModelRoot.toFile();
 			if ( !directory.exists() && !directory.mkdirs() )
-			{
 				throw new UncheckedIOException( "Failed to create environment directory: " + directory, new IOException() );
-			}
 
 			if ( directory.isDirectory() )
-			{
-				File[] files = directory.listFiles();
-				if ( files != null && files.length > 0 )
-				{
-					logger.info( "Found {} files/directories in {}", files.length, directory.getAbsolutePath() );
-					for ( File file : files )
-						logger.debug( "File/Directory: {}", file.getName() );
-					installationFolderName = Paths.get( files[ 0 ].getAbsolutePath() ).getFileName().toString();
-					logger.info( "Reusing model in folder: {}", installationFolderName );
-				}
-				else
-				{
-					try
-					{
-						logger.info( "Downloading model to {}", directory.getAbsolutePath() );
-						BioimageioRepo repo = BioimageioRepo.connect();
-						ModelDescriptor descriptor = repo.selectByName( modelType.getModelName() );
-						String installationFolder = repo.downloadByName( modelType.getModelName(), directory.getAbsolutePath() );
-						installationFolderName = Paths.get( installationFolder ).getFileName().toString();
-						createConfigFromBioimageio( descriptor, directory.getAbsolutePath() + File.separator + installationFolderName );
-						logger.info( "Downloading finished. Installation folder: {}", installationFolderName );
-					}
-					catch ( IllegalArgumentException e )
-					{
-						logger.info( "Exception while downloading model: {}", e.getMessage() );
-					}
-				}
-			}
+				checkIfModelsExistsAndDownloadIfNeeded( directory );
 			else
 				logger.error( "The specified path is not a directory: {}", directory.getAbsolutePath() );
+		}
+	}
+
+	private void checkIfModelsExistsAndDownloadIfNeeded( final File directory ) throws InterruptedException, IOException
+	{
+		File[] files = directory.listFiles();
+		if ( files != null && files.length > 0 )
+		{
+			logger.info( "Found {} files/directories in {}", files.length, directory.getAbsolutePath() );
+			for ( File file : files )
+				logger.debug( "File/Directory: {}", file.getName() );
+			installationFolderName = Paths.get( files[ 0 ].getAbsolutePath() ).getFileName().toString();
+			logger.info( "Reusing model in folder: {}", installationFolderName );
+		}
+		else
+		{
+			try
+			{
+				logger.info( "Downloading model to {}", directory.getAbsolutePath() );
+				BioimageioRepo repo = BioimageioRepo.connect();
+				ModelDescriptor descriptor = repo.selectByName( modelType.getModelName() );
+				String installationFolder = repo.downloadByName( modelType.getModelName(), directory.getAbsolutePath() );
+				installationFolderName = Paths.get( installationFolder ).getFileName().toString();
+				createConfigFromBioimageio( descriptor, directory.getAbsolutePath() + File.separator + installationFolderName );
+				logger.info( "Downloading finished. Installation folder: {}", installationFolderName );
+			}
+			catch ( IllegalArgumentException e )
+			{
+				logger.info( "Exception while downloading model: {}", e.getMessage() );
+			}
 		}
 	}
 
