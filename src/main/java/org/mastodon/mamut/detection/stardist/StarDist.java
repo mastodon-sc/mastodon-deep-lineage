@@ -28,11 +28,21 @@ public class StarDist extends Segmentation
 
 	private boolean dataIs2D;
 
+	private double probThresh;
+
+	private double nmsThresh;
+
+	public static final double DEFAULT_PROB_THRESHOLD = 0.5d;
+
+	public static final double DEFAULT_NMS_THRESHOLD = 0.4d;
+
 	public StarDist( final ModelType model ) throws IOException, InterruptedException
 	{
 		super();
 		logger.info( "Initializing StarDist, model: {}", model );
 		this.modelType = model;
+		this.probThresh = DEFAULT_PROB_THRESHOLD;
+		this.nmsThresh = DEFAULT_NMS_THRESHOLD;
 		Path starDistModelRoot = getStarDistModelRoot();
 		if ( starDistModelRoot == null )
 			logger.debug( "StarDist model path is null. This is normal for the built-in demo models" );
@@ -153,6 +163,28 @@ public class StarDist extends Segmentation
 		this.dataIs2D = dataIs2D;
 	}
 
+	/**
+	 * Probability/Score Threshold: Determine the number of object candidates to enter non-maximum suppression.
+	 * Higher values lead to fewer segmented objects, but will likely avoid false positives.
+	 *
+	 * @param probThresh the probability threshold
+	 */
+	public void setProbThresh( final double probThresh )
+	{
+		this.probThresh = probThresh;
+	}
+
+	/**
+	 * Overlap Threshold: Determine when two objects are considered the same during non-maximum suppression.
+	 * Higher values allow segmented objects to overlap substantially.
+	 *
+	 * @param nmsThresh the non-maximum suppression threshold
+	 */
+	public void setNmsThresh( final double nmsThresh )
+	{
+		this.nmsThresh = nmsThresh;
+	}
+
 	private String getImportStarDistCommand()
 	{
 		if ( modelType.getModelPath() == null )
@@ -173,7 +205,9 @@ public class StarDist extends Segmentation
 
 	private String getPredictionCommand()
 	{
-		return "label_image, details = model.predict_instances(image_normalized, axes='ZYX', n_tiles=guessed_tiles)" + "\n";
+		return "label_image, details = model.predict_instances(image_normalized, axes='ZYX', n_tiles=guessed_tiles, nms_thresh=" + nmsThresh
+				+ ", prob_thresh=" + probThresh + ")"
+				+ "\n";
 	}
 
 	private String getLoadModelCommand()

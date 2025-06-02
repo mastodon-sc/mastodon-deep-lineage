@@ -1,8 +1,11 @@
 package org.mastodon.mamut.detection.stardist;
 
-
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_MODEL_TYPE;
+import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_NMS_THRESHOLD;
+import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_PROB_THRESHOLD;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_MODEL_TYPE;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_NMS_THRESHOLD;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_PROB_THRESHOLD;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
@@ -52,6 +55,8 @@ public class StarDistDetector extends AbstractDetector
 					throw new StarDistModelException( "StarDist model type is 3D, but the image is 2D. Please select a 2D model type." );
 			}
 			starDist.setDataIs2D( !isData3D );
+			starDist.setProbThresh( ( double ) settings.get( KEY_PROB_THRESHOLD ) );
+			starDist.setNmsThresh( ( double ) settings.get( KEY_NMS_THRESHOLD ) );
 			return starDist.segmentImage( Cast.unchecked( image ) );
 		}
 		catch ( Exception e )
@@ -67,6 +72,8 @@ public class StarDistDetector extends AbstractDetector
 	protected void addSpecificDefaultSettings( Map< String, Object > defaultSettings )
 	{
 		defaultSettings.put( KEY_MODEL_TYPE, StarDist.ModelType.DEMO );
+		defaultSettings.put( KEY_PROB_THRESHOLD, DEFAULT_PROB_THRESHOLD );
+		defaultSettings.put( KEY_NMS_THRESHOLD, DEFAULT_NMS_THRESHOLD );
 	}
 
 	@Override
