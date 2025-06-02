@@ -73,7 +73,7 @@ public class Cellpose4Detector extends AbstractDetector
 		try (Cellpose4 cellpose = new Cellpose4())
 		{
 			cellpose.set3D( is3D( image ) );
-			cellpose.setCellprobThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
+			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );
 			return cellpose.segmentImage( Cast.unchecked( image ) );
 		}

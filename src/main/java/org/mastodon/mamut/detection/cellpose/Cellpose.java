@@ -6,7 +6,7 @@ import org.mastodon.mamut.detection.Segmentation;
 
 public abstract class Cellpose extends Segmentation
 {
-	protected double cellprobThreshold = 0;
+	protected double cellProbThreshold = 0;
 
 	protected double flowThreshold = 0;
 
@@ -21,9 +21,9 @@ public abstract class Cellpose extends Segmentation
 		super();
 	}
 
-	public void setCellprobThreshold( final double cellprobThreshold )
+	public void setCellProbThreshold( final double cellProbThreshold )
 	{
-		this.cellprobThreshold = cellprobThreshold;
+		this.cellProbThreshold = cellProbThreshold;
 	}
 
 	public void setFlowThreshold( final double flowThreshold )

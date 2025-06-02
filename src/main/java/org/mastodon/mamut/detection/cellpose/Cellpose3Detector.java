@@ -79,7 +79,7 @@ public class Cellpose3Detector extends AbstractDetector
 		try (Cellpose3 cellpose = new Cellpose3( ( Cellpose3.ModelType ) settings.get( KEY_MODEL_TYPE ) ))
 		{
 			cellpose.set3D( is3D( image ) );
-			cellpose.setCellprobThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
+			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );
 			final boolean respectAnisotropy = ( boolean ) settings.get( KEY_RESPECT_ANISOTROPY );
 			double anisotropy = respectAnisotropy ? getAnisotropy( voxelDimensions ) : 1.0;

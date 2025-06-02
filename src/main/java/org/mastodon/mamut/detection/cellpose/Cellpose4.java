@@ -27,7 +27,7 @@ public class Cellpose4 extends Cellpose
 				+ "batch_size=8, "
 				+ "flow3D_smooth=0, "
 				+ "flow_threshold=" + flowThreshold + ", "
-				+ "cellprob_threshold=" + cellprobThreshold + ")" + "\n";
+				+ "cellprob_threshold=" + cellProbThreshold + ")" + "\n";
 	}
 
 	@Override
