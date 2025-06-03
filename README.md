@@ -150,7 +150,7 @@ positions of each segmented spot.
     * 0 ... viewer (ill-shaped) detections
     * 6 ... more detections
 * Diameter:
-    * Cellpose can exploit an a priori knowledge on the size of cells.
+    * Cellpose can exploit a priori knowledge on the size of cells.
     * If you have a rough estimate of the size of a typical cell, it can be entered, which will speed up the
       detection and improve the results.
     * Units are in pixels, so if your image has a pixel size of e.g. 0.5 µm, and you expect cells to be around 10 µm,

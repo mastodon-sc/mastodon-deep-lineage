@@ -130,7 +130,7 @@
             <artifactId>commons-math3</artifactId>
         </dependency>
 
-        <!-- imglib2-appose for stardist based detection -->
+        <!-- imglib2-appose for cellpose and stardist based detection -->
         <dependency>
             <groupId>net.imglib2</groupId>
             <artifactId>imglib2-appose</artifactId>
@@ -143,21 +143,21 @@
             </exclusions>
         </dependency>
 
-        <!-- appose for python java shared memory -->
+        <!-- appose library for shared memory between java and python -->
         <dependency>
             <groupId>org.apposed</groupId>
             <artifactId>appose</artifactId>
             <version>0.4.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- mastodon tracking as base for Python-based detection -->
+        <!-- mastodon tracking as base for custom detectors (cellpose, stardist) -->
         <dependency>
             <groupId>${mastodon.group}</groupId>
             <artifactId>mastodon-tracking</artifactId>
             <version>${mastodon-tracking.version}</version>
         </dependency>
 
-        <!-- dl-modelrunner -->
+        <!-- downloader for stardist models from bioimage.io -->
         <dependency>
             <groupId>io.bioimage</groupId>
             <artifactId>dl-modelrunner</artifactId>
