@@ -140,7 +140,9 @@ After the segmentation, spots are derived by fitting of ellipsoids to the pixel 
 The resulting spots are ellipsoids with the semi-axes computed from the variance covariance matrix of the pixel
 positions of each segmented spot.
 
-* Different Cellpose models can be used for different types of images.
+* Different Cellpose models can be used for different types of images. Cf.
+  the [Cellpose documentation](https://cellpose.readthedocs.io/en/v3.1.1.1/models.html) for more information on the
+  models.
 * Cell probability threshold:
     * 0 ... more detections
     * 6 ... less detections (in dim regions)
