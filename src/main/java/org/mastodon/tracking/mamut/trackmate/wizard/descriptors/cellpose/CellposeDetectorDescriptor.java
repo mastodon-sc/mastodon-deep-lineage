@@ -24,14 +24,14 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 
 		cellProbabilityThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 ) );
 		String cellProbText =
-				"<html>Cell probability threshold:<br>0 ... more detections<br>6 ... less detections (in dim regions)</html>";
+				"<html>Cell probability threshold:<br>0 ... more detections<br>6 ... viewer detections (in dim regions)</html>";
 		JLabel cellProbLabel = new JLabel( cellProbText );
 		panel.add( cellProbLabel, "align left, wmin 200, wrap" );
 		panel.add( cellProbabilityThreshold, "align left, grow" );
 
 		flowThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 ) );
 		String flowText =
-				"<html>Flow threshold:<br>0 ... less (ill shaped) detections<br>6 ... more detections</html>";
+				"<html>Flow threshold:<br>0 ... viewer (ill shaped) detections<br>6 ... more detections</html>";
 		JLabel flowLabel = new JLabel( flowText );
 		panel.add( flowLabel, "align left, wmin 200, wrap" );
 		panel.add( flowThreshold, "align left, grow" );
