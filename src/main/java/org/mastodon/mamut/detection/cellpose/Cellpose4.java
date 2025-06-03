@@ -20,7 +20,7 @@ public class Cellpose4 extends Cellpose
 	{
 		return "segmentation, flows, styles = model.eval("
 				+ "image_ndarray, "
-				+ "diameter=None, "
+				+ "diameter=" + getDiameter() + ", "
 				+ "do_3D=" + is3DParam() + ", "
 				+ "z_axis=0, "
 				+ "normalize=True, "

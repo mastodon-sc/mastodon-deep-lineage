@@ -38,7 +38,7 @@ public class Cellpose3 extends Cellpose
 		String diams = modelType.hasSizeModel() ? ", diams" : "";
 		return "segmentation, flows, styles" + diams + " = model.eval("
 				+ "image_ndarray, "
-				+ "diameter=None, "
+				+ "diameter=" + getDiameter() + ", "
 				+ "channels=[0, 0], "
 				+ "do_3D=" + is3DParam() + ", "
 				+ "anisotropy=" + anisotropyParam() + ", "

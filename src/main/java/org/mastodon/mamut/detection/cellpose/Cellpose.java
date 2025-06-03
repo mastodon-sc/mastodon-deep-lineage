@@ -10,11 +10,15 @@ public abstract class Cellpose extends Segmentation
 
 	protected double flowThreshold = 0;
 
+	protected double diameter = 0;
+
 	protected boolean is3D = true;
 
 	public static final double DEFAULT_CELLPROB_THRESHOLD = 3d;
 
 	public static final double DEFAULT_FLOW_THRESHOLD = 0.4d;
+
+	public static final double DEFAULT_DIAMETER = 0d;
 
 	protected Cellpose() throws IOException
 	{
@@ -31,6 +35,11 @@ public abstract class Cellpose extends Segmentation
 		this.flowThreshold = flowThreshold;
 	}
 
+	public void setDiameter( final double diameter )
+	{
+		this.diameter = diameter;
+	}
+
 	public boolean is3D()
 	{
 		return is3D;
@@ -44,6 +53,11 @@ public abstract class Cellpose extends Segmentation
 	protected String is3DParam()
 	{
 		return is3D ? "True" : "False";
+	}
+
+	protected String getDiameter()
+	{
+		return diameter > 0 ? String.valueOf( diameter ) : "None";
 	}
 
 	protected abstract String getLoadModelCommand();

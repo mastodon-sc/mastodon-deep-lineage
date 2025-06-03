@@ -1,8 +1,12 @@
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
+import java.text.NumberFormat;
+
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.text.NumberFormatter;
 
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDetectorDescriptor;
 
@@ -11,6 +15,8 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 	protected JSpinner cellProbabilityThreshold;
 
 	protected JSpinner flowThreshold;
+
+	protected JFormattedTextField diameter;
 
 	protected abstract void addModelTypeSelection( final ConfigPanel panel );
 
@@ -36,6 +42,33 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		panel.add( flowLabel, "align left, wmin 200, wrap" );
 		panel.add( flowThreshold, "align left, grow" );
 
+		diameter = new JFormattedTextField( getNumberFormatter() );
+		diameter.setColumns( 10 );
+
+		String diameterText =
+				"<html>"
+						+ "If you have a rough estimate of the size of a typical cell, enter it here. Units are in pixels.<br>"
+						+ "</html>";
+		JLabel diameterLabel = new JLabel( diameterText );
+		panel.add( diameterLabel, "align left, wmin 200, wrap" );
+		panel.add( diameter, "align left, grow" );
+
 		addRespectAnisotropyCheckbox( panel );
+	}
+
+	private static NumberFormatter getNumberFormatter()
+	{
+		// Create a NumberFormat for doubles
+		NumberFormat doubleFormat = NumberFormat.getNumberInstance();
+		doubleFormat.setGroupingUsed( false ); // disables thousand separators
+
+		// Create a NumberFormatter that restricts values between 0 and 1000
+		NumberFormatter numberFormatter = new NumberFormatter( doubleFormat );
+		numberFormatter.setValueClass( Double.class );
+		numberFormatter.setMinimum( 0.0 );
+		numberFormatter.setMaximum( 1000.0 );
+		numberFormatter.setAllowsInvalid( false ); // Disallow invalid input
+		numberFormatter.setCommitsOnValidEdit( true ); // Commit edits as soon as valid
+		return numberFormatter;
 	}
 }

@@ -1,6 +1,7 @@
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
+import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_DIAMETER;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
 
 import java.util.Collection;
@@ -27,6 +28,8 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 
 	public static final String KEY_FLOW_THRESHOLD = "cellpose3FlowThreshold";
 
+	public static final String KEY_DIAMETER = "cellpose3Diameter";
+
 	public static final String KEY_RESPECT_ANISOTROPY = "cellpose3RespectAnisotropy";
 
 	private JComboBox< Cellpose3.ModelType > modelTypeSelection;
@@ -40,6 +43,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 		detectorSettings.put( KEY_MODEL_TYPE, modelTypeSelection.getSelectedItem() );
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, cellProbabilityThreshold.getValue() );
 		detectorSettings.put( KEY_FLOW_THRESHOLD, flowThreshold.getValue() );
+		detectorSettings.put( KEY_DIAMETER, diameter.getValue() );
 		detectorSettings.put( KEY_RESPECT_ANISOTROPY, respectAnisotropyCheckbox.isSelected() );
 	}
 
@@ -50,6 +54,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 		logger.info( String.format( "  - cell probability threshold: %s%n",
 				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
 		logger.info( String.format( "  - flow threshold: %s%n", settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
+		logger.info( String.format( "  - diameter: %s%n", settings.values.getDetectorSettings().get( KEY_DIAMETER ) ) );
 		logger.info( String.format( "  - respect anisotropy: %s%n", settings.values.getDetectorSettings().get( KEY_RESPECT_ANISOTROPY ) ) );
 	}
 
@@ -81,6 +86,14 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 		else
 			flowThreshold = Double.parseDouble( String.valueOf( flowThresholdObject ) );
 
+		// Get the diameter.
+		final Object diameterObject = detectorSettings.get( KEY_DIAMETER );
+		final double diameter;
+		if ( null == diameterObject )
+			diameter = DEFAULT_DIAMETER; // default
+		else
+			diameter = Double.parseDouble( String.valueOf( diameterObject ) );
+
 		// Get the anisotropy.
 		final Object respectAnisotropyObject = detectorSettings.get( KEY_RESPECT_ANISOTROPY );
 		final boolean respectAnisotropy;
@@ -93,6 +106,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 		this.modelTypeSelection.setSelectedItem( modelType );
 		this.cellProbabilityThreshold.setValue( cellprobThreshold );
 		this.flowThreshold.setValue( flowThreshold );
+		this.diameter.setValue( diameter );
 		this.respectAnisotropyCheckbox.setSelected( respectAnisotropy );
 	}
 
@@ -117,7 +131,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 		respectAnisotropyCheckbox = new JCheckBox( "Respect anisotropy" );
 		panel.add( respectAnisotropyCheckbox, "align left, wrap" );
 		String respectAnisotropyText =
-				"<html>Respecting anisotropy may take significantly more time,<br>but can lead to better detection results.</html>";
+				"<html>Respecting anisotropy may take significantly more time, but can lead to better detection results.</html>";
 		panel.add( new JLabel( respectAnisotropyText ), "align left, wmin 200, grow" );
 	}
 
@@ -131,6 +145,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 		detectorSettings.put( KEY_MODEL_TYPE, modelTypeSelection.getSelectedItem() );
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, cellProbabilityThreshold.getValue() );
 		detectorSettings.put( KEY_FLOW_THRESHOLD, flowThreshold.getValue() );
+		detectorSettings.put( KEY_DIAMETER, diameter.getValue() );
 		detectorSettings.put( KEY_RESPECT_ANISOTROPY, respectAnisotropyCheckbox.isSelected() );
 	}
 

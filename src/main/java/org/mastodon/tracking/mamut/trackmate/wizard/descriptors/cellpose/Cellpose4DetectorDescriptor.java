@@ -1,6 +1,7 @@
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
+import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_DIAMETER;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
 
 import java.util.Collection;
@@ -21,12 +22,15 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 
 	public static final String KEY_FLOW_THRESHOLD = "cellpose4flowThreshold";
 
+	public static final String KEY_DIAMETER = "cellpose4Diameter";
+
 	@Override
 	protected void persistSettings()
 	{
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, this.cellProbabilityThreshold.getValue() );
 		detectorSettings.put( KEY_FLOW_THRESHOLD, this.flowThreshold.getValue() );
+		detectorSettings.put( KEY_DIAMETER, this.diameter.getValue() );
 	}
 
 	@Override
@@ -59,9 +63,18 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 		else
 			flowThreshold = Double.parseDouble( String.valueOf( flowThresholdObject ) );
 
+		// Get the diameter.
+		final Object diameterObject = detectorSettings.get( KEY_DIAMETER );
+		final double diameter;
+		if ( null == diameterObject )
+			diameter = DEFAULT_DIAMETER; // default
+		else
+			diameter = Double.parseDouble( String.valueOf( diameterObject ) );
+
 		// Update them in the config panel.
 		this.cellProbabilityThreshold.setValue( cellprobThreshold );
 		this.flowThreshold.setValue( flowThreshold );
+		this.diameter.setValue( diameter );
 	}
 
 	@Override
@@ -91,6 +104,7 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, cellProbabilityThreshold.getValue() );
 		detectorSettings.put( KEY_FLOW_THRESHOLD, flowThreshold.getValue() );
+		detectorSettings.put( KEY_DIAMETER, diameter.getValue() );
 	}
 
 	@Override

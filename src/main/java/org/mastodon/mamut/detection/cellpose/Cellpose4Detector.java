@@ -32,6 +32,7 @@ import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_TH
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor.KEY_DIAMETER;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor.KEY_FLOW_THRESHOLD;
 
 import java.lang.invoke.MethodHandles;
@@ -64,7 +65,8 @@ public class Cellpose4Detector extends AbstractDetector
 	protected boolean validateSettings( final StringBuilder errorHolder )
 	{
 		return checkParameter( settings, KEY_CELL_PROBABILITY_THRESHOLD, Double.class, errorHolder )
-				&& checkParameter( settings, KEY_FLOW_THRESHOLD, Double.class, errorHolder );
+				&& checkParameter( settings, KEY_FLOW_THRESHOLD, Double.class, errorHolder )
+				&& checkParameter( settings, KEY_DIAMETER, Double.class, errorHolder );
 	}
 
 	@Override
@@ -75,6 +77,7 @@ public class Cellpose4Detector extends AbstractDetector
 			cellpose.set3D( is3D( image ) );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );
+			cellpose.setDiameter( ( double ) settings.get( KEY_DIAMETER ) );
 			return cellpose.segmentImage( Cast.unchecked( image ) );
 		}
 		catch ( Exception e )
@@ -91,6 +94,7 @@ public class Cellpose4Detector extends AbstractDetector
 	{
 		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, DEFAULT_CELLPROB_THRESHOLD );
 		defaultSettings.put( KEY_FLOW_THRESHOLD, DEFAULT_FLOW_THRESHOLD );
+		defaultSettings.put( KEY_DIAMETER, Cellpose4.DEFAULT_DIAMETER );
 	}
 
 	@Override

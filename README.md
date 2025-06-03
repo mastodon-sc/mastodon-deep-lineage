@@ -90,6 +90,13 @@ the plugin menu: `Plugins > Compute Features > Movement of spots relative to nea
 ** It is highly recommended to use all detectors, added by Mastodon Deep Lineage, only on machines with a GPU (ideally
 NVIDIA). The detectors are very slow on machines without a GPU. **
 
+* When running (or even previewing) the detectors for the first time, an internal installation process is started, which
+  may take some time (a couple of minutes, depending on the speed of internet connection). We recommend opening the
+  Window `Console` in Fiji using `Window > Console` to see the progress of
+  the installation.
+
+![console.png](doc/detection/console.png)
+
 ### StarDist Detector
 
 This detector uses StarDist for segmentation.
@@ -140,6 +147,13 @@ positions of each segmented spot.
 * Flow threshold:
     * 0 ... viewer (ill-shaped) detections
     * 6 ... more detections
+* Diameter:
+    * Cellpose can exploit an a priori knowledge on the size of cells.
+    * If you have a rough estimate of the size of a typical cell, it can be entered, which will speed up the
+      detection and improve the results.
+    * Units are in pixels, so if your image has a pixel size of e.g. 0.5 µm, and you expect cells to be around 10 µm,
+      enter 20 here.
+    * If you do not know, enter 0 and cellpose will automatically determine the cell size estimate.
 * For 3D data, anisotropy can be respected. Respecting anisotropy may take significantly more time but can lead to
   better detection results.
 * **When this detection method is used for the first time, internet connection is needed, since an internal
@@ -164,6 +178,13 @@ positions of each segmented spot.
 * Flow threshold:
     * 0 ... viewer (ill-shaped) detections
     * 6 ... more detections
+* Diameter:
+    * Cellpose can exploit an a priori knowledge on the size of cells.
+    * If you have a rough estimate of the size of a typical cell, it can be entered, which will speed up the
+      detection and improve the results.
+    * Units are in pixels, so if your image has a pixel size of e.g. 0.5 µm, and you expect cells to be around 10 µm,
+      enter 20 here.
+    * If you do not know, enter 0 and cellpose will automatically determine the cell size estimate.
 * **When this detection method is used for the first time, internet connection is needed, since an internal
   installation process is started. The installation consumes ~7.5GB hard disk space.**
 

@@ -29,9 +29,11 @@
 package org.mastodon.mamut.detection.cellpose;
 
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
+import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_DIAMETER;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose3.ModelType.CYTO3;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_DIAMETER;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_RESPECT_ANISOTROPY;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_MODEL_TYPE;
@@ -70,6 +72,7 @@ public class Cellpose3Detector extends AbstractDetector
 		return checkParameter( settings, KEY_MODEL_TYPE, Cellpose3.ModelType.class, errorHolder )
 				&& checkParameter( settings, KEY_CELL_PROBABILITY_THRESHOLD, Double.class, errorHolder )
 				&& checkParameter( settings, KEY_FLOW_THRESHOLD, Double.class, errorHolder )
+				&& checkParameter( settings, KEY_DIAMETER, Double.class, errorHolder )
 				&& checkParameter( settings, KEY_RESPECT_ANISOTROPY, Boolean.class, errorHolder );
 	}
 
@@ -81,6 +84,7 @@ public class Cellpose3Detector extends AbstractDetector
 			cellpose.set3D( is3D( image ) );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );
+			cellpose.setDiameter( ( double ) settings.get( KEY_DIAMETER ) );
 			final boolean respectAnisotropy = ( boolean ) settings.get( KEY_RESPECT_ANISOTROPY );
 			double anisotropy = respectAnisotropy ? getAnisotropy( voxelDimensions ) : 1.0;
 			cellpose.setAnisotropy( ( float ) anisotropy );
@@ -101,6 +105,7 @@ public class Cellpose3Detector extends AbstractDetector
 		defaultSettings.put( KEY_MODEL_TYPE, CYTO3 );
 		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, DEFAULT_CELLPROB_THRESHOLD );
 		defaultSettings.put( KEY_FLOW_THRESHOLD, DEFAULT_FLOW_THRESHOLD );
+		defaultSettings.put( KEY_DIAMETER, DEFAULT_DIAMETER );
 		defaultSettings.put( KEY_RESPECT_ANISOTROPY, true );
 	}
 
