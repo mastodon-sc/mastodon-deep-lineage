@@ -513,7 +513,7 @@ the Mastodon repository.
 * Labels are processed frame by frame.
 * Multiple blobs with the same id in the same frame are considered to belong to the same spot by this importer. It is
   advised to use unique ids for spots in the same frame.
-* The resulting spots are ellipsoids with the semi axes computed from the variance covariance matrix of the pixel
+* The resulting spots are ellipsoids with the semi-axes computed from the variance covariance matrix of the pixel
   positions of each label.
 * Labels with only one pixel are ignored. This is because the variance covariance matrix is not defined for a single
   point. If you want to import single pixel spots, you can use the [
