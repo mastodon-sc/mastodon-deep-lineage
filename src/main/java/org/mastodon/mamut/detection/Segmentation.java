@@ -30,6 +30,14 @@ import org.apposed.appose.TaskEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Abstract class providing a framework for image segmentation using Python-based processing.
+ * It manages the Python environment setup, execution of the segmentation in the Python environment, and results retrieval.<br>
+ * Subclasses are required to provide details, such as generating
+ * the environment file content and the script for the actual image segmentation.<br>
+ * This class facilitates the transfer of images between the Java and Python environments
+ * using shared memory and tracks task progress and execution time.
+ */
 public abstract class Segmentation implements AutoCloseable
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
@@ -110,6 +118,15 @@ public abstract class Segmentation implements AutoCloseable
 		return environment;
 	}
 
+	/**
+	 * Segments the input image using the configured Python environment and
+	 * returns the segmented image as an {@link Img}.
+	 *
+	 * @param inputImage the input image to be segmented.
+	 * @param <T>        the type of the image.
+	 * @return the segmented image.
+	 * @throws IOException if there is an error during segmentation.
+	 */
 	public < T extends NativeType< T > > Img< T > segmentImage( final RandomAccessibleInterval< T > inputImage ) throws IOException
 	{
 		String script = generateScript();

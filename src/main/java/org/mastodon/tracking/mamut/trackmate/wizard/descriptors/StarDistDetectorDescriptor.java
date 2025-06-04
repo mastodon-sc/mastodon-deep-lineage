@@ -20,6 +20,10 @@ import org.mastodon.mamut.detection.stardist.StarDistDetector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.scijava.plugin.Plugin;
 
+/**
+ * The {@code StarDistDetectorDescriptor} class is a configuration descriptor
+ * for the {@link StarDistDetector}.
+ */
 @Plugin( type = SpotDetectorDescriptor.class, name = "StarDist spot detector configuration descriptor" )
 public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 {

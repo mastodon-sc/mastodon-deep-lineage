@@ -49,6 +49,16 @@ import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A detector class that uses the Cellpose4 algorithm for image segmentation.<br>
+ * This class performs segmentation of images and derives spots by fitting ellipsoids
+ * to the pixel clouds of detected objects. It supports various Cellpose pre-trained.<br>
+ * Key Features:
+ * <ul>
+ *     <li>Allows setting a cell probability threshold for sensitivity adjustments.</li>
+ *     <li>Requires an internet connection for initial installation, consuming approximately 9GB of hard disk space.</li>
+ * </ul>
+ */
 @Plugin( type = SpotDetectorOp.class, priority = Priority.LOW, name = "Cellpose4 detector", description = "<html>"
 		+ "This detector uses Cellpose SAM for segmentation. Cellpose SAM has been published in:<br>"
 		+ "<i>Cellpose-SAM: superhuman generalization for cellular segmentation. </i> - "
@@ -94,7 +104,7 @@ public class Cellpose4Detector extends DeepLearningDetector
 	{
 		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, DEFAULT_CELLPROB_THRESHOLD );
 		defaultSettings.put( KEY_FLOW_THRESHOLD, DEFAULT_FLOW_THRESHOLD );
-		defaultSettings.put( KEY_DIAMETER, Cellpose4.DEFAULT_DIAMETER );
+		defaultSettings.put( KEY_DIAMETER, Cellpose.DEFAULT_DIAMETER );
 	}
 
 	@Override

@@ -2,6 +2,10 @@ package org.mastodon.mamut.detection.cellpose;
 
 import java.io.IOException;
 
+/**
+ * Cellpose3 is a specialized implementation of the {@link Cellpose} class, specifically
+ * designed to use Cellpose version 4 model for cell segmentation tasks.<br>
+ */
 public class Cellpose4 extends Cellpose
 {
 	public Cellpose4() throws IOException

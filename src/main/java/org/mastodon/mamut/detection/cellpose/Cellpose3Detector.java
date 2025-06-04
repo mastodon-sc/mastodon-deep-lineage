@@ -53,6 +53,18 @@ import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A detector class that uses the Cellpose3 algorithm for image segmentation.<br>
+ * This class performs segmentation of images and derives spots by fitting ellipsoids
+ * to the pixel clouds of detected objects. It supports various Cellpose pre-trained.<br>
+ * Key Features:
+ * <ul>
+ *     <li>Supports using different Cellpose models for various image types.</li>
+ *     <li>Allows setting a cell probability threshold for sensitivity adjustments.</li>
+ *     <li>Supports anisotropy for 3D data.</li>
+ *     <li>Requires an internet connection for initial installation, consuming approximately 7.5GB of hard disk space.</li>
+ * </ul>
+ */
 @Plugin( type = SpotDetectorOp.class, priority = Priority.LOW, name = "Cellpose3 detector", description = "<html>"
 		+ "This detector uses Cellpose for segmentation. Cellpose has been published in:<br>"
 		+ "<i>Cellpose: a generalist algorithm for cellular segmentation </i> - "

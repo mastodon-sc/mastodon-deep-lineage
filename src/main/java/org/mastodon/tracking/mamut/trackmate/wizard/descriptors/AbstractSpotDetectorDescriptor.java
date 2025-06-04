@@ -23,6 +23,9 @@ import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.ViewerFrameMamut;
 import org.scijava.plugin.Parameter;
 
+/**
+ * A class that contains the common logic for the spot detectors in this package.
+ */
 public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescriptor
 {
 
@@ -85,27 +88,14 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 	@Override
 	public void setTrackMate( final TrackMate trackmate )
 	{
-		/*
-		 * This method is called when the panel is shown when the user 'enters'
-		 * the config panel. It receives the instance of TrackMate that will run
-		 * the detection, and that this panel needs to configure. We use the
-		 * method for two things:
-		 *
-		 * 1/ Get the settings map to configure. The TrackMate instance stores
-		 * the detector settings in a map. We will need to update it with the
-		 * values set by the user on the panel when they 'leave' the panel, so
-		 * we store a reference to it in the descriptor.
-		 */
+		// This method is called when the user 'enters' the config panel.
+		// Get the settings map to configure. It is updated with the values set by the user on the panel when they 'leave' the panel, cf. aboutToHidePanel().
 		this.settings = trackmate.getSettings();
 
-		/*
-		 * 2/ We want to display the detector settings values, either the
-		 * default ones, or the one that were set previously. For this, we read
-		 * these values from the TrackMate instance we receive.
-		 */
 		if ( null == settings )
 			return;
 
+		// To display the detector settings values, either the default ones, or the one that were set previously, read these values from the TrackMate instance.
 		getSettingsAndUpdateConfigPanel();
 	}
 

@@ -10,6 +10,11 @@ import javax.swing.text.NumberFormatter;
 
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDetectorDescriptor;
 
+/**
+ * The {@code CellposeDetectorDescriptor} is an abstract superclass for CellposeDetector descriptors.<br>
+ * It provides the common configuration fields for Cellpose-based spot detection,
+ * including cell probability threshold, flow threshold, and diameter.<br>
+ */
 public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDescriptor
 {
 	protected JSpinner cellProbabilityThreshold;

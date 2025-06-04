@@ -19,6 +19,10 @@ import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDete
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.SpotDetectorDescriptor;
 import org.scijava.plugin.Plugin;
 
+/**
+ * The {@code Cellpose3DetectorDescriptor} class is a configuration descriptor
+ * for the {@link Cellpose3Detector}.
+ */
 @Plugin( type = SpotDetectorDescriptor.class, name = "Cellpose3 spot detector configuration descriptor" )
 public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 {

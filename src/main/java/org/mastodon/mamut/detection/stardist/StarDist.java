@@ -18,6 +18,15 @@ import io.bioimage.modelrunner.bioimageio.BioimageioRepo;
 import io.bioimage.modelrunner.bioimageio.description.ModelDescriptor;
 import io.bioimage.modelrunner.utils.JSONUtils;
 
+/**
+ * The StarDist class is responsible for performing segmentation tasks using the
+ * StarDist model. It extends the Segmentation class and supports both 2D and 3D
+ * data operations, depending on the chosen model type.<br>
+ * This class initializes the StarDist model, downloads the required model files
+ * if necessary, and configures the runtime environment.<br>
+ * Additionally, it handles segmentation predictions while allowing adjustments to important thresholds
+ * such as probability and non-maximum suppression.
+ */
 public class StarDist extends Segmentation
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
