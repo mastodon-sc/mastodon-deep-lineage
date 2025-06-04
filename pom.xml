@@ -134,6 +134,7 @@
         <dependency>
             <groupId>net.imglib2</groupId>
             <artifactId>imglib2-appose</artifactId>
+            <!-- TODO: use a stable version, when it is available -->
             <version>0.3.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
@@ -147,6 +148,7 @@
         <dependency>
             <groupId>org.apposed</groupId>
             <artifactId>appose</artifactId>
+            <!-- TODO: use a stable version, when it is available -->
             <version>0.4.0-SNAPSHOT</version>
         </dependency>
 
