@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Mastodon
+ * mastodon-deep-lineage
  * %%
- * Copyright (C) 2023 - 2025 Tobias Pietzsch, Jean-Yves Tinevez
+ * Copyright (C) 2022 - 2025 Stefan Hahmann
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
