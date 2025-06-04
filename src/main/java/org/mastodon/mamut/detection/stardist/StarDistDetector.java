@@ -14,7 +14,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.util.Cast;
 
-import org.mastodon.mamut.detection.AbstractDetector;
+import org.mastodon.mamut.detection.DeepLearningDetector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor;
 import org.scijava.Priority;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 		+ "A cell probability threshold can be set to allow more/less sensitive detection.<br><br>"
 		+ "<strong>When this detection method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~5.5GB hard disk space.</strong><br>"
 		+ "</html>" )
-public class StarDistDetector extends AbstractDetector
+public class StarDistDetector extends DeepLearningDetector
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 

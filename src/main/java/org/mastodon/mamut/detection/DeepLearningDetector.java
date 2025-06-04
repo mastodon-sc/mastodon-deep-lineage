@@ -21,7 +21,17 @@ import org.slf4j.LoggerFactory;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 
-public abstract class AbstractDetector extends AbstractSpotDetectorOp
+/**
+ * An abstract class representing a deep learning-based detector.
+ * This class provides the framework for various segmentation
+ * models and requires subclass implementation for model-specific functionality.<br>
+ * Subclasses are expected to define specific segmentation, settings, and validation
+ * logic.<br>
+ * The main workflow includes validating settings, providing a (time-point and channel) specific source,
+ * and executing the detection process via image segmentation.<br>
+ * The segmentation results are then used to create spots in the model graph.<br>
+ */
+public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 {
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
