@@ -78,40 +78,24 @@ public abstract class AbstractDetector extends AbstractSpotDetectorOp
 				if ( isCanceled() )
 					break; // Exit but don't fail.
 
-				if ( !DetectionUtil.isPresent( sources, setup, timepoint ) )
-					continue;
+				if ( DetectionUtil.isPresent( sources, setup, timepoint ) )
+				{
+					// First, get the source for the current channel (or setup) at the desired time-point. In BDV jargon, this is a source.
+					final Source< ? > source = sources.get( setup ).getSpimSource();
 
-				/*
-				 * Now here is the part specific to our dummy detector. First we get
-				 * the source for the current channel (or setup) at the desired
-				 * time-point. In BDV jargon, this is a source.
-				 */
-				final Source< ? > source = sources.get( setup ).getSpimSource();
-				double[] voxelDimensions = source.getVoxelDimensions().dimensionsAsDoubleArray();
+					final int level = 0; // level 0 is always the highest resolution.
 
-				/*
-				 * This source possibly has several resolution levels. And for your
-				 * own real detector, it might be very interesting to work on a
-				 * lower resolution (higher level). Check the DogDetectorOp code, for
-				 * instance. For us, we don't even care for pixels, we just want to
-				 * have the image boundary from the highest resolution (level 0).
-				 */
-				final int level = 0;
+					// This is the 3D image of the current time-point and specified channel. It is always 3D. If the source is 2D, the 3rd dimension has a size of 1.
+					final RandomAccessibleInterval< ? > image = source.getSource( timepoint, level );
 
-				/*
-				 * This is the 3D image of the current time-point, specified
-				 * channel. It is always 3D. If the source is 2D, the 3rd dimension
-				 * will have a size of 1.
-				 */
-				final RandomAccessibleInterval< ? > image = source.getSource( timepoint, level );
+					final Img< ? > segmentation = performSegmentation( image, source.getVoxelDimensions().dimensionsAsDoubleArray() );
 
-				final Img< ? > segmentation = performSegmentation( image, voxelDimensions );
+					if ( segmentation == null )
+						return;
 
-				if ( segmentation == null )
-					return;
-
-				final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
-				LabelImageUtils.createSpotsForFrame( graph, Cast.unchecked( segmentation ), timepoint, transform, 1d );
+					final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
+					LabelImageUtils.createSpotsForFrame( graph, Cast.unchecked( segmentation ), timepoint, transform, 1d );
+				}
 			}
 		}
 		catch ( Exception e )
