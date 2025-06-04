@@ -24,6 +24,10 @@
         <mastodon.group>org.mastodon</mastodon.group>
         <!-- when a pom-scijava exists that references the scijava-common 2.99.1 release, this can be removed again -->
         <scijava-common.version>2.99.1</scijava-common.version>
+        <!-- TODO: use a stable version, when it is available -->
+        <imglib2-appose.version>0.3.0-SNAPSHOT</imglib2-appose.version>
+        <!-- TODO: use a stable version, when it is available -->
+        <appose.version>0.4.0-SNAPSHOT</appose.version>
 
         <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
@@ -134,8 +138,7 @@
         <dependency>
             <groupId>net.imglib2</groupId>
             <artifactId>imglib2-appose</artifactId>
-            <!-- TODO: use a stable version, when it is available -->
-            <version>0.3.0-SNAPSHOT</version>
+            <version>${imglib2-appose.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apposed</groupId>
@@ -148,8 +151,7 @@
         <dependency>
             <groupId>org.apposed</groupId>
             <artifactId>appose</artifactId>
-            <!-- TODO: use a stable version, when it is available -->
-            <version>0.4.0-SNAPSHOT</version>
+            <version>${appose.version}</version>
         </dependency>
 
         <!-- mastodon tracking as base for custom detectors (cellpose, stardist) -->
