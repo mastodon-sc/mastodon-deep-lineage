@@ -1,0 +1,79 @@
+package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
+
+import java.text.NumberFormat;
+
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.text.NumberFormatter;
+
+import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDetectorDescriptor;
+
+/**
+ * The {@code CellposeDetectorDescriptor} is an abstract superclass for CellposeDetector descriptors.<br>
+ * It provides the common configuration fields for Cellpose-based spot detection,
+ * including cell probability threshold, flow threshold, and diameter.<br>
+ */
+public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDescriptor
+{
+	protected JSpinner cellProbabilityThreshold;
+
+	protected JSpinner flowThreshold;
+
+	protected JFormattedTextField diameter;
+
+	protected abstract void addModelTypeSelection( final ConfigPanel panel );
+
+	protected abstract void addRespectAnisotropyCheckbox( final ConfigPanel panel );
+
+	@Override
+	protected void configureDetectorSpecificFields( final ConfigPanel panel )
+	{
+
+		addModelTypeSelection( panel );
+
+		cellProbabilityThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 ) );
+		String cellProbText =
+				"<html>Cell probability threshold:<br>0 ... more detections<br>6 ... viewer detections (in dim regions)</html>";
+		JLabel cellProbLabel = new JLabel( cellProbText );
+		panel.add( cellProbLabel, "align left, wmin 200, wrap" );
+		panel.add( cellProbabilityThreshold, "align left, grow" );
+
+		flowThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 ) );
+		String flowText =
+				"<html>Flow threshold:<br>0 ... viewer (ill shaped) detections<br>6 ... more detections</html>";
+		JLabel flowLabel = new JLabel( flowText );
+		panel.add( flowLabel, "align left, wmin 200, wrap" );
+		panel.add( flowThreshold, "align left, grow" );
+
+		diameter = new JFormattedTextField( getNumberFormatter() );
+		diameter.setColumns( 10 );
+
+		String diameterText =
+				"<html>"
+						+ "If you have a rough estimate of the size of a typical cell, enter it here. Units are in pixels.<br>"
+						+ "</html>";
+		JLabel diameterLabel = new JLabel( diameterText );
+		panel.add( diameterLabel, "align left, wmin 200, wrap" );
+		panel.add( diameter, "align left, grow" );
+
+		addRespectAnisotropyCheckbox( panel );
+	}
+
+	private static NumberFormatter getNumberFormatter()
+	{
+		// Create a NumberFormat for doubles
+		NumberFormat doubleFormat = NumberFormat.getNumberInstance();
+		doubleFormat.setGroupingUsed( false ); // disables thousand separators
+
+		// Create a NumberFormatter that restricts values between 0 and 1000
+		NumberFormatter numberFormatter = new NumberFormatter( doubleFormat );
+		numberFormatter.setValueClass( Double.class );
+		numberFormatter.setMinimum( 0.0 );
+		numberFormatter.setMaximum( 1000.0 );
+		numberFormatter.setAllowsInvalid( false ); // Disallow invalid input
+		numberFormatter.setCommitsOnValidEdit( true ); // Commit edits as soon as valid
+		return numberFormatter;
+	}
+}

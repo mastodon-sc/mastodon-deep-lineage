@@ -20,9 +20,10 @@
         <license.copyrightOwners>Stefan Hahmann</license.copyrightOwners>
 
         <mastodon.version>1.0.0-beta-34</mastodon.version>
+        <mastodon-tracking.version>1.0.0-beta-20</mastodon-tracking.version>
         <mastodon.group>org.mastodon</mastodon.group>
         <!-- when a pom-scijava exists that references the scijava-common 2.99.1 release, this can be removed again -->
-        <scijava-common.version>2.99.1-SNAPSHOT</scijava-common.version>
+        <scijava-common.version>2.99.1</scijava-common.version>
 
         <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
@@ -127,6 +128,40 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
+        </dependency>
+
+        <!-- imglib2-appose for cellpose and stardist based detection -->
+        <dependency>
+            <groupId>net.imglib2</groupId>
+            <artifactId>imglib2-appose</artifactId>
+            <version>0.3.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apposed</groupId>
+                    <artifactId>appose</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- appose library for shared memory between java and python -->
+        <dependency>
+            <groupId>org.apposed</groupId>
+            <artifactId>appose</artifactId>
+            <version>0.4.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- mastodon tracking as base for custom detectors (cellpose, stardist) -->
+        <dependency>
+            <groupId>${mastodon.group}</groupId>
+            <artifactId>mastodon-tracking</artifactId>
+            <version>${mastodon-tracking.version}</version>
+        </dependency>
+
+        <!-- downloader for stardist models from bioimage.io -->
+        <dependency>
+            <groupId>io.bioimage</groupId>
+            <artifactId>dl-modelrunner</artifactId>
+            <version>0.5.10</version>
         </dependency>
 
         <!-- Test dependencies -->
