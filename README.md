@@ -95,7 +95,7 @@ NVIDIA). The detectors are very slow on machines without a GPU. **
   Window `Console` in Fiji using `Window > Console` to see the progress of
   the installation.
 
-![console.png](doc/detection/console.png)
+![console.png](doc/detectors/console.png)
 
 ### StarDist Detector
 
