@@ -18,6 +18,8 @@
     * [StarDist Detector](#stardist-detector)
     * [Cellpose3 Detector](#cellpose3-detector)
     * [Cellpose4 Detector](#cellpose4-detector)
+  * [Which Cellpose version to use?](#which-cellpose-version-to-use)
+  * [Examples of Deep-Learning Detectors](#examples-of-deep-learning-detectors)
 * [Hierarchical Clustering of Lineage Trees](#hierarchical-clustering-of-lineage-trees)
     * [Zhang Tree Edit Distance](#zhang-tree-edit-distance)
     * [Workflow](#workflow)
@@ -190,14 +192,6 @@ positions of each segmented spot.
 * **When this detection method is used for the first time, internet connection is needed, since an internal
   installation process is started. The installation consumes ~7.5GB hard disk space.**
 
-### Examples of Deep-Learning Detectors
-
-* You can try the detectors on
-  the [Mastodon example dataset](https://github.com/mastodon-sc/mastodon-example-data/tree/master/tgmm-mini)
-* Cellpose3: ![mastodon-cellpose3.gif](doc/detectors/mastodon-cellpose3.gif)
-* Cellpose4: ![mastodon-cellpose4.gif](doc/detectors/mastodon-cellpose4.gif)
-* StarDist: ![mastodon-stardist.gif](doc/detectors/mastodon-stardist.gif)
-
 ### Which Cellpose version to use?
 
 * Cellpose3 is the original Cellpose version, which is still widely used. It is a good choice for most applications. You
@@ -208,6 +202,14 @@ positions of each segmented spot.
   It does not require a model to be selected since it
   automatically adapts to the data. In 2D applications its running time is similar to Cellpose3, but in 3D applications
   it is ~20 times slower than Cellpose3.
+
+### Examples of Deep-Learning Detectors
+
+* You can try the detectors on
+  the [Mastodon example dataset](https://github.com/mastodon-sc/mastodon-example-data/tree/master/tgmm-mini)
+* Cellpose3: ![mastodon-cellpose3.gif](doc/detectors/mastodon-cellpose3.gif)
+* Cellpose4: ![mastodon-cellpose4.gif](doc/detectors/mastodon-cellpose4.gif)
+* StarDist: ![mastodon-stardist.gif](doc/detectors/mastodon-stardist.gif)
 
 ## Hierarchical Clustering of Lineage Trees
 
