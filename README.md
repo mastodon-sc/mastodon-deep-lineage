@@ -190,6 +190,14 @@ positions of each segmented spot.
 * **When this detection method is used for the first time, internet connection is needed, since an internal
   installation process is started. The installation consumes ~7.5GB hard disk space.**
 
+###
+
+* You can try the detectors on
+  the [Mastodon example dataset](https://github.com/mastodon-sc/mastodon-example-data/tree/master/tgmm-mini)
+* Cellpose3: ![mastodon-cellpose3.gif](doc/detectors/mastodon-cellpose3.gif)
+* Cellpose4: ![mastodon-cellpose4.gif](doc/detectors/mastodon-cellpose4.gif)
+* StarDist: ![mastodon-stardist.gif](doc/detectors/mastodon-stardist.gif)
+
 ### Which Cellpose version to use?
 
 * Cellpose3 is the original Cellpose version, which is still widely used. It is a good choice for most applications. You
