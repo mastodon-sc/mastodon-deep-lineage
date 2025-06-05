@@ -190,7 +190,7 @@ positions of each segmented spot.
 * **When this detection method is used for the first time, internet connection is needed, since an internal
   installation process is started. The installation consumes ~7.5GB hard disk space.**
 
-###
+### Examples of Deep-Learning Detectors
 
 * You can try the detectors on
   the [Mastodon example dataset](https://github.com/mastodon-sc/mastodon-example-data/tree/master/tgmm-mini)
