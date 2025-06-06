@@ -89,8 +89,8 @@ the plugin menu: `Plugins > Compute Features > Movement of spots relative to nea
 
 ## Detectors added to Mastodon
 
-** It is highly recommended to use all detectors, added by Mastodon Deep Lineage, only on machines with a GPU (ideally
-NVIDIA). The detectors are very slow on machines without a GPU. **
+**It is highly recommended to use all detectors, added by Mastodon Deep Lineage, only on machines with a GPU (ideally
+NVIDIA). The detectors are very slow on machines without a GPU.**
 
 * When running (or even previewing) the detectors for the first time, an internal installation process is started, which
   may take some time (a couple of minutes, depending on the speed of internet connection). We recommend opening the
