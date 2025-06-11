@@ -206,18 +206,16 @@ public abstract class Segmentation implements AutoCloseable
 	private Consumer< TaskEvent > getTaskListener( final StopWatch stopWatch, final Service.Task task )
 	{
 		return taskEvent -> {
+			stopWatch.split();
 			switch ( taskEvent.responseType )
 			{
 			case UPDATE:
-				stopWatch.split();
 				logger.info( "Task update: {}. Time elapsed: {}", taskEvent.message, stopWatch.formatSplitTime() );
 				break;
 			case LAUNCH:
-				stopWatch.split();
 				logger.info( "Task launched. Time elapsed: {}", stopWatch.formatSplitTime() );
 				break;
 			case COMPLETION:
-				stopWatch.split();
 				logger.info( "Task completed. Time elapsed: {}", stopWatch.formatSplitTime() );
 				break;
 			default:
