@@ -218,6 +218,9 @@ public abstract class Segmentation implements AutoCloseable
 			case COMPLETION:
 				logger.info( "Task completed. Time elapsed: {}", stopWatch.formatSplitTime() );
 				break;
+			case FAILURE:
+				logger.error( "Task failed with error: {}. Time elapsed: {}", task.error, stopWatch.formatSplitTime() );
+				break;
 			default:
 				logger.warn( "Unhandled task event: {}.", taskEvent.responseType );
 				break;
