@@ -210,7 +210,7 @@ public abstract class Segmentation implements AutoCloseable
 			{
 			case UPDATE:
 				stopWatch.split();
-				logger.info( "Task update: {}. Time elapsed: {}", task.message, stopWatch.formatSplitTime() );
+				logger.info( "Task update: {}. Time elapsed: {}", taskEvent.message, stopWatch.formatSplitTime() );
 				break;
 			case LAUNCH:
 				stopWatch.split();
