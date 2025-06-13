@@ -151,16 +151,31 @@ public class StarDist extends Segmentation
 				+ "  - conda-forge\n"
 				+ "dependencies:\n"
 				+ "  - python=3.10\n"
-				+ "  - cudatoolkit=11.2\n"
-				+ "  - cudnn=8.1.0\n"
+				+ getCuda()
 				+ "  - numpy<1.24\n"
 				+ "  - pip\n"
 				+ "  - pip:\n"
 				+ "    - numpy<1.24\n"
-				+ "    - tensorflow==2.10\n"
+				+ getTensorflow()
 				+ "    - stardist==0.8.5\n"
 				// + "    - git+https://github.com/apposed/appose-python.git@efe6dadb2242ca45820fcbb7aeea2096f99f9cb2\n"; // contains a bug fix to run appose on Windows
 				+ "    - appose==0.4.0\n";
+	}
+
+	private String getCuda()
+	{
+		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
+			return "";
+		return "  - cudatoolkit=11.2\n"
+				+ "  - cudnn=8.1.0\n";
+	}
+
+	private String getTensorflow()
+	{
+		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
+			return "    - tensorflow-macos==2.10\n"
+					+ "    - tensorflow-metal==0.6.0\n";
+		return "    - tensorflow==2.10\n";
 	}
 
 	@Override
