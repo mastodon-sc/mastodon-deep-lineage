@@ -14,6 +14,7 @@
 
     <properties>
         <package-name>org.mastodon</package-name>
+        <!-- license information -->
         <license.licenseName>bsd_2</license.licenseName>
         <license.projectName>mastodon-deep-lineage</license.projectName>
         <license.organizationName>Mastodon authors</license.organizationName>
@@ -24,6 +25,8 @@
         <mastodon.group>org.mastodon</mastodon.group>
         <!-- when a pom-scijava exists that references the scijava-common 2.99.1 release, this can be removed again -->
         <scijava-common.version>2.99.1</scijava-common.version>
+        <!-- when a pom-scijava exists that references the ij1-patcher 1.2.7 release, this can be removed again -->
+        <ij1-patcher.version>1.2.7</ij1-patcher.version>
         <!-- TODO: use a stable version, when it is available -->
         <imglib2-appose.version>0.3.0-SNAPSHOT</imglib2-appose.version>
         <!-- TODO: use a stable version, when it is available -->
@@ -33,6 +36,7 @@
 
         <enforcer.skip>true</enforcer.skip>
 
+        <!-- SonarCloud configuration. Used for code quality metric reports -->
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
@@ -114,21 +118,21 @@
             <artifactId>jfreesvg</artifactId>
         </dependency>
 
-        <!-- UMAP -->
+        <!-- UMAP (production) -->
         <dependency>
             <groupId>tech.molecules</groupId>
             <artifactId>external-umap-java</artifactId>
             <version>1.0</version>
         </dependency>
 
-        <!-- t-SNE -->
+        <!-- PCA, t-SNE (production), UMAP (tests only) -->
         <dependency>
-            <groupId>com.github.lejon.T-SNE-Java</groupId>
-            <artifactId>tsne</artifactId>
-            <version>v2.6.4</version>
+            <groupId>com.github.haifengl</groupId>
+            <artifactId>smile-core</artifactId>
+            <version>4.0.0</version>
         </dependency>
 
-        <!-- Standardization for UMAP preprocessing -->
+        <!-- Standardization for dimensionality reduction preprocessing -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
@@ -182,7 +186,6 @@
             <version>4.11.0</version>
             <scope>test</scope>
         </dependency>
-
 
         <!-- hierarchical clustering, tests only -->
         <dependency>
@@ -272,6 +275,9 @@
                         <version>3.1.0</version>
                         <configuration>
                             <argLine>-Xmx3g</argLine>
+                            <classpathDependencyExcludes>
+                                <classpathDependencyExclude>net.imagej:imagej-legacy</classpathDependencyExclude>
+                            </classpathDependencyExcludes>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -288,12 +294,15 @@
                         <version>3.1.0</version>
                         <configuration>
                             <argLine>@{argLine} -Xmx3g</argLine>
+                            <classpathDependencyExcludes>
+                                <classpathDependencyExclude>net.imagej:imagej-legacy</classpathDependencyExclude>
+                            </classpathDependencyExcludes>
                         </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.7</version>
+                        <version>0.8.11</version>
                         <executions>
                             <execution>
                                 <id>prepare-agent</id>

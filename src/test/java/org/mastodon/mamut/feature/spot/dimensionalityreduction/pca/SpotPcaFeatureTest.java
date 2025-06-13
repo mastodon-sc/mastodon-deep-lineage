@@ -2,7 +2,7 @@
  * #%L
  * mastodon-deep-lineage
  * %%
- * Copyright (C) 2022 - 2025 Stefan Hahmann
+ * Copyright (C) 2022 - 2024 Stefan Hahmann
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.spot.dimensionalityreduction.tsne;
+package org.mastodon.mamut.feature.spot.dimensionalityreduction.pca;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -56,9 +56,9 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
 import org.scijava.Context;
 
-public class SpotTSneFeatureTest extends AbstractFeatureTest< Spot >
+public class SpotPcaFeatureTest extends AbstractFeatureTest< Spot >
 {
-	private SpotTSneFeature spotTSneFeature;
+	private SpotPcaFeature spotPcaFeature;
 
 	private final ExampleGraph7 graph7 = new ExampleGraph7();
 
@@ -73,14 +73,14 @@ public class SpotTSneFeatureTest extends AbstractFeatureTest< Spot >
 		{
 			FeatureModel featureModel = graph7.getModel().getFeatureModel();
 			DimensionalityReductionController controller = new DimensionalityReductionController( graph7.getModel(), context );
-			controller.setAlgorithm( DimensionalityReductionAlgorithm.TSNE );
+			controller.setAlgorithm( DimensionalityReductionAlgorithm.PCA );
 			Supplier< List< InputDimension< Spot > > > inputDimensionsSupplier =
 					() -> InputDimension.getListFromFeatureModel( featureModel, Spot.class, Link.class );
 			controller.computeFeature( inputDimensionsSupplier );
-			spotTSneFeature = FeatureUtils.getFeature( graph7.getModel(), SpotTSneFeature.SpotTSneFeatureSpec.class );
-			assertNotNull( spotTSneFeature );
-			spec0 = new FeatureProjectionSpec( spotTSneFeature.getProjectionName( 0 ), Dimension.NONE );
-			spec1 = new FeatureProjectionSpec( spotTSneFeature.getProjectionName( 1 ), Dimension.NONE );
+			spotPcaFeature = FeatureUtils.getFeature( graph7.getModel(), SpotPcaFeature.SpotPcaFeatureSpec.class );
+			assertNotNull( spotPcaFeature );
+			spec0 = new FeatureProjectionSpec( spotPcaFeature.getProjectionName( 0 ), Dimension.NONE );
+			spec1 = new FeatureProjectionSpec( spotPcaFeature.getProjectionName( 1 ), Dimension.NONE );
 		}
 	}
 
@@ -88,9 +88,9 @@ public class SpotTSneFeatureTest extends AbstractFeatureTest< Spot >
 	@Override
 	public void testFeatureComputation()
 	{
-		assertNotNull( spotTSneFeature );
-		FeatureProjection< Spot > projection0 = getProjection( spotTSneFeature, spec0 );
-		FeatureProjection< Spot > projection1 = getProjection( spotTSneFeature, spec1 );
+		assertNotNull( spotPcaFeature );
+		FeatureProjection< Spot > projection0 = getProjection( spotPcaFeature, spec0 );
+		FeatureProjection< Spot > projection1 = getProjection( spotPcaFeature, spec1 );
 		Iterator< Spot > spotIterator = graph7.getModel().getGraph().vertices().iterator();
 		Spot spot0 = spotIterator.next();
 		assertTrue( Double.isNaN( projection0.value( spot0 ) ) );
@@ -106,18 +106,19 @@ public class SpotTSneFeatureTest extends AbstractFeatureTest< Spot >
 	@Override
 	public void testFeatureSerialization() throws IOException
 	{
-		SpotTSneFeature spotTSneFeatureReloaded;
+		SpotPcaFeature spotPcaFeatureReloaded;
 		try (Context context = new Context())
 		{
-			spotTSneFeatureReloaded =
-					( SpotTSneFeature ) FeatureSerializerTestUtils.saveAndReload( context, graph7.getModel(), spotTSneFeature );
+			spotPcaFeatureReloaded =
+					( SpotPcaFeature ) FeatureSerializerTestUtils.saveAndReload( context, graph7.getModel(), spotPcaFeature );
 		}
-		assertNotNull( spotTSneFeatureReloaded );
+		assertNotNull( spotPcaFeatureReloaded );
 		// check that the feature has correct values after saving and reloading
 		Iterator< Spot > spotIterator = graph7.getModel().getGraph().vertices().iterator();
 		spotIterator.next();
 		Spot spot1 = spotIterator.next();
-		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( spotTSneFeature, spotTSneFeatureReloaded,
+		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality(
+				spotPcaFeature, spotPcaFeatureReloaded,
 				Collections.singleton( spot1 ) ) );
 	}
 
@@ -129,14 +130,14 @@ public class SpotTSneFeatureTest extends AbstractFeatureTest< Spot >
 		Iterator< Spot > spotIterator = graph7.getModel().getGraph().vertices().iterator();
 		spotIterator.next();
 		Spot spot1 = spotIterator.next();
-		assertFalse( Double.isNaN( getProjection( spotTSneFeature, spec0 ).value( spot1 ) ) );
-		assertFalse( Double.isNaN( getProjection( spotTSneFeature, spec1 ).value( spot1 ) ) );
+		assertFalse( Double.isNaN( getProjection( spotPcaFeature, spec0 ).value( spot1 ) ) );
+		assertFalse( Double.isNaN( getProjection( spotPcaFeature, spec1 ).value( spot1 ) ) );
 
 		// invalidate feature
-		spotTSneFeature.invalidate( spot1 );
+		spotPcaFeature.invalidate( spot1 );
 
 		// test, if features are NaN after invalidation
-		assertTrue( Double.isNaN( getProjection( spotTSneFeature, spec0 ).value( spot1 ) ) );
-		assertTrue( Double.isNaN( getProjection( spotTSneFeature, spec1 ).value( spot1 ) ) );
+		assertTrue( Double.isNaN( getProjection( spotPcaFeature, spec0 ).value( spot1 ) ) );
+		assertTrue( Double.isNaN( getProjection( spotPcaFeature, spec1 ).value( spot1 ) ) );
 	}
 }
