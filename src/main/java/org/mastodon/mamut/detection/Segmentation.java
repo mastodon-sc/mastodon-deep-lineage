@@ -210,7 +210,7 @@ public abstract class Segmentation implements AutoCloseable
 			switch ( taskEvent.responseType )
 			{
 			case UPDATE:
-				logger.info( "Task update: {}. Time elapsed: {}", task.message, stopWatch.formatSplitTime() );
+				logger.info( "Task update: {}. Time elapsed: {}", taskEvent.message, stopWatch.formatSplitTime() );
 				break;
 			case LAUNCH:
 				logger.info( "Task launched. Time elapsed: {}", stopWatch.formatSplitTime() );

@@ -96,7 +96,7 @@ public class Cellpose3 extends Cellpose
 				+ "  - pip\n"
 				+ "  - pip:\n"
 				+ "    - cellpose==3.1.1.2\n"
-				// + "    - git+https://github.com/apposed/appose-python.git@c8747e317244433f53d6975fb784eb55416b0564\n" // bug fix: Always initialize thread attribute
+				//+ "    - git+https://github.com/apposed/appose-python.git@c8747e317244433f53d6975fb784eb55416b0564\n" // bug fix: Always initialize thread attribute
 				+ "    - appose==0.4.0\n"
 				+ "  - pytorch\n"
 				+ "  - pytorch-cuda\n"
