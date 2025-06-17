@@ -75,8 +75,7 @@ public class Cellpose4 extends Cellpose
 				+ "  - pip\n"
 				+ "  - pip:\n"
 				+ "    - cellpose==4.0.2\n"
-				+ "    - git+https://github.com/apposed/appose-python.git@fc61f5a9367248d6f1a1cc1e322c82bcf50f1a9d\n" // latest commit
-				// + "    - appose==0.4.0\n"
+				+ getApposeVersion()
 				+ "  - pytorch\n"
 				+ "  - pytorch-cuda\n"
 				+ "  - numpy\n";
