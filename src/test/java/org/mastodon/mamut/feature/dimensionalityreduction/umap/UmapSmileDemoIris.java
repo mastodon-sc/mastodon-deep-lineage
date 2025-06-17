@@ -26,7 +26,6 @@ public class UmapSmileDemoIris
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	/*
 	public static void main( String[] args ) throws IOException, CsvValidationException
 	{
 		File file = new File( "src/test/resources/org/mastodon/mamut/feature/dimensionalityreduction/iris.tsv" );
@@ -62,6 +61,5 @@ public class UmapSmileDemoIris
 		int nNeighbors = 15;
 		return UMAP.of( data, MathEx::distance, nNeighbors, 2, iterations, 1, minDist, 1.0, 5, 1 );
 	}
-	
-	 */
+
 }
