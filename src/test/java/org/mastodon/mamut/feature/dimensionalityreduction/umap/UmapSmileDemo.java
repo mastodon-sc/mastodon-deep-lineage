@@ -10,7 +10,7 @@ import smile.math.MathEx;
 
 public class UmapSmileDemo
 {
-	/*
+
 	public static void main( final String[] args )
 	{
 		int numCluster1 = 50;
@@ -28,6 +28,4 @@ public class UmapSmileDemo
 		int nNeighbors = 15;
 		return UMAP.of( sampleData, MathEx::distance, nNeighbors, 2, iterations, 1, minDist, 1.0, 5, 1 );
 	}
-	
-	 */
 }
