@@ -158,8 +158,7 @@ public class StarDist extends Segmentation
 				+ "    - numpy<1.24\n"
 				+ getTensorflow()
 				+ "    - stardist==0.8.5\n"
-				+ "    - git+https://github.com/apposed/appose-python.git@fc61f5a9367248d6f1a1cc1e322c82bcf50f1a9d\n"; // latest commit
-		// + "    - appose==0.4.0\n";
+				+ getApposeVersion();
 	}
 
 	private String getCuda()
