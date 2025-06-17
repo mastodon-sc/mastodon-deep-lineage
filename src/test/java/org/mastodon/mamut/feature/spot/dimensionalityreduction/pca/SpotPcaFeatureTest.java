@@ -56,7 +56,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
 import org.scijava.Context;
 
-public class SpotPcaFeatureTest extends AbstractFeatureTest< Spot >
+class SpotPcaFeatureTest extends AbstractFeatureTest< Spot >
 {
 	private SpotPcaFeature spotPcaFeature;
 
@@ -67,7 +67,7 @@ public class SpotPcaFeatureTest extends AbstractFeatureTest< Spot >
 	private FeatureProjectionSpec spec1;
 
 	@BeforeEach
-	public void setUp()
+	void setUp()
 	{
 		try (Context context = new Context())
 		{
