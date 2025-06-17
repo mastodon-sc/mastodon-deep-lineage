@@ -96,8 +96,8 @@ public class Cellpose3 extends Cellpose
 				+ "  - pip\n"
 				+ "  - pip:\n"
 				+ "    - cellpose==3.1.1.2\n"
-				+ "    - git+https://github.com/apposed/appose-python.git@efe6dadb2242ca45820fcbb7aeea2096f99f9cb2\n" // contains a bug fix to run appose on Windows
-				// + "    - appose\n"
+				+ "    - git+https://github.com/apposed/appose-python.git@fc61f5a9367248d6f1a1cc1e322c82bcf50f1a9d\n" // latest commit
+				// + "    - appose==0.4.0\n"
 				+ "  - pytorch\n"
 				+ "  - pytorch-cuda\n"
 				+ "  - numpy\n";

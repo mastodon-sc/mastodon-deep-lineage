@@ -93,7 +93,7 @@ public abstract class Segmentation implements AutoCloseable
 		if ( logger.isInfoEnabled() )
 			logger.info( "Set up environment. Path: {}. Time elapsed: {}", environment.base(), stopWatch.formatSplitTime() );
 		this.pythonWorker = environment.python();
-		this.pythonWorker.debug( logger::info );
+		// this.pythonWorker.debug( logger::info );
 		this.inputs = new HashMap<>();
 	}
 
@@ -206,19 +206,20 @@ public abstract class Segmentation implements AutoCloseable
 	private Consumer< TaskEvent > getTaskListener( final StopWatch stopWatch, final Service.Task task )
 	{
 		return taskEvent -> {
+			stopWatch.split();
 			switch ( taskEvent.responseType )
 			{
 			case UPDATE:
-				stopWatch.split();
 				logger.info( "Task update: {}. Time elapsed: {}", taskEvent.message, stopWatch.formatSplitTime() );
 				break;
 			case LAUNCH:
-				stopWatch.split();
 				logger.info( "Task launched. Time elapsed: {}", stopWatch.formatSplitTime() );
 				break;
 			case COMPLETION:
-				stopWatch.split();
 				logger.info( "Task completed. Time elapsed: {}", stopWatch.formatSplitTime() );
+				break;
+			case FAILURE:
+				logger.error( "Task failed with error: {}. Time elapsed: {}", task.error, stopWatch.formatSplitTime() );
 				break;
 			default:
 				logger.warn( "Unhandled task event: {}.", taskEvent.responseType );
