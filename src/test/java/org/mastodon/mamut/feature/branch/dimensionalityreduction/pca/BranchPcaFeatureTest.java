@@ -62,7 +62,7 @@ import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
-public class BranchPcaFeatureTest extends AbstractFeatureTest< BranchSpot >
+class BranchPcaFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
 	private BranchPcaFeature pcaFeature;
 
@@ -73,7 +73,7 @@ public class BranchPcaFeatureTest extends AbstractFeatureTest< BranchSpot >
 	private FeatureProjectionSpec spec1;
 
 	@BeforeEach
-	public void setUp()
+	void setUp()
 	{
 		try (Context context = new Context())
 		{
