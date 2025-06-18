@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
+import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionTestUtils;
@@ -61,9 +62,15 @@ class TSneTest
 		// Recommendations for t-SNE defaults: https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
 		double perplexity = 30d; // recommended value is between 5 and 50
 		int maxIterations = 1000; // should be at least 250
-
-		TSNE tsne = new TSNE( inputData, 2, perplexity, 200, maxIterations );
-		double[][] tsneResult = tsne.coordinates;
+		int d = 2; // target dimension
+		double eta = 200; // learning rate
+		Properties p = new Properties();
+		p.setProperty( "smile.t_sne.d", String.valueOf( d ) );
+		p.setProperty( "smile.t_sne.perplexity", String.valueOf( perplexity ) );
+		p.setProperty( "smile.t_sne.eta", String.valueOf( eta ) );
+		p.setProperty( "smile.t_sne.iterations", String.valueOf( maxIterations ) );
+		TSNE tsne = TSNE.fit( inputData, TSNE.Options.of( p ) );
+		double[][] tsneResult = tsne.coordinates();
 
 		assertEquals( tsneResult.length, inputData.length );
 		assertEquals( 2, tsneResult[ 0 ].length );

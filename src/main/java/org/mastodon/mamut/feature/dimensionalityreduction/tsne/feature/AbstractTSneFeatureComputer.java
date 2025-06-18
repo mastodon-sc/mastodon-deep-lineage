@@ -30,6 +30,7 @@ package org.mastodon.mamut.feature.dimensionalityreduction.tsne.feature;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.RefPool;
@@ -96,9 +97,14 @@ public abstract class AbstractTSneFeatureComputer< V extends Vertex< E >, E exte
 					+ tSneSettings.getMaxValidPerplexity( rows ) + ")." );
 		}
 		logger.info( "Computing t-SNE. Data matrix has {} rows x {} columns.", dataMatrix.length, dataMatrix[ 0 ].length );
-		TSNE tsne = new TSNE( dataMatrix, settings.getNumberOfOutputDimensions(), tSneSettings.getPerplexity(), 200,
-				tSneSettings.getMaxIterations() );
-		tSneResult = tsne.coordinates;
+		double eta = 200; // learning rate
+		Properties p = new Properties();
+		p.setProperty( "smile.t_sne.d", String.valueOf( settings.getNumberOfOutputDimensions() ) );
+		p.setProperty( "smile.t_sne.perplexity", String.valueOf( tSneSettings.getPerplexity() ) );
+		p.setProperty( "smile.t_sne.eta", String.valueOf( eta ) );
+		p.setProperty( "smile.t_sne.iterations", String.valueOf( tSneSettings.getMaxIterations() ) );
+		TSNE tsne = TSNE.fit( dataMatrix, TSNE.Options.of( p ) );
+		tSneResult = tsne.coordinates();
 		logger.info( "Finished computing t-SNE. Results has {} rows x {} columns.", tSneResult.length,
 				tSneResult.length > 0 ? tSneResult[ 0 ].length : 0 );
 	}

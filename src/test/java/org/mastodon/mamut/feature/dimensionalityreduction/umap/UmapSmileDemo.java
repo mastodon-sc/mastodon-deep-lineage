@@ -1,12 +1,12 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.umap;
 
 import java.util.Arrays;
+import java.util.Properties;
 
 import org.mastodon.mamut.feature.dimensionalityreduction.PlotPoints;
 import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
 
 import smile.manifold.UMAP;
-import smile.math.MathEx;
 
 public class UmapSmileDemo
 {
@@ -23,9 +23,23 @@ public class UmapSmileDemo
 	
 	static double[][] setUpUmap( final double[][] sampleData )
 	{
-		int iterations = sampleData.length < 10_000 ? 500 : 200; // https://github.com/lmcinnes/umap/blob/a012b9d8751d98b94935ca21f278a54b3c3e1b7f/umap/umap_.py#L1073
-		double minDist = 0.1;
 		int nNeighbors = 15;
-		return UMAP.of( sampleData, MathEx::distance, nNeighbors, 2, iterations, 1, minDist, 1.0, 5, 1 );
+		int d = 2;
+		double learningRate = 1.0;
+		double minDist = 0.1;
+		double spread = 1.0;
+		int negativeSampleRate = 5;
+		double repulsionStrength = 1.0;
+
+		Properties props = new Properties();
+		props.setProperty( "smile.umap.k", String.valueOf( nNeighbors ) );
+		props.setProperty( "smile.umap.d", String.valueOf( d ) );
+		props.setProperty( "smile.umap.learning_rate", String.valueOf( learningRate ) );
+		props.setProperty( "smile.umap.min_dist", String.valueOf( minDist ) );
+		props.setProperty( "smile.umap.spread", String.valueOf( spread ) );
+		props.setProperty( "smile.umap.negative_samples", String.valueOf( negativeSampleRate ) );
+		props.setProperty( "smile.umap.repulsion_strength", String.valueOf( repulsionStrength ) );
+
+		return UMAP.fit( sampleData, UMAP.Options.of( props ) );
 	}
 }
