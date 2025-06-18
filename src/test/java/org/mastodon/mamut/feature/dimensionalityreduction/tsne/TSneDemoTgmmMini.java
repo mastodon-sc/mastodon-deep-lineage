@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -46,7 +47,16 @@ public class TSneDemoTgmmMini
 
 	static double[][] setUpTSne( double[][] inputData )
 	{
-		TSNE tsne = new TSNE( inputData, 2, 30d, 200, 1000 );
-		return tsne.coordinates;
+		int d = 2; // target dimension
+		double perplexity = 30d;
+		double eta = 200; // learning rate
+		int maxIter = 1000; // maximum number of iterations
+		Properties p = new Properties();
+		p.setProperty( "smile.t_sne.d", String.valueOf( d ) );
+		p.setProperty( "smile.t_sne.perplexity", String.valueOf( perplexity ) );
+		p.setProperty( "smile.t_sne.eta", String.valueOf( eta ) );
+		p.setProperty( "smile.t_sne.iterations", String.valueOf( maxIter ) );
+		TSNE tsne = TSNE.fit( inputData, TSNE.Options.of( p ) );
+		return tsne.coordinates();
 	}
 }

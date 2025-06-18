@@ -28,6 +28,8 @@
  */
 package org.mastodon.mamut.feature.dimensionalityreduction.tsne;
 
+import java.util.Properties;
+
 import org.mastodon.mamut.feature.dimensionalityreduction.PlotPoints;
 import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
 
@@ -44,7 +46,16 @@ public class TSneDemo
 
 	static double[][] setUpTSne( double[][] inputData )
 	{
-		TSNE tsne = new TSNE( inputData, 2, 30d, 200, 1000 );
-		return tsne.coordinates;
+		int d = 2; // target dimension
+		double perplexity = 30d;
+		double eta = 200; // learning rate
+		int maxIter = 1000; // maximum number of iterations
+		Properties p = new Properties();
+		p.setProperty( "smile.t_sne.d", String.valueOf( d ) );
+		p.setProperty( "smile.t_sne.perplexity", String.valueOf( perplexity ) );
+		p.setProperty( "smile.t_sne.eta", String.valueOf( eta ) );
+		p.setProperty( "smile.t_sne.iterations", String.valueOf( maxIter ) );
+		TSNE tsne = TSNE.fit( inputData, TSNE.Options.of( p ) );
+		return tsne.coordinates();
 	}
 }
