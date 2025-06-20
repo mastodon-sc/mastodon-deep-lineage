@@ -30,7 +30,6 @@ package org.mastodon.mamut.feature.dimensionalityreduction.tsne.feature;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.RefPool;
