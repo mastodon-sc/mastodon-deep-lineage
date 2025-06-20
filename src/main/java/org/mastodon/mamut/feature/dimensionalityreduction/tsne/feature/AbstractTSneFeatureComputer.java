@@ -98,12 +98,11 @@ public abstract class AbstractTSneFeatureComputer< V extends Vertex< E >, E exte
 		}
 		logger.info( "Computing t-SNE. Data matrix has {} rows x {} columns.", dataMatrix.length, dataMatrix[ 0 ].length );
 		double eta = 200; // learning rate
-		Properties p = new Properties();
-		p.setProperty( "smile.t_sne.d", String.valueOf( settings.getNumberOfOutputDimensions() ) );
-		p.setProperty( "smile.t_sne.perplexity", String.valueOf( tSneSettings.getPerplexity() ) );
-		p.setProperty( "smile.t_sne.eta", String.valueOf( eta ) );
-		p.setProperty( "smile.t_sne.iterations", String.valueOf( tSneSettings.getMaxIterations() ) );
-		TSNE tsne = TSNE.fit( dataMatrix, TSNE.Options.of( p ) );
+		double earlyExaggeration = 12; // early exaggeration factor
+		TSNE.Options options =
+				new TSNE.Options( settings.getNumberOfOutputDimensions(), tSneSettings.getPerplexity(), eta, earlyExaggeration,
+				tSneSettings.getMaxIterations() );
+		TSNE tsne = TSNE.fit( dataMatrix, options );
 		tSneResult = tsne.coordinates();
 		logger.info( "Finished computing t-SNE. Results has {} rows x {} columns.", tSneResult.length,
 				tSneResult.length > 0 ? tSneResult[ 0 ].length : 0 );

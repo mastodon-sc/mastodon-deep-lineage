@@ -64,12 +64,8 @@ class TSneTest
 		int maxIterations = 1000; // should be at least 250
 		int d = 2; // target dimension
 		double eta = 200; // learning rate
-		Properties p = new Properties();
-		p.setProperty( "smile.t_sne.d", String.valueOf( d ) );
-		p.setProperty( "smile.t_sne.perplexity", String.valueOf( perplexity ) );
-		p.setProperty( "smile.t_sne.eta", String.valueOf( eta ) );
-		p.setProperty( "smile.t_sne.iterations", String.valueOf( maxIterations ) );
-		TSNE tsne = TSNE.fit( inputData, TSNE.Options.of( p ) );
+		double earlyExaggeration = 12; // default value
+		TSNE tsne = TSNE.fit( inputData, new TSNE.Options( d, perplexity, eta, earlyExaggeration, maxIterations ) );
 		double[][] tsneResult = tsne.coordinates();
 
 		assertEquals( tsneResult.length, inputData.length );
