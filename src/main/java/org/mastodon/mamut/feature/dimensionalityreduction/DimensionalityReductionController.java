@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,13 +37,16 @@ import net.imglib2.util.Cast;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.feature.branch.dimensionalityreduction.pca.BranchPcaFeatureComputer;
 import org.mastodon.mamut.feature.branch.dimensionalityreduction.tsne.BranchTSneFeatureComputer;
 import org.mastodon.mamut.feature.branch.dimensionalityreduction.umap.BranchUmapFeatureComputer;
+import org.mastodon.mamut.feature.dimensionalityreduction.pca.AbstractPcaFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.tsne.TSneSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.tsne.feature.AbstractTSneFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.UmapSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.umap.feature.AbstractUmapFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
+import org.mastodon.mamut.feature.spot.dimensionalityreduction.pca.SpotPcaFeatureComputer;
 import org.mastodon.mamut.feature.spot.dimensionalityreduction.tsne.SpotTSneFeatureComputer;
 import org.mastodon.mamut.feature.spot.dimensionalityreduction.umap.SpotUmapFeatureComputer;
 import org.mastodon.mamut.model.Link;
@@ -209,6 +212,12 @@ public class DimensionalityReductionController
 				logger.error( "Not enough data for t-SNE computation. {}", e.getMessage() );
 				throw new ArrayIndexOutOfBoundsException( "Not enough data for t-SNE computation." );
 			}
+			break;
+		case PCA:
+			AbstractPcaFeatureComputer< V, E, G > pcaFeatureComputer =
+					isModelGraph ? Cast.unchecked( new SpotPcaFeatureComputer( model, context ) )
+							: Cast.unchecked( new BranchPcaFeatureComputer( model, context ) );
+			pcaFeatureComputer.computeFeature( commonSettings, inputDimensions, graph );
 			break;
 		default:
 			throw new IllegalArgumentException( "Unknown algorithm: " + algorithm );
