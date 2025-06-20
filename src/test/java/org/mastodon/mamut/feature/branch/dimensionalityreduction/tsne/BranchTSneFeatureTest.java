@@ -97,6 +97,7 @@ class BranchTSneFeatureTest extends AbstractFeatureTest< BranchSpot >
 			DimensionalityReductionController controller = new DimensionalityReductionController( graph7.getModel(), context );
 			TSneSettings tSneSettings = controller.getTSneSettings();
 			tSneSettings.setPerplexity( 10 );
+			tSneSettings.setMaxIterations( 1_000 );
 			controller.setModelGraph( false );
 			controller.setAlgorithm( DimensionalityReductionAlgorithm.TSNE );
 			controller.computeFeature( inputDimensionsSupplier );
