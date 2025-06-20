@@ -317,9 +317,7 @@
                                     <head>Implementation Note:</head>
                                 </tag>
                             </tags>
-                            <additionalJOptions>--ignore-source-errors</additionalJOptions>
-                            <includeDependencySources>false</includeDependencySources>
-                            <skippedModules>ome:formats-bsd</skippedModules>
+                            <failOnError>false</failOnError>
                         </configuration>
                     </plugin>
                 </plugins>
