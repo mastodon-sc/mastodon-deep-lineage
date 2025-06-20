@@ -23,6 +23,8 @@
         <mastodon.version>1.0.0-beta-35</mastodon.version>
         <mastodon-tracking.version>1.0.0-beta-20</mastodon-tracking.version>
         <mastodon.group>org.mastodon</mastodon.group>
+        <!-- needs to be added so that the smile library can be used -->
+        <scijava.jvm.version>21</scijava.jvm.version>
         <!-- when a pom-scijava exists that references the scijava-common 2.99.1 release, this can be removed again -->
         <scijava-common.version>2.99.1</scijava-common.version>
         <!-- when a pom-scijava exists that references the ij1-patcher 1.2.7 release, this can be removed again -->
