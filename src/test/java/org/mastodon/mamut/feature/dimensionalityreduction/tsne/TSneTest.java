@@ -32,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
-import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionTestUtils;
