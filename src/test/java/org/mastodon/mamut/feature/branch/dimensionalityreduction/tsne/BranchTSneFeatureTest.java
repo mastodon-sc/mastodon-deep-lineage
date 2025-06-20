@@ -54,6 +54,7 @@ import org.mastodon.mamut.feature.FeatureUtils;
 import org.mastodon.mamut.feature.branch.BranchDisplacementDurationFeature;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph7;
 import org.mastodon.mamut.feature.branch.sinuosity.BranchSinuosityFeature;
+import org.mastodon.mamut.feature.dimensionalityreduction.CommonSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionAlgorithm;
 import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionController;
 import org.mastodon.mamut.feature.dimensionalityreduction.tsne.TSneSettings;
@@ -98,6 +99,8 @@ class BranchTSneFeatureTest extends AbstractFeatureTest< BranchSpot >
 			TSneSettings tSneSettings = controller.getTSneSettings();
 			tSneSettings.setPerplexity( 10 );
 			tSneSettings.setMaxIterations( 1_000 );
+			CommonSettings commonSettings = controller.getCommonSettings();
+			commonSettings.setNumberOfOutputDimensions( 2 );
 			controller.setModelGraph( false );
 			controller.setAlgorithm( DimensionalityReductionAlgorithm.TSNE );
 			controller.computeFeature( inputDimensionsSupplier );
