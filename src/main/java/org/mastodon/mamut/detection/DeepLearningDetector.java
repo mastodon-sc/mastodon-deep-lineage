@@ -136,19 +136,19 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 
 					final Img< ? > segmentation = performSegmentation( image, source.getVoxelDimensions().dimensionsAsDoubleArray() );
 
-					if ( segmentation == null )
-						return;
-
-					IntervalView< ? > roiSegmentation = Views.zeroMin( segmentation );
-					if ( roi != null )
+					if ( segmentation != null )
 					{
-						long[] min = new long[ roi.numDimensions() ];
-						roi.min( min );
-						roiSegmentation = Views.translate( segmentation, min );
-					}
+						IntervalView< ? > roiSegmentation = Views.zeroMin( segmentation );
+						if ( roi != null )
+						{
+							long[] min = new long[ roi.numDimensions() ];
+							roi.min( min );
+							roiSegmentation = Views.translate( segmentation, min );
+						}
 
-					final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
-					LabelImageUtils.createSpotsForFrame( graph, Cast.unchecked( roiSegmentation ), timepoint, transform, 1d );
+						final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
+						LabelImageUtils.createSpotsForFrame( graph, Cast.unchecked( roiSegmentation ), timepoint, transform, 1d );
+					}
 				}
 			}
 		}
