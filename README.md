@@ -90,12 +90,24 @@ the plugin menu: `Plugins > Compute Features > Movement of spots relative to nea
 ## Detectors added to Mastodon
 
 **It is highly recommended to use all detectors, added by Mastodon Deep Lineage, only on machines with a GPU (ideally
-NVIDIA). The detectors are very slow on machines without a GPU.**
+NVIDIA). The detectors are very slow on machines without a GPU. Moreover, consider running these detectors on a
+workstation and not on a typical consumer machine for better performance.**
 
 * When running (or even previewing) the detectors for the first time, an internal installation process is started, which
   may take some time (a couple of minutes, depending on the speed of internet connection). We recommend opening the
-  Window `Console` in Fiji using `Window > Console` to see the progress of
+  Window `Console` in Fiji using `Window > Console` to monitor the progress of
   the installation.
+* If you experience problems during the installation of the detector, please check the console output for error
+  messages. If you need to re-run the installation, you should first delete the folder
+  `USER_HOME/.local/share/appose/cellpose3` or
+  `USER_HOME/.local/share/appose/cellpose4` or
+  `USER_HOME/.local/share/appose/stardist` (where `USER_HOME` is your user home directory, e.g. `/home/username` on
+  Linux or `C:\Users\username` on Windows) and then restart Fiji. This will trigger the installation process again.
+* Currently, the installation of the detectors requires git to be installed on your system and available in the
+  system path. If you do not have `git` installed, please install it first. On Linux, you can install git using your
+  package manager, e.g. `sudo apt install git`. On Windows, you can download and install git from
+  [git-scm.com](https://git-scm.com/download/win). After the installation of git, make sure that git is added to your
+  system path.
 
 ![console.png](doc/detectors/console.png)
 
