@@ -149,6 +149,7 @@ public class StarDist extends Segmentation
 		return "name: stardist\n"
 				+ "channels:\n"
 				+ "  - conda-forge\n"
+				+ "channel_priority: strict\n"
 				+ "dependencies:\n"
 				+ "  - python=3.10\n"
 				+ getCuda()

@@ -91,6 +91,7 @@ public class Cellpose3 extends Cellpose
 				+ "  - nvidia\n"
 				+ "  - pytorch\n"
 				+ "  - conda-forge\n"
+				+ "channel_priority: strict\n"
 				+ "dependencies:\n"
 				+ "  - python=3.10\n"
 				+ "  - pip\n"
