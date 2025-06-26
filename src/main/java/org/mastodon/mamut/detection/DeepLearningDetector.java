@@ -33,10 +33,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.imglib2.Interval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Cast;
+import net.imglib2.view.IntervalView;
+import net.imglib2.view.Views;
 
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.util.LabelImageUtils;
@@ -124,15 +127,28 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 					final int level = 0; // level 0 is always the highest resolution.
 
 					// This is the 3D image of the current time-point and specified channel. It is always 3D. If the source is 2D, the 3rd dimension has a size of 1.
-					final RandomAccessibleInterval< ? > image = source.getSource( timepoint, level );
+					RandomAccessibleInterval< ? > image = source.getSource( timepoint, level );
+
+					// Crop the image to the region of interest (ROI) if specified in the settings.
+					final Interval roi = ( Interval ) settings.get( DetectorKeys.KEY_ROI );
+					if ( roi != null )
+						image = Views.interval( image, roi );
 
 					final Img< ? > segmentation = performSegmentation( image, source.getVoxelDimensions().dimensionsAsDoubleArray() );
 
 					if ( segmentation == null )
 						return;
 
+					IntervalView< ? > roiSegmentation = Views.zeroMin( segmentation );
+					if ( roi != null )
+					{
+						long[] min = new long[ roi.numDimensions() ];
+						roi.min( min );
+						roiSegmentation = Views.translate( segmentation, min );
+					}
+
 					final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
-					LabelImageUtils.createSpotsForFrame( graph, Cast.unchecked( segmentation ), timepoint, transform, 1d );
+					LabelImageUtils.createSpotsForFrame( graph, Cast.unchecked( roiSegmentation ), timepoint, transform, 1d );
 				}
 			}
 		}
@@ -198,6 +214,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		defaultSettings.put( DetectorKeys.KEY_SETUP_ID, DetectorKeys.DEFAULT_SETUP_ID );
 		defaultSettings.put( DetectorKeys.KEY_MIN_TIMEPOINT, DetectorKeys.DEFAULT_MIN_TIMEPOINT );
 		defaultSettings.put( DetectorKeys.KEY_MAX_TIMEPOINT, DetectorKeys.DEFAULT_MAX_TIMEPOINT );
+		defaultSettings.put( DetectorKeys.KEY_ROI, null ); // No ROI by default.
 		addSpecificDefaultSettings( defaultSettings );
 		return defaultSettings;
 	}
