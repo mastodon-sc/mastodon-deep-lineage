@@ -36,6 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -125,7 +126,6 @@ public abstract class Segmentation implements AutoCloseable
 			{
 				writer.write( content );
 			}
-			envFile.deleteOnExit();
 			logEnvFile( envFile );
 			environment = Appose.file( envFile, "environment.yml" )
 					.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
@@ -137,6 +137,7 @@ public abstract class Segmentation implements AutoCloseable
 						if ( !msg.isEmpty() )
 							logger.error( msg );
 					} ).build();
+			Files.deleteIfExists( envFile.toPath() );
 		}
 		catch ( IOException e )
 		{
