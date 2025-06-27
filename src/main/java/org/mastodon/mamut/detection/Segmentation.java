@@ -232,9 +232,9 @@ public abstract class Segmentation implements AutoCloseable
 	{
 		String os = System.getProperty( "os.name" ).toLowerCase();
 		if ( os.contains( "win" ) )
-			return "    - git+https://github.com/apposed/appose-python.git@dd3f49a35542a8ec1181f176d04890c317ec8182\n"; // latest commit on main branch
+			return "    - git+https://github.com/apposed/appose-python.git@54e0b8fe154d2b51576d34f9fd19dc2c9c56039c\n"; // latest commit on main branch
 		else
-			return "    - git+https://github.com/apposed/appose-python.git@fc61f5a9367248d6f1a1cc1e322c82bcf50f1a9d\n"; // latest commit on main-thread-queue branch
+			return "    - git+https://github.com/apposed/appose-python.git@54e0b8fe154d2b51576d34f9fd19dc2c9c56039c\n"; // latest commit on main-thread-queue branch
 		// return "    - appose==0.4.0\n";
 	}
 
