@@ -126,7 +126,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		final int maxTimepoint = ( int ) settings.get( DetectorKeys.KEY_MAX_TIMEPOINT );
 		final int setup = ( int ) settings.get( DetectorKeys.KEY_SETUP_ID );
 
-		logger.info( "Settings contain, minTimepoint: {}, maxTimepoint: {} and setup {}", minTimepoint, maxTimepoint, setup );
+		logger.info( "Settings contain, minTimepoint: {}, maxTimepoint: {} and setup: {}", minTimepoint, maxTimepoint, setup );
 
 		if ( setup < 0 || setup >= sources.size() )
 		{
@@ -160,7 +160,10 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		// Crop the image to the region of interest (ROI) if specified in the settings.
 		final Interval roi = ( Interval ) settings.get( DetectorKeys.KEY_ROI );
 		if ( roi != null )
+		{
+			logger.info( "Settings contained a roi: {}", roi );
 			image = Views.interval( image, roi );
+		}
 
 		final Img< ? > segmentation = performSegmentation( image, source.getVoxelDimensions().dimensionsAsDoubleArray() );
 
