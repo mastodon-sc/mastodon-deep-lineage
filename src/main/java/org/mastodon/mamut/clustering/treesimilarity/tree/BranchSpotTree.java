@@ -34,8 +34,8 @@ import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.mamut.util.LegacyTagSetUtils;
 import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.util.TagSetUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -170,15 +170,7 @@ public class BranchSpotTree implements Tree< Double >, HasName
 		{
 			Spot ref = model.getGraph().vertexRef();
 			String tagLabel = null;
-			try
-			{
-				// TODO: this try-catch block is a workaround. It will not be needed anymore after mastodon-core beta-34
-				tagLabel = LegacyTagSetUtils.getTagLabel( model, branchSpot, tagSet, ref );
-			}
-			catch ( NullPointerException e )
-			{
-				// happens, when the branchSpot is not in the model anymore
-			}
+			tagLabel = TagSetUtils.getTagLabel( model, branchSpot, tagSet, ref );
 			model.getGraph().releaseRef( ref );
 			if ( tagLabel == null )
 				tagLabel = "";
