@@ -46,6 +46,7 @@ import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.thread.ThreadService;
 import org.scijava.util.ColorRGB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,18 +82,23 @@ public class FindLineageModulesCommand extends CancelableImpl implements Command
 	@Parameter( label = "Color" )
 	private ColorRGB color = new ColorRGB( "red" );
 
+	@Parameter
+	private ThreadService threadService;
+
 	/**
 	 * This method is executed whenever a parameter changes
 	 */
 	@Override
 	public void run()
 	{
-		findModules();
+		threadService.run( () -> findModules( true ) );
 	}
 
-	private void findModules()
+	private void findModules( boolean runOnBranchGraph )
 	{
 		Model model = projectModel.getModel();
+		if ( runOnBranchGraph )
+			projectModel.getBranchGraphSync().sync();
 		Spot spotRef = model.getGraph().vertexRef();
 		BranchSpot branchSpotRef = model.getBranchGraph().vertexRef();
 		try
@@ -100,7 +106,8 @@ public class FindLineageModulesCommand extends CancelableImpl implements Command
 			BranchSpotTree lineageModule = LineageModuleUtils.getSelectedModule( model, projectModel.getSelectionModel() );
 			String lineageModuleName = LineageModuleUtils.getLineageModuleName( model, lineageModule );
 			List< Pair< BranchSpotTree, Double > > similarModules =
-					LineageModuleUtils.getMostSimilarModules( model, lineageModule, numberOfSimilarLineage, spotRef, branchSpotRef, false );
+					LineageModuleUtils.getMostSimilarModules( model, lineageModule, numberOfSimilarLineage, spotRef, branchSpotRef,
+							!runOnBranchGraph );
 			LineageModuleUtils.tagLineageModules( projectModel, TAG_SET_NAME + lineageModuleName, similarModules,
 					new Color( color.getARGB() ) );
 		}
