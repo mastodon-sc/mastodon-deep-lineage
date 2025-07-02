@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.lineagemodules.ui;
+package org.mastodon.mamut.lineagemotifs.ui;
 
 import java.awt.Color;
 import java.lang.invoke.MethodHandles;
@@ -37,8 +37,8 @@ import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.clustering.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.clustering.ui.Notification;
 import org.mastodon.mamut.feature.CancelableImpl;
-import org.mastodon.mamut.lineagemodules.util.InvalidLineageModuleSelection;
-import org.mastodon.mamut.lineagemodules.util.LineageModuleUtils;
+import org.mastodon.mamut.lineagemotifs.util.InvalidLineageMotifSelection;
+import org.mastodon.mamut.lineagemotifs.util.LineageMotifsUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Plugin( type = Command.class, label = "Find similar lineage modules", visible = false )
-public class FindLineageModulesCommand extends CancelableImpl implements Command
+public class FindLineageMotifsCommand extends CancelableImpl implements Command
 {
 	private static final String TAG_SET_NAME = "Lineage Modules similar to ";
 
@@ -103,15 +103,15 @@ public class FindLineageModulesCommand extends CancelableImpl implements Command
 		BranchSpot branchSpotRef = model.getBranchGraph().vertexRef();
 		try
 		{
-			BranchSpotTree lineageModule = LineageModuleUtils.getSelectedModule( model, projectModel.getSelectionModel() );
-			String lineageModuleName = LineageModuleUtils.getLineageModuleName( model, lineageModule );
+			BranchSpotTree lineageMotif = LineageMotifsUtils.getSelectedMotif( model, projectModel.getSelectionModel() );
+			String lineageModuleName = LineageMotifsUtils.getLineageMotifName( model, lineageMotif );
 			List< Pair< BranchSpotTree, Double > > similarModules =
-					LineageModuleUtils.getMostSimilarModules( model, lineageModule, numberOfSimilarLineage, spotRef, branchSpotRef,
+					LineageMotifsUtils.getMostSimilarMotifs( model, lineageMotif, numberOfSimilarLineage, spotRef, branchSpotRef,
 							!runOnBranchGraph );
-			LineageModuleUtils.tagLineageModules( projectModel, TAG_SET_NAME + lineageModuleName, similarModules,
+			LineageMotifsUtils.tagLineageMotifs( projectModel, TAG_SET_NAME + lineageModuleName, similarModules,
 					new Color( color.getARGB() ) );
 		}
-		catch ( InvalidLineageModuleSelection e )
+		catch ( InvalidLineageMotifSelection e )
 		{
 			logger.warn( e.getLogMessage() );
 			Notification.showError( e.getUiTitle(), e.getUiMessage() );

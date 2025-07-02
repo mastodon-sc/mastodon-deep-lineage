@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.lineagemodules;
+package org.mastodon.mamut.lineagemotifs;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.menu;
@@ -37,7 +37,7 @@ import java.util.List;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.lineagemodules.ui.FindLineageModulesCommand;
+import org.mastodon.mamut.lineagemotifs.ui.FindLineageMotifsCommand;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.AbstractContextual;
@@ -53,13 +53,13 @@ import org.scijava.ui.behaviour.util.RunnableAction;
 
 @SuppressWarnings( "unused" )
 @Plugin( type = MamutPlugin.class )
-public class LineageModulesPlugin extends AbstractContextual implements MamutPlugin
+public class LineageMotifsPlugin extends AbstractContextual implements MamutPlugin
 {
-	private static final String FIND_LINEAGE_MODULES = "Find Lineage Modules";
+	private static final String FIND_LINEAGE_MOTIFS = "Find Lineage Motifs";
 
-	private static final String[] FIND_LINEAGE_MODULES_KEYS = { "ctrl shift L" };
+	private static final String[] FIND_LINEAGE_MOTIFS_KEYS = { "ctrl shift L" };
 
-	private final AbstractNamedAction findLineageModulesAction;
+	private final AbstractNamedAction findLineageMotifsAction;
 
 	private ProjectModel projectModel;
 
@@ -72,9 +72,9 @@ public class LineageModulesPlugin extends AbstractContextual implements MamutPlu
 	private PrefService prefService;
 
 	@SuppressWarnings( "unused" )
-	public LineageModulesPlugin()
+	public LineageMotifsPlugin()
 	{
-		findLineageModulesAction = new RunnableAction( FIND_LINEAGE_MODULES, this::findLineageModules );
+		findLineageMotifsAction = new RunnableAction( FIND_LINEAGE_MOTIFS, this::findLineageMotifs );
 	}
 
 	@Override
@@ -86,18 +86,18 @@ public class LineageModulesPlugin extends AbstractContextual implements MamutPlu
 	@Override
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
-		return Collections.singletonList( menu( "Plugins", menu( "Lineage analysis", item( FIND_LINEAGE_MODULES ) ) ) );
+		return Collections.singletonList( menu( "Plugins", menu( "Lineage analysis", item( FIND_LINEAGE_MOTIFS ) ) ) );
 	}
 
 	@Override
 	public void installGlobalActions( Actions actions )
 	{
-		actions.namedAction( findLineageModulesAction, FIND_LINEAGE_MODULES_KEYS );
+		actions.namedAction( findLineageMotifsAction, FIND_LINEAGE_MOTIFS_KEYS );
 	}
 
-	private void findLineageModules()
+	private void findLineageMotifs()
 	{
-		commandService.run( FindLineageModulesCommand.class, true, "projectModel", projectModel );
+		commandService.run( FindLineageMotifsCommand.class, true, "projectModel", projectModel );
 	}
 
 	/*
@@ -114,7 +114,7 @@ public class LineageModulesPlugin extends AbstractContextual implements MamutPlu
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( FIND_LINEAGE_MODULES, FIND_LINEAGE_MODULES_KEYS, "Find Lineage Modules." );
+			descriptions.add( FIND_LINEAGE_MOTIFS, FIND_LINEAGE_MOTIFS_KEYS, "Find Lineage Motifs that are similar to a given motif." );
 		}
 	}
 }

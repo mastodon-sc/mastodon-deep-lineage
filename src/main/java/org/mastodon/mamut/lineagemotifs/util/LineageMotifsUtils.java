@@ -1,4 +1,4 @@
-package org.mastodon.mamut.lineagemodules.util;
+package org.mastodon.mamut.lineagemotifs.util;
 
 import java.awt.Color;
 import java.lang.invoke.MethodHandles;
@@ -34,44 +34,44 @@ import org.mastodon.util.TreeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LineageModuleUtils
+public class LineageMotifsUtils
 {
 
-	public static final String DEFAULT_LINEAGE_MODULE_NAME = "Lineage Module";
+	public static final String DEFAULT_LINEAGE_MOTIF_NAME = "Lineage Motif";
 
-	private LineageModuleUtils()
+	private LineageMotifsUtils()
 	{
 		// Utility class, no instantiation allowed.
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	private static final String TAG_NAME = "Lineage Module ";
+	private static final String TAG_NAME = "Lineage Motif ";
 
 	/**
-	 * Retrieves the {@link BranchSpotTree} for the selected lineage module based on the given model and the current selection of the user.
-	 * It ensures a valid selection of exactly one lineage module and throws an exception if none or multiple are selected.
+	 * Retrieves the {@link BranchSpotTree} for the selected lineage motif based on the given model and the current selection of the user.
+	 * It ensures a valid selection of exactly one lineage motif and throws an exception if none or multiple are selected.
 	 *
 	 * @param model the {@link Model} containing the graph and branch data
 	 * @param selectionModel the {@link SelectionModel} indicating the currently selected spots and links
-	 * @return the {@link BranchSpotTree} representing the selected lineage module
-	 * @throws InvalidLineageModuleSelection if the selection is invalid (e.g., no spots selected, or multiple modules selected)
+	 * @return the {@link BranchSpotTree} representing the selected lineage motif
+	 * @throws InvalidLineageMotifSelection if the selection is invalid (e.g., no spots selected, or multiple motifs selected)
 	 */
-	public static BranchSpotTree getSelectedModule( final Model model, final SelectionModel< Spot, Link > selectionModel )
-			throws InvalidLineageModuleSelection
+	public static BranchSpotTree getSelectedMotif( final Model model, final SelectionModel< Spot, Link > selectionModel )
+			throws InvalidLineageMotifSelection
 	{
 		RefSet< Spot > selectedRootSpots =
 				SelectedRootsFinder.getRoots( model.getGraph(), selectionModel );
 		if ( selectedRootSpots.isEmpty() )
-			throw new InvalidLineageModuleSelection(
-					"No selected spots found thus no lineage module can be found.", "No spots selected",
-					"Please select spots to define a lineage module."
+			throw new InvalidLineageMotifSelection(
+					"No selected spots found. Thus no lineage motif can be found.", "No spots selected",
+					"Please select spots to define a lineage motif."
 			);
 		if ( selectedRootSpots.size() > 1 )
-			throw new InvalidLineageModuleSelection(
-					"Multiple lineage modules (" + selectedRootSpots.size() + ") found. Only one is allowed.",
-					"Multiple modules selected",
-					"You have selected " + selectedRootSpots.size() + " lineage modules. Please select only one."
+			throw new InvalidLineageMotifSelection(
+					"Multiple lineage motifs (" + selectedRootSpots.size() + ") found. Only one is allowed.",
+					"Multiple motifs selected",
+					"You have selected " + selectedRootSpots.size() + " lineage motifs. Please select only one."
 			);
 		Spot selectedRoot = selectedRootSpots.iterator().next();
 
@@ -83,11 +83,11 @@ public class LineageModuleUtils
 	}
 
 	/**
-	 * Gets the end timepoint of the selected lineage module.
-	 * @param selectedRoot the selected root {@link Spot} of the lineage module
+	 * Gets the end timepoint of the selected lineage motif.
+	 * @param selectedRoot the selected root {@link Spot} of the lineage motif
 	 * @param model the {@link Model} containing the graph
 	 * @param selectionModel the {@link SelectionModel} containing the selected {@link Spot}s
-	 * @return the end timepoint of the lineage module, i.e. the maximum timepoint of all selected {@link Spot}s in the lineage module
+	 * @return the end timepoint of the lineage motif, i.e. the maximum timepoint of all selected {@link Spot}s in the lineage motif
 	 */
 	static int getEndTimepoint( final Spot selectedRoot, final Model model, final SelectionModel< Spot, Link > selectionModel )
 	{
@@ -105,19 +105,19 @@ public class LineageModuleUtils
 	}
 
 	/**
-	 * Gets the similarity of the given lineage module to all other modules in the model.
-	 * The method iterates over all spots in the graph and constructs a lineage module for each of these spots with the same length as the given lineage module.
-	 * The similarity is calculated as the normalized distance between the two modules using the {@link TreeDistances#normalizedDistance(Tree, Tree, ToDoubleBiFunction)} method.
+	 * Gets the similarity of the given lineage motif to all other motifs in the model.
+	 * The method iterates over all spots in the graph and constructs a lineage motif for each of these spots with the same length as the given lineage motif.
+	 * The similarity is calculated as the normalized distance between the two motifs using the {@link TreeDistances#normalizedDistance(Tree, Tree, ToDoubleBiFunction)} method.
 	 *
 	 * @param model the {@link Model} containing the graph
-	 * @param lineageModule the {@link BranchSpotTree} representing the given lineage module
+	 * @param lineageMotif the {@link BranchSpotTree} representing the given lineage motif
 	 * @param branchRef a reference to the branch graph
-	 * @return a {@link RefDoubleMap} of {@link Spot}s and their respective similarity to the given lineage module
+	 * @return a {@link RefDoubleMap} of {@link Spot}s and their respective similarity to the given lineage motif
 	 */
-	static RefDoubleMap< Spot > getModuleSimilarityBySpotIteration( final Model model, final BranchSpotTree lineageModule,
+	static RefDoubleMap< Spot > getMotifSimilarityBySpotIteration( final Model model, final BranchSpotTree lineageMotif,
 			final BranchSpot branchRef )
 	{
-		final int moduleLength = getModuleLength( lineageModule );
+		final int motifLength = getMotifLength( lineageMotif );
 		RefDoubleMap< Spot > candidates = new RefDoubleHashMap<>( model.getGraph().vertices().getRefPool(), Double.MAX_VALUE );
 		final int maxTimepoint = TreeUtils.getMaxTimepoint( model );
 		RefSet< Spot > roots = RootFinder.getRoots( model.getGraph() );
@@ -127,16 +127,16 @@ public class LineageModuleUtils
 					DepthFirstIteration.forRoot( model.getGraph(), root );
 			depthFirstIteration.forEach( spotStep -> {
 				Spot spot = spotStep.node();
-				if ( maxTimepoint - spot.getTimepoint() < moduleLength )
+				if ( maxTimepoint - spot.getTimepoint() < motifLength )
 					spotStep.truncate(); // do not traverse further if the module does not fit into the remaining time points
 				else
 				{
 					int startTimepoint = spot.getTimepoint();
-					int endTimepoint = startTimepoint + moduleLength;
+					int endTimepoint = startTimepoint + motifLength;
 					BranchSpot branchSpot = model.getBranchGraph().getBranchVertex( spot, branchRef );
 					BranchSpotTree candidateModule = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
 					double distance = TreeDistances.normalizedDistance(
-							lineageModule, candidateModule,
+							lineageMotif, candidateModule,
 							TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
 					);
 					candidates.put( spot, distance );
@@ -152,27 +152,27 @@ public class LineageModuleUtils
 	 * The similarity is calculated as the normalized distance between the two modules using the {@link TreeDistances#normalizedDistance(Tree, Tree, ToDoubleBiFunction)} method.
 	 *
 	 * @param model the {@link Model} containing the graph
-	 * @param lineageModule the {@link BranchSpotTree} representing the given lineage module
+	 * @param lineageMotif the {@link BranchSpotTree} representing the given lineage module
 	 * @return a {@link RefDoubleMap} of {@link Spot}s and their respective similarity to the given lineage module
 	 */
-	static RefDoubleMap< Spot > getModuleSimilarityByBranchSpotIteration( final Model model, final BranchSpotTree lineageModule )
+	static RefDoubleMap< Spot > getMotifSimilarityByBranchSpotIteration( final Model model, final BranchSpotTree lineageMotif )
 	{
-		final int moduleLength = getModuleLength( lineageModule );
-		int moduleStartTimepoint = lineageModule.getStartTimepoint();
-		int firstDivisionTimepoint = lineageModule.getBranchSpot().getTimepoint();
+		final int motifLength = getMotifLength( lineageMotif );
+		int moduleStartTimepoint = lineageMotif.getStartTimepoint();
+		int firstDivisionTimepoint = lineageMotif.getBranchSpot().getTimepoint();
 		int timepointsUntilFirstDivision = firstDivisionTimepoint - moduleStartTimepoint;
 		RefDoubleMap< Spot > candidates = new RefDoubleHashMap<>( model.getGraph().vertices().getRefPool(), Double.MAX_VALUE );
 		final int maxTimepoint = TreeUtils.getMaxTimepoint( model );
-		logger.debug( "moduleLength: {}, maxTimepoint: {}", moduleLength, maxTimepoint );
+		logger.debug( "motifLength: {}, maxTimepoint: {}", motifLength, maxTimepoint );
 		for ( BranchSpot branchSpot : model.getBranchGraph().vertices() )
 		{
 			int startTimepoint = branchSpot.getTimepoint() - timepointsUntilFirstDivision;
-			if ( maxTimepoint - startTimepoint >= moduleLength )
+			if ( maxTimepoint - startTimepoint >= motifLength )
 			{
-				int endTimepoint = startTimepoint + moduleLength;
-				BranchSpotTree candidateModule = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
+				int endTimepoint = startTimepoint + motifLength;
+				BranchSpotTree candidateMotifs = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
 				double distance = TreeDistances.normalizedDistance(
-						lineageModule, candidateModule,
+						lineageMotif, candidateMotifs,
 						TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
 				);
 				Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
@@ -192,33 +192,33 @@ public class LineageModuleUtils
 		return candidates;
 	}
 
-	static int getModuleLength( final BranchSpotTree lineageModule )
+	static int getMotifLength( final BranchSpotTree lineageMotif )
 	{
-		return lineageModule.getEndTimepoint() - lineageModule.getStartTimepoint();
+		return lineageMotif.getEndTimepoint() - lineageMotif.getStartTimepoint();
 	}
 
 	/**
-	 * Gets the most similar lineage modules to a given module based on their similarity scores.
-	 * This method identifies and ranks other modules compared to a reference module
+	 * Gets the most similar lineage motifs to a given motif based on their similarity scores.
+	 * This method identifies and ranks other motifs compared to a reference motif
 	 * and returns a list of the most similar ones up to a specified maximum number, including their similarity scores.
 	 *
 	 * @param model           the {@link Model} containing the graph and branch data for the lineage
-	 * @param lineageModule   the {@link BranchSpotTree} representing the lineage module to compare
-	 * @param maxNumberOfModules the maximum number of similar modules to retrieve
+	 * @param lineageMotifs   the {@link BranchSpotTree} representing the lineage motif to compare
+	 * @param maxNumberOfMotifs the maximum number of similar motifs to retrieve
 	 * @param spotRef         a reference {@link Spot} used for accessing the graph's objects
 	 * @param branchRef       a reference {@link BranchSpot} associated with the branch graph
-	 * @return a {@link List} of {@link BranchSpotTree} objects representing the most similar lineage modules, including their similarity scores.
+	 * @return a {@link List} of {@link BranchSpotTree} objects representing the most similar lineage motifs, including their similarity scores.
 	 */
-	public static List< Pair< BranchSpotTree, Double > > getMostSimilarModules( final Model model, final BranchSpotTree lineageModule,
-			int maxNumberOfModules, final Spot spotRef, final BranchSpot branchRef, boolean isSpotIteration )
+	public static List< Pair< BranchSpotTree, Double > > getMostSimilarMotifs( final Model model, final BranchSpotTree lineageMotifs,
+			int maxNumberOfMotifs, final Spot spotRef, final BranchSpot branchRef, boolean isSpotIteration )
 	{
-		int moduleLength = getModuleLength( lineageModule );
+		int motifLength = getMotifLength( lineageMotifs );
 		RefDoubleMap< Spot > candidates;
 		if ( isSpotIteration )
-			candidates = getModuleSimilarityBySpotIteration( model, lineageModule, branchRef );
+			candidates = getMotifSimilarityBySpotIteration( model, lineageMotifs, branchRef );
 		else
-			candidates = getModuleSimilarityByBranchSpotIteration( model, lineageModule );
-		List< Pair< BranchSpotTree, Double > > modules = new ArrayList<>();
+			candidates = getMotifSimilarityByBranchSpotIteration( model, lineageMotifs );
+		List< Pair< BranchSpotTree, Double > > motifs = new ArrayList<>();
 		RefPool< Spot > refPool = model.getGraph().vertices().getRefPool();
 		Map< Integer, Double > distances = candidates.keySet().stream()
 				.collect( Collectors.toMap( refPool::getId, candidates::get ) );
@@ -228,7 +228,7 @@ public class LineageModuleUtils
 				.sorted( Comparator.comparingDouble( Pair::getValue ) )
 				.collect( Collectors.toList() );
 
-		int max = Math.min( sortedDistances.size(), maxNumberOfModules );
+		int max = Math.min( sortedDistances.size(), maxNumberOfMotifs );
 		int entries = 0;
 		int i = 0;
 
@@ -241,54 +241,54 @@ public class LineageModuleUtils
 			logger.debug( "Spot: {} has a distance of: {}", spot.getLabel(), distance );
 			BranchSpot branchSpot = model.getBranchGraph().getBranchVertex( spot, model.getBranchGraph().vertexRef() );
 			int startTimepoint = spot.getTimepoint();
-			int endTimepoint = startTimepoint + moduleLength;
-			BranchSpotTree module = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
-			modules.add( Pair.of( module, distance ) );
-			if ( !lineageModule.getBranchSpot().equals( branchSpot ) )
+			int endTimepoint = startTimepoint + motifLength;
+			BranchSpotTree motif = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
+			motifs.add( Pair.of( motif, distance ) );
+			if ( !lineageMotifs.getBranchSpot().equals( branchSpot ) )
 				entries++;
 		}
-		return modules;
+		return motifs;
 	}
 
 	/**
-	 * Tags a list of lineage modules (and thereby all spots within them) with unique identifiers and colors.<br>
+	 * Tags a list of lineage motifs (and thereby all spots within them) with unique identifiers and colors.<br>
 	 *
-	 * This method generates a new tag set to categorize the given lineage modules, where each module is assigned
-	 * a distinct tag and color. The tags and colors are applied to the spots within each module.
+	 * This method generates a new tag set to categorize the given lineage motifs, where each motif is assigned
+	 * a distinct tag and color. The tags and colors are applied to the spots within each motif.
 	 * The tagging information is saved in the project's tag set structure. <br>
 	 *
-	 * The colors for the tags are generated as a saturation fade from the provided base color. The first module will get the given color,
-	 * all later modules will get colors with less saturation compared to the base colors.<br>
+	 * The colors for the tags are generated as a saturation fade from the provided base color. The first motif will get the given color,
+	 * all later motifs will get colors with less saturation compared to the base colors.<br>
 	 *
-	 * @param projectModel The {@link ProjectModel} containing the model data and branch graph for the lineage modules.
+	 * @param projectModel The {@link ProjectModel} containing the model data and branch graph for the lineage motifs.
 	 * @param tagSetName The name to be assigned to the new tag set.
-	 * @param lineageModules A {@link List} of {@link BranchSpotTree} objects representing the lineage modules to tag.
-	 * @param color The {@link Color} used as the base for generating unique colors for each module's tag.
+	 * @param lineageMotifs A {@link List} of {@link BranchSpotTree} objects representing the lineage motifs to tag.
+	 * @param color The {@link Color} used as the base for generating unique colors for each motif's tag.
 	 */
-	public static void tagLineageModules(
-			final ProjectModel projectModel, final String tagSetName, final List< Pair< BranchSpotTree, Double > > lineageModules,
+	public static void tagLineageMotifs(
+			final ProjectModel projectModel, final String tagSetName, final List< Pair< BranchSpotTree, Double > > lineageMotifs,
 			final Color color )
 	{
-		final int count = lineageModules.size();
+		final int count = lineageMotifs.size();
 		final List< Color > colors = ColorUtils.generateSaturationFade( color, count );
 		final List< Map.Entry< String, Integer > > tagsAndColors = new ArrayList<>();
 		for ( int i = 0; i < count; i++ )
 		{
-			BranchSpotTree lineageModule = lineageModules.get( i ).getLeft();
-			double distance = lineageModules.get( i ).getRight();
-			String lineageModuleName = getLineageModuleName( projectModel.getModel(), lineageModule );
-			String tag = TAG_NAME + " " + lineageModuleName + " (distance: " + String.format( "%.2f", distance ) + ")";
+			BranchSpotTree lineageMotif = lineageMotifs.get( i ).getLeft();
+			double distance = lineageMotifs.get( i ).getRight();
+			String lineageMotifName = getLineageMotifName( projectModel.getModel(), lineageMotif );
+			String tag = TAG_NAME + " " + lineageMotifName + " (distance: " + String.format( "%.2f", distance ) + ")";
 			tagsAndColors.add( Pair.of( tag, colors.get( i ).getRGB() ) );
 		}
 		final Model model = projectModel.getModel();
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, tagSetName, tagsAndColors );
 		final AtomicInteger tagIndex = new AtomicInteger();
-		lineageModules.forEach( module -> {
+		lineageMotifs.forEach( motif -> {
 			TagSetStructure.Tag tag = tagSet.getTags().get( tagIndex.getAndIncrement() );
-			BranchSpotTree lineageModule = module.getLeft();
-			int startTimepoint = lineageModule.getStartTimepoint();
-			int endTimepoint = lineageModule.getEndTimepoint();
-			DepthFirstIteration.forRoot( projectModel.getModel().getBranchGraph(), lineageModule.getBranchSpot() ).forEach(
+			BranchSpotTree lineageMotif = motif.getLeft();
+			int startTimepoint = lineageMotif.getStartTimepoint();
+			int endTimepoint = lineageMotif.getEndTimepoint();
+			DepthFirstIteration.forRoot( projectModel.getModel().getBranchGraph(), lineageMotif.getBranchSpot() ).forEach(
 					spotBranch -> {
 						BranchSpot branchSpot = spotBranch.node();
 						Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
@@ -307,31 +307,31 @@ public class LineageModuleUtils
 	}
 
 	/**
-	 * Retrieves the name of a lineage module based on its first spot's label at the start timepoint.
-	 * If no label is found, a default name {@link #DEFAULT_LINEAGE_MODULE_NAME} is returned.
+	 * Retrieves the name of a lineage motif based on its first spot's label at the start timepoint.
+	 * If no label is found, a default name {@link #DEFAULT_LINEAGE_MOTIF_NAME} is returned.
 	 *
 	 * @param model the {@link Model} containing the graph and branch information
-	 * @param lineageModule the {@link BranchSpotTree} representing the lineage module
-	 * @return the name of the lineage module as a {@link String}, or a default name if no label is found
+	 * @param lineageMotif the {@link BranchSpotTree} representing the lineage motif
+	 * @return the name of the lineage motif as a {@link String}, or a default name if no label is found
 	 */
-	public static String getLineageModuleName( final Model model, final BranchSpotTree lineageModule )
+	public static String getLineageMotifName( final Model model, final BranchSpotTree lineageMotif )
 	{
 		String name = null;
-		Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( lineageModule.getBranchSpot() );
+		Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( lineageMotif.getBranchSpot() );
 		while ( spotIterator.hasNext() )
 		{
 			Spot spot = spotIterator.next();
-			if ( spot.getTimepoint() == lineageModule.getStartTimepoint() )
+			if ( spot.getTimepoint() == lineageMotif.getStartTimepoint() )
 			{
 				name = spot.getLabel();
-				break; // we only need the label of the first spot in the lineage module
+				break; // we only need the label of the first spot in the lineage motif
 			}
 		}
 		model.getBranchGraph().releaseIterator( spotIterator );
 		if ( name == null )
 		{
-			logger.debug( "Could not find a label for the lineage module. Using default name." );
-			name = DEFAULT_LINEAGE_MODULE_NAME;
+			logger.debug( "Could not find a label for the lineage motif. Using default name." );
+			name = DEFAULT_LINEAGE_MOTIF_NAME;
 		}
 		return name;
 	}
