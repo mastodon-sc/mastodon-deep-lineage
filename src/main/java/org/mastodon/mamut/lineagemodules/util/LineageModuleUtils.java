@@ -114,9 +114,10 @@ public class LineageModuleUtils
 	 * @param branchRef a reference to the branch graph
 	 * @return a {@link RefDoubleMap} of {@link Spot}s and their respective similarity to the given lineage module
 	 */
-	static RefDoubleMap< Spot > getModuleSimilarity( final Model model, final BranchSpotTree lineageModule, final BranchSpot branchRef )
+	static RefDoubleMap< Spot > getModuleSimilarityBySpotIteration( final Model model, final BranchSpotTree lineageModule,
+			final BranchSpot branchRef )
 	{
-		final int moduleLength = lineageModule.getEndTimepoint() - lineageModule.getStartTimepoint();
+		final int moduleLength = getModuleLength( lineageModule );
 		RefDoubleMap< Spot > candidates = new RefDoubleHashMap<>( model.getGraph().vertices().getRefPool(), Double.MAX_VALUE );
 		final int maxTimepoint = TreeUtils.getMaxTimepoint( model );
 		RefSet< Spot > roots = RootFinder.getRoots( model.getGraph() );
@@ -146,23 +147,78 @@ public class LineageModuleUtils
 	}
 
 	/**
+	 * Gets the similarity of the given lineage module to all other modules in the model.
+	 * The method iterates over all spots in the graph and constructs a lineage module for each of these spots with the same length as the given lineage module.
+	 * The similarity is calculated as the normalized distance between the two modules using the {@link TreeDistances#normalizedDistance(Tree, Tree, ToDoubleBiFunction)} method.
+	 *
+	 * @param model the {@link Model} containing the graph
+	 * @param lineageModule the {@link BranchSpotTree} representing the given lineage module
+	 * @return a {@link RefDoubleMap} of {@link Spot}s and their respective similarity to the given lineage module
+	 */
+	static RefDoubleMap< Spot > getModuleSimilarityByBranchSpotIteration( final Model model, final BranchSpotTree lineageModule )
+	{
+		final int moduleLength = getModuleLength( lineageModule );
+		int moduleStartTimepoint = lineageModule.getStartTimepoint();
+		int firstDivisionTimepoint = lineageModule.getBranchSpot().getTimepoint();
+		int timepointsUntilFirstDivision = firstDivisionTimepoint - moduleStartTimepoint;
+		RefDoubleMap< Spot > candidates = new RefDoubleHashMap<>( model.getGraph().vertices().getRefPool(), Double.MAX_VALUE );
+		final int maxTimepoint = TreeUtils.getMaxTimepoint( model );
+		logger.debug( "moduleLength: {}, maxTimepoint: {}", moduleLength, maxTimepoint );
+		for ( BranchSpot branchSpot : model.getBranchGraph().vertices() )
+		{
+			int startTimepoint = branchSpot.getTimepoint() - timepointsUntilFirstDivision;
+			if ( maxTimepoint - startTimepoint >= moduleLength )
+			{
+				int endTimepoint = startTimepoint + moduleLength;
+				BranchSpotTree candidateModule = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
+				double distance = TreeDistances.normalizedDistance(
+						lineageModule, candidateModule,
+						TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
+				);
+				Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
+				// we need to iterate over the spots in the branch to get the correct spot for the candidate
+				while ( spotIterator.hasNext() )
+				{
+					Spot spot = spotIterator.next();
+					if ( spot.getTimepoint() == startTimepoint )
+					{
+						candidates.put( spot, distance );
+						break;
+					}
+				}
+				model.getBranchGraph().releaseIterator( spotIterator );
+			}
+		}
+		return candidates;
+	}
+
+	static int getModuleLength( final BranchSpotTree lineageModule )
+	{
+		return lineageModule.getEndTimepoint() - lineageModule.getStartTimepoint();
+	}
+
+	/**
 	 * Gets the most similar lineage modules to a given module based on their similarity scores.
 	 * This method identifies and ranks other modules compared to a reference module
-	 * and returns a list of the most similar ones up to a specified maximum number.
+	 * and returns a list of the most similar ones up to a specified maximum number, including their similarity scores.
 	 *
 	 * @param model           the {@link Model} containing the graph and branch data for the lineage
 	 * @param lineageModule   the {@link BranchSpotTree} representing the lineage module to compare
 	 * @param maxNumberOfModules the maximum number of similar modules to retrieve
 	 * @param spotRef         a reference {@link Spot} used for accessing the graph's objects
 	 * @param branchRef       a reference {@link BranchSpot} associated with the branch graph
-	 * @return a {@link List} of {@link BranchSpotTree} objects representing the most similar lineage modules
+	 * @return a {@link List} of {@link BranchSpotTree} objects representing the most similar lineage modules, including their similarity scores.
 	 */
-	public static List< BranchSpotTree > getMostSimilarModules( final Model model, final BranchSpotTree lineageModule,
-			int maxNumberOfModules, final Spot spotRef, final BranchSpot branchRef )
+	public static List< Pair< BranchSpotTree, Double > > getMostSimilarModules( final Model model, final BranchSpotTree lineageModule,
+			int maxNumberOfModules, final Spot spotRef, final BranchSpot branchRef, boolean isSpotIteration )
 	{
-		int moduleLength = lineageModule.getEndTimepoint() - lineageModule.getStartTimepoint();
-		RefDoubleMap< Spot > candidates = getModuleSimilarity( model, lineageModule, branchRef );
-		List< BranchSpotTree > modules = new ArrayList<>();
+		int moduleLength = getModuleLength( lineageModule );
+		RefDoubleMap< Spot > candidates;
+		if ( isSpotIteration )
+			candidates = getModuleSimilarityBySpotIteration( model, lineageModule, branchRef );
+		else
+			candidates = getModuleSimilarityByBranchSpotIteration( model, lineageModule );
+		List< Pair< BranchSpotTree, Double > > modules = new ArrayList<>();
 		RefPool< Spot > refPool = model.getGraph().vertices().getRefPool();
 		Map< Integer, Double > distances = candidates.keySet().stream()
 				.collect( Collectors.toMap( refPool::getId, candidates::get ) );
@@ -181,18 +237,15 @@ public class LineageModuleUtils
 			Pair< Integer, Double > entry = sortedDistances.get( i );
 			i++;
 			Spot spot = refPool.getObject( entry.getLeft(), spotRef );
-			logger.debug( "Spot: {} has a distance of: {}", spot.getLabel(), entry.getRight() );
+			double distance = entry.getRight();
+			logger.debug( "Spot: {} has a distance of: {}", spot.getLabel(), distance );
 			BranchSpot branchSpot = model.getBranchGraph().getBranchVertex( spot, model.getBranchGraph().vertexRef() );
 			int startTimepoint = spot.getTimepoint();
 			int endTimepoint = startTimepoint + moduleLength;
 			BranchSpotTree module = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
-			if ( lineageModule.getBranchSpot().equals( branchSpot ) )
-			{
-				logger.debug( "Skipping module with the same branch spot as the selected module." );
-				continue; // skip the module if it has the same branch spot as the selected module
-			}
-			modules.add( module );
-			entries++;
+			modules.add( Pair.of( module, distance ) );
+			if ( !lineageModule.getBranchSpot().equals( branchSpot ) )
+				entries++;
 		}
 		return modules;
 	}
@@ -213,16 +266,18 @@ public class LineageModuleUtils
 	 * @param color The {@link Color} used as the base for generating unique colors for each module's tag.
 	 */
 	public static void tagLineageModules(
-			final ProjectModel projectModel, final String tagSetName, final List< BranchSpotTree > lineageModules, final Color color )
+			final ProjectModel projectModel, final String tagSetName, final List< Pair< BranchSpotTree, Double > > lineageModules,
+			final Color color )
 	{
 		final int count = lineageModules.size();
 		final List< Color > colors = ColorUtils.generateSaturationFade( color, count );
 		final List< Map.Entry< String, Integer > > tagsAndColors = new ArrayList<>();
 		for ( int i = 0; i < count; i++ )
 		{
-			BranchSpotTree lineageModule = lineageModules.get( i );
+			BranchSpotTree lineageModule = lineageModules.get( i ).getLeft();
+			double distance = lineageModules.get( i ).getRight();
 			String lineageModuleName = getLineageModuleName( projectModel.getModel(), lineageModule );
-			String tag = TAG_NAME + " " + lineageModuleName;
+			String tag = TAG_NAME + " " + lineageModuleName + " (distance: " + String.format( "%.2f", distance ) + ")";
 			tagsAndColors.add( Pair.of( tag, colors.get( i ).getRGB() ) );
 		}
 		final Model model = projectModel.getModel();
@@ -230,9 +285,10 @@ public class LineageModuleUtils
 		final AtomicInteger tagIndex = new AtomicInteger();
 		lineageModules.forEach( module -> {
 			TagSetStructure.Tag tag = tagSet.getTags().get( tagIndex.getAndIncrement() );
-			int startTimepoint = module.getStartTimepoint();
-			int endTimepoint = module.getEndTimepoint();
-			DepthFirstIteration.forRoot( projectModel.getModel().getBranchGraph(), module.getBranchSpot() ).forEach(
+			BranchSpotTree lineageModule = module.getLeft();
+			int startTimepoint = lineageModule.getStartTimepoint();
+			int endTimepoint = lineageModule.getEndTimepoint();
+			DepthFirstIteration.forRoot( projectModel.getModel().getBranchGraph(), lineageModule.getBranchSpot() ).forEach(
 					spotBranch -> {
 						BranchSpot branchSpot = spotBranch.node();
 						Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
@@ -242,6 +298,8 @@ public class LineageModuleUtils
 							if ( spot.getTimepoint() < startTimepoint || spot.getTimepoint() > endTimepoint )
 								continue; // skip spots outside the time range
 							TagSetUtils.tagSpot( projectModel.getModel(), tagSet, tag, spot );
+							if ( spot.getTimepoint() < endTimepoint )
+								TagSetUtils.tagLinks( projectModel.getModel(), tagSet, tag, spot.outgoingEdges() );
 						}
 						model.getBranchGraph().releaseIterator( spotIterator );
 					} );
