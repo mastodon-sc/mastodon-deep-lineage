@@ -1,6 +1,6 @@
-package org.mastodon.mamut.lineagemodules.util;
+package org.mastodon.mamut.lineagemotifs.util;
 
-public class InvalidLineageModuleSelection extends RuntimeException
+public class InvalidLineageMotifSelection extends RuntimeException
 {
 
 	private final String logMessage;
@@ -9,7 +9,7 @@ public class InvalidLineageModuleSelection extends RuntimeException
 
 	private final String uiMessage;
 
-	public InvalidLineageModuleSelection( String logMessage, String uiTitle, String uiMessage )
+	public InvalidLineageMotifSelection( String logMessage, String uiTitle, String uiMessage )
 	{
 		super( logMessage ); // or just pass null to super()
 		this.logMessage = logMessage;
@@ -17,7 +17,7 @@ public class InvalidLineageModuleSelection extends RuntimeException
 		this.uiMessage = uiMessage;
 	}
 
-	public InvalidLineageModuleSelection( String logMessage, String uiTitle, String uiMessage, Throwable cause )
+	public InvalidLineageMotifSelection( String logMessage, String uiTitle, String uiMessage, Throwable cause )
 	{
 		super( logMessage, cause );
 		this.logMessage = logMessage;

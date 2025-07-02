@@ -1,4 +1,4 @@
-package org.mastodon.mamut.lineagemodules.util;
+package org.mastodon.mamut.lineagemotifs.util;
 
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
