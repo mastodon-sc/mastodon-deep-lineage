@@ -32,6 +32,7 @@ import java.awt.Color;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.clustering.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.clustering.ui.Notification;
@@ -86,10 +87,10 @@ public class FindLineageModulesCommand extends CancelableImpl implements Command
 	@Override
 	public void run()
 	{
-		findModulesBasedOnSpotIteration();
+		findModules();
 	}
 
-	private void findModulesBasedOnSpotIteration()
+	private void findModules()
 	{
 		Model model = projectModel.getModel();
 		Spot spotRef = model.getGraph().vertexRef();
@@ -97,9 +98,9 @@ public class FindLineageModulesCommand extends CancelableImpl implements Command
 		try
 		{
 			BranchSpotTree lineageModule = LineageModuleUtils.getSelectedModule( model, projectModel.getSelectionModel() );
-			List< BranchSpotTree > similarModules =
-					LineageModuleUtils.getMostSimilarModules( model, lineageModule, numberOfSimilarLineage, spotRef, branchSpotRef );
 			String lineageModuleName = LineageModuleUtils.getLineageModuleName( model, lineageModule );
+			List< Pair< BranchSpotTree, Double > > similarModules =
+					LineageModuleUtils.getMostSimilarModules( model, lineageModule, numberOfSimilarLineage, spotRef, branchSpotRef, false );
 			LineageModuleUtils.tagLineageModules( projectModel, TAG_SET_NAME + lineageModuleName, similarModules,
 					new Color( color.getARGB() ) );
 		}
