@@ -224,10 +224,10 @@ public class LineageMotifsUtils
 			candidates = getMotifSimilarityByBranchSpotIteration( model, lineageMotifs );
 		List< Pair< BranchSpotTree, Double > > motifs = new ArrayList<>();
 		RefPool< Spot > refPool = model.getGraph().vertices().getRefPool();
-		Map< Integer, Double > distances = candidates.keySet().stream()
+		Map< Integer, Double > idsAndDistances = candidates.keySet().stream()
 				.collect( Collectors.toMap( refPool::getId, candidates::get ) );
 
-		List< Pair< Integer, Double > > sortedDistances = distances.entrySet().stream()
+		List< Pair< Integer, Double > > sortedDistances = idsAndDistances.entrySet().stream()
 				.map( e -> Pair.of( e.getKey(), e.getValue() ) )
 				.sorted( Comparator.comparingDouble( Pair::getValue ) )
 				.collect( Collectors.toList() );
@@ -236,7 +236,7 @@ public class LineageMotifsUtils
 		int entries = 0;
 		int i = 0;
 
-		while ( entries < max )
+		while ( entries < max && i < max )
 		{
 			Pair< Integer, Double > entry = sortedDistances.get( i );
 			i++;

@@ -117,6 +117,11 @@ public class FindLineageMotifsCommand extends CancelableImpl implements Command
 			logger.warn( e.getLogMessage() );
 			Notification.showError( e.getUiTitle(), e.getUiMessage() );
 		}
+		catch ( Exception e )
+		{
+			logger.error( "Error while finding similar lineage modules.", e );
+			Notification.showError( "Error", "An error occurred while finding similar lineage modules: " + e.getMessage() );
+		}
 		finally
 		{
 			model.getGraph().releaseRef( spotRef );
