@@ -22,7 +22,7 @@ public class SelectedRootsFinder< V extends Vertex< E >, E extends Edge< V > > e
 
 	private final SelectionModel< V, E > selectionModel;
 
-	public SelectedRootsFinder( final ReadOnlyGraph< V, E > graph, final SelectionModel< V, E > selectionModel )
+	private SelectedRootsFinder( final ReadOnlyGraph< V, E > graph, final SelectionModel< V, E > selectionModel )
 	{
 		super( graph );
 		this.selectionModel = selectionModel;
@@ -30,7 +30,7 @@ public class SelectedRootsFinder< V extends Vertex< E >, E extends Edge< V > > e
 		fetchRoots();
 	}
 
-	public RefSet< V > get()
+	private RefSet< V > get()
 	{
 		return roots;
 	}
