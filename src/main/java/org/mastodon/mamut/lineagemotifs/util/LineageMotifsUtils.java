@@ -354,4 +354,53 @@ public class LineageMotifsUtils
 		}
 		return name;
 	}
+
+	/**
+	 * Counts the number of divisions (branching points) in a given lineage motif
+	 * represented by a {@link BranchSpotTree} within the time interval of the motif, using the provided {@link Model}.
+	 * A division is identified as a spot within the motif that has more than one outgoing edge.
+	 *
+	 * @param lineageMotif the {@link BranchSpotTree} representing the lineage motif to analyze
+	 * @param model the {@link Model} containing the graph information used for traversal and analysis
+	 * @return the number of division events within the specified lineage motif,
+	 *         or 0 if no valid root spot is found or no divisions are present
+	 */
+	public static int getNumberOfDivisions( final BranchSpotTree lineageMotif, final Model model )
+	{
+		Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( lineageMotif.getBranchSpot() );
+		AtomicInteger divisionCount = new AtomicInteger();
+		try
+		{
+			Spot rootSpot = null;
+			while ( spotIterator.hasNext() )
+			{
+				Spot spot = spotIterator.next();
+				if ( spot.getTimepoint() == lineageMotif.getStartTimepoint() )
+				{
+					rootSpot = spot;
+					break;
+				}
+			}
+			if ( rootSpot == null )
+			{
+				logger.debug( "Could not find a root spot for the lineage motif. Returning 0 as division count." );
+				return 0;
+			}
+			DepthFirstIteration.forRoot( model.getGraph(), rootSpot ).forEach( iterationStep -> {
+				Spot spot = iterationStep.node();
+				if ( iterationStep.isFirstVisit() )
+				{
+					if ( spot.getTimepoint() >= lineageMotif.getEndTimepoint() )
+						iterationStep.truncate(); // do not traverse further if the spot is after the end timepoint of the motif
+					if ( spot.outgoingEdges().size() > 1 )
+						divisionCount.incrementAndGet();
+				}
+			} );
+		}
+		finally
+		{
+			model.getBranchGraph().releaseIterator( spotIterator );
+		}
+		return divisionCount.get();
+	}
 }
