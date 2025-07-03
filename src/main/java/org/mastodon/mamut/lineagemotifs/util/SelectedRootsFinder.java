@@ -46,6 +46,15 @@ public class SelectedRootsFinder< V extends Vertex< E >, E extends Edge< V > > e
 		}
 	}
 
+	/**
+	 * Returns a set of vertices that are selected and have either no incoming edges
+	 * or only incoming edges from non-selected vertices in a given graph.
+	 *
+	 * @param <V> the type of vertices in the graph.
+	 * @param graph the graph being analyzed.
+	 * @param selectionModel the selection model to determine selected vertices.
+	 * @return a set of selected root vertices.
+	 */
 	@SuppressWarnings( { "rawtypes", "unchecked" } )
 	public static < V extends Vertex< ? > > RefSet< V > getRoots( final ReadOnlyGraph< V, ? > graph,
 			final SelectionModel< V, ? > selectionModel )
