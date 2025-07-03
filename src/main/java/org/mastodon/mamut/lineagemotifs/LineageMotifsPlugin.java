@@ -55,7 +55,7 @@ import org.scijava.ui.behaviour.util.RunnableAction;
 @Plugin( type = MamutPlugin.class )
 public class LineageMotifsPlugin extends AbstractContextual implements MamutPlugin
 {
-	private static final String FIND_LINEAGE_MOTIFS = "Find Lineage Motifs";
+	private static final String FIND_LINEAGE_MOTIFS = "Find lineage motifs";
 
 	private static final String[] FIND_LINEAGE_MOTIFS_KEYS = { "ctrl shift L" };
 
@@ -114,7 +114,7 @@ public class LineageMotifsPlugin extends AbstractContextual implements MamutPlug
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( FIND_LINEAGE_MOTIFS, FIND_LINEAGE_MOTIFS_KEYS, "Find Lineage Motifs that are similar to a given motif." );
+			descriptions.add( FIND_LINEAGE_MOTIFS, FIND_LINEAGE_MOTIFS_KEYS, "Find lineage Motifs that are similar to a selected motif." );
 		}
 	}
 }
