@@ -94,6 +94,8 @@ public class LineageMotifsUtils
 		AtomicInteger highestTimepoint = new AtomicInteger( selectedRoot.getTimepoint() );
 		Iterable< DepthFirstIteration.Step< Spot > > depthFirstIteration = DepthFirstIteration.forRoot( model.getGraph(), selectedRoot );
 		depthFirstIteration.forEach( spotStep -> {
+			if ( !spotStep.isFirstVisit() )
+				return; // only consider the first visit to each spot
 			Spot spot = spotStep.node();
 			boolean isSelected = selectionModel.isSelected( spot );
 			if ( isSelected && spot.getTimepoint() > highestTimepoint.get() )
@@ -126,6 +128,8 @@ public class LineageMotifsUtils
 			Iterable< DepthFirstIteration.Step< Spot > > depthFirstIteration =
 					DepthFirstIteration.forRoot( model.getGraph(), root );
 			depthFirstIteration.forEach( spotStep -> {
+				if ( !spotStep.isFirstVisit() )
+					return; // only consider the first visit to each spot
 				Spot spot = spotStep.node();
 				if ( maxTimepoint - spot.getTimepoint() < motifLength )
 					spotStep.truncate(); // do not traverse further if the module does not fit into the remaining time points
@@ -303,8 +307,10 @@ public class LineageMotifsUtils
 			final int endTimepoint, final TagSetStructure.TagSet tagSet, final TagSetStructure.Tag tag )
 	{
 		DepthFirstIteration.forRoot( model.getBranchGraph(), lineageMotif.getBranchSpot() ).forEach(
-				spotBranch -> {
-					BranchSpot branchSpot = spotBranch.node();
+				iterationStep -> {
+					if ( !iterationStep.isFirstVisit() )
+						return; // only consider the first visit to each branch spot
+					BranchSpot branchSpot = iterationStep.node();
 					Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
 					while ( spotIterator.hasNext() )
 					{
