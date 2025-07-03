@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.ToDoubleBiFunction;
 import java.util.stream.Collectors;
 
@@ -270,22 +271,32 @@ public class LineageMotifsUtils
 		final int count = lineageMotifs.size();
 		final List< Color > colors = ColorUtils.generateSaturationFade( color, count );
 		final List< Map.Entry< String, Integer > > tagsAndColors = new ArrayList<>();
-		for ( int i = 0; i < count; i++ )
+		final ReentrantReadWriteLock.WriteLock lock = model.getGraph().getLock().writeLock();
+		lock.lock();
+		try
 		{
-			BranchSpotTree lineageMotif = lineageMotifs.get( i ).getLeft();
-			double distance = lineageMotifs.get( i ).getRight();
-			String lineageMotifName = getLineageMotifName( model, lineageMotif );
-			String tag = TAG_NAME + " " + lineageMotifName + " (distance: " + String.format( "%.2f", distance ) + ")";
-			tagsAndColors.add( Pair.of( tag, colors.get( i ).getRGB() ) );
+			for ( int i = 0; i < count; i++ )
+			{
+				BranchSpotTree lineageMotif = lineageMotifs.get( i ).getLeft();
+				double distance = lineageMotifs.get( i ).getRight();
+				String lineageMotifName = getLineageMotifName( model, lineageMotif );
+				String tag = TAG_NAME + " " + lineageMotifName + " (distance: " + String.format( "%.2f", distance ) + ")";
+				tagsAndColors.add( Pair.of( tag, colors.get( i ).getRGB() ) );
+			}
+			TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, tagSetName, tagsAndColors );
+			final AtomicInteger tagIndex = new AtomicInteger();
+			lineageMotifs.forEach( motif -> {
+				TagSetStructure.Tag tag = tagSet.getTags().get( tagIndex.getAndIncrement() );
+				BranchSpotTree lineageMotif = motif.getLeft();
+				tagSpotsAndLinksWithinTimeInterval( model, lineageMotif, lineageMotif.getStartTimepoint(), lineageMotif.getEndTimepoint(),
+						tagSet, tag );
+			} );
+			model.setUndoPoint();
 		}
-		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, tagSetName, tagsAndColors );
-		final AtomicInteger tagIndex = new AtomicInteger();
-		lineageMotifs.forEach( motif -> {
-			TagSetStructure.Tag tag = tagSet.getTags().get( tagIndex.getAndIncrement() );
-			BranchSpotTree lineageMotif = motif.getLeft();
-			tagSpotsAndLinksWithinTimeInterval( model, lineageMotif, lineageMotif.getStartTimepoint(), lineageMotif.getEndTimepoint(),
-					tagSet, tag );
-		} );
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	private static void tagSpotsAndLinksWithinTimeInterval( final Model model, final BranchSpotTree lineageMotif, final int startTimepoint,
