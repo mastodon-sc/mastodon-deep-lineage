@@ -17,7 +17,6 @@ import org.mastodon.collection.RefDoubleMap;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.RefDoubleHashMap;
 import org.mastodon.graph.algorithm.RootFinder;
-import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.clustering.treesimilarity.TreeDistances;
 import org.mastodon.mamut.clustering.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.clustering.treesimilarity.tree.Tree;
@@ -251,7 +250,7 @@ public class LineageMotifsUtils
 	}
 
 	/**
-	 * Tags a list of lineage motifs (and thereby all spots within them) with unique identifiers and colors.<br>
+	 * Tags a list of lineage motifs (and thereby all spots and links within them) with unique identifiers and colors.<br>
 	 *
 	 * This method generates a new tag set to categorize the given lineage motifs, where each motif is assigned
 	 * a distinct tag and color. The tags and colors are applied to the spots within each motif.
@@ -260,14 +259,13 @@ public class LineageMotifsUtils
 	 * The colors for the tags are generated as a saturation fade from the provided base color. The first motif will get the given color,
 	 * all later motifs will get colors with less saturation compared to the base colors.<br>
 	 *
-	 * @param projectModel The {@link ProjectModel} containing the model data and branch graph for the lineage motifs.
+	 * @param model The {@link Model} containing the branch graph for the lineage motifs.
 	 * @param tagSetName The name to be assigned to the new tag set.
 	 * @param lineageMotifs A {@link List} of {@link BranchSpotTree} objects representing the lineage motifs to tag.
 	 * @param color The {@link Color} used as the base for generating unique colors for each motif's tag.
 	 */
-	public static void tagLineageMotifs(
-			final ProjectModel projectModel, final String tagSetName, final List< Pair< BranchSpotTree, Double > > lineageMotifs,
-			final Color color )
+	public static void tagLineageMotifs( final Model model, final String tagSetName,
+			final List< Pair< BranchSpotTree, Double > > lineageMotifs, final Color color )
 	{
 		final int count = lineageMotifs.size();
 		final List< Color > colors = ColorUtils.generateSaturationFade( color, count );
@@ -276,34 +274,38 @@ public class LineageMotifsUtils
 		{
 			BranchSpotTree lineageMotif = lineageMotifs.get( i ).getLeft();
 			double distance = lineageMotifs.get( i ).getRight();
-			String lineageMotifName = getLineageMotifName( projectModel.getModel(), lineageMotif );
+			String lineageMotifName = getLineageMotifName( model, lineageMotif );
 			String tag = TAG_NAME + " " + lineageMotifName + " (distance: " + String.format( "%.2f", distance ) + ")";
 			tagsAndColors.add( Pair.of( tag, colors.get( i ).getRGB() ) );
 		}
-		final Model model = projectModel.getModel();
 		TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, tagSetName, tagsAndColors );
 		final AtomicInteger tagIndex = new AtomicInteger();
 		lineageMotifs.forEach( motif -> {
 			TagSetStructure.Tag tag = tagSet.getTags().get( tagIndex.getAndIncrement() );
 			BranchSpotTree lineageMotif = motif.getLeft();
-			int startTimepoint = lineageMotif.getStartTimepoint();
-			int endTimepoint = lineageMotif.getEndTimepoint();
-			DepthFirstIteration.forRoot( projectModel.getModel().getBranchGraph(), lineageMotif.getBranchSpot() ).forEach(
-					spotBranch -> {
-						BranchSpot branchSpot = spotBranch.node();
-						Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
-						while ( spotIterator.hasNext() )
-						{
-							Spot spot = spotIterator.next();
-							if ( spot.getTimepoint() < startTimepoint || spot.getTimepoint() > endTimepoint )
-								continue; // skip spots outside the time range
-							TagSetUtils.tagSpot( projectModel.getModel(), tagSet, tag, spot );
-							if ( spot.getTimepoint() < endTimepoint )
-								TagSetUtils.tagLinks( projectModel.getModel(), tagSet, tag, spot.outgoingEdges() );
-						}
-						model.getBranchGraph().releaseIterator( spotIterator );
-					} );
+			tagSpotsAndLinksWithinTimeInterval( model, lineageMotif, lineageMotif.getStartTimepoint(), lineageMotif.getEndTimepoint(),
+					tagSet, tag );
 		} );
+	}
+
+	private static void tagSpotsAndLinksWithinTimeInterval( final Model model, final BranchSpotTree lineageMotif, final int startTimepoint,
+			final int endTimepoint, final TagSetStructure.TagSet tagSet, final TagSetStructure.Tag tag )
+	{
+		DepthFirstIteration.forRoot( model.getBranchGraph(), lineageMotif.getBranchSpot() ).forEach(
+				spotBranch -> {
+					BranchSpot branchSpot = spotBranch.node();
+					Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
+					while ( spotIterator.hasNext() )
+					{
+						Spot spot = spotIterator.next();
+						if ( spot.getTimepoint() < startTimepoint || spot.getTimepoint() > endTimepoint )
+							continue; // skip spots outside the time range
+						TagSetUtils.tagSpot( model, tagSet, tag, spot );
+						if ( spot.getTimepoint() < endTimepoint )
+							TagSetUtils.tagLinks( model, tagSet, tag, spot.outgoingEdges() );
+					}
+					model.getBranchGraph().releaseIterator( spotIterator );
+				} );
 	}
 
 	/**
