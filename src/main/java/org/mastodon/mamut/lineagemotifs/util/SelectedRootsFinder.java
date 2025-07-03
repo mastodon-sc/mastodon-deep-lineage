@@ -8,7 +8,7 @@ import org.mastodon.graph.algorithm.AbstractGraphAlgorithm;
 import org.mastodon.model.SelectionModel;
 
 /**
- * Small algorithm that returns a set of vertices that are selected and that have no incoming edges
+ * Small algorithm that returns a set of vertices that are selected and that have either no incoming edges or only incoming edges from non-selected vertices
  *
  * @param <V>
  *            the type of vertices in the graph.
