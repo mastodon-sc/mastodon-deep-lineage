@@ -101,6 +101,7 @@ public class FindLineageMotifsCommand extends CancelableImpl implements Command
 			projectModel.getBranchGraphSync().sync();
 		Spot spotRef = model.getGraph().vertexRef();
 		BranchSpot branchSpotRef = model.getBranchGraph().vertexRef();
+		String tagSetName = "";
 		try
 		{
 			BranchSpotTree lineageMotif = LineageMotifsUtils.getSelectedMotif( model, projectModel.getSelectionModel() );
@@ -109,8 +110,10 @@ public class FindLineageMotifsCommand extends CancelableImpl implements Command
 					LineageMotifsUtils.getMostSimilarMotifs( model, lineageMotif, numberOfSimilarLineage, spotRef, branchSpotRef,
 							!runOnBranchGraph );
 			int numberOfDivisions = LineageMotifsUtils.getNumberOfDivisions( lineageMotif, model );
-			String tagSetName = TAG_SET_NAME + lineageModuleName + " (" + numberOfDivisions + " divisions)";
+			String optionalPlural = numberOfDivisions == 1 ? "" : "s";
+			tagSetName = TAG_SET_NAME + lineageModuleName + " (" + numberOfDivisions + " division" + optionalPlural + ")";
 			LineageMotifsUtils.tagLineageMotifs( model, tagSetName, similarModules, new Color( color.getARGB() ) );
+			Notification.showSuccess( "Finding similar lineage modules finished.", "New tag set added: " + tagSetName );
 		}
 		catch ( InvalidLineageMotifSelection e )
 		{
