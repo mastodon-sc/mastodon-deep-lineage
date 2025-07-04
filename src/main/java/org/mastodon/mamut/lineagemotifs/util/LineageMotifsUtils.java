@@ -330,10 +330,10 @@ public class LineageMotifsUtils
 	private static void tagSpotsAndLinksWithinTimeInterval( final Model model, final BranchSpotTree lineageMotif, final int startTimepoint,
 			final int endTimepoint, final TagSetStructure.TagSet tagSet, final TagSetStructure.Tag tag )
 	{
+		DepthFirstIterator< BranchSpot, BranchLink > depthFirstIterator = new DepthFirstIterator<>( model.getBranchGraph() );
+		depthFirstIterator.reset( lineageMotif.getBranchSpot() );
 		DepthFirstIteration.forRoot( model.getBranchGraph(), lineageMotif.getBranchSpot() ).forEach(
 				iterationStep -> {
-					if ( !iterationStep.isFirstVisit() )
-						return; // only consider the first visit to each branch spot
 					BranchSpot branchSpot = iterationStep.node();
 					Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
 					while ( spotIterator.hasNext() )
