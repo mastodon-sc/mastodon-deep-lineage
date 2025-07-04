@@ -207,22 +207,23 @@ public class LineageMotifsUtils
 	 * and returns a list of the most similar ones up to a specified maximum number, including their similarity scores.
 	 *
 	 * @param model           the {@link Model} containing the graph and branch data for the lineage
-	 * @param lineageMotifs   the {@link BranchSpotTree} representing the lineage motif to compare
+	 * @param lineageMotif    the {@link BranchSpotTree} representing the lineage motif to compare
 	 * @param maxNumberOfMotifs the maximum number of similar motifs to retrieve
 	 * @param spotRef         a reference {@link Spot} used for accessing the graph's objects
 	 * @param branchRef       a reference {@link BranchSpot} associated with the branch graph
 	 * @return a {@link List} of {@link BranchSpotTree} objects representing the most similar lineage motifs, including their similarity scores.
 	 */
-	public static List< Pair< BranchSpotTree, Double > > getMostSimilarMotifs( final Model model, final BranchSpotTree lineageMotifs,
+	public static List< Pair< BranchSpotTree, Double > > getMostSimilarMotifs( final Model model, final BranchSpotTree lineageMotif,
 			int maxNumberOfMotifs, final Spot spotRef, final BranchSpot branchRef, boolean isSpotIteration )
 	{
-		int motifLength = getMotifLength( lineageMotifs );
+		int motifLength = getMotifLength( lineageMotif );
 		RefDoubleMap< Spot > candidates;
 		if ( isSpotIteration )
-			candidates = getMotifSimilarityBySpotIteration( model, lineageMotifs, branchRef );
+			candidates = getMotifSimilarityBySpotIteration( model, lineageMotif, branchRef );
 		else
-			candidates = getMotifSimilarityByBranchSpotIteration( model, lineageMotifs );
+			candidates = getMotifSimilarityByBranchSpotIteration( model, lineageMotif );
 		List< Pair< BranchSpotTree, Double > > motifs = new ArrayList<>();
+		motifs.add( Pair.of( lineageMotif, 0d ) );
 		RefPool< Spot > refPool = model.getGraph().vertices().getRefPool();
 		Map< Integer, Double > idsAndDistances = candidates.keySet().stream()
 				.collect( Collectors.toMap( refPool::getId, candidates::get ) );
@@ -232,24 +233,26 @@ public class LineageMotifsUtils
 				.sorted( Comparator.comparingDouble( Pair::getValue ) )
 				.collect( Collectors.toList() );
 
-		int max = Math.min( sortedDistances.size(), maxNumberOfMotifs );
-		int entries = 0;
-		int i = 0;
-
-		while ( entries < max && i < max )
+		int addedMotifs = 0;
+		for ( Pair< Integer, Double > entry : sortedDistances )
 		{
-			Pair< Integer, Double > entry = sortedDistances.get( i );
-			i++;
 			Spot spot = refPool.getObject( entry.getLeft(), spotRef );
 			double distance = entry.getRight();
 			logger.debug( "Spot: {} has a distance of: {}", spot.getLabel(), distance );
 			BranchSpot branchSpot = model.getBranchGraph().getBranchVertex( spot, model.getBranchGraph().vertexRef() );
-			int startTimepoint = spot.getTimepoint();
-			int endTimepoint = startTimepoint + motifLength;
-			BranchSpotTree motif = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
-			motifs.add( Pair.of( motif, distance ) );
-			if ( !lineageMotifs.getBranchSpot().equals( branchSpot ) )
-				entries++;
+
+			// Only proceed if this is not the motif itself
+			if ( !lineageMotif.getBranchSpot().equals( branchSpot ) )
+			{
+				int startTimepoint = spot.getTimepoint();
+				int endTimepoint = startTimepoint + motifLength;
+				BranchSpotTree motif = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
+				motifs.add( Pair.of( motif, distance ) );
+				addedMotifs++;
+			}
+
+			if ( addedMotifs >= maxNumberOfMotifs )
+				break;
 		}
 		return motifs;
 	}
@@ -301,6 +304,7 @@ public class LineageMotifsUtils
 		{
 			lock.unlock();
 		}
+		logger.info( "Tagged {} lineage motifs", count );
 	}
 
 	private static void tagSpotsAndLinksWithinTimeInterval( final Model model, final BranchSpotTree lineageMotif, final int startTimepoint,
