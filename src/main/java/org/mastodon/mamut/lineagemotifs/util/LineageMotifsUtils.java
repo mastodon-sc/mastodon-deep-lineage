@@ -219,19 +219,14 @@ public class LineageMotifsUtils
 			candidates = getMotifSimilarityBySpotIteration( model, lineageMotif, branchRef );
 		else
 			candidates = getMotifSimilarityByBranchSpotIteration( model, lineageMotif );
-		List< Pair< BranchSpotTree, Double > > motifs = new ArrayList<>();
-		motifs.add( Pair.of( lineageMotif, 0d ) );
-		RefPool< Spot > refPool = model.getGraph().vertices().getRefPool();
-		Map< Integer, Double > idsAndDistances = candidates.keySet().stream()
-				.collect( Collectors.toMap( refPool::getId, candidates::get ) );
 
-		List< Pair< Integer, Double > > sortedDistances = idsAndDistances.entrySet().stream()
-				.map( e -> Pair.of( e.getKey(), e.getValue() ) )
-				.sorted( Comparator.comparingDouble( Pair::getValue ) )
-				.collect( Collectors.toList() );
+		RefPool< Spot > refPool = model.getGraph().vertices().getRefPool();
+		List< Pair< BranchSpotTree, Double > > motifsSortedByDistance = new ArrayList<>();
+		List< Pair< Integer, Double > > sortedMotifIds = getSortedMotifIds( candidates, refPool );
 
 		int addedMotifs = 0;
-		for ( Pair< Integer, Double > entry : sortedDistances )
+		motifsSortedByDistance.add( Pair.of( lineageMotif, 0d ) );
+		for ( Pair< Integer, Double > entry : sortedMotifIds )
 		{
 			Spot spot = refPool.getObject( entry.getLeft(), spotRef );
 			double distance = entry.getRight();
@@ -244,14 +239,42 @@ public class LineageMotifsUtils
 				int startTimepoint = spot.getTimepoint();
 				int endTimepoint = startTimepoint + motifLength;
 				BranchSpotTree motif = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
-				motifs.add( Pair.of( motif, distance ) );
+				motifsSortedByDistance.add( Pair.of( motif, distance ) );
 				addedMotifs++;
 			}
 
 			if ( addedMotifs >= maxNumberOfMotifs )
 				break;
 		}
-		return motifs;
+		return getMotifsSortedByGraphDepth( motifsSortedByDistance, model );
+	}
+
+	static List< Pair< BranchSpotTree, Double > > getMotifsSortedByGraphDepth( final List< Pair< BranchSpotTree, Double > > motifs,
+			final Model model )
+	{
+		Map< Pair< BranchSpotTree, Double >, Integer > depthMap = new HashMap<>();
+		motifs.forEach( pair -> depthMap.put( pair, getGraphDepth( pair.getKey().getBranchSpot(), model ) ) );
+		return motifs.stream().sorted( Comparator.comparingInt( depthMap::get ) ).collect( Collectors.toList() );
+	}
+
+	static int getGraphDepth( final BranchSpot branchSpot, final Model model )
+	{
+		InverseDepthFirstIterator< BranchSpot, BranchLink > iterator = new InverseDepthFirstIterator<>( model.getBranchGraph() );
+		iterator.reset( branchSpot );
+		AtomicInteger depth = new AtomicInteger( 0 );
+		iterator.forEachRemaining( bs -> depth.incrementAndGet() );
+		return depth.get();
+	}
+
+	private static List< Pair< Integer, Double > > getSortedMotifIds( final RefDoubleMap< Spot > candidates, final RefPool< Spot > refPool )
+	{
+		Map< Integer, Double > idsAndDistances = candidates.keySet().stream()
+				.collect( Collectors.toMap( refPool::getId, candidates::get ) );
+
+		return idsAndDistances.entrySet().stream()
+				.map( e -> Pair.of( e.getKey(), e.getValue() ) )
+				.sorted( Comparator.comparingDouble( Pair::getValue ) )
+				.collect( Collectors.toList() );
 	}
 
 	/**
