@@ -76,7 +76,7 @@ public class FindLineageMotifsCommand extends CancelableImpl implements Command
 			+ "</body>\n"
 			+ "</html>\n";
 
-	@Parameter( label = "Number of similar lineage", min = "1", max = "100", stepSize = "1" )
+	@Parameter( label = "Number of similar lineages", min = "1", max = "1000", stepSize = "1" )
 	private int numberOfSimilarLineage = 10;
 
 	@Parameter( label = "Color" )
