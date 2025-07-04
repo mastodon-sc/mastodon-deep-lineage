@@ -92,17 +92,14 @@ public class LineageMotifsUtils
 	static int getEndTimepoint( final Spot selectedRoot, final Model model, final SelectionModel< Spot, Link > selectionModel )
 	{
 		AtomicInteger highestTimepoint = new AtomicInteger( selectedRoot.getTimepoint() );
-		Iterable< DepthFirstIteration.Step< Spot > > depthFirstIteration = DepthFirstIteration.forRoot( model.getGraph(), selectedRoot );
-		depthFirstIteration.forEach( spotStep -> {
-			if ( !spotStep.isFirstVisit() )
-				return; // only consider the first visit to each spot
-			Spot spot = spotStep.node();
+		DepthFirstIterator< Spot, Link > depthFirstIterator = new DepthFirstIterator<>( model.getGraph() );
+		depthFirstIterator.reset( selectedRoot );
+		depthFirstIterator.forEachRemaining( spot -> {
 			boolean isSelected = selectionModel.isSelected( spot );
 			if ( isSelected && spot.getTimepoint() > highestTimepoint.get() )
 				highestTimepoint.set( spot.getTimepoint() );
-			if ( !isSelected )
-				spotStep.truncate(); // do not traverse further if the spot is not selected
-		} );
+		}
+		);
 		return highestTimepoint.get();
 	}
 
