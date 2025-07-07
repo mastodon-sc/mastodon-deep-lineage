@@ -355,25 +355,7 @@ public class LineageMotifsUtils
 	 */
 	public static String getLineageMotifName( final BranchSpotTree lineageMotif )
 	{
-		Model model = lineageMotif.getModel();
-		String name = null;
-		Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( lineageMotif.getBranchSpot() );
-		while ( spotIterator.hasNext() )
-		{
-			Spot spot = spotIterator.next();
-			if ( spot.getTimepoint() == lineageMotif.getStartTimepoint() )
-			{
-				name = spot.getLabel();
-				break; // we only need the label of the first spot in the lineage motif
-			}
-		}
-		model.getBranchGraph().releaseIterator( spotIterator );
-		if ( name == null )
-		{
-			logger.debug( "Could not find a label for the lineage motif. Using default name." );
-			name = DEFAULT_LINEAGE_MOTIF_NAME;
-		}
-		return name;
+		return lineageMotif.getRootSpot().getLabel();
 	}
 
 	/**
