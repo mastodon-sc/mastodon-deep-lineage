@@ -226,7 +226,6 @@ public class LineageMotifsUtils
 		{
 			Spot spot = refPool.getObject( entry.getLeft(), spotRef );
 			double distance = entry.getRight();
-			logger.debug( "Spot: {} has a distance of: {}", spot.getLabel(), distance );
 			BranchSpot branchSpot = model.getBranchGraph().getBranchVertex( spot, model.getBranchGraph().vertexRef() );
 
 			// Only proceed if this is not the motif itself
@@ -242,6 +241,8 @@ public class LineageMotifsUtils
 			if ( addedMotifs >= maxNumberOfMotifs )
 				break;
 		}
+		motifsSortedByDistance.forEach(
+				motifDistancePair -> logger.debug( "motif: {}, distance: {}", motifDistancePair.getLeft(), motifDistancePair.getRight() ) );
 		return getMotifsSortedByGraphDepth( motifsSortedByDistance, model );
 	}
 
