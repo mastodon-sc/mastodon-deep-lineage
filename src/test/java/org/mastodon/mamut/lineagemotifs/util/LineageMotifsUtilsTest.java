@@ -148,8 +148,12 @@ class LineageMotifsUtilsTest
 				List< Pair< BranchSpotTree, Double > > similarMotifsBranchSpotIteration =
 						LineageMotifsUtils.getMostSimilarMotifs( motif, 20, spotRef, branchSpotRef, false );
 				boolean containsZeroValueSpotIteration = similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
+				boolean containsBranchSpot220SpotIteration =
+						similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getKey().getBranchSpot().getLabel().equals( "220" ) );
 				boolean containsZeroValueBranchSpotIteration =
 						similarMotifsBranchSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
+				boolean containsBranchSpot220BranchSpotIteration = similarMotifsBranchSpotIteration.stream()
+						.anyMatch( pair -> pair.getKey().getBranchSpot().getLabel().equals( "220" ) );
 
 				assertEquals( "220", motif.getBranchSpot().getLabel() );
 				assertEquals( 16, motif.getStartTimepoint() );
@@ -157,9 +161,11 @@ class LineageMotifsUtilsTest
 
 				assertEquals( 21, similarMotifsSpotIteration.size() );
 				assertTrue( containsZeroValueSpotIteration );
+				assertTrue( containsBranchSpot220SpotIteration );
 
 				assertEquals( 18, similarMotifsBranchSpotIteration.size() );
 				assertTrue( containsZeroValueBranchSpotIteration );
+				assertTrue( containsBranchSpot220BranchSpotIteration );
 			}
 			finally
 			{
