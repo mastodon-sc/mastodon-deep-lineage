@@ -398,21 +398,7 @@ public class LineageMotifsUtils
 		AtomicInteger divisionCount = new AtomicInteger();
 		try
 		{
-			Spot rootSpot = null;
-			while ( spotIterator.hasNext() )
-			{
-				Spot spot = spotIterator.next();
-				if ( spot.getTimepoint() == lineageMotif.getStartTimepoint() )
-				{
-					rootSpot = spot;
-					break;
-				}
-			}
-			if ( rootSpot == null )
-			{
-				logger.debug( "Could not find a root spot for the lineage motif. Returning 0 as division count." );
-				return 0;
-			}
+			Spot rootSpot = lineageMotif.getRootSpot();
 			DepthFirstIteration.forRoot( model.getGraph(), rootSpot ).forEach( iterationStep -> {
 				Spot spot = iterationStep.node();
 				if ( iterationStep.isFirstVisit() )
