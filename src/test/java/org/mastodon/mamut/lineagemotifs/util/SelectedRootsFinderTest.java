@@ -7,8 +7,6 @@ import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.real.FloatType;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mastodon.collection.RefSet;
 import org.mastodon.mamut.ProjectModel;
@@ -20,59 +18,52 @@ import org.scijava.Context;
 class SelectedRootsFinderTest
 {
 
-	private ExampleGraph2 graph;
-
-	private ProjectModel projectModel;
-
-	private Context context;
-
-	@BeforeEach
-	void setUp()
-	{
-		graph = new ExampleGraph2();
-		context = new Context();
-		final Img< FloatType > img = ArrayImgs.floats( 1, 1, 1 );
-		projectModel = DemoUtils.wrapAsAppModel( img, graph.getModel(), context );
-	}
-
-	@AfterEach
-	void tearDown()
-	{
-		projectModel.close();
-		context.close();
-	}
+	private final ExampleGraph2 graph = new ExampleGraph2();
 
 	@Test
 	void testGetRoots_NoVerticesSelected_ReturnsEmptySet()
 	{
-		RefSet< Spot > roots = SelectedRootsFinder.getRoots( graph.getModel().getGraph(), projectModel.getSelectionModel() );
-		assertTrue( roots.isEmpty() );
+		try (Context context = new Context())
+		{
+			final Img< FloatType > img = ArrayImgs.floats( 1, 1, 1 );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, graph.getModel(), context );
+			RefSet< Spot > roots = SelectedRootsFinder.getRoots( graph.getModel().getGraph(), projectModel.getSelectionModel() );
+			assertTrue( roots.isEmpty() );
+		}
 	}
 
 	@Test
 	void testGetRoots_OneVertexSelected()
 	{
+		try (Context context = new Context())
+		{
+			final Img< FloatType > img = ArrayImgs.floats( 1, 1, 1 );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, graph.getModel(), context );
 
-		projectModel.getSelectionModel().setSelected( graph.spot2, true );
+			RefSet< Spot > roots = SelectedRootsFinder.getRoots( graph.getModel().getGraph(), projectModel.getSelectionModel() );
 
-		RefSet< Spot > roots = SelectedRootsFinder.getRoots( graph.getModel().getGraph(), projectModel.getSelectionModel() );
-
-		assertEquals( 1, roots.size() );
-		assertTrue( roots.contains( graph.spot2 ) );
+			assertEquals( 1, roots.size() );
+			assertTrue( roots.contains( graph.spot2 ) );
+		}
 	}
 
 	@Test
 	void testGetRoots_TwoRoots()
 	{
+		try (Context context = new Context())
+		{
+			final Img< FloatType > img = ArrayImgs.floats( 1, 1, 1 );
+			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, graph.getModel(), context );
 
-		projectModel.getSelectionModel().setSelected( graph.spot0, true );
-		projectModel.getSelectionModel().setSelected( graph.spot1, true );
-		projectModel.getSelectionModel().setSelected( graph.spot3, true );
+			projectModel.getSelectionModel().setSelected( graph.spot0, true );
+			projectModel.getSelectionModel().setSelected( graph.spot1, true );
+			projectModel.getSelectionModel().setSelected( graph.spot3, true );
 
-		RefSet< Spot > roots = SelectedRootsFinder.getRoots( graph.getModel().getGraph(), projectModel.getSelectionModel() );
+			RefSet< Spot > roots = SelectedRootsFinder.getRoots( graph.getModel().getGraph(), projectModel.getSelectionModel() );
 
-		assertEquals( 2, roots.size() );
-		assertTrue( roots.contains( graph.spot0 ) );
-		assertTrue( roots.contains( graph.spot3 ) );
+			assertEquals( 2, roots.size() );
+			assertTrue( roots.contains( graph.spot0 ) );
+			assertTrue( roots.contains( graph.spot3 ) );
+		}
 	}
 }
