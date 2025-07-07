@@ -125,24 +125,17 @@ public class LineageMotifsUtils
 		RefSet< Spot > roots = RootFinder.getRoots( model.getGraph() );
 		for ( Spot root : roots )
 		{
-			Iterable< DepthFirstIteration.Step< Spot > > depthFirstIteration =
-					DepthFirstIteration.forRoot( model.getGraph(), root );
-			depthFirstIteration.forEach( spotStep -> {
-				if ( !spotStep.isFirstVisit() )
-					return; // only consider the first visit to each spot
-				Spot spot = spotStep.node();
-				if ( maxTimepoint - spot.getTimepoint() < motifLength )
-					spotStep.truncate(); // do not traverse further if the module does not fit into the remaining time points
-				else
+			DepthFirstIterator< Spot, Link > depthFirstIterator = new DepthFirstIterator<>( model.getGraph() );
+			depthFirstIterator.reset( root );
+			depthFirstIterator.forEachRemaining( spot -> {
+				if ( maxTimepoint - spot.getTimepoint() + 1 >= motifLength )
 				{
 					int startTimepoint = spot.getTimepoint();
 					int endTimepoint = startTimepoint + motifLength;
 					BranchSpot branchSpot = model.getBranchGraph().getBranchVertex( spot, branchRef );
 					BranchSpotTree candidateModule = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
-					double distance = TreeDistances.normalizedDistance(
-							lineageMotif, candidateModule,
-							TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION
-					);
+					double distance =
+							TreeDistances.normalizedDistance( lineageMotif, candidateModule, TreeDistances.LOCAL_ABSOLUTE_COST_FUNCTION );
 					candidates.put( spot, distance );
 				}
 			} );
@@ -198,7 +191,7 @@ public class LineageMotifsUtils
 
 	static int getMotifLength( final BranchSpotTree lineageMotif )
 	{
-		return lineageMotif.getEndTimepoint() - lineageMotif.getStartTimepoint();
+		return lineageMotif.getEndTimepoint() - lineageMotif.getStartTimepoint() + 1; // +1 because the end timepoint is inclusive
 	}
 
 	/**

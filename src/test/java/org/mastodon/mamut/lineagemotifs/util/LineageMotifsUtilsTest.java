@@ -2,6 +2,7 @@ package org.mastodon.mamut.lineagemotifs.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -142,14 +143,23 @@ class LineageMotifsUtilsTest
 						selectionModel.setSelected( spot, true );
 				}
 				BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( model, selectionModel );
+				List< Pair< BranchSpotTree, Double > > similarMotifsSpotIteration =
+						LineageMotifsUtils.getMostSimilarMotifs( motif, 20, spotRef, branchSpotRef, true );
+				List< Pair< BranchSpotTree, Double > > similarMotifsBranchSpotIteration =
+						LineageMotifsUtils.getMostSimilarMotifs( motif, 20, spotRef, branchSpotRef, false );
+				boolean containsZeroValueSpotIteration = similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
+				boolean containsZeroValueBranchSpotIteration =
+						similarMotifsBranchSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
+
 				assertEquals( "220", motif.getBranchSpot().getLabel() );
 				assertEquals( 16, motif.getStartTimepoint() );
 				assertEquals( 30, motif.getEndTimepoint() );
-				List< Pair< BranchSpotTree, Double > > similarMotifs =
-						LineageMotifsUtils.getMostSimilarMotifs( motif, 20, spotRef, branchSpotRef, false );
-				assertEquals( 20, similarMotifs.size() );
-				assertEquals( "685", similarMotifs.get( 0 ).getLeft().getBranchSpot().getLabel() );
-				assertEquals( 0.0, similarMotifs.get( 0 ).getRight() );
+
+				assertEquals( 21, similarMotifsSpotIteration.size() );
+				assertTrue( containsZeroValueSpotIteration );
+
+				assertEquals( 18, similarMotifsBranchSpotIteration.size() );
+				assertTrue( containsZeroValueBranchSpotIteration );
 			}
 			finally
 			{
