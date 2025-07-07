@@ -40,9 +40,6 @@ import org.slf4j.LoggerFactory;
 
 public class LineageMotifsUtils
 {
-
-	public static final String DEFAULT_LINEAGE_MOTIF_NAME = "Lineage Motif";
-
 	private LineageMotifsUtils()
 	{
 		// Utility class, no instantiation allowed.
@@ -348,7 +345,6 @@ public class LineageMotifsUtils
 
 	/**
 	 * Retrieves the name of a lineage motif based on its first spot's label at the start timepoint.
-	 * If no label is found, a default name {@link #DEFAULT_LINEAGE_MOTIF_NAME} is returned.
 	 *
 	 * @param lineageMotif the {@link BranchSpotTree} representing the lineage motif
 	 * @return the name of the lineage motif as a {@link String}, or a default name if no label is found
