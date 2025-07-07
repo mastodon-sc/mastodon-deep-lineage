@@ -105,11 +105,10 @@ public class FindLineageMotifsCommand extends CancelableImpl implements Command
 		try
 		{
 			BranchSpotTree lineageMotif = LineageMotifsUtils.getSelectedMotif( model, projectModel.getSelectionModel() );
-			String lineageModuleName = LineageMotifsUtils.getLineageMotifName( model, lineageMotif );
-			List< Pair< BranchSpotTree, Double > > similarModules =
-					LineageMotifsUtils.getMostSimilarMotifs( model, lineageMotif, numberOfSimilarLineage, spotRef, branchSpotRef,
-							!runOnBranchGraph );
-			int numberOfDivisions = LineageMotifsUtils.getNumberOfDivisions( lineageMotif, model );
+			String lineageModuleName = LineageMotifsUtils.getLineageMotifName( lineageMotif );
+			List< Pair< BranchSpotTree, Double > > similarModules = LineageMotifsUtils.getMostSimilarMotifs( lineageMotif,
+					numberOfSimilarLineage, spotRef, branchSpotRef, !runOnBranchGraph );
+			int numberOfDivisions = LineageMotifsUtils.getNumberOfDivisions( lineageMotif );
 			String optionalPlural = numberOfDivisions == 1 ? "" : "s";
 			tagSetName = TAG_SET_NAME + lineageModuleName + " (" + numberOfDivisions + " division" + optionalPlural + ")";
 			LineageMotifsUtils.tagLineageMotifs( model, tagSetName, similarModules, new Color( color.getARGB() ) );

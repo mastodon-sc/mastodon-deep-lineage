@@ -58,6 +58,8 @@ public class BranchSpotTree implements Tree< Double >, HasName
 
 	private final int endTimepoint;
 
+	private final Model model;
+
 	BranchSpotTree( final BranchSpot branchSpot, final int startTimepoint, final int endTimepoint )
 	{
 		this( branchSpot, startTimepoint, endTimepoint, null );
@@ -78,10 +80,11 @@ public class BranchSpotTree implements Tree< Double >, HasName
 					+ " is greater than the endTimepoint (" + endTimepoint + ")." );
 		this.branchSpot = branchSpot;
 		this.children = new ArrayList<>();
-		this.labelSupplier = new LabelSupplier( model );
+		this.labelSupplier = new LabelSupplier();
 		this.attribute = ( double ) BranchSpotFeatureUtils.branchDuration( branchSpot, startTimepoint, endTimepoint );
 		this.startTimepoint = startTimepoint;
 		this.endTimepoint = endTimepoint;
+		this.model = model;
 		for ( BranchLink branchLink : branchSpot.outgoingEdges() )
 		{
 			BranchSpot child = branchLink.getTarget();
@@ -119,6 +122,11 @@ public class BranchSpotTree implements Tree< Double >, HasName
 		return endTimepoint;
 	}
 
+	public Model getModel()
+	{
+		return model;
+	}
+
 	public void updateLabeling( final boolean includeName, final boolean includeTag, final TagSetStructure.TagSet tagSet )
 	{
 		labelSupplier.setParams( includeName, includeTag, tagSet );
@@ -152,13 +160,6 @@ public class BranchSpotTree implements Tree< Double >, HasName
 
 		private TagSetStructure.TagSet tagSet;
 
-		private final Model model;
-
-		public LabelSupplier( final Model model )
-		{
-			this.model = model;
-		}
-
 		public void setParams( final boolean includeName, final boolean includeTag, final TagSetStructure.TagSet tagSet )
 		{
 			this.includeName = includeName;
@@ -169,7 +170,7 @@ public class BranchSpotTree implements Tree< Double >, HasName
 		private String getTagLabel()
 		{
 			Spot ref = model.getGraph().vertexRef();
-			String tagLabel = null;
+			String tagLabel;
 			tagLabel = TagSetUtils.getTagLabel( model, branchSpot, tagSet, ref );
 			model.getGraph().releaseRef( ref );
 			if ( tagLabel == null )

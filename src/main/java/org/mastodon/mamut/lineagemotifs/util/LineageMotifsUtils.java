@@ -112,14 +112,13 @@ public class LineageMotifsUtils
 	 * The method iterates over all spots in the graph and constructs a lineage motif for each of these spots with the same length as the given lineage motif.
 	 * The similarity is calculated as the normalized distance between the two motifs using the {@link TreeDistances#normalizedDistance(Tree, Tree, ToDoubleBiFunction)} method.
 	 *
-	 * @param model the {@link Model} containing the graph
 	 * @param lineageMotif the {@link BranchSpotTree} representing the given lineage motif
 	 * @param branchRef a reference to the branch graph
 	 * @return a {@link RefDoubleMap} of {@link Spot}s and their respective similarity to the given lineage motif
 	 */
-	static RefDoubleMap< Spot > getMotifSimilarityBySpotIteration( final Model model, final BranchSpotTree lineageMotif,
-			final BranchSpot branchRef )
+	static RefDoubleMap< Spot > getMotifSimilarityBySpotIteration( final BranchSpotTree lineageMotif, final BranchSpot branchRef )
 	{
+		Model model = lineageMotif.getModel();
 		final int motifLength = getMotifLength( lineageMotif );
 		RefDoubleMap< Spot > candidates = new RefDoubleHashMap<>( model.getGraph().vertices().getRefPool(), Double.MAX_VALUE );
 		final int maxTimepoint = TreeUtils.getMaxTimepoint( model );
@@ -156,16 +155,16 @@ public class LineageMotifsUtils
 	 * The method iterates over all spots in the graph and constructs a lineage module for each of these spots with the same length as the given lineage module.
 	 * The similarity is calculated as the normalized distance between the two modules using the {@link TreeDistances#normalizedDistance(Tree, Tree, ToDoubleBiFunction)} method.
 	 *
-	 * @param model the {@link Model} containing the graph
 	 * @param lineageMotif the {@link BranchSpotTree} representing the given lineage module
 	 * @return a {@link RefDoubleMap} of {@link Spot}s and their respective similarity to the given lineage module
 	 */
-	static RefDoubleMap< Spot > getMotifSimilarityByBranchSpotIteration( final Model model, final BranchSpotTree lineageMotif )
+	static RefDoubleMap< Spot > getMotifSimilarityByBranchSpotIteration( final BranchSpotTree lineageMotif )
 	{
 		final int motifLength = getMotifLength( lineageMotif );
 		int moduleStartTimepoint = lineageMotif.getStartTimepoint();
 		int firstDivisionTimepoint = lineageMotif.getBranchSpot().getTimepoint();
 		int timepointsUntilFirstDivision = firstDivisionTimepoint - moduleStartTimepoint;
+		Model model = lineageMotif.getModel();
 		RefDoubleMap< Spot > candidates = new RefDoubleHashMap<>( model.getGraph().vertices().getRefPool(), Double.MAX_VALUE );
 		final int maxTimepoint = TreeUtils.getMaxTimepoint( model );
 		logger.debug( "motifLength: {}, maxTimepoint: {}", motifLength, maxTimepoint );
@@ -207,23 +206,23 @@ public class LineageMotifsUtils
 	 * This method identifies and ranks other motifs compared to a reference motif
 	 * and returns a list of the most similar ones up to a specified maximum number, including their similarity scores.
 	 *
-	 * @param model           the {@link Model} containing the graph and branch data for the lineage
 	 * @param lineageMotif    the {@link BranchSpotTree} representing the lineage motif to compare
 	 * @param maxNumberOfMotifs the maximum number of similar motifs to retrieve
 	 * @param spotRef         a reference {@link Spot} used for accessing the graph's objects
 	 * @param branchRef       a reference {@link BranchSpot} associated with the branch graph
 	 * @return a {@link List} of {@link BranchSpotTree} objects representing the most similar lineage motifs, including their similarity scores.
 	 */
-	public static List< Pair< BranchSpotTree, Double > > getMostSimilarMotifs( final Model model, final BranchSpotTree lineageMotif,
+	public static List< Pair< BranchSpotTree, Double > > getMostSimilarMotifs( final BranchSpotTree lineageMotif,
 			int maxNumberOfMotifs, final Spot spotRef, final BranchSpot branchRef, boolean isSpotIteration )
 	{
 		int motifLength = getMotifLength( lineageMotif );
 		RefDoubleMap< Spot > candidates;
 		if ( isSpotIteration )
-			candidates = getMotifSimilarityBySpotIteration( model, lineageMotif, branchRef );
+			candidates = getMotifSimilarityBySpotIteration( lineageMotif, branchRef );
 		else
-			candidates = getMotifSimilarityByBranchSpotIteration( model, lineageMotif );
+			candidates = getMotifSimilarityByBranchSpotIteration( lineageMotif );
 
+		Model model = lineageMotif.getModel();
 		RefPool< Spot > refPool = model.getGraph().vertices().getRefPool();
 		List< Pair< BranchSpotTree, Double > > motifsSortedByDistance = new ArrayList<>();
 		List< Pair< Integer, Double > > sortedMotifIds = getSortedMotifIds( candidates, refPool );
@@ -291,7 +290,6 @@ public class LineageMotifsUtils
 	 * The colors for the tags are generated as a saturation fade from the provided base color. The first motif will get the given color,
 	 * all later motifs will get colors with less saturation compared to the base colors.<br>
 	 *
-	 * @param model The {@link Model} containing the branch graph for the lineage motifs.
 	 * @param tagSetName The name to be assigned to the new tag set.
 	 * @param lineageMotifs A {@link List} of {@link BranchSpotTree} objects representing the lineage motifs to tag.
 	 * @param color The {@link Color} used as the base for generating unique colors for each motif's tag.
@@ -310,7 +308,7 @@ public class LineageMotifsUtils
 			{
 				BranchSpotTree lineageMotif = lineageMotifs.get( i ).getLeft();
 				double distance = lineageMotifs.get( i ).getRight();
-				String lineageMotifName = getLineageMotifName( model, lineageMotif );
+				String lineageMotifName = getLineageMotifName( lineageMotif );
 				String tag = TAG_NAME + " " + lineageMotifName + " (distance: " + String.format( "%.2f", distance ) + ")";
 				tagsAndColors.add( Pair.of( tag, colors.get( i ).getRGB() ) );
 			}
@@ -319,8 +317,8 @@ public class LineageMotifsUtils
 			lineageMotifs.forEach( motif -> {
 				TagSetStructure.Tag tag = tagSet.getTags().get( tagIndex.getAndIncrement() );
 				BranchSpotTree lineageMotif = motif.getLeft();
-				tagSpotsAndLinksWithinTimeInterval( model, lineageMotif, lineageMotif.getStartTimepoint(), lineageMotif.getEndTimepoint(),
-						tagSet, tag );
+				tagSpotsAndLinksWithinTimeInterval( lineageMotif, lineageMotif.getStartTimepoint(), lineageMotif.getEndTimepoint(), tagSet,
+						tag );
 			} );
 			model.setUndoPoint();
 		}
@@ -331,9 +329,10 @@ public class LineageMotifsUtils
 		logger.info( "Tagged {} lineage motifs", count );
 	}
 
-	private static void tagSpotsAndLinksWithinTimeInterval( final Model model, final BranchSpotTree lineageMotif, final int startTimepoint,
+	private static void tagSpotsAndLinksWithinTimeInterval( final BranchSpotTree lineageMotif, final int startTimepoint,
 			final int endTimepoint, final TagSetStructure.TagSet tagSet, final TagSetStructure.Tag tag )
 	{
+		Model model = lineageMotif.getModel();
 		DepthFirstIterator< BranchSpot, BranchLink > depthFirstIterator = new DepthFirstIterator<>( model.getBranchGraph() );
 		depthFirstIterator.reset( lineageMotif.getBranchSpot() );
 		DepthFirstIteration.forRoot( model.getBranchGraph(), lineageMotif.getBranchSpot() ).forEach(
@@ -357,12 +356,12 @@ public class LineageMotifsUtils
 	 * Retrieves the name of a lineage motif based on its first spot's label at the start timepoint.
 	 * If no label is found, a default name {@link #DEFAULT_LINEAGE_MOTIF_NAME} is returned.
 	 *
-	 * @param model the {@link Model} containing the graph and branch information
 	 * @param lineageMotif the {@link BranchSpotTree} representing the lineage motif
 	 * @return the name of the lineage motif as a {@link String}, or a default name if no label is found
 	 */
-	public static String getLineageMotifName( final Model model, final BranchSpotTree lineageMotif )
+	public static String getLineageMotifName( final BranchSpotTree lineageMotif )
 	{
+		Model model = lineageMotif.getModel();
 		String name = null;
 		Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( lineageMotif.getBranchSpot() );
 		while ( spotIterator.hasNext() )
@@ -389,12 +388,12 @@ public class LineageMotifsUtils
 	 * A division is identified as a spot within the motif that has more than one outgoing edge.
 	 *
 	 * @param lineageMotif the {@link BranchSpotTree} representing the lineage motif to analyze
-	 * @param model the {@link Model} containing the graph information used for traversal and analysis
 	 * @return the number of division events within the specified lineage motif,
 	 *         or 0 if no valid root spot is found or no divisions are present
 	 */
-	public static int getNumberOfDivisions( final BranchSpotTree lineageMotif, final Model model )
+	public static int getNumberOfDivisions( final BranchSpotTree lineageMotif )
 	{
+		Model model = lineageMotif.getModel();
 		Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( lineageMotif.getBranchSpot() );
 		AtomicInteger divisionCount = new AtomicInteger();
 		try

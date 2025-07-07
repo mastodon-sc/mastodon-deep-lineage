@@ -41,7 +41,7 @@ class LineageMotifsUtilsTest
 	void testGetNumberOfDivisions_NoDivisions()
 	{
 		Model model = graph1.getModel();
-		int division = LineageMotifsUtils.getNumberOfDivisions( new BranchSpotTree( graph1.branchSpotA, 0, 3, model ), model );
+		int division = LineageMotifsUtils.getNumberOfDivisions( new BranchSpotTree( graph1.branchSpotA, 0, 3, model ) );
 		assertEquals( 0, division );
 	}
 
@@ -49,7 +49,7 @@ class LineageMotifsUtilsTest
 	void testGetNumberOfDivisions_MultipleDivisions()
 	{
 		Model model = graph2.getModel();
-		int division = LineageMotifsUtils.getNumberOfDivisions( new BranchSpotTree( graph2.branchSpotA, 0, 7, model ), model );
+		int division = LineageMotifsUtils.getNumberOfDivisions( new BranchSpotTree( graph2.branchSpotA, 0, 7, model ) );
 		assertEquals( 2, division );
 	}
 
@@ -124,15 +124,15 @@ class LineageMotifsUtilsTest
 					"src/test/resources/org/mastodon/mamut/lineagemotifs/util/lineage_modules.mastodon", "model",
 					".mastodon"
 			);
-			ProjectModel projectModel1 = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
-			Model model1 = projectModel1.getModel();
-			Spot spotRef = model1.getGraph().vertexRef();
-			BranchSpot branchSpotRef = model1.getBranchGraph().vertexRef();
+			ProjectModel projectModel = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
+			Model model = projectModel.getModel();
+			Spot spotRef = model.getGraph().vertexRef();
+			BranchSpot branchSpotRef = model.getBranchGraph().vertexRef();
 			try
 			{
-				SelectionModel< Spot, Link > selectionModel = projectModel1.getSelectionModel();
+				SelectionModel< Spot, Link > selectionModel = projectModel.getSelectionModel();
 
-				for ( Spot spot : model1.getGraph().vertices() )
+				for ( Spot spot : model.getGraph().vertices() )
 				{
 					List< String > list =
 							Arrays.asList( "218", "219", "220", "221", "222", "223", "224", "225", "226", "227", "228", "229", "230",
@@ -141,21 +141,21 @@ class LineageMotifsUtilsTest
 					if ( list.contains( spot.getLabel() ) )
 						selectionModel.setSelected( spot, true );
 				}
-				BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( model1, selectionModel );
+				BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( model, selectionModel );
 				assertEquals( "220", motif.getBranchSpot().getLabel() );
 				assertEquals( 16, motif.getStartTimepoint() );
 				assertEquals( 30, motif.getEndTimepoint() );
 				List< Pair< BranchSpotTree, Double > > similarMotifs =
-						LineageMotifsUtils.getMostSimilarMotifs( model1, motif, 20, spotRef, branchSpotRef, false );
+						LineageMotifsUtils.getMostSimilarMotifs( motif, 20, spotRef, branchSpotRef, false );
 				assertEquals( 20, similarMotifs.size() );
 				assertEquals( "685", similarMotifs.get( 0 ).getLeft().getBranchSpot().getLabel() );
 				assertEquals( 0.0, similarMotifs.get( 0 ).getRight() );
 			}
 			finally
 			{
-				model1.getGraph().releaseRef( spotRef );
-				model1.getBranchGraph().releaseRef( branchSpotRef );
-				projectModel1.close();
+				model.getGraph().releaseRef( spotRef );
+				model.getBranchGraph().releaseRef( branchSpotRef );
+				projectModel.close();
 			}
 		}
 	}
