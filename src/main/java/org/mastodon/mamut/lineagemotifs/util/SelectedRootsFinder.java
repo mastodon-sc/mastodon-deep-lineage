@@ -39,9 +39,7 @@ public class SelectedRootsFinder< V extends Vertex< E >, E extends Edge< V > > e
 	{
 		for ( final V vertex : selectionModel.getSelectedVertices() )
 		{
-			if ( vertex.incomingEdges().isEmpty() )
-				roots.add( vertex );
-			else if ( !hasSelectedPredecessors( vertex, selectionModel ) )
+			if ( vertex.incomingEdges().isEmpty() || !hasSelectedPredecessors( vertex, selectionModel ) )
 				roots.add( vertex );
 		}
 	}
