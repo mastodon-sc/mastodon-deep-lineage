@@ -190,7 +190,6 @@ class LineageMotifsUtilsTest
 	@Test
 	void testTagLineageMotifs()
 	{
-		// final Model model, final String tagSetName, final List< Pair< BranchSpotTree, Double > > lineageMotifs, final Color color
 		String tagSetName = "testTagSet";
 		Color color = Color.RED;
 		Model model = graph2.getModel();
@@ -226,6 +225,5 @@ class LineageMotifsUtilsTest
 		assertEquals( tag1.label(), model.getTagSetModel().getVertexTags().tags( tagSet ).get( graph2.spot10 ).label() );
 		assertEquals( tag2.label(), model.getTagSetModel().getVertexTags().tags( tagSet ).get( graph2.spot11 ).label() );
 		assertEquals( tag2.label(), model.getTagSetModel().getVertexTags().tags( tagSet ).get( graph2.spot13 ).label() );
-
 	}
 }
