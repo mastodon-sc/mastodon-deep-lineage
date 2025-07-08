@@ -101,7 +101,7 @@ public class FindLineageMotifsCommand extends CancelableImpl implements Command
 			projectModel.getBranchGraphSync().sync();
 		Spot spotRef = model.getGraph().vertexRef();
 		BranchSpot branchSpotRef = model.getBranchGraph().vertexRef();
-		String tagSetName = "";
+		String tagSetName;
 		try
 		{
 			BranchSpotTree lineageMotif = LineageMotifsUtils.getSelectedMotif( model, projectModel.getSelectionModel() );
