@@ -72,7 +72,7 @@ public class FindLineageMotifsCommand extends CancelableImpl implements Command
 	private String documentation = "<html>\n"
 			+ "<body width=" + WIDTH + "cm align=left>\n"
 			+ "<h1>Find similar lineage modules</h1>\n"
-			+ "<p>This commands finds a specifiable number of lineage modules that are similar to the currently selected module and assigns tags to them.</p>\n"
+			+ "<p>This command finds a specifiable number of lineage modules that are similar to the currently selected module and assigns tags to them.</p>\n"
 			+ "</body>\n"
 			+ "</html>\n";
 
