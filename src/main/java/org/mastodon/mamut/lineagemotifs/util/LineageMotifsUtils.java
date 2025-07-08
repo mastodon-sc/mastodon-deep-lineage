@@ -157,7 +157,6 @@ public class LineageMotifsUtils
 		Model model = lineageMotif.getModel();
 		RefDoubleMap< Spot > candidates = new RefDoubleHashMap<>( model.getGraph().vertices().getRefPool(), Double.MAX_VALUE );
 		final int maxTimepoint = TreeUtils.getMaxTimepoint( model );
-		logger.debug( "motifLength: {}, maxTimepoint: {}", motifLength, maxTimepoint );
 		for ( BranchSpot branchSpot : model.getBranchGraph().vertices() )
 		{
 			int startTimepoint = branchSpot.getTimepoint() - timepointsUntilFirstDivision;
@@ -216,7 +215,7 @@ public class LineageMotifsUtils
 		RefPool< Spot > refPool = model.getGraph().vertices().getRefPool();
 		List< Pair< BranchSpotTree, Double > > motifsSortedByDistance = new ArrayList<>();
 		List< Pair< Integer, Double > > sortedMotifIds = getSortedMotifIds( candidates, refPool );
-
+		logger.debug( "lineage motif: {}, length: {}", lineageMotif, motifLength );
 		int addedMotifs = 0;
 		motifsSortedByDistance.add( Pair.of( lineageMotif, 0d ) );
 		for ( Pair< Integer, Double > entry : sortedMotifIds )
