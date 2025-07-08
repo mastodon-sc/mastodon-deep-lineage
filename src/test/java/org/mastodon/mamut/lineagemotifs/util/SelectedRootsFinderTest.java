@@ -39,6 +39,7 @@ class SelectedRootsFinderTest
 		{
 			final Img< FloatType > img = ArrayImgs.floats( 1, 1, 1 );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, graph.getModel(), context );
+			projectModel.getSelectionModel().setSelected( graph.spot2, true );
 
 			RefSet< Spot > roots = SelectedRootsFinder.getRoots( graph.getModel().getGraph(), projectModel.getSelectionModel() );
 
