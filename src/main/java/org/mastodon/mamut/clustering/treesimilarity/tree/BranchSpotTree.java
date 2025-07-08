@@ -142,6 +142,8 @@ public class BranchSpotTree implements Tree< Double >, HasName
 	 */
 	public Spot getRootSpot()
 	{
+		if ( model == null )
+			return null;
 		Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
 		Spot spot = null;
 		while ( spotIterator.hasNext() )
