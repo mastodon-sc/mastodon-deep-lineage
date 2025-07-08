@@ -2,6 +2,7 @@ package org.mastodon.mamut.util;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ColorUtils
@@ -61,6 +62,9 @@ public class ColorUtils
 		// Clamp minSaturation if it exceeds base saturation
 		float clampedMinSat = ( float ) Math.min( minSaturation, baseSaturation );
 
+		if ( count == 1 )
+			return Collections.singletonList( baseColor );
+
 		for ( int i = 0; i < count; i++ )
 		{
 			double fraction = i / ( double ) ( count - 1 );
@@ -68,7 +72,6 @@ public class ColorUtils
 			Color newColor = Color.getHSBColor( hue, saturation, brightness );
 			colors.add( newColor );
 		}
-
 		return colors;
 	}
 }
