@@ -304,7 +304,7 @@ public class LineageMotifsUtils
 			final List< Map.Entry< String, Integer > > tagsAndColors =
 					indexedMotifs.stream()
 							.map( indexedMotif -> Pair.of(
-									TAG_NAME + " " + getLineageMotifName( indexedMotif.motifAndDistance.getKey() ) + " (distance: "
+									TAG_NAME + getLineageMotifName( indexedMotif.motifAndDistance.getKey() ) + " (distance: "
 											+ String.format( "%.2f", indexedMotif.motifAndDistance.getValue() ) + ")",
 									colors.get( colorIndex.getAndIncrement() ).getRGB() ) )
 							.collect( Collectors.toList() );
