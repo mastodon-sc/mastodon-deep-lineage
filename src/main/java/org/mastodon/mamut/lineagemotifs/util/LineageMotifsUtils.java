@@ -240,21 +240,21 @@ public class LineageMotifsUtils
 		}
 		motifsSortedByDistance.forEach(
 				motifDistancePair -> logger.debug( "motif: {}, distance: {}", motifDistancePair.getLeft(), motifDistancePair.getRight() ) );
-		return getMotifsSortedByGraphDepth( motifsSortedByDistance, model );
+		return getMotifsSortedByGraphDepth( motifsSortedByDistance );
 	}
 
-	static List< Pair< BranchSpotTree, Double > > getMotifsSortedByGraphDepth( final List< Pair< BranchSpotTree, Double > > motifs,
-			final Model model )
+	static List< Pair< BranchSpotTree, Double > > getMotifsSortedByGraphDepth( final List< Pair< BranchSpotTree, Double > > motifs )
 	{
 		Map< Pair< BranchSpotTree, Double >, Integer > depthMap = new HashMap<>();
-		motifs.forEach( pair -> depthMap.put( pair, getGraphDepth( pair.getKey().getBranchSpot(), model ) ) );
+		motifs.forEach( pair -> depthMap.put( pair, getGraphDepth( pair.getKey() ) ) );
 		return motifs.stream().sorted( Comparator.comparingInt( depthMap::get ) ).collect( Collectors.toList() );
 	}
 
-	static int getGraphDepth( final BranchSpot branchSpot, final Model model )
+	static int getGraphDepth( final BranchSpotTree motif )
 	{
+		final Model model = motif.getModel();
 		InverseDepthFirstIterator< BranchSpot, BranchLink > iterator = new InverseDepthFirstIterator<>( model.getBranchGraph() );
-		iterator.reset( branchSpot );
+		iterator.reset( motif.getBranchSpot() );
 		AtomicInteger depth = new AtomicInteger( 0 );
 		iterator.forEachRemaining( bs -> depth.incrementAndGet() );
 		return depth.get();
