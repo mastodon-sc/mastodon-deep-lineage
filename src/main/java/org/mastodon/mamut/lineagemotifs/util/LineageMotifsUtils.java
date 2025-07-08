@@ -414,11 +414,5 @@ public class LineageMotifsUtils
 			this.motifAndDistance = motifAndDistance;
 			this.originalIndex = originalIndex;
 		}
-
-		@Override
-		public String toString()
-		{
-			return "(" + motifAndDistance.getKey() + ", " + motifAndDistance.getValue() + ") [originalIndex=" + originalIndex + "]";
-		}
 	}
 }
