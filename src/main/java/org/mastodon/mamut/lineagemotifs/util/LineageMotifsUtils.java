@@ -290,23 +290,37 @@ public class LineageMotifsUtils
 	{
 		final int count = lineageMotifs.size();
 		final List< Color > colors = ColorUtils.generateSaturationFade( color, count );
-		final List< Map.Entry< String, Integer > > tagsAndColors = new ArrayList<>();
 		final ReentrantReadWriteLock.WriteLock lock = model.getGraph().getLock().writeLock();
 		lock.lock();
 		try
 		{
+			List< IndexedMotif > indexedMotifs = new ArrayList<>();
 			for ( int i = 0; i < count; i++ )
 			{
-				BranchSpotTree lineageMotif = lineageMotifs.get( i ).getLeft();
-				double distance = lineageMotifs.get( i ).getRight();
-				String lineageMotifName = getLineageMotifName( lineageMotif );
-				String tag = TAG_NAME + " " + lineageMotifName + " (distance: " + String.format( "%.2f", distance ) + ")";
-				tagsAndColors.add( Pair.of( tag, colors.get( i ).getRGB() ) );
+				indexedMotifs.add( new IndexedMotif( lineageMotifs.get( i ), i ) );
 			}
+			indexedMotifs.sort( Comparator.comparingDouble( indexedMotif -> indexedMotif.motifAndDistance.getValue() ) );
+			AtomicInteger colorIndex = new AtomicInteger( 0 );
+			final List< Map.Entry< String, Integer > > tagsAndColors =
+					indexedMotifs.stream()
+							.map( indexedMotif -> Pair.of(
+									TAG_NAME + " " + getLineageMotifName( indexedMotif.motifAndDistance.getKey() ) + " (distance: "
+											+ String.format( "%.2f", indexedMotif.motifAndDistance.getValue() ) + ")",
+									colors.get( colorIndex.getAndIncrement() ).getRGB() ) )
+							.collect( Collectors.toList() );
 			TagSetStructure.TagSet tagSet = TagSetUtils.addNewTagSetToModel( model, tagSetName, tagsAndColors );
-			final AtomicInteger tagIndex = new AtomicInteger();
+
+			Map< Integer, Integer > originalToNewIndexMap = new HashMap<>();
+
+			for ( int newIndex = 0; newIndex < indexedMotifs.size(); newIndex++ )
+			{
+				IndexedMotif indexMotif = indexedMotifs.get( newIndex );
+				originalToNewIndexMap.put( indexMotif.originalIndex, newIndex );
+			}
+
+			AtomicInteger tagIndex = new AtomicInteger( 0 );
 			lineageMotifs.forEach( motif -> {
-				TagSetStructure.Tag tag = tagSet.getTags().get( tagIndex.getAndIncrement() );
+				TagSetStructure.Tag tag = tagSet.getTags().get( originalToNewIndexMap.get( tagIndex.getAndIncrement() ) );
 				BranchSpotTree lineageMotif = motif.getLeft();
 				tagSpotsAndLinksWithinTimeInterval( lineageMotif, lineageMotif.getStartTimepoint(), lineageMotif.getEndTimepoint(), tagSet,
 						tag );
@@ -387,5 +401,24 @@ public class LineageMotifsUtils
 			model.getBranchGraph().releaseIterator( spotIterator );
 		}
 		return divisionCount.get();
+	}
+
+	private static class IndexedMotif
+	{
+		Pair< BranchSpotTree, Double > motifAndDistance;
+
+		int originalIndex;
+
+		IndexedMotif( final Pair< BranchSpotTree, Double > motifAndDistance, final int originalIndex )
+		{
+			this.motifAndDistance = motifAndDistance;
+			this.originalIndex = originalIndex;
+		}
+
+		@Override
+		public String toString()
+		{
+			return "(" + motifAndDistance.getKey() + ", " + motifAndDistance.getValue() + ") [originalIndex=" + originalIndex + "]";
+		}
 	}
 }
