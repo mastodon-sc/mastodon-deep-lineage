@@ -45,7 +45,7 @@ public class DendrogramViewDemo
 			final DendrogramView< String > view =
 					new DendrogramView<>( ClusterData.createSampleClassification3(), "Classification of lineages", model,
 							context.getService( PrefService.class ), "TestProject" );
-			view.show();
+			view.setVisible( true );
 		}
 	}
 }
