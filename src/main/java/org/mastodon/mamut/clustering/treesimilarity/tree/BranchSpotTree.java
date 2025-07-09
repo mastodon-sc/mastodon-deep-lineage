@@ -39,6 +39,7 @@ import org.mastodon.util.TagSetUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.function.Supplier;
 
 /**
@@ -58,6 +59,8 @@ public class BranchSpotTree implements Tree< Double >, HasName
 
 	private final int endTimepoint;
 
+	private final Model model;
+
 	BranchSpotTree( final BranchSpot branchSpot, final int startTimepoint, final int endTimepoint )
 	{
 		this( branchSpot, startTimepoint, endTimepoint, null );
@@ -75,13 +78,17 @@ public class BranchSpotTree implements Tree< Double >, HasName
 			throw new IllegalArgumentException( "The given branchSpot is null." );
 		if ( branchSpot.getFirstTimePoint() > endTimepoint )
 			throw new IllegalArgumentException( "The first timepoint of the given branchSpot " + branchSpot.getFirstTimePoint()
-					+ " is greater than the endTimepoint (" + endTimepoint + ")." );
+					+ " is greater than the given endTimepoint (" + endTimepoint + "). This is not allowed." );
+		if ( branchSpot.getTimepoint() < startTimepoint )
+			throw new IllegalArgumentException( "The end timepoint of the given branchSpot (" + branchSpot.getTimepoint()
+					+ ") is less than the startTimepoint of this BranchSpotTree (" + startTimepoint + "). This is not allowed." );
 		this.branchSpot = branchSpot;
 		this.children = new ArrayList<>();
-		this.labelSupplier = new LabelSupplier( model );
+		this.labelSupplier = new LabelSupplier();
 		this.attribute = ( double ) BranchSpotFeatureUtils.branchDuration( branchSpot, startTimepoint, endTimepoint );
 		this.startTimepoint = startTimepoint;
 		this.endTimepoint = endTimepoint;
+		this.model = model;
 		for ( BranchLink branchLink : branchSpot.outgoingEdges() )
 		{
 			BranchSpot child = branchLink.getTarget();
@@ -119,6 +126,36 @@ public class BranchSpotTree implements Tree< Double >, HasName
 		return endTimepoint;
 	}
 
+	public Model getModel()
+	{
+		return model;
+	}
+
+	/**
+	 * Retrieves the root spot of the branch graph that corresponds to the
+	 * specified starting timepoint. Navigates through the spots in the branch graph
+	 * using a vertex branch iterator, and identifies the spot associated with the start
+	 * timepoint. The iterator is released after iteration is complete.
+	 *
+	 * @return the root spot corresponding to the start timepoint, or {@code null} if no such
+	 *         spot is found.
+	 */
+	public Spot getRootSpot()
+	{
+		if ( model == null )
+			return null;
+		Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
+		Spot spot = null;
+		while ( spotIterator.hasNext() )
+		{
+			spot = spotIterator.next();
+			if ( spot.getTimepoint() == startTimepoint )
+				break;
+		}
+		model.getBranchGraph().releaseIterator( spotIterator );
+		return spot;
+	}
+
 	public void updateLabeling( final boolean includeName, final boolean includeTag, final TagSetStructure.TagSet tagSet )
 	{
 		labelSupplier.setParams( includeName, includeTag, tagSet );
@@ -152,13 +189,6 @@ public class BranchSpotTree implements Tree< Double >, HasName
 
 		private TagSetStructure.TagSet tagSet;
 
-		private final Model model;
-
-		public LabelSupplier( final Model model )
-		{
-			this.model = model;
-		}
-
 		public void setParams( final boolean includeName, final boolean includeTag, final TagSetStructure.TagSet tagSet )
 		{
 			this.includeName = includeName;
@@ -169,7 +199,7 @@ public class BranchSpotTree implements Tree< Double >, HasName
 		private String getTagLabel()
 		{
 			Spot ref = model.getGraph().vertexRef();
-			String tagLabel = null;
+			String tagLabel;
 			tagLabel = TagSetUtils.getTagLabel( model, branchSpot, tagSet, ref );
 			model.getGraph().releaseRef( ref );
 			if ( tagLabel == null )
