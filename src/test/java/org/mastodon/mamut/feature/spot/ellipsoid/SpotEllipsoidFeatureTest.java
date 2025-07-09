@@ -44,13 +44,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SpotEllipsoidFeatureTest extends AbstractEllipsoidFeatureTest
+class SpotEllipsoidFeatureTest extends AbstractEllipsoidFeatureTest
 {
 
 	private Feature< Spot > ellipsoidFeature;
 
 	@BeforeEach
-	public void setUp()
+	void setUp()
 	{
 		try (Context context = new Context())
 		{
