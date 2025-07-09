@@ -322,6 +322,6 @@ class ZhangUnorderedTreeEditDistanceTest
 		stopWatch.start();
 		double costs = ZhangUnorderedTreeEditDistance.distance( tree2aba, tree1bab, defaultCosts );
 		stopWatch.stop();
-		logger.debug( "Costs: {}, time: {}ms", costs, stopWatch.getTime() );
+		logger.debug( "Costs: {}, time: {}ms", costs, stopWatch.getDuration() );
 	}
 }
