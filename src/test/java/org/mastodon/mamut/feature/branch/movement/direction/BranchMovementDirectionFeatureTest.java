@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BranchMovementDirectionFeatureTest extends AbstractFeatureTest< BranchSpot >
+class BranchMovementDirectionFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
 
 	private Feature< BranchSpot > branchMovementDirectionFeature;
@@ -54,7 +54,7 @@ public class BranchMovementDirectionFeatureTest extends AbstractFeatureTest< Bra
 	private final ExampleGraph1 graph = new ExampleGraph1();
 
 	@BeforeEach
-	public void setUp()
+	void setUp()
 	{
 		try (Context context = new Context())
 		{

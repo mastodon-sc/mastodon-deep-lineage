@@ -58,7 +58,7 @@ import org.mastodon.mamut.model.Spot;
 import org.scijava.Context;
 
 @Disabled( "mvn test takes too long" )
-public class SpotTSneFeatureTest extends AbstractFeatureTest< Spot >
+class SpotTSneFeatureTest extends AbstractFeatureTest< Spot >
 {
 	private SpotTSneFeature spotTSneFeature;
 
@@ -69,7 +69,7 @@ public class SpotTSneFeatureTest extends AbstractFeatureTest< Spot >
 	private FeatureProjectionSpec spec1;
 
 	@BeforeEach
-	public void setUp()
+	void setUp()
 	{
 		try (Context context = new Context())
 		{

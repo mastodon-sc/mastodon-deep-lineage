@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
+class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 {
 	private SpotRelativeMovementFeature spotRelativeMovementFeature;
 
@@ -68,7 +68,7 @@ public class SpotRelativeMovementFeatureTest extends AbstractFeatureTest< Spot >
 	private FeatureProjectionSpec specNorm;
 
 	@BeforeEach
-	public void setUp()
+	void setUp()
 	{
 		try (Context context = new Context())
 		{

@@ -65,7 +65,7 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
 @Disabled( "mvn test takes too long" )
-public class BranchTSneFeatureTest extends AbstractFeatureTest< BranchSpot >
+class BranchTSneFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
 	private BranchTSneFeature tSneFeature;
 
@@ -76,7 +76,7 @@ public class BranchTSneFeatureTest extends AbstractFeatureTest< BranchSpot >
 	private FeatureProjectionSpec spec1;
 
 	@BeforeEach
-	public void setUp()
+	void setUp()
 	{
 		try (Context context = new Context())
 		{

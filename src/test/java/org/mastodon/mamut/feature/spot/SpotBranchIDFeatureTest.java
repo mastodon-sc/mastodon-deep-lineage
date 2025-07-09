@@ -46,14 +46,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SpotBranchIDFeatureTest extends AbstractFeatureTest< Spot >
+class SpotBranchIDFeatureTest extends AbstractFeatureTest< Spot >
 {
 	private Feature< Spot > feature;
 
 	private final ExampleGraph2 graph = new ExampleGraph2();
 
 	@BeforeEach
-	public void setUp()
+	void setUp()
 	{
 		try (Context context = new Context())
 		{

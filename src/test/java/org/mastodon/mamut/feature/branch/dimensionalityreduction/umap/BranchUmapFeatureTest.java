@@ -61,7 +61,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
+class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
 	private BranchUmapFeature umapFeature;
 
@@ -72,7 +72,7 @@ public class BranchUmapFeatureTest extends AbstractFeatureTest< BranchSpot >
 	private FeatureProjectionSpec spec1;
 
 	@BeforeEach
-	public void setUp()
+	void setUp()
 	{
 		try (Context context = new Context())
 		{

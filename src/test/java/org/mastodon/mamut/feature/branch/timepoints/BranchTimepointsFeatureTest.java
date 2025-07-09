@@ -46,14 +46,14 @@ import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
-public class BranchTimepointsFeatureTest extends AbstractFeatureTest< BranchSpot >
+class BranchTimepointsFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
 	private Feature< BranchSpot > branchTimepointsFeature;
 
 	private final ExampleGraph2 graph = new ExampleGraph2();
 
 	@BeforeEach
-	public void setUp()
+	void setUp()
 	{
 		try (Context context = new Context())
 		{

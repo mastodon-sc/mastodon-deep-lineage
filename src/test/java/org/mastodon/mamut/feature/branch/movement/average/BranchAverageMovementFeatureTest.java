@@ -46,14 +46,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BranchAverageMovementFeatureTest extends AbstractFeatureTest< BranchSpot >
+class BranchAverageMovementFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
 	private Feature< BranchSpot > branchAverageMovementFeature;
 
 	private final ExampleGraph1 graph = new ExampleGraph1();
 
 	@BeforeEach
-	public void setUp()
+	void setUp()
 	{
 		try (Context context = new Context())
 		{
