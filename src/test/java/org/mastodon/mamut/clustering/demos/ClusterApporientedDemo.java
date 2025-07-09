@@ -126,7 +126,7 @@ public class ClusterApporientedDemo
 		// Generate random int values for the upper triangular matrix and zero the diagonal
 		for ( int i = 0; i < 10; i++ )
 			for ( int j = i; j < 10; j++ )
-				symmetricArray[ i ][ j ] = symmetricArray[ j ][ i ] = j == i ? 0 : ( int ) ( random.nextDouble() * 100 );
+				symmetricArray[ i ][ j ] = symmetricArray[ j ][ i ] = j == i ? 0 : random.nextInt( 100 );
 
 		return symmetricArray;
 	}
