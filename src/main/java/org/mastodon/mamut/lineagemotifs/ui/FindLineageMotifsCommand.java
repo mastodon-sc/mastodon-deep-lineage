@@ -87,7 +87,7 @@ public class FindLineageMotifsCommand extends DynamicCommand
 	@Parameter( label = "Color" )
 	private ColorRGB color = new ColorRGB( "red" );
 
-	@SuppressWarnings( "all" )
+	@SuppressWarnings( "unused" )
 	@Parameter( label = "Similarity measure", initializer = "initSimilarityMeasureChoices", callback = "update" )
 	public String similarityMeasure = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.getName();
 
