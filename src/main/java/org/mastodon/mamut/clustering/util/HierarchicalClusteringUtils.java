@@ -110,7 +110,7 @@ public class HierarchicalClusteringUtils
 				logger.debug( "Computed {} of {} distances ({}%).", finishedTasks, numTasks, ( finishedTasks * 100 ) / numTasks );
 		} );
 		stopWatch.stop();
-		logger.debug( "Computed all distances in {} s.", stopWatch.getTime() / 1000d );
+		logger.debug( "Computed all distances in {} s.", stopWatch.getDuration().getSeconds() );
 		logger.debug( "Shape of similarity matrix: {}x{}={} entries.", distances.length, distances.length,
 				distances.length * distances.length );
 
