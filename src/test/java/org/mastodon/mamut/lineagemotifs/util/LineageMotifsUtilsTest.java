@@ -19,6 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.TestUtils;
+import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.clustering.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
@@ -136,20 +137,20 @@ class LineageMotifsUtilsTest
 			{
 				SelectionModel< Spot, Link > selectionModel = projectModel.getSelectionModel();
 
+				List< String > list =
+						Arrays.asList( "218", "219", "220", "221", "222", "223", "224", "225", "226", "227", "228", "229", "230",
+								"231", "232", "255", "256", "257", "258", "259", "260", "261", "262", "263", "264", "265", "266", "267",
+								"268", "269", "270", "271", "272", "273", "274" );
 				for ( Spot spot : model.getGraph().vertices() )
 				{
-					List< String > list =
-							Arrays.asList( "218", "219", "220", "221", "222", "223", "224", "225", "226", "227", "228", "229", "230",
-									"231", "232", "255", "256", "257", "258", "259", "260", "261", "262", "263", "264", "265", "266", "267",
-									"268", "269", "270", "271", "272", "273", "274" );
 					if ( list.contains( spot.getLabel() ) )
 						selectionModel.setSelected( spot, true );
 				}
 				BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( model, selectionModel );
-				List< Pair< BranchSpotTree, Double > > similarMotifsSpotIteration =
-						LineageMotifsUtils.getMostSimilarMotifs( motif, 20, spotRef, branchSpotRef, true );
-				List< Pair< BranchSpotTree, Double > > similarMotifsBranchSpotIteration =
-						LineageMotifsUtils.getMostSimilarMotifs( motif, 20, spotRef, branchSpotRef, false );
+				List< Pair< BranchSpotTree, Double > > similarMotifsSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif, 20,
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, spotRef, branchSpotRef, true );
+				List< Pair< BranchSpotTree, Double > > similarMotifsBranchSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif,
+						20, SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, spotRef, branchSpotRef, false );
 				boolean containsZeroValueSpotIteration = similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
 				boolean containsBranchSpot220SpotIteration =
 						similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getKey().getBranchSpot().getLabel().equals( "220" ) );

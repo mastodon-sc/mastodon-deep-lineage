@@ -30,13 +30,17 @@ package org.mastodon.mamut.lineagemotifs.ui;
 
 import java.awt.Color;
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.clustering.config.HasName;
+import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.clustering.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.clustering.ui.Notification;
-import org.mastodon.mamut.feature.CancelableImpl;
 import org.mastodon.mamut.lineagemotifs.util.InvalidLineageMotifSelection;
 import org.mastodon.mamut.lineagemotifs.util.LineageMotifsUtils;
 import org.mastodon.mamut.model.Model;
@@ -44,6 +48,7 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
+import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.thread.ThreadService;
@@ -55,7 +60,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Plugin( type = Command.class, label = "Find similar lineage modules", visible = false )
-public class FindLineageMotifsCommand extends CancelableImpl implements Command
+public class FindLineageMotifsCommand extends DynamicCommand
 {
 	private static final String TAG_SET_NAME = "Lineage Modules similar to ";
 
@@ -82,8 +87,14 @@ public class FindLineageMotifsCommand extends CancelableImpl implements Command
 	@Parameter( label = "Color" )
 	private ColorRGB color = new ColorRGB( "red" );
 
+	@SuppressWarnings( "unused" )
+	@Parameter( label = "Similarity measure", initializer = "initSimilarityMeasureChoices", callback = "update" )
+	public String similarityMeasure = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.getName();
+
 	@Parameter
 	private ThreadService threadService;
+
+	private CountDownLatch latch;
 
 	/**
 	 * This method is executed whenever a parameter changes
@@ -107,12 +118,14 @@ public class FindLineageMotifsCommand extends CancelableImpl implements Command
 			BranchSpotTree lineageMotif = LineageMotifsUtils.getSelectedMotif( model, projectModel.getSelectionModel() );
 			String lineageModuleName = LineageMotifsUtils.getLineageMotifName( lineageMotif );
 			List< Pair< BranchSpotTree, Double > > similarModules = LineageMotifsUtils.getMostSimilarMotifs( lineageMotif,
-					numberOfSimilarLineage, spotRef, branchSpotRef, !runOnBranchGraph );
+					numberOfSimilarLineage, SimilarityMeasure.getByName( similarityMeasure ), spotRef, branchSpotRef, !runOnBranchGraph );
 			int numberOfDivisions = LineageMotifsUtils.getNumberOfDivisions( lineageMotif );
 			String optionalPlural = numberOfDivisions == 1 ? "" : "s";
 			tagSetName = TAG_SET_NAME + lineageModuleName + " (" + numberOfDivisions + " division" + optionalPlural + ")";
 			LineageMotifsUtils.tagLineageMotifs( model, tagSetName, similarModules, new Color( color.getARGB() ) );
 			Notification.showSuccess( "Finding similar lineage modules finished.", "New tag set added: " + tagSetName );
+			if ( latch != null )
+				latch.countDown();
 		}
 		catch ( InvalidLineageMotifSelection e )
 		{
@@ -129,5 +142,16 @@ public class FindLineageMotifsCommand extends CancelableImpl implements Command
 			model.getGraph().releaseRef( spotRef );
 			model.getBranchGraph().releaseRef( branchSpotRef );
 		}
+	}
+
+	@SuppressWarnings( "unused" )
+	private void initSimilarityMeasureChoices()
+	{
+		getInfo().getMutableInput( "similarityMeasure", String.class ).setChoices( enumNamesAsList( SimilarityMeasure.values() ) );
+	}
+
+	static List< String > enumNamesAsList( final HasName[] values )
+	{
+		return Arrays.stream( values ).map( HasName::getName ).collect( Collectors.toList() );
 	}
 }
