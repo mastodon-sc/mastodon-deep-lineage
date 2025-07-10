@@ -166,15 +166,20 @@ public class LineageMotifsUtils
 				double distance = similarityMeasure.compute( lineageMotif, candidateMotif );
 				Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
 				// we need to iterate over the spots in the branch to get the correct spot for the candidate
+				boolean foundMatchingSpot = false;
+				Spot spot = null;
 				while ( spotIterator.hasNext() )
 				{
-					Spot spot = spotIterator.next();
+					spot = spotIterator.next();
 					if ( spot.getTimepoint() == startTimepoint )
 					{
 						candidates.put( spot, distance );
+						foundMatchingSpot = true;
 						break;
 					}
 				}
+				if ( !foundMatchingSpot && spot != null )
+					candidates.put( spot, distance ); // if we don't find a matching spot, we still add the candidate with the distance using the last spot in the branch
 				model.getBranchGraph().releaseIterator( spotIterator );
 			}
 		}
