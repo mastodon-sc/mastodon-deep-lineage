@@ -29,6 +29,7 @@
     * [Workflow](#workflow-1)
     * [Usage](#usage)
     * [Parameters](#parameters-1)
+  * [Example](#example-1)
 * [Dimensionality reduction](#dimensionality-reduction)
     * [Usage](#usage-1)
     * [Description](#description)
