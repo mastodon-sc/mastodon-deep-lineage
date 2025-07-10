@@ -31,65 +31,85 @@ package org.mastodon.mamut.lineagemotifs.ui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-
-import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.type.numeric.real.FloatType;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.clustering.treesimilarity.tree.BranchSpotTree;
-import org.mastodon.mamut.clustering.ui.ClusterLineagesCommand;
-import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
-import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
-import org.mastodon.mamut.lineagemotifs.util.LineageMotifsUtils;
+import org.mastodon.mamut.TestUtils;
+import org.mastodon.mamut.io.ProjectLoader;
 import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.SelectionModel;
 import org.scijava.Context;
 import org.scijava.thread.ThreadService;
+
+import mpicbg.spim.data.SpimDataException;
 
 class FindLinageMotifsCommandTest
 {
 
 	@Test
-	void testFindLinageMotifsCommand() throws NoSuchFieldException, IllegalAccessException
+	void testFindLinageMotifsCommand()
+			throws NoSuchFieldException, IllegalAccessException, InterruptedException, IOException, SpimDataException
 	{
 		try (final Context context = new Context())
 		{
-			final ExampleGraph2 graph2 = new ExampleGraph2();
-			final Img< FloatType > img = ArrayImgs.floats( 1, 1, 1 );
-			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, graph2.getModel(), context );
-			ThreadService threadService = context.getService( ThreadService.class );
-
-			FindLineageMotifsCommand findLineageMotifsCommand = new FindLineageMotifsCommand();
-
-			Field projectModelField = FindLineageMotifsCommand.class.getDeclaredField( "projectModel" );
-			projectModelField.setAccessible( true );
-			projectModelField.set( findLineageMotifsCommand, projectModel );
-			Field threadServiceField = FindLineageMotifsCommand.class.getDeclaredField( "threadService" );
-			threadServiceField.setAccessible( true );
-			threadServiceField.set( findLineageMotifsCommand, threadService );
-
-			SelectionModel< Spot, Link > selectionModel = projectModel.getSelectionModel();
-
-			List< String > list =
-					Arrays.asList( "218", "219", "220", "221", "222", "223", "224", "225", "226", "227", "228", "229", "230",
-							"231", "232", "255", "256", "257", "258", "259", "260", "261", "262", "263", "264", "265", "266", "267",
-							"268", "269", "270", "271", "272", "273", "274" );
-
-			for ( Spot spot : graph2.getModel().getGraph().vertices() )
+			File tempFile1 = TestUtils.getTempFileCopy(
+					"src/test/resources/org/mastodon/mamut/lineagemotifs/util/lineage_modules.mastodon", "model",
+					".mastodon"
+			);
+			ProjectModel projectModel = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
+			Model model = projectModel.getModel();
+			Spot spotRef = model.getGraph().vertexRef();
+			BranchSpot branchSpotRef = model.getBranchGraph().vertexRef();
+			try
 			{
-				if ( list.contains( spot.getLabel() ) )
-					selectionModel.setSelected( spot, true );
-			}
+				SelectionModel< Spot, Link > selectionModel = projectModel.getSelectionModel();
 
-			findLineageMotifsCommand.run();
-			assertNotNull( findLineageMotifsCommand );
-			assertEquals( 6, projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().size() );
+				List< String > list =
+						Arrays.asList( "218", "219", "220", "221", "222", "223", "224", "225", "226", "227", "228", "229", "230",
+								"231", "232", "255", "256", "257", "258", "259", "260", "261", "262", "263", "264", "265", "266", "267",
+								"268", "269", "270", "271", "272", "273", "274" );
+				for ( Spot spot : model.getGraph().vertices() )
+				{
+					if ( list.contains( spot.getLabel() ) )
+						selectionModel.setSelected( spot, true );
+				}
+				ThreadService threadService = context.getService( ThreadService.class );
+
+				FindLineageMotifsCommand findLineageMotifsCommand = new FindLineageMotifsCommand();
+
+				Field projectModelField = FindLineageMotifsCommand.class.getDeclaredField( "projectModel" );
+				projectModelField.setAccessible( true );
+				projectModelField.set( findLineageMotifsCommand, projectModel );
+				Field threadServiceField = FindLineageMotifsCommand.class.getDeclaredField( "threadService" );
+				threadServiceField.setAccessible( true );
+				threadServiceField.set( findLineageMotifsCommand, threadService );
+				CountDownLatch latch = new CountDownLatch( 1 );
+				Field latchField = FindLineageMotifsCommand.class.getDeclaredField( "latch" );
+				latchField.setAccessible( true );
+				latchField.set( findLineageMotifsCommand, latch );
+
+				findLineageMotifsCommand.run();
+
+				latch.await();
+				assertNotNull( findLineageMotifsCommand );
+				assertEquals( 11, projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().get( 2 ).getTags().size() );
+
+			}
+			finally
+			{
+				model.getGraph().releaseRef( spotRef );
+				model.getBranchGraph().releaseRef( branchSpotRef );
+				projectModel.close();
+			}
 		}
 	}
 }

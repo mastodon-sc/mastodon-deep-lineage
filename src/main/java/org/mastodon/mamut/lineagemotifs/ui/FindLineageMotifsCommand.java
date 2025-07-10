@@ -32,6 +32,7 @@ import java.awt.Color;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -93,6 +94,8 @@ public class FindLineageMotifsCommand extends DynamicCommand
 	@Parameter
 	private ThreadService threadService;
 
+	private CountDownLatch latch;
+
 	/**
 	 * This method is executed whenever a parameter changes
 	 */
@@ -121,6 +124,8 @@ public class FindLineageMotifsCommand extends DynamicCommand
 			tagSetName = TAG_SET_NAME + lineageModuleName + " (" + numberOfDivisions + " division" + optionalPlural + ")";
 			LineageMotifsUtils.tagLineageMotifs( model, tagSetName, similarModules, new Color( color.getARGB() ) );
 			Notification.showSuccess( "Finding similar lineage modules finished.", "New tag set added: " + tagSetName );
+			if ( latch != null )
+				latch.countDown();
 		}
 		catch ( InvalidLineageMotifSelection e )
 		{
