@@ -198,6 +198,7 @@ public class LineageMotifsUtils
 	 *
 	 * @param lineageMotif    the {@link BranchSpotTree} representing the lineage motif to compare
 	 * @param maxNumberOfMotifs the maximum number of similar motifs to retrieve
+	 * @param similarityMeasure the {@link SimilarityMeasure} used to compute the similarity between motifs
 	 * @param spotRef         a reference {@link Spot} used for accessing the graph's objects
 	 * @param branchRef       a reference {@link BranchSpot} associated with the branch graph
 	 * @param isSpotIteration  a boolean indicating whether to use spot iteration or branch spot iteration for similarity calculation.
