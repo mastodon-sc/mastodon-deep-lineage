@@ -503,7 +503,7 @@ Tree2
     * When opening the dataset, you should confirm that you open the project with dummy
       images. ![Dummy images](doc/clustering/dummy.png)
 * The track scheme of the demo data contains 10 lineage trees in total.
-* Demo usage: [normalized_zhang_distance.gif](doc/lineagemotifs/lineage_motif_search_workflow.gif)
+* Demo usage: [lineage_motif_search_workflow.gif](doc/lineagemotifs/lineage_motif_search_workflow.gif)
 
 ## Dimensionality reduction
 
