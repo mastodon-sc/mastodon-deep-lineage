@@ -19,6 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.TestUtils;
+import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.clustering.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
@@ -146,10 +147,10 @@ class LineageMotifsUtilsTest
 						selectionModel.setSelected( spot, true );
 				}
 				BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( model, selectionModel );
-				List< Pair< BranchSpotTree, Double > > similarMotifsSpotIteration =
-						LineageMotifsUtils.getMostSimilarMotifs( motif, 20, spotRef, branchSpotRef, true );
-				List< Pair< BranchSpotTree, Double > > similarMotifsBranchSpotIteration =
-						LineageMotifsUtils.getMostSimilarMotifs( motif, 20, spotRef, branchSpotRef, false );
+				List< Pair< BranchSpotTree, Double > > similarMotifsSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif, 20,
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, spotRef, branchSpotRef, true );
+				List< Pair< BranchSpotTree, Double > > similarMotifsBranchSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif,
+						20, SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, spotRef, branchSpotRef, false );
 				boolean containsZeroValueSpotIteration = similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
 				boolean containsBranchSpot220SpotIteration =
 						similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getKey().getBranchSpot().getLabel().equals( "220" ) );
