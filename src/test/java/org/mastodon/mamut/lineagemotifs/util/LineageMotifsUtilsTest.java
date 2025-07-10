@@ -137,12 +137,12 @@ class LineageMotifsUtilsTest
 			{
 				SelectionModel< Spot, Link > selectionModel = projectModel.getSelectionModel();
 
+				List< String > list =
+						Arrays.asList( "218", "219", "220", "221", "222", "223", "224", "225", "226", "227", "228", "229", "230",
+								"231", "232", "255", "256", "257", "258", "259", "260", "261", "262", "263", "264", "265", "266", "267",
+								"268", "269", "270", "271", "272", "273", "274" );
 				for ( Spot spot : model.getGraph().vertices() )
 				{
-					List< String > list =
-							Arrays.asList( "218", "219", "220", "221", "222", "223", "224", "225", "226", "227", "228", "229", "230",
-									"231", "232", "255", "256", "257", "258", "259", "260", "261", "262", "263", "264", "265", "266", "267",
-									"268", "269", "270", "271", "272", "273", "274" );
 					if ( list.contains( spot.getLabel() ) )
 						selectionModel.setSelected( spot, true );
 				}
