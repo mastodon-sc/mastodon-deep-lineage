@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,11 +33,15 @@ import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetStructure;
 import org.scijava.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import mpicbg.spim.data.SpimDataException;
 
 class LineageMotifsUtilsTest
 {
+
+	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final ExampleGraph1 graph1 = new ExampleGraph1();
 
@@ -126,7 +131,7 @@ class LineageMotifsUtilsTest
 		try (final Context context = new Context())
 		{
 			File tempFile1 = TestUtils.getTempFileCopy(
-					"src/test/resources/org/mastodon/mamut/lineagemotifs/util/lineage_modules.mastodon", "model",
+					"src/test/resources/org/mastodon/mamut/lineagemotifs/util/lineage_motifs_small_medium_large.mastodon", "model",
 					".mastodon"
 			);
 			ProjectModel projectModel = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
@@ -137,39 +142,79 @@ class LineageMotifsUtilsTest
 			{
 				SelectionModel< Spot, Link > selectionModel = projectModel.getSelectionModel();
 
-				List< String > list =
-						Arrays.asList( "218", "219", "220", "221", "222", "223", "224", "225", "226", "227", "228", "229", "230",
-								"231", "232", "255", "256", "257", "258", "259", "260", "261", "262", "263", "264", "265", "266", "267",
-								"268", "269", "270", "271", "272", "273", "274" );
+				List< String > list = Arrays.asList( "small a", "749", "750", "751", "752", "753", "754", "755", "756", "757", "758", "759",
+						"760", "761", "762", "763", "764", "765" );
 				for ( Spot spot : model.getGraph().vertices() )
 				{
 					if ( list.contains( spot.getLabel() ) )
 						selectionModel.setSelected( spot, true );
 				}
-				BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( model, selectionModel );
-				List< Pair< BranchSpotTree, Double > > similarMotifsSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif, 20,
-						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, spotRef, branchSpotRef, true );
-				List< Pair< BranchSpotTree, Double > > similarMotifsBranchSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif,
-						20, SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, spotRef, branchSpotRef, false );
-				boolean containsZeroValueSpotIteration = similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
-				boolean containsBranchSpot220SpotIteration =
-						similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getKey().getBranchSpot().getLabel().equals( "220" ) );
-				boolean containsZeroValueBranchSpotIteration =
-						similarMotifsBranchSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
-				boolean containsBranchSpot220BranchSpotIteration = similarMotifsBranchSpotIteration.stream()
-						.anyMatch( pair -> pair.getKey().getBranchSpot().getLabel().equals( "220" ) );
+				BranchSpotTree motifSmallA = LineageMotifsUtils.getSelectedMotif( model, selectionModel );
+				int motifLength = LineageMotifsUtils.getMotifLength( motifSmallA );
+				logger.debug( "motif length: {}", motifLength );
 
-				assertEquals( "220", motif.getBranchSpot().getLabel() );
-				assertEquals( 16, motif.getStartTimepoint() );
-				assertEquals( 30, motif.getEndTimepoint() );
+				Spot smallB = model.getGraph().vertices().stream().filter( spot -> spot.getLabel().equals( "small b" ) ).findFirst()
+						.orElseThrow( () -> new IllegalStateException( "Spot with label 'small b' not found." ) );
+				BranchSpot branchSpotSmallB = model.getBranchGraph().getBranchVertex( smallB, branchSpotRef );
+				BranchSpotTree motifSmallB = new BranchSpotTree( branchSpotSmallB, 0, 11, model );
 
-				assertEquals( 21, similarMotifsSpotIteration.size() );
-				assertTrue( containsZeroValueSpotIteration );
-				assertTrue( containsBranchSpot220SpotIteration );
+				Spot medium = model.getGraph().vertices().stream().filter( spot -> spot.getLabel().equals( "medium" ) ).findFirst()
+						.orElseThrow( () -> new IllegalStateException( "Spot with label 'medium' not found." ) );
+				BranchSpot branchSpotMedium = model.getBranchGraph().getBranchVertex( medium, branchSpotRef );
+				BranchSpotTree motifMedium = new BranchSpotTree( branchSpotMedium, 0, 20, model );
 
-				assertEquals( 18, similarMotifsBranchSpotIteration.size() );
-				assertTrue( containsZeroValueBranchSpotIteration );
-				assertTrue( containsBranchSpot220BranchSpotIteration );
+				Spot large = model.getGraph().vertices().stream().filter( spot -> spot.getLabel().equals( "large" ) ).findFirst()
+						.orElseThrow( () -> new IllegalStateException( "Spot with label 'large' not found." ) );
+				BranchSpot branchSpotLarge = model.getBranchGraph().getBranchVertex( large, branchSpotRef );
+				BranchSpotTree motifLarge = new BranchSpotTree( branchSpotLarge, 0, 30, model );
+
+				double distanceSmallASmallB = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.compute( motifSmallA, motifSmallB );
+				logger.debug( "normalized zhang, distance small a -> small b: {}", distanceSmallASmallB );
+				double distanceSmallAMedium = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.compute( motifSmallA, motifMedium );
+				logger.debug( "normalized zhang, distance small a -> medium: {}", distanceSmallAMedium );
+				double distanceSmallALarge = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.compute( motifSmallA, motifLarge );
+				logger.debug( "normalized zhang, distance small a -> large: {}", distanceSmallALarge );
+				assertTrue( distanceSmallASmallB <= distanceSmallAMedium );
+				assertTrue( distanceSmallAMedium <= distanceSmallALarge );
+
+				distanceSmallASmallB =
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifSmallB );
+				logger.debug( "normalized zhang with local normalization, distance small a -> small b: {}", distanceSmallASmallB );
+				distanceSmallAMedium =
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifMedium );
+				logger.debug( "normalized zhang with local normalization, distance small a -> medium: {}", distanceSmallAMedium );
+				distanceSmallALarge =
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifLarge );
+				logger.debug( "normalized zhang with local normalization, distance small a -> large: {}", distanceSmallALarge );
+				assertTrue( distanceSmallASmallB <= distanceSmallAMedium );
+				assertTrue( distanceSmallAMedium <= distanceSmallALarge );
+
+				distanceSmallASmallB = SimilarityMeasure.PER_BRANCH_ZHANG_DISTANCE.compute( motifSmallA, motifMedium );
+				logger.debug( "per branch zhang, distance small a -> small b: {}", distanceSmallASmallB );
+				distanceSmallAMedium = SimilarityMeasure.PER_BRANCH_ZHANG_DISTANCE.compute( motifSmallA, motifMedium );
+				logger.debug( "per branch zhang, distance small a -> medium: {}", distanceSmallAMedium );
+				distanceSmallALarge = SimilarityMeasure.PER_BRANCH_ZHANG_DISTANCE.compute( motifSmallA, motifLarge );
+				logger.debug( "per branch zhang, distance small a -> large: {}", distanceSmallALarge );
+				assertTrue( distanceSmallASmallB <= distanceSmallAMedium );
+				assertTrue( distanceSmallAMedium <= distanceSmallALarge );
+
+				distanceSmallASmallB = SimilarityMeasure.ZHANG_DISTANCE.compute( motifSmallA, motifSmallB );
+				logger.debug( "zhang, distance small a -> small b: {}", distanceSmallASmallB );
+				distanceSmallAMedium = SimilarityMeasure.ZHANG_DISTANCE.compute( motifSmallA, motifMedium );
+				logger.debug( "zhang, distance small a -> medium: {}", distanceSmallAMedium );
+				distanceSmallALarge = SimilarityMeasure.ZHANG_DISTANCE.compute( motifSmallA, motifLarge );
+				logger.debug( "zhang, distance small a -> large: {}", distanceSmallALarge );
+				assertTrue( distanceSmallASmallB <= distanceSmallAMedium );
+				assertTrue( distanceSmallAMedium <= distanceSmallALarge );
+
+				distanceSmallASmallB = SimilarityMeasure.ZHANG_DISTANCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifSmallB );
+				logger.debug( "zhang with local normalization, distance small a -> small b: {}", distanceSmallASmallB );
+				distanceSmallAMedium = SimilarityMeasure.ZHANG_DISTANCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifMedium );
+				logger.debug( "zhang with local normalization, distance small a -> medium: {}", distanceSmallAMedium );
+				distanceSmallALarge = SimilarityMeasure.ZHANG_DISTANCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifLarge );
+				logger.debug( "zhang with local normalization, distance small a -> large: {}", distanceSmallALarge );
+				assertTrue( distanceSmallASmallB <= distanceSmallAMedium );
+				assertTrue( distanceSmallAMedium <= distanceSmallALarge );
 			}
 			finally
 			{
@@ -226,5 +271,65 @@ class LineageMotifsUtilsTest
 		assertEquals( tag1.label(), model.getTagSetModel().getVertexTags().tags( tagSet ).get( graph2.spot10 ).label() );
 		assertEquals( tag2.label(), model.getTagSetModel().getVertexTags().tags( tagSet ).get( graph2.spot11 ).label() );
 		assertEquals( tag2.label(), model.getTagSetModel().getVertexTags().tags( tagSet ).get( graph2.spot13 ).label() );
+	}
+
+	@Test
+	void testGetSimilarMotifs() throws IOException, SpimDataException
+	{
+		try (final Context context = new Context())
+		{
+			File tempFile1 = TestUtils.getTempFileCopy(
+					"src/test/resources/org/mastodon/mamut/lineagemotifs/util/lineage_modules.mastodon", "model",
+					".mastodon"
+			);
+			ProjectModel projectModel = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
+			Model model = projectModel.getModel();
+			Spot spotRef = model.getGraph().vertexRef();
+			BranchSpot branchSpotRef = model.getBranchGraph().vertexRef();
+			try
+			{
+				SelectionModel< Spot, Link > selectionModel = projectModel.getSelectionModel();
+
+				List< String > list =
+						Arrays.asList( "218", "219", "220", "221", "222", "223", "224", "225", "226", "227", "228", "229", "230",
+								"231", "232", "255", "256", "257", "258", "259", "260", "261", "262", "263", "264", "265", "266", "267",
+								"268", "269", "270", "271", "272", "273", "274" );
+				for ( Spot spot : model.getGraph().vertices() )
+				{
+					if ( list.contains( spot.getLabel() ) )
+						selectionModel.setSelected( spot, true );
+				}
+				BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( model, selectionModel );
+				List< Pair< BranchSpotTree, Double > > similarMotifsSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif, 20,
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, spotRef, branchSpotRef, true );
+				List< Pair< BranchSpotTree, Double > > similarMotifsBranchSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif,
+						20, SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, spotRef, branchSpotRef, false );
+				boolean containsZeroValueSpotIteration = similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
+				boolean containsBranchSpot220SpotIteration =
+						similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getKey().getBranchSpot().getLabel().equals( "220" ) );
+				boolean containsZeroValueBranchSpotIteration =
+						similarMotifsBranchSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
+				boolean containsBranchSpot220BranchSpotIteration = similarMotifsBranchSpotIteration.stream()
+						.anyMatch( pair -> pair.getKey().getBranchSpot().getLabel().equals( "220" ) );
+
+				assertEquals( "220", motif.getBranchSpot().getLabel() );
+				assertEquals( 16, motif.getStartTimepoint() );
+				assertEquals( 30, motif.getEndTimepoint() );
+
+				assertEquals( 21, similarMotifsSpotIteration.size() );
+				assertTrue( containsZeroValueSpotIteration );
+				assertTrue( containsBranchSpot220SpotIteration );
+
+				assertEquals( 18, similarMotifsBranchSpotIteration.size() );
+				assertTrue( containsZeroValueBranchSpotIteration );
+				assertTrue( containsBranchSpot220BranchSpotIteration );
+			}
+			finally
+			{
+				model.getGraph().releaseRef( spotRef );
+				model.getBranchGraph().releaseRef( branchSpotRef );
+				projectModel.close();
+			}
+		}
 	}
 }
