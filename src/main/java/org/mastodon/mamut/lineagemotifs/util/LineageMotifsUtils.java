@@ -130,7 +130,7 @@ public class LineageMotifsUtils
 					int endTimepoint = startTimepoint + motifLength;
 					BranchSpot branchSpot = model.getBranchGraph().getBranchVertex( spot, branchRef );
 					BranchSpotTree candidateMotif = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
-					double distance = similarityMeasure.compute( lineageMotif, candidateMotif );
+					double distance = similarityMeasure.compute( lineageMotif, candidateMotif, 1d );
 					candidates.put( spot, distance );
 				}
 			} );
@@ -163,7 +163,7 @@ public class LineageMotifsUtils
 			{
 				int endTimepoint = startTimepoint + motifLength;
 				BranchSpotTree candidateMotif = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
-				double distance = similarityMeasure.compute( lineageMotif, candidateMotif );
+				double distance = similarityMeasure.compute( lineageMotif, candidateMotif, 1d );
 				Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
 				// we need to iterate over the spots in the branch to get the correct spot for the candidate
 				boolean foundMatchingSpot = false;

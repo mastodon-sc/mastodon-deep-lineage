@@ -142,8 +142,8 @@ class LineageMotifsUtilsTest
 			{
 				SelectionModel< Spot, Link > selectionModel = projectModel.getSelectionModel();
 
-				List< String > list = Arrays.asList( "small a", "749", "750", "751", "752", "753", "754", "755", "756", "757", "758", "759",
-						"760", "761", "762", "763", "764", "765" );
+				List< String > list = Arrays.asList( "small a", "749", "750", "751", "752", "753", "754", "755", "756", "757", "783", "758",
+						"759", "760", "761" );
 				for ( Spot spot : model.getGraph().vertices() )
 				{
 					if ( list.contains( spot.getLabel() ) )
@@ -168,53 +168,71 @@ class LineageMotifsUtilsTest
 				BranchSpot branchSpotLarge = model.getBranchGraph().getBranchVertex( large, branchSpotRef );
 				BranchSpotTree motifLarge = new BranchSpotTree( branchSpotLarge, 0, 30, model );
 
-				double distanceSmallASmallB = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.compute( motifSmallA, motifSmallB );
+				double scaleSmallSmall = 1d;
+				double scaleSmallMedium = 1 / 2d;
+				double scaleSmallLarge = 1 / 3d;
+
+				double distanceSmallASmallB =
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.compute( motifSmallA, motifSmallB, scaleSmallSmall );
 				logger.debug( "normalized zhang, distance small a -> small b: {}", distanceSmallASmallB );
-				double distanceSmallAMedium = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.compute( motifSmallA, motifMedium );
+				double distanceSmallAMedium =
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.compute( motifSmallA, motifMedium, scaleSmallMedium );
 				logger.debug( "normalized zhang, distance small a -> medium: {}", distanceSmallAMedium );
-				double distanceSmallALarge = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.compute( motifSmallA, motifLarge );
+				double distanceSmallALarge =
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.compute( motifSmallA, motifLarge, scaleSmallLarge );
 				logger.debug( "normalized zhang, distance small a -> large: {}", distanceSmallALarge );
-				assertTrue( distanceSmallASmallB <= distanceSmallAMedium );
-				assertTrue( distanceSmallAMedium <= distanceSmallALarge );
+				assertEquals( 0, distanceSmallASmallB, 0.0001d );
+				assertEquals( 0, distanceSmallAMedium, 0.0001d );
+				assertEquals( 0, distanceSmallALarge, 0.0001d );
 
 				distanceSmallASmallB =
-						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifSmallB );
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifSmallB,
+								scaleSmallSmall );
 				logger.debug( "normalized zhang with local normalization, distance small a -> small b: {}", distanceSmallASmallB );
 				distanceSmallAMedium =
-						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifMedium );
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifMedium,
+								scaleSmallMedium );
 				logger.debug( "normalized zhang with local normalization, distance small a -> medium: {}", distanceSmallAMedium );
 				distanceSmallALarge =
-						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifLarge );
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifLarge,
+								scaleSmallLarge );
 				logger.debug( "normalized zhang with local normalization, distance small a -> large: {}", distanceSmallALarge );
-				assertTrue( distanceSmallASmallB <= distanceSmallAMedium );
-				assertTrue( distanceSmallAMedium <= distanceSmallALarge );
+				assertEquals( 0, distanceSmallASmallB, 0.0001d );
+				assertEquals( 0, distanceSmallAMedium, 0.0001d );
+				assertEquals( 0, distanceSmallALarge, 0.0001d );
 
-				distanceSmallASmallB = SimilarityMeasure.PER_BRANCH_ZHANG_DISTANCE.compute( motifSmallA, motifMedium );
+				distanceSmallASmallB = SimilarityMeasure.PER_BRANCH_ZHANG_DISTANCE.compute( motifSmallA, motifSmallB, scaleSmallSmall );
 				logger.debug( "per branch zhang, distance small a -> small b: {}", distanceSmallASmallB );
-				distanceSmallAMedium = SimilarityMeasure.PER_BRANCH_ZHANG_DISTANCE.compute( motifSmallA, motifMedium );
+				distanceSmallAMedium = SimilarityMeasure.PER_BRANCH_ZHANG_DISTANCE.compute( motifSmallA, motifMedium, scaleSmallMedium );
 				logger.debug( "per branch zhang, distance small a -> medium: {}", distanceSmallAMedium );
-				distanceSmallALarge = SimilarityMeasure.PER_BRANCH_ZHANG_DISTANCE.compute( motifSmallA, motifLarge );
+				distanceSmallALarge = SimilarityMeasure.PER_BRANCH_ZHANG_DISTANCE.compute( motifSmallA, motifLarge, scaleSmallLarge );
 				logger.debug( "per branch zhang, distance small a -> large: {}", distanceSmallALarge );
-				assertTrue( distanceSmallASmallB <= distanceSmallAMedium );
-				assertTrue( distanceSmallAMedium <= distanceSmallALarge );
+				assertEquals( 0, distanceSmallASmallB, 0.0001d );
+				assertEquals( 0, distanceSmallAMedium, 0.0001d );
+				assertEquals( 0, distanceSmallALarge, 0.0001d );
 
-				distanceSmallASmallB = SimilarityMeasure.ZHANG_DISTANCE.compute( motifSmallA, motifSmallB );
+				distanceSmallASmallB = SimilarityMeasure.ZHANG_DISTANCE.compute( motifSmallA, motifSmallB, scaleSmallSmall );
 				logger.debug( "zhang, distance small a -> small b: {}", distanceSmallASmallB );
-				distanceSmallAMedium = SimilarityMeasure.ZHANG_DISTANCE.compute( motifSmallA, motifMedium );
+				distanceSmallAMedium = SimilarityMeasure.ZHANG_DISTANCE.compute( motifSmallA, motifMedium, scaleSmallMedium );
 				logger.debug( "zhang, distance small a -> medium: {}", distanceSmallAMedium );
-				distanceSmallALarge = SimilarityMeasure.ZHANG_DISTANCE.compute( motifSmallA, motifLarge );
+				distanceSmallALarge = SimilarityMeasure.ZHANG_DISTANCE.compute( motifSmallA, motifLarge, scaleSmallLarge );
 				logger.debug( "zhang, distance small a -> large: {}", distanceSmallALarge );
-				assertTrue( distanceSmallASmallB <= distanceSmallAMedium );
-				assertTrue( distanceSmallAMedium <= distanceSmallALarge );
+				assertEquals( 0, distanceSmallASmallB, 0.0001d );
+				assertEquals( 0, distanceSmallAMedium, 0.0001d );
+				assertEquals( 0, distanceSmallALarge, 0.0001d );
 
-				distanceSmallASmallB = SimilarityMeasure.ZHANG_DISTANCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifSmallB );
+				distanceSmallASmallB =
+						SimilarityMeasure.ZHANG_DISTANCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifSmallB, scaleSmallSmall );
 				logger.debug( "zhang with local normalization, distance small a -> small b: {}", distanceSmallASmallB );
-				distanceSmallAMedium = SimilarityMeasure.ZHANG_DISTANCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifMedium );
+				distanceSmallAMedium =
+						SimilarityMeasure.ZHANG_DISTANCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifMedium, scaleSmallMedium );
 				logger.debug( "zhang with local normalization, distance small a -> medium: {}", distanceSmallAMedium );
-				distanceSmallALarge = SimilarityMeasure.ZHANG_DISTANCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifLarge );
+				distanceSmallALarge =
+						SimilarityMeasure.ZHANG_DISTANCE_WITH_LOCAL_NORMALIZATION.compute( motifSmallA, motifLarge, scaleSmallLarge );
 				logger.debug( "zhang with local normalization, distance small a -> large: {}", distanceSmallALarge );
-				assertTrue( distanceSmallASmallB <= distanceSmallAMedium );
-				assertTrue( distanceSmallAMedium <= distanceSmallALarge );
+				assertEquals( 0, distanceSmallASmallB, 0.0001d );
+				assertEquals( 0, distanceSmallAMedium, 0.0001d );
+				assertEquals( 0, distanceSmallALarge, 0.0001d );
 			}
 			finally
 			{
