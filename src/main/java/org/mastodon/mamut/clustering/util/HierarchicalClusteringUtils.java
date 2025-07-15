@@ -102,7 +102,7 @@ public class HierarchicalClusteringUtils
 		Parallelization.getTaskExecutor().forEach( pairs, pair -> {
 			int i = pair.getLeft();
 			int j = pair.getRight();
-			double distance = similarityMeasure.compute( trees.get( i ), trees.get( j ) );
+			double distance = similarityMeasure.compute( trees.get( i ), trees.get( j ), 1d );
 			distances[ i ][ j ] = distance;
 			distances[ j ][ i ] = distance; // symmetric
 			int finishedTasks = counter.incrementAndGet();
