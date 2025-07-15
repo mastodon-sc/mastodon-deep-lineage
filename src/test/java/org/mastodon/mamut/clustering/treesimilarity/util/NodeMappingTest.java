@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.ToDoubleBiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,13 +43,16 @@ import org.mastodon.mamut.clustering.treesimilarity.tree.SimpleTree;
 import org.mastodon.mamut.clustering.treesimilarity.tree.SimpleTreeExamples;
 import org.mastodon.mamut.clustering.treesimilarity.tree.Tree;
 import org.mastodon.mamut.clustering.treesimilarity.tree.TreeUtils;
+import org.mastodon.mamut.util.ToDoubleTriFunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class NodeMappingTest
 {
 
-	private static final ToDoubleBiFunction< Double, Double > DEFAULT_COSTS = ( o1, o2 ) -> {
+	private static final Double DEFAULT_SCALE = 1.0;
+
+	private static final ToDoubleTriFunction< Double, Double, Double > DEFAULT_COSTS = ( o1, o2, scale ) -> {
 		if ( o2 == null )
 			return o1;
 		else
@@ -142,7 +144,8 @@ class NodeMappingTest
 
 	private void testNodeMappingForward( Tree< Double > tree1, Tree< Double > tree2, double expectedCosts, String expectedMapping )
 	{
-		Map< Tree< Double >, Tree< Double > > mapping = ZhangUnorderedTreeEditDistance.nodeMapping( tree1, tree2, DEFAULT_COSTS );
+		Map< Tree< Double >, Tree< Double > > mapping =
+				ZhangUnorderedTreeEditDistance.nodeMapping( tree1, tree2, DEFAULT_COSTS, DEFAULT_SCALE );
 		assertEquals( expectedMapping, asString( mapping ) );
 		assertEquals( expectedCosts, computeCosts( tree1, tree2, mapping ), 0.0 );
 	}
@@ -165,12 +168,12 @@ class NodeMappingTest
 		double costs = 0;
 		for ( Tree< Double > subtree : TreeUtils.getAllChildren( tree1 ) )
 			if ( !keys.contains( subtree ) )
-				costs += DEFAULT_COSTS.applyAsDouble( subtree.getAttribute(), null );
+				costs += DEFAULT_COSTS.applyAsDouble( subtree.getAttribute(), null, DEFAULT_SCALE );
 		for ( Tree< Double > subtree : TreeUtils.getAllChildren( tree2 ) )
 			if ( !values.contains( subtree ) )
-				costs += DEFAULT_COSTS.applyAsDouble( subtree.getAttribute(), null );
+				costs += DEFAULT_COSTS.applyAsDouble( subtree.getAttribute(), null, DEFAULT_SCALE );
 		for ( Map.Entry< Tree< Double >, Tree< Double > > entry : mapping.entrySet() )
-			costs += DEFAULT_COSTS.applyAsDouble( entry.getKey().getAttribute(), entry.getValue().getAttribute() );
+			costs += DEFAULT_COSTS.applyAsDouble( entry.getKey().getAttribute(), entry.getValue().getAttribute(), DEFAULT_SCALE );
 		return costs;
 	}
 
