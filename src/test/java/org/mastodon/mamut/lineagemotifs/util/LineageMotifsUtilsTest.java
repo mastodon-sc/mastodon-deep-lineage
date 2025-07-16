@@ -249,7 +249,7 @@ class LineageMotifsUtilsTest
 	void testGetLineageMotifName()
 	{
 		BranchSpotTree motif = new BranchSpotTree( graph2.branchSpotA, 1, 5, graph2.getModel() );
-		String name = LineageMotifsUtils.getLineageMotifName( motif );
+		String name = motif.getStartSpotName();
 		assertEquals( "1", name );
 	}
 

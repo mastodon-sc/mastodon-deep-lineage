@@ -19,7 +19,6 @@ import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.RefDoubleHashMap;
 import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstIterator;
-import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
 import org.mastodon.mamut.clustering.config.SimilarityMeasure;
 import org.mastodon.mamut.clustering.treesimilarity.tree.BranchSpotTree;
 import org.mastodon.mamut.model.Link;
@@ -293,7 +292,7 @@ public class LineageMotifsUtils
 			final List< Map.Entry< String, Integer > > tagsAndColors =
 					indexedMotifs.stream()
 							.map( indexedMotif -> Pair.of(
-									TAG_NAME + getLineageMotifName( indexedMotif.motifAndDistance.getKey() ) + " (distance: "
+									TAG_NAME + indexedMotif.motifAndDistance.getKey().getStartSpotName() + " (distance: "
 											+ String.format( "%.2f", indexedMotif.motifAndDistance.getValue() ) + ")",
 									colors.get( colorIndex.getAndIncrement() ).getRGB() ) )
 							.collect( Collectors.toList() );
@@ -344,17 +343,6 @@ public class LineageMotifsUtils
 					}
 					model.getBranchGraph().releaseIterator( spotIterator );
 				} );
-	}
-
-	/**
-	 * Retrieves the name of a lineage motif based on its first spot's label at the start timepoint.
-	 *
-	 * @param lineageMotif the {@link BranchSpotTree} representing the lineage motif
-	 * @return the name of the lineage motif as a {@link String}, or a default name if no label is found
-	 */
-	public static String getLineageMotifName( final BranchSpotTree lineageMotif )
-	{
-		return lineageMotif.getRootSpot().getLabel();
 	}
 
 	private static class IndexedMotif
