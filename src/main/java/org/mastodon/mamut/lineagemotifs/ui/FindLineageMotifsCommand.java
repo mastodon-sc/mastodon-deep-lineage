@@ -94,7 +94,7 @@ public class FindLineageMotifsCommand extends DynamicCommand
 	@Parameter
 	private ThreadService threadService;
 
-	private CountDownLatch latch;
+	private CountDownLatch latch; // used in a unit test to wait for the command to finish
 
 	/**
 	 * This method is executed whenever a parameter changes
