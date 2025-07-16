@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.clustering.treesimilarity.tree;
 
+import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
 import org.mastodon.mamut.clustering.config.HasName;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
@@ -204,6 +205,19 @@ public class BranchSpotTree implements Tree< Double >, HasName
 			model.getBranchGraph().releaseIterator( spotIterator );
 		}
 		return divisionCount.get();
+	}
+
+	/**
+	 * Calculates the depth branch spot defining the this BranchSpotTree in the branch graph, i.e. the number of divisions within the branch graph starting from its root.
+	 * @return the depth of the branch spot in the branch graph
+	 */
+	public int getGraphDepth()
+	{
+		InverseDepthFirstIterator< BranchSpot, BranchLink > iterator = new InverseDepthFirstIterator<>( model.getBranchGraph() );
+		iterator.reset( getBranchSpot() );
+		AtomicInteger depth = new AtomicInteger( 0 );
+		iterator.forEachRemaining( bs -> depth.incrementAndGet() );
+		return depth.get();
 	}
 
 	/**
