@@ -108,10 +108,11 @@ public class LineageMotifsUtils
 	 * @param lineageMotif the {@link BranchSpotTree} representing the given lineage motif
 	 * @param branchRef a reference to the branch graph
 	 * @param similarityMeasure the {@link SimilarityMeasure} to use for calculating the similarity
+	 * @param scaleFactor a scaling factor (i.e. in time) to apply to the similarity measure
 	 * @return a {@link RefDoubleMap} of {@link Spot}s and their respective similarity to the given lineage motif
 	 */
 	static RefDoubleMap< Spot > getMotifSimilarityBySpotIteration( final BranchSpotTree lineageMotif,
-			final SimilarityMeasure similarityMeasure, final BranchSpot branchRef )
+			final SimilarityMeasure similarityMeasure, final BranchSpot branchRef, final double scaleFactor )
 	{
 		Model model = lineageMotif.getModel();
 		final int motifLength = lineageMotif.getDuration();
@@ -129,7 +130,7 @@ public class LineageMotifsUtils
 					int endTimepoint = startTimepoint + motifLength;
 					BranchSpot branchSpot = model.getBranchGraph().getBranchVertex( spot, branchRef );
 					BranchSpotTree candidateMotif = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
-					double distance = similarityMeasure.compute( lineageMotif, candidateMotif, 1d );
+					double distance = similarityMeasure.compute( lineageMotif, candidateMotif, scaleFactor );
 					candidates.put( spot, distance );
 				}
 			} );
@@ -143,10 +144,11 @@ public class LineageMotifsUtils
 	 *
 	 * @param lineageMotif the {@link BranchSpotTree} representing the given lineage module
 	 * @param similarityMeasure the {@link SimilarityMeasure} to use for calculating the similarity
+	 * @param scaleFactor a scaling factor (i.e. in time) to apply to the similarity measure
 	 * @return a {@link RefDoubleMap} of {@link Spot}s and their respective similarity to the given lineage module
 	 */
 	static RefDoubleMap< Spot > getMotifSimilarityByBranchSpotIteration( final BranchSpotTree lineageMotif,
-			final SimilarityMeasure similarityMeasure )
+			final SimilarityMeasure similarityMeasure, final double scaleFactor )
 	{
 		final int motifLength = lineageMotif.getDuration();
 		int moduleStartTimepoint = lineageMotif.getStartTimepoint();
@@ -162,7 +164,7 @@ public class LineageMotifsUtils
 			{
 				int endTimepoint = startTimepoint + motifLength;
 				BranchSpotTree candidateMotif = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, model );
-				double distance = similarityMeasure.compute( lineageMotif, candidateMotif, 1d );
+				double distance = similarityMeasure.compute( lineageMotif, candidateMotif, scaleFactor );
 				Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( branchSpot );
 				// we need to iterate over the spots in the branch to get the correct spot for the candidate
 				boolean foundMatchingSpot = false;
@@ -193,6 +195,7 @@ public class LineageMotifsUtils
 	 * @param lineageMotif    the {@link BranchSpotTree} representing the lineage motif to compare
 	 * @param maxNumberOfMotifs the maximum number of similar motifs to retrieve
 	 * @param similarityMeasure the {@link SimilarityMeasure} used to compute the similarity between motifs
+	 * @param scaleFactor      a scaling factor (i.e. in time) to apply to the similarity measure
 	 * @param spotRef         a reference {@link Spot} used for accessing the graph's objects
 	 * @param branchRef       a reference {@link BranchSpot} associated with the branch graph
 	 * @param isSpotIteration  a boolean indicating whether to use spot iteration or branch spot iteration for similarity calculation.
@@ -200,15 +203,15 @@ public class LineageMotifsUtils
 	 * @return a {@link List} of {@link BranchSpotTree} objects representing the most similar lineage motifs, including their similarity scores.
 	 */
 	public static List< Pair< BranchSpotTree, Double > > getMostSimilarMotifs( final BranchSpotTree lineageMotif,
-			int maxNumberOfMotifs, final SimilarityMeasure similarityMeasure, final Spot spotRef, final BranchSpot branchRef,
-			boolean isSpotIteration )
+			int maxNumberOfMotifs, final SimilarityMeasure similarityMeasure, final double scaleFactor, final Spot spotRef,
+			final BranchSpot branchRef, boolean isSpotIteration )
 	{
 		int motifLength = lineageMotif.getDuration();
 		RefDoubleMap< Spot > candidates;
 		if ( isSpotIteration )
-			candidates = getMotifSimilarityBySpotIteration( lineageMotif, similarityMeasure, branchRef );
+			candidates = getMotifSimilarityBySpotIteration( lineageMotif, similarityMeasure, branchRef, scaleFactor );
 		else
-			candidates = getMotifSimilarityByBranchSpotIteration( lineageMotif, similarityMeasure );
+			candidates = getMotifSimilarityByBranchSpotIteration( lineageMotif, similarityMeasure, scaleFactor );
 
 		Model model = lineageMotif.getModel();
 		RefPool< Spot > refPool = model.getGraph().vertices().getRefPool();
