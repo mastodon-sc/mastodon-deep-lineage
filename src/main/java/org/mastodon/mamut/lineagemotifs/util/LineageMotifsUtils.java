@@ -115,7 +115,7 @@ public class LineageMotifsUtils
 			final SimilarityMeasure similarityMeasure, final BranchSpot branchRef )
 	{
 		Model model = lineageMotif.getModel();
-		final int motifLength = getMotifLength( lineageMotif );
+		final int motifLength = lineageMotif.getDuration();
 		RefDoubleMap< Spot > candidates = new RefDoubleHashMap<>( model.getGraph().vertices().getRefPool(), Double.MAX_VALUE );
 		final int maxTimepoint = TreeUtils.getMaxTimepoint( model );
 		RefSet< Spot > roots = RootFinder.getRoots( model.getGraph() );
@@ -149,7 +149,7 @@ public class LineageMotifsUtils
 	static RefDoubleMap< Spot > getMotifSimilarityByBranchSpotIteration( final BranchSpotTree lineageMotif,
 			final SimilarityMeasure similarityMeasure )
 	{
-		final int motifLength = getMotifLength( lineageMotif );
+		final int motifLength = lineageMotif.getDuration();
 		int moduleStartTimepoint = lineageMotif.getStartTimepoint();
 		int firstDivisionTimepoint = lineageMotif.getBranchSpot().getTimepoint();
 		int timepointsUntilFirstDivision = firstDivisionTimepoint - moduleStartTimepoint;
@@ -186,11 +186,6 @@ public class LineageMotifsUtils
 		return candidates;
 	}
 
-	static int getMotifLength( final BranchSpotTree lineageMotif )
-	{
-		return lineageMotif.getEndTimepoint() - lineageMotif.getStartTimepoint() + 1; // +1 because the end timepoint is inclusive
-	}
-
 	/**
 	 * Gets the most similar lineage motifs to a given motif based on their similarity scores.
 	 * This method identifies and ranks other motifs compared to a reference motif
@@ -209,7 +204,7 @@ public class LineageMotifsUtils
 			int maxNumberOfMotifs, final SimilarityMeasure similarityMeasure, final Spot spotRef, final BranchSpot branchRef,
 			boolean isSpotIteration )
 	{
-		int motifLength = getMotifLength( lineageMotif );
+		int motifLength = lineageMotif.getDuration();
 		RefDoubleMap< Spot > candidates;
 		if ( isSpotIteration )
 			candidates = getMotifSimilarityBySpotIteration( lineageMotif, similarityMeasure, branchRef );
