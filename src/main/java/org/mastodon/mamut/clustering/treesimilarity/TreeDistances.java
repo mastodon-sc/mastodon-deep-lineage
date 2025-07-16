@@ -115,9 +115,14 @@ public class TreeDistances
 		if ( o2 == null )
 			return o1;
 		else if ( o1 == null )
-			return o2 * scale;
+			return scale == 1d ? o2 : o2 * scale;
 		else
-			return Math.abs( o1 - o2 * scale );
+		{
+			if ( scale == 1d )
+				return Math.abs( o1 - o2 );
+			else
+				return Math.abs( o1 - o2 * scale );
+		}
 	}
 
 	/**
@@ -127,9 +132,21 @@ public class TreeDistances
 	{
 		if ( o1 == null || o2 == null )
 			return 1d;
-		else if ( o1.equals( o2 * scale ) ) // NB: avoid non-required division and possible division by zero
-			return 0d;
+
+		if ( scale == 1d )
+		{
+			if ( o1.equals( o2 ) )
+				return 0d;
+			else
+				return Math.abs( o1 - o2 ) / ( o1 + o2 );
+		}
 		else
-			return Math.abs( o1 - o2 * scale ) / ( o1 + o2 * scale );
+		{
+			double scaleTimesO2 = o2 * scale;
+			if ( o1.equals( scaleTimesO2 ) )
+				return 0d;
+			else
+				return Math.abs( o1 - scaleTimesO2 ) / ( o1 + scaleTimesO2 );
+		}
 	}
 }
