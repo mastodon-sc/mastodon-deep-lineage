@@ -231,6 +231,16 @@ public class BranchSpotTree implements Tree< Double >, HasName
 	}
 
 	/**
+	 * Retrieves the name of the first Spot that is part of this BranchSpotTree.
+	 *
+	 * @return the label of the first spot in this BranchSpotTree
+	 */
+	public String getStartSpotName()
+	{
+		return getRootSpot().getLabel();
+	}
+
+	/**
 	 * Gets the first the label for the branch spot associated with the BranchSpotTree
 	 * @return the first label of the branch spot
 	 */
