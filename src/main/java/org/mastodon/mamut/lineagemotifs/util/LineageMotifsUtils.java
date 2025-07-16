@@ -250,18 +250,8 @@ public class LineageMotifsUtils
 	static List< Pair< BranchSpotTree, Double > > getMotifsSortedByGraphDepth( final List< Pair< BranchSpotTree, Double > > motifs )
 	{
 		Map< Pair< BranchSpotTree, Double >, Integer > depthMap = new HashMap<>();
-		motifs.forEach( pair -> depthMap.put( pair, getGraphDepth( pair.getKey() ) ) );
+		motifs.forEach( pair -> depthMap.put( pair, pair.getKey().getGraphDepth() ) );
 		return motifs.stream().sorted( Comparator.comparingInt( depthMap::get ) ).collect( Collectors.toList() );
-	}
-
-	static int getGraphDepth( final BranchSpotTree motif )
-	{
-		final Model model = motif.getModel();
-		InverseDepthFirstIterator< BranchSpot, BranchLink > iterator = new InverseDepthFirstIterator<>( model.getBranchGraph() );
-		iterator.reset( motif.getBranchSpot() );
-		AtomicInteger depth = new AtomicInteger( 0 );
-		iterator.forEachRemaining( bs -> depth.incrementAndGet() );
-		return depth.get();
 	}
 
 	private static List< Pair< Integer, Double > > getSortedMotifIds( final RefDoubleMap< Spot > candidates, final RefPool< Spot > refPool )
