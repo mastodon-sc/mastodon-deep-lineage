@@ -35,11 +35,13 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.util.DepthFirstIteration;
 import org.mastodon.util.TagSetUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
@@ -170,6 +172,38 @@ public class BranchSpotTree implements Tree< Double >, HasName
 	public String getTagLabel()
 	{
 		return labelSupplier.getTagLabel();
+	}
+
+	/**
+	 * Counts the number of divisions (branching points) within this branch spot tree,
+	 * A division is identified as a spot within the tree that has more than one outgoing edge.
+	 *
+	 * @return the number of division events within the specified lineage motif,
+	 *         or 0 if no valid root spot is found or no divisions are present
+	 */
+	public int getNumberOfDivisions()
+	{
+		Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( getBranchSpot() );
+		AtomicInteger divisionCount = new AtomicInteger();
+		try
+		{
+			Spot rootSpot = getRootSpot();
+			DepthFirstIteration.forRoot( model.getGraph(), rootSpot ).forEach( iterationStep -> {
+				Spot spot = iterationStep.node();
+				if ( iterationStep.isFirstVisit() )
+				{
+					if ( spot.getTimepoint() >= getEndTimepoint() )
+						iterationStep.truncate(); // do not traverse further if the spot is after the end timepoint of the motif
+					if ( spot.outgoingEdges().size() > 1 )
+						divisionCount.incrementAndGet();
+				}
+			} );
+		}
+		finally
+		{
+			model.getBranchGraph().releaseIterator( spotIterator );
+		}
+		return divisionCount.get();
 	}
 
 	/**

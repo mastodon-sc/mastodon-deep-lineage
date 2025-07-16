@@ -51,7 +51,8 @@ class LineageMotifsUtilsTest
 	void testGetNumberOfDivisions_NoDivisions()
 	{
 		Model model = graph1.getModel();
-		int division = LineageMotifsUtils.getNumberOfDivisions( new BranchSpotTree( graph1.branchSpotA, 0, 3, model ) );
+		BranchSpotTree branchSpotTree = new BranchSpotTree( graph1.branchSpotA, 0, 3, model );
+		int division = branchSpotTree.getNumberOfDivisions();
 		assertEquals( 0, division );
 	}
 
@@ -59,7 +60,8 @@ class LineageMotifsUtilsTest
 	void testGetNumberOfDivisions_MultipleDivisions()
 	{
 		Model model = graph2.getModel();
-		int division = LineageMotifsUtils.getNumberOfDivisions( new BranchSpotTree( graph2.branchSpotA, 0, 7, model ) );
+		BranchSpotTree branchSpotTree = new BranchSpotTree( graph2.branchSpotA, 0, 7, model );
+		int division = branchSpotTree.getNumberOfDivisions();
 		assertEquals( 2, division );
 	}
 
