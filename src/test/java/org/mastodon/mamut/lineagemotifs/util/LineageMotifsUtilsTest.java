@@ -321,9 +321,9 @@ class LineageMotifsUtilsTest
 				}
 				BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( model, selectionModel );
 				List< Pair< BranchSpotTree, Double > > similarMotifsSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif, 20,
-						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, spotRef, branchSpotRef, true );
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, 1d, spotRef, branchSpotRef, true );
 				List< Pair< BranchSpotTree, Double > > similarMotifsBranchSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif,
-						20, SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, spotRef, branchSpotRef, false );
+						20, SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, 1d, spotRef, branchSpotRef, false );
 				boolean containsZeroValueSpotIteration = similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
 				boolean containsBranchSpot220SpotIteration =
 						similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getKey().getBranchSpot().getLabel().equals( "220" ) );
