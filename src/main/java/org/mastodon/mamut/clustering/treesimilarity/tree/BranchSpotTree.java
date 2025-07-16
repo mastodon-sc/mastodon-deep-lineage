@@ -221,6 +221,16 @@ public class BranchSpotTree implements Tree< Double >, HasName
 	}
 
 	/**
+	 * Gets the duration of this BranchSpotTree.
+	 * It is the number of timepoints that are covered by this branch spot tree (inclusive).
+	 * @return the duration of the branch spot tree in timepoints
+	 */
+	public int getDuration()
+	{
+		return getEndTimepoint() - getStartTimepoint() + 1; // +1 because the end timepoint is inclusive
+	}
+
+	/**
 	 * Gets the first the label for the branch spot associated with the BranchSpotTree
 	 * @return the first label of the branch spot
 	 */

@@ -152,7 +152,7 @@ class LineageMotifsUtilsTest
 						selectionModel.setSelected( spot, true );
 				}
 				BranchSpotTree motifSmallA = LineageMotifsUtils.getSelectedMotif( model, selectionModel );
-				int motifLength = LineageMotifsUtils.getMotifLength( motifSmallA );
+				int motifLength = motifSmallA.getDuration();
 				logger.debug( "motif length: {}", motifLength );
 
 				Spot smallB = model.getGraph().vertices().stream().filter( spot -> spot.getLabel().equals( "small b" ) ).findFirst()
