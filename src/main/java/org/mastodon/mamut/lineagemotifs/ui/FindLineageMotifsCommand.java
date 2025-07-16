@@ -94,7 +94,7 @@ public class FindLineageMotifsCommand extends DynamicCommand
 	@Parameter
 	private ThreadService threadService;
 
-	private CountDownLatch latch;
+	private CountDownLatch latch; // used in a unit test to wait for the command to finish
 
 	/**
 	 * This method is executed whenever a parameter changes
@@ -116,12 +116,13 @@ public class FindLineageMotifsCommand extends DynamicCommand
 		try
 		{
 			BranchSpotTree lineageMotif = LineageMotifsUtils.getSelectedMotif( model, projectModel.getSelectionModel() );
-			String lineageModuleName = LineageMotifsUtils.getLineageMotifName( lineageMotif );
-			List< Pair< BranchSpotTree, Double > > similarModules = LineageMotifsUtils.getMostSimilarMotifs( lineageMotif,
-					numberOfSimilarLineage, SimilarityMeasure.getByName( similarityMeasure ), spotRef, branchSpotRef, !runOnBranchGraph );
-			int numberOfDivisions = LineageMotifsUtils.getNumberOfDivisions( lineageMotif );
+			String lineageMotifName = lineageMotif.getStartSpotName();
+			List< Pair< BranchSpotTree, Double > > similarModules =
+					LineageMotifsUtils.getMostSimilarMotifs( lineageMotif, numberOfSimilarLineage,
+							SimilarityMeasure.getByName( similarityMeasure ), 1d, spotRef, branchSpotRef, !runOnBranchGraph );
+			int numberOfDivisions = lineageMotif.getNumberOfDivisions();
 			String optionalPlural = numberOfDivisions == 1 ? "" : "s";
-			tagSetName = TAG_SET_NAME + lineageModuleName + " (" + numberOfDivisions + " division" + optionalPlural + ")";
+			tagSetName = TAG_SET_NAME + lineageMotifName + " (" + numberOfDivisions + " division" + optionalPlural + ")";
 			LineageMotifsUtils.tagLineageMotifs( model, tagSetName, similarModules, new Color( color.getARGB() ) );
 			Notification.showSuccess( "Finding similar lineage modules finished.", "New tag set added: " + tagSetName );
 			if ( latch != null )

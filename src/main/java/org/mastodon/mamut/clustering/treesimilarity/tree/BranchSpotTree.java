@@ -28,6 +28,7 @@
  */
 package org.mastodon.mamut.clustering.treesimilarity.tree;
 
+import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
 import org.mastodon.mamut.clustering.config.HasName;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
@@ -35,11 +36,13 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.tag.TagSetStructure;
+import org.mastodon.util.DepthFirstIteration;
 import org.mastodon.util.TagSetUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
@@ -170,6 +173,71 @@ public class BranchSpotTree implements Tree< Double >, HasName
 	public String getTagLabel()
 	{
 		return labelSupplier.getTagLabel();
+	}
+
+	/**
+	 * Counts the number of divisions (branching points) within this branch spot tree,
+	 * A division is identified as a spot within the tree that has more than one outgoing edge.
+	 *
+	 * @return the number of division events within the specified lineage motif,
+	 *         or 0 if no valid root spot is found or no divisions are present
+	 */
+	public int getNumberOfDivisions()
+	{
+		Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( getBranchSpot() );
+		AtomicInteger divisionCount = new AtomicInteger();
+		try
+		{
+			Spot rootSpot = getRootSpot();
+			DepthFirstIteration.forRoot( model.getGraph(), rootSpot ).forEach( iterationStep -> {
+				Spot spot = iterationStep.node();
+				if ( iterationStep.isFirstVisit() )
+				{
+					if ( spot.getTimepoint() >= getEndTimepoint() )
+						iterationStep.truncate(); // do not traverse further if the spot is after the end timepoint of the motif
+					if ( spot.outgoingEdges().size() > 1 )
+						divisionCount.incrementAndGet();
+				}
+			} );
+		}
+		finally
+		{
+			model.getBranchGraph().releaseIterator( spotIterator );
+		}
+		return divisionCount.get();
+	}
+
+	/**
+	 * Calculates the depth branch spot defining the this BranchSpotTree in the branch graph, i.e. the number of divisions within the branch graph starting from its root.
+	 * @return the depth of the branch spot in the branch graph
+	 */
+	public int getGraphDepth()
+	{
+		InverseDepthFirstIterator< BranchSpot, BranchLink > iterator = new InverseDepthFirstIterator<>( model.getBranchGraph() );
+		iterator.reset( getBranchSpot() );
+		AtomicInteger depth = new AtomicInteger( 0 );
+		iterator.forEachRemaining( bs -> depth.incrementAndGet() );
+		return depth.get();
+	}
+
+	/**
+	 * Gets the duration of this BranchSpotTree.
+	 * It is the number of timepoints that are covered by this branch spot tree (inclusive).
+	 * @return the duration of the branch spot tree in timepoints
+	 */
+	public int getDuration()
+	{
+		return getEndTimepoint() - getStartTimepoint() + 1; // +1 because the end timepoint is inclusive
+	}
+
+	/**
+	 * Retrieves the name of the first Spot that is part of this BranchSpotTree.
+	 *
+	 * @return the label of the first spot in this BranchSpotTree
+	 */
+	public String getStartSpotName()
+	{
+		return getRootSpot().getLabel();
 	}
 
 	/**

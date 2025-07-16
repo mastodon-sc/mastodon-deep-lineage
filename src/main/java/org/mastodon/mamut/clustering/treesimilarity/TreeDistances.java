@@ -30,9 +30,9 @@ package org.mastodon.mamut.clustering.treesimilarity;
 
 import org.mastodon.mamut.clustering.treesimilarity.tree.Tree;
 import org.mastodon.mamut.clustering.treesimilarity.tree.TreeUtils;
+import org.mastodon.mamut.util.ToDoubleTriFunction;
 
 import javax.annotation.Nullable;
-import java.util.function.ToDoubleBiFunction;
 
 /**
  * Utility class for calculating distances between trees.
@@ -51,14 +51,16 @@ public class TreeDistances
 	 *
 	 * @see <a href="https://gitlab.inria.fr/mosaic/treex/-/blob/master/test/test_analysis/test_zhang_labeled_trees.py?ref_type=heads#L99">treex library</a>
 	 */
-	public static final ToDoubleBiFunction< Double, Double > LOCAL_ABSOLUTE_COST_FUNCTION = TreeDistances::localAbsoluteCostFunction;
+	public static final ToDoubleTriFunction< Double, Double, Double > LOCAL_ABSOLUTE_COST_FUNCTION =
+			TreeDistances::localAbsoluteCostFunction;
 
 	/**
 	 * Cost function as used in Guignard et al. 2020. It returns the normalized absolute difference between two attributes or 1 if one attribute is {@code null}.
 	 *
 	 * @see <a href="https://www.science.org/doi/suppl/10.1126/science.aar5663/suppl_file/aar5663_guignard_sm.pdf">Guignard et al. (2020) Page 38-39</a>
 	 */
-	public static final ToDoubleBiFunction< Double, Double > LOCAL_NORMALIZED_COST_FUNCTION = TreeDistances::localNormalizedCostFunction;
+	public static final ToDoubleTriFunction< Double, Double, Double > LOCAL_NORMALIZED_COST_FUNCTION =
+			TreeDistances::localNormalizedCostFunction;
 
 	/**
 	 * Calculates the normalized Zhang edit distance between two labeled unordered trees.
@@ -73,14 +75,14 @@ public class TreeDistances
 	 * @return The normalized Zhang edit distance between tree1 and tree2.
 	 */
 	public static < T > double normalizedDistance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
-			final ToDoubleBiFunction< T, T > costFunction )
+			final ToDoubleTriFunction< T, T, T > costFunction, final T scale )
 	{
-		double denominator = ZhangUnorderedTreeEditDistance.distance( tree1, null, costFunction )
-				+ ZhangUnorderedTreeEditDistance.distance( null, tree2, costFunction );
+		double denominator = ZhangUnorderedTreeEditDistance.distance( tree1, null, costFunction, scale )
+				+ ZhangUnorderedTreeEditDistance.distance( null, tree2, costFunction, scale );
 		// NB: avoid division by zero. Two empty trees are considered equal and also two trees with zero edit distance are considered equal.
 		if ( denominator == 0 )
 			return 0;
-		return ZhangUnorderedTreeEditDistance.distance( tree1, tree2, costFunction ) / denominator;
+		return ZhangUnorderedTreeEditDistance.distance( tree1, tree2, costFunction, scale ) / denominator;
 	}
 
 	/**
@@ -96,38 +98,55 @@ public class TreeDistances
 	 * @return The average Zhang edit distance between tree1 and tree2.
 	 */
 	public static < T > double averageDistance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
-			final ToDoubleBiFunction< T, T > costFunction )
+			final ToDoubleTriFunction< T, T, T > costFunction, final T scale )
 	{
 		double denominator = ( double ) TreeUtils.size( tree1 ) + ( double ) TreeUtils.size( tree2 );
 		// NB: avoid division by zero. Two empty trees are considered equal.
 		if ( denominator == 0 )
 			return 0;
-		return ZhangUnorderedTreeEditDistance.distance( tree1, tree2, costFunction ) / denominator;
+		return ZhangUnorderedTreeEditDistance.distance( tree1, tree2, costFunction, scale ) / denominator;
 	}
 
 	/**
 	 * @see <a href="https://gitlab.inria.fr/mosaic/treex/-/blob/master/test/test_analysis/test_zhang_labeled_trees.py?ref_type=heads#L99">treex library</a>
 	 */
-	private static Double localAbsoluteCostFunction( final Double o1, final Double o2 )
+	private static Double localAbsoluteCostFunction( final Double o1, final Double o2, final Double scale )
 	{
 		if ( o2 == null )
 			return o1;
 		else if ( o1 == null )
-			return o2;
+			return scale == 1d ? o2 : o2 * scale;
 		else
-			return Math.abs( o1 - o2 );
+		{
+			if ( scale == 1d )
+				return Math.abs( o1 - o2 );
+			else
+				return Math.abs( o1 - o2 * scale );
+		}
 	}
 
 	/**
 	 * @see <a href="https://www.science.org/doi/suppl/10.1126/science.aar5663/suppl_file/aar5663_guignard_sm.pdf">Guignard et al. (2020) Page 38</a>
 	 */
-	private static Double localNormalizedCostFunction( final Double o1, final Double o2 )
+	private static Double localNormalizedCostFunction( final Double o1, final Double o2, final Double scale )
 	{
 		if ( o1 == null || o2 == null )
 			return 1d;
-		else if ( o1.equals( o2 ) ) // NB: avoid non-required division and possible division by zero
-			return 0d;
+
+		if ( scale == 1d )
+		{
+			if ( o1.equals( o2 ) )
+				return 0d;
+			else
+				return Math.abs( o1 - o2 ) / ( o1 + o2 );
+		}
 		else
-			return Math.abs( o1 - o2 ) / ( o1 + o2 );
+		{
+			double scaleTimesO2 = o2 * scale;
+			if ( o1.equals( scaleTimesO2 ) )
+				return 0d;
+			else
+				return Math.abs( o1 - scaleTimesO2 ) / ( o1 + scaleTimesO2 );
+		}
 	}
 }
