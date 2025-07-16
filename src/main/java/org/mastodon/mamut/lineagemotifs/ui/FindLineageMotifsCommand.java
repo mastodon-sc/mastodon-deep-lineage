@@ -119,7 +119,7 @@ public class FindLineageMotifsCommand extends DynamicCommand
 			String lineageModuleName = LineageMotifsUtils.getLineageMotifName( lineageMotif );
 			List< Pair< BranchSpotTree, Double > > similarModules = LineageMotifsUtils.getMostSimilarMotifs( lineageMotif,
 					numberOfSimilarLineage, SimilarityMeasure.getByName( similarityMeasure ), spotRef, branchSpotRef, !runOnBranchGraph );
-			int numberOfDivisions = LineageMotifsUtils.getNumberOfDivisions( lineageMotif );
+			int numberOfDivisions = lineageMotif.getNumberOfDivisions();
 			String optionalPlural = numberOfDivisions == 1 ? "" : "s";
 			tagSetName = TAG_SET_NAME + lineageModuleName + " (" + numberOfDivisions + " division" + optionalPlural + ")";
 			LineageMotifsUtils.tagLineageMotifs( model, tagSetName, similarModules, new Color( color.getARGB() ) );

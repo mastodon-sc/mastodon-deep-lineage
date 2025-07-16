@@ -372,41 +372,6 @@ public class LineageMotifsUtils
 		return lineageMotif.getRootSpot().getLabel();
 	}
 
-	/**
-	 * Counts the number of divisions (branching points) in a given lineage motif
-	 * represented by a {@link BranchSpotTree} within the time interval of the motif, using the provided {@link Model}.
-	 * A division is identified as a spot within the motif that has more than one outgoing edge.
-	 *
-	 * @param lineageMotif the {@link BranchSpotTree} representing the lineage motif to analyze
-	 * @return the number of division events within the specified lineage motif,
-	 *         or 0 if no valid root spot is found or no divisions are present
-	 */
-	public static int getNumberOfDivisions( final BranchSpotTree lineageMotif )
-	{
-		Model model = lineageMotif.getModel();
-		Iterator< Spot > spotIterator = model.getBranchGraph().vertexBranchIterator( lineageMotif.getBranchSpot() );
-		AtomicInteger divisionCount = new AtomicInteger();
-		try
-		{
-			Spot rootSpot = lineageMotif.getRootSpot();
-			DepthFirstIteration.forRoot( model.getGraph(), rootSpot ).forEach( iterationStep -> {
-				Spot spot = iterationStep.node();
-				if ( iterationStep.isFirstVisit() )
-				{
-					if ( spot.getTimepoint() >= lineageMotif.getEndTimepoint() )
-						iterationStep.truncate(); // do not traverse further if the spot is after the end timepoint of the motif
-					if ( spot.outgoingEdges().size() > 1 )
-						divisionCount.incrementAndGet();
-				}
-			} );
-		}
-		finally
-		{
-			model.getBranchGraph().releaseIterator( spotIterator );
-		}
-		return divisionCount.get();
-	}
-
 	private static class IndexedMotif
 	{
 		Pair< BranchSpotTree, Double > motifAndDistance;
