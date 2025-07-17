@@ -32,9 +32,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
+import org.mastodon.graph.Graph;
 import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.plugin.MamutPlugin;
@@ -56,6 +59,7 @@ import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -75,17 +79,23 @@ public class GraphMLExportPlugin extends AbstractContextual implements MamutPlug
 
 	private static final String EXPORT_SELECTED_BRANCH_GRAPH = "Export selected branches to GraphML (one file)";
 
+	private static final String EXPORT_SELECTED_GRAPH = "Export selected spots to GraphML (one file)";
+
 	private static final String EXPORT_LINEAGES = "Export tracks to GraphML (one file per track)";
 
 	private static final String[] EXPORT_BRANCH_GRAPH_KEYS = { "ctrl G" };
 
 	private static final String[] EXPORT_SELECTED_BRANCH_GRAPH_KEYS = { "ctrl shift G" };
 
+	private static final String[] EXPORT_SELECTED_GRAPH_KEYS = { "ctrl shift S" };
+
 	private static final String[] EXPORT_LINEAGES_KEYS = { "ctrl alt G" };
 
 	private final AbstractNamedAction exportBranchGraph;
 
 	private final AbstractNamedAction exportSelectedBranchGraph;
+
+	private final AbstractNamedAction exportSelectedGraph;
 
 	private final AbstractNamedAction exportLineages;
 
@@ -94,6 +104,7 @@ public class GraphMLExportPlugin extends AbstractContextual implements MamutPlug
 	{
 		exportBranchGraph = new RunnableAction( EXPORT_BRANCH_GRAPH, this::exportBranchGraph );
 		exportSelectedBranchGraph = new RunnableAction( EXPORT_SELECTED_BRANCH_GRAPH, this::exportSelectedBranchGraph );
+		exportSelectedGraph = new RunnableAction( EXPORT_SELECTED_GRAPH, this::exportSelectedGraph );
 		exportLineages = new RunnableAction( EXPORT_LINEAGES, this::exportLineages );
 	}
 
@@ -109,7 +120,8 @@ public class GraphMLExportPlugin extends AbstractContextual implements MamutPlug
 		return Collections.singletonList( MamutMenuBuilder.fileMenu(
 				menu( "Export",
 						menu( "Export to GraphML (branches)",
-								item( EXPORT_BRANCH_GRAPH ), item( EXPORT_SELECTED_BRANCH_GRAPH ), item( EXPORT_LINEAGES ) ) ) ) );
+								item( EXPORT_BRANCH_GRAPH ), item( EXPORT_SELECTED_BRANCH_GRAPH ), item( EXPORT_LINEAGES ) ),
+						menu( "Export to GraphML (individual spots)", item( EXPORT_SELECTED_GRAPH ) ) ) ) );
 	}
 
 	@Override
@@ -117,6 +129,7 @@ public class GraphMLExportPlugin extends AbstractContextual implements MamutPlug
 	{
 		actions.namedAction( exportBranchGraph, EXPORT_BRANCH_GRAPH_KEYS );
 		actions.namedAction( exportSelectedBranchGraph, EXPORT_SELECTED_BRANCH_GRAPH_KEYS );
+		actions.namedAction( exportSelectedGraph, EXPORT_SELECTED_GRAPH_KEYS );
 		actions.namedAction( exportLineages, EXPORT_LINEAGES_KEYS );
 	}
 
@@ -142,7 +155,7 @@ public class GraphMLExportPlugin extends AbstractContextual implements MamutPlug
 		logger.debug( "Selected branch spots: {}", selectedBranchSpots.size() );
 		logger.debug( "Selected branch links: {}", selectedBranchLinks.size() );
 
-		// Export the selected spots and their links to a GraphML file
+		// Export the selected branch spots and their links to a GraphML file
 		GraphMLUtils.exportBranches( selectedBranchSpots, selectedBranchLinks, file );
 	}
 
@@ -165,6 +178,12 @@ public class GraphMLExportPlugin extends AbstractContextual implements MamutPlug
 	private void exportBranchGraph()
 	{
 		chooseFileAndExport( this::exportModelBranchGraph, GraphMLExportPlugin::getFileFromFileChooser );
+	}
+
+	private void exportSelectedGraph()
+	{
+		chooseFileAndExport( file -> GraphMLUtils.exportSelectedSpotsAndLinks( projectModel, file ),
+				GraphMLExportPlugin::getFileFromFileChooser );
 	}
 
 	private void exportSelectedBranchGraph()
@@ -220,6 +239,7 @@ public class GraphMLExportPlugin extends AbstractContextual implements MamutPlug
 					"Exports selected branches of branch graph to one graphml file." );
 			descriptions.add( EXPORT_LINEAGES, EXPORT_LINEAGES_KEYS,
 					"Export all tracks (i.e. roots and downward lineage) to one GraphML file per track." );
+			descriptions.add( EXPORT_SELECTED_GRAPH, EXPORT_SELECTED_GRAPH_KEYS, "Exports selected spots and links to one graphml file." );
 		}
 	}
 }
