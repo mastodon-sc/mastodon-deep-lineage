@@ -57,7 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Command to find similar lineage modules based on a selected lineage
  */
 @Plugin( type = Command.class, label = "Find similar lineage modules", visible = false )
 public class FindLineageMotifsCommand extends DynamicCommand
