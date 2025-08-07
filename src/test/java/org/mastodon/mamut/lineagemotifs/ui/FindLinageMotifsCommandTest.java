@@ -93,9 +93,7 @@ class FindLinageMotifsCommandTest
 				threadServiceField.setAccessible( true );
 				threadServiceField.set( findLineageMotifsCommand, threadService );
 				CountDownLatch latch = new CountDownLatch( 1 );
-				Field latchField = FindLineageMotifsCommand.class.getDeclaredField( "latch" );
-				latchField.setAccessible( true );
-				latchField.set( findLineageMotifsCommand, latch );
+				findLineageMotifsCommand.latch = latch;
 
 				findLineageMotifsCommand.run();
 
