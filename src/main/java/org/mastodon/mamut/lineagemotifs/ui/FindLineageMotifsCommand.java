@@ -91,6 +91,9 @@ public class FindLineageMotifsCommand extends DynamicCommand
 	@Parameter( label = "Similarity measure", initializer = "initSimilarityMeasureChoices", callback = "update" )
 	public String similarityMeasure = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.getName();
 
+	@Parameter( label = "Run on branch graph", required = false, persist = false, description = "Running this command on the branch graph (recommended option) will be much faster, but a bit less accurate. Running it on the model graph will be more accurate, but slower." )
+	private boolean runOnBranchGraph = true;
+
 	@Parameter
 	private ThreadService threadService;
 
@@ -102,7 +105,7 @@ public class FindLineageMotifsCommand extends DynamicCommand
 	@Override
 	public void run()
 	{
-		threadService.run( () -> findModules( true ) );
+		threadService.run( () -> findModules( runOnBranchGraph ) );
 	}
 
 	private void findModules( boolean runOnBranchGraph )
