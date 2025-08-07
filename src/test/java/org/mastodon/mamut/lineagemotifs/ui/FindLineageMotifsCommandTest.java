@@ -52,7 +52,7 @@ import org.scijava.thread.ThreadService;
 
 import mpicbg.spim.data.SpimDataException;
 
-class FindLinageMotifsCommandTest
+class FindLineageMotifsCommandTest
 {
 
 	@Test
