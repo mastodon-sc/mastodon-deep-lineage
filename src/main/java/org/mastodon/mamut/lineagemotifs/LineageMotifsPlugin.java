@@ -37,7 +37,8 @@ import java.util.List;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.KeyConfigScopes;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.lineagemotifs.ui.FindLineageMotifsCommand;
+import org.mastodon.mamut.lineagemotifs.ui.FindLineageMotifsBasedOnImportCommand;
+import org.mastodon.mamut.lineagemotifs.ui.FindLineageMotifsBasedOnSelectionCommand;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.AbstractContextual;
@@ -57,9 +58,17 @@ public class LineageMotifsPlugin extends AbstractContextual implements MamutPlug
 {
 	private static final String FIND_LINEAGE_MOTIFS = "Find lineage motifs";
 
+	private static final String FIND_LINEAGE_MOTIFS_SELECTION = "Based on selected motif";
+
 	private static final String[] FIND_LINEAGE_MOTIFS_KEYS = { "ctrl shift L" };
 
-	private final AbstractNamedAction findLineageMotifsAction;
+	private static final String FIND_LINEAGE_MOTIFS_IMPORT = "Based on imported motif";
+
+	private static final String[] FIND_LINEAGE_MOTIFS_IMPORT_KEYS = { "ctrl shift I" };
+
+	private final AbstractNamedAction findLineageMotifsSelectionAction;
+
+	private final AbstractNamedAction findLineageMotifsImportAction;
 
 	private ProjectModel projectModel;
 
@@ -74,7 +83,8 @@ public class LineageMotifsPlugin extends AbstractContextual implements MamutPlug
 	@SuppressWarnings( "unused" )
 	public LineageMotifsPlugin()
 	{
-		findLineageMotifsAction = new RunnableAction( FIND_LINEAGE_MOTIFS, this::findLineageMotifs );
+		findLineageMotifsSelectionAction = new RunnableAction( FIND_LINEAGE_MOTIFS_SELECTION, this::findLineageMotifsSelection );
+		findLineageMotifsImportAction = new RunnableAction( FIND_LINEAGE_MOTIFS_IMPORT, this::findLineageMotifsBasedOnImport );
 	}
 
 	@Override
@@ -86,18 +96,25 @@ public class LineageMotifsPlugin extends AbstractContextual implements MamutPlug
 	@Override
 	public List< ViewMenuBuilder.MenuItem > getMenuItems()
 	{
-		return Collections.singletonList( menu( "Plugins", menu( "Lineage analysis", item( FIND_LINEAGE_MOTIFS ) ) ) );
+		return Collections.singletonList( menu( "Plugins", menu( "Lineage analysis",
+				menu( FIND_LINEAGE_MOTIFS, item( FIND_LINEAGE_MOTIFS_SELECTION ), item( FIND_LINEAGE_MOTIFS_IMPORT ) ) ) ) );
 	}
 
 	@Override
 	public void installGlobalActions( Actions actions )
 	{
-		actions.namedAction( findLineageMotifsAction, FIND_LINEAGE_MOTIFS_KEYS );
+		actions.namedAction( findLineageMotifsSelectionAction, FIND_LINEAGE_MOTIFS_KEYS );
+		actions.namedAction( findLineageMotifsImportAction, FIND_LINEAGE_MOTIFS_IMPORT_KEYS );
 	}
 
-	private void findLineageMotifs()
+	private void findLineageMotifsSelection()
 	{
-		commandService.run( FindLineageMotifsCommand.class, true, "projectModel", projectModel );
+		commandService.run( FindLineageMotifsBasedOnSelectionCommand.class, true, "projectModel", projectModel );
+	}
+
+	private void findLineageMotifsBasedOnImport()
+	{
+		commandService.run( FindLineageMotifsBasedOnImportCommand.class, true, "projectModel", projectModel );
 	}
 
 	/*
@@ -114,7 +131,8 @@ public class LineageMotifsPlugin extends AbstractContextual implements MamutPlug
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( FIND_LINEAGE_MOTIFS, FIND_LINEAGE_MOTIFS_KEYS, "Find lineage Motifs that are similar to a selected motif." );
+			descriptions.add( FIND_LINEAGE_MOTIFS_SELECTION, FIND_LINEAGE_MOTIFS_KEYS,
+					"Find lineage Motifs that are similar to a selected motif." );
 		}
 	}
 }

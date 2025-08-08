@@ -80,7 +80,7 @@ class LineageMotifsUtilsTest
 			selectionModel.setSelected( graph2.spot5, true );
 			selectionModel.setSelected( graph2.spot8, true );
 
-			BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( projectModel.getModel(), selectionModel );
+			BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( projectModel );
 
 			assertEquals( graph2.branchSpotA, motif.getBranchSpot() );
 			assertEquals( 2, motif.getStartTimepoint() );
@@ -95,11 +95,7 @@ class LineageMotifsUtilsTest
 		{
 			final Img< FloatType > img = ArrayImgs.floats( 1, 1, 1 );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, graph2.getModel(), context );
-
-			Model model = projectModel.getModel();
-			SelectionModel< Spot, Link > selectionModel = projectModel.getSelectionModel();
-			assertThrows( InvalidLineageMotifSelection.class,
-					() -> LineageMotifsUtils.getSelectedMotif( model, selectionModel ) );
+			assertThrows( InvalidLineageMotifException.class, () -> LineageMotifsUtils.getSelectedMotif( projectModel ) );
 		}
 	}
 
@@ -111,7 +107,6 @@ class LineageMotifsUtilsTest
 			final Img< FloatType > img = ArrayImgs.floats( 1, 1, 1 );
 			ProjectModel projectModel = DemoUtils.wrapAsAppModel( img, graph2.getModel(), context );
 
-			Model model = projectModel.getModel();
 			SelectionModel< Spot, Link > selectionModel = projectModel.getSelectionModel();
 			selectionModel.setSelected( graph2.spot2, true );
 			selectionModel.setSelected( graph2.spot4, true );
@@ -122,8 +117,7 @@ class LineageMotifsUtilsTest
 			selectionModel.setSelected( graph2.spot10, true );
 			selectionModel.setSelected( graph2.spot11, true );
 
-			assertThrows( InvalidLineageMotifSelection.class,
-					() -> LineageMotifsUtils.getSelectedMotif( model, selectionModel ) );
+			assertThrows( InvalidLineageMotifException.class, () -> LineageMotifsUtils.getSelectedMotif( projectModel ) );
 		}
 	}
 
@@ -151,7 +145,7 @@ class LineageMotifsUtilsTest
 					if ( list.contains( spot.getLabel() ) )
 						selectionModel.setSelected( spot, true );
 				}
-				BranchSpotTree motifSmallA = LineageMotifsUtils.getSelectedMotif( model, selectionModel );
+				BranchSpotTree motifSmallA = LineageMotifsUtils.getSelectedMotif( projectModel );
 				int motifLength = motifSmallA.getDuration();
 				logger.debug( "motif length: {}", motifLength );
 
@@ -299,7 +293,7 @@ class LineageMotifsUtilsTest
 		try (final Context context = new Context())
 		{
 			File tempFile1 = TestUtils.getTempFileCopy(
-					"src/test/resources/org/mastodon/mamut/lineagemotifs/util/lineage_modules.mastodon", "model",
+					"src/test/resources/org/mastodon/mamut/lineagemotifs/util/lineage_motifs.mastodon", "model",
 					".mastodon"
 			);
 			ProjectModel projectModel = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
@@ -319,11 +313,11 @@ class LineageMotifsUtilsTest
 					if ( list.contains( spot.getLabel() ) )
 						selectionModel.setSelected( spot, true );
 				}
-				BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( model, selectionModel );
+				BranchSpotTree motif = LineageMotifsUtils.getSelectedMotif( projectModel );
 				List< Pair< BranchSpotTree, Double > > similarMotifsSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif, 20,
-						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, 1d, spotRef, branchSpotRef, true );
+						SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, 1d, true, model );
 				List< Pair< BranchSpotTree, Double > > similarMotifsBranchSpotIteration = LineageMotifsUtils.getMostSimilarMotifs( motif,
-						20, SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, 1d, spotRef, branchSpotRef, false );
+						20, SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE, 1d, false, model );
 				boolean containsZeroValueSpotIteration = similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getValue() == 0.0 );
 				boolean containsBranchSpot220SpotIteration =
 						similarMotifsSpotIteration.stream().anyMatch( pair -> pair.getKey().getBranchSpot().getLabel().equals( "220" ) );
