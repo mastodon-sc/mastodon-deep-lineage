@@ -34,7 +34,6 @@ import org.junit.jupiter.api.Test;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
 import org.mastodon.mamut.ProjectModel;
-import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph1;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph4;
 import org.mastodon.mamut.io.importer.graphml.GraphMLImporter;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
@@ -51,7 +50,6 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -145,7 +143,7 @@ class GraphMLUtilsTest
 	}
 
 	@Test
-	void testExportSpots() throws IOException
+	void testExportSpotsAndLinks() throws IOException
 	{
 		RefSet< Spot > spots = RefCollections.createRefSet( graph4.getModel().getGraph().vertices() );
 		spots.add( graph4.spot0 );
@@ -165,7 +163,7 @@ class GraphMLUtilsTest
 		links.add( graph4.link5 );
 
 		File tempFile = Files.createTempFile( "graphml-test", "" ).toFile();
-		GraphMLUtils.exportSpots( spots, links, tempFile );
+		GraphMLUtils.exportSpotsAndLinks( spots, links, tempFile );
 
 		// read file to string - java 8 style
 		String actualContent = FileUtils.readFileToString( tempFile, StandardCharsets.UTF_8 );

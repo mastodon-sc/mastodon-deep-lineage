@@ -48,11 +48,11 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.SelectionModel;
 import org.scijava.Context;
-import org.scijava.thread.ThreadService;
+import org.scijava.command.DynamicCommand;
 
 import mpicbg.spim.data.SpimDataException;
 
-class FindLineageMotifsCommandTest
+class FindLineageMotifsBasedOnSelectionCommandTest
 {
 
 	@Test
@@ -62,7 +62,7 @@ class FindLineageMotifsCommandTest
 		try (final Context context = new Context())
 		{
 			File tempFile1 = TestUtils.getTempFileCopy(
-					"src/test/resources/org/mastodon/mamut/lineagemotifs/util/lineage_modules.mastodon", "model",
+					"src/test/resources/org/mastodon/mamut/lineagemotifs/util/lineage_motifs.mastodon", "model",
 					".mastodon"
 			);
 			ProjectModel projectModel = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
@@ -82,23 +82,21 @@ class FindLineageMotifsCommandTest
 					if ( list.contains( spot.getLabel() ) )
 						selectionModel.setSelected( spot, true );
 				}
-				ThreadService threadService = context.getService( ThreadService.class );
-
-				FindLineageMotifsCommand findLineageMotifsCommand = new FindLineageMotifsCommand();
-
-				Field projectModelField = FindLineageMotifsCommand.class.getDeclaredField( "projectModel" );
+				FindLineageMotifsBasedOnSelectionCommand findLineageMotifsBasedOnSelectionCommand =
+						new FindLineageMotifsBasedOnSelectionCommand();
+				Field projectModelField = AbstractFindLineageMotifsCommand.class.getDeclaredField( "projectModel" );
 				projectModelField.setAccessible( true );
-				projectModelField.set( findLineageMotifsCommand, projectModel );
-				Field threadServiceField = FindLineageMotifsCommand.class.getDeclaredField( "threadService" );
-				threadServiceField.setAccessible( true );
-				threadServiceField.set( findLineageMotifsCommand, threadService );
+				projectModelField.set( findLineageMotifsBasedOnSelectionCommand, projectModel );
+				Field contextField = DynamicCommand.class.getDeclaredField( "context" );
+				contextField.setAccessible( true );
+				contextField.set( findLineageMotifsBasedOnSelectionCommand, context );
 				CountDownLatch latch = new CountDownLatch( 1 );
-				findLineageMotifsCommand.latch = latch;
+				findLineageMotifsBasedOnSelectionCommand.latch = latch;
 
-				findLineageMotifsCommand.run();
+				findLineageMotifsBasedOnSelectionCommand.run();
 
 				latch.await();
-				assertNotNull( findLineageMotifsCommand );
+				assertNotNull( findLineageMotifsBasedOnSelectionCommand );
 				assertEquals( 11, projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().get( 2 ).getTags().size() );
 
 			}

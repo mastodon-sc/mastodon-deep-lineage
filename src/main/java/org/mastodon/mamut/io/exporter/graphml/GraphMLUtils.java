@@ -133,7 +133,7 @@ public class GraphMLUtils
 		try
 		{
 			// Export the selected spots and their links to a GraphML file
-			GraphMLUtils.exportSpots( selectedSpots, selectedLinks, file );
+			GraphMLUtils.exportSpotsAndLinks( selectedSpots, selectedLinks, file );
 		}
 		finally
 		{
@@ -158,7 +158,7 @@ public class GraphMLUtils
 	 * @param links the links. Only links between spots in the spot set are added to the graph.
 	 * @param file the file to write the graph to
 	 */
-	static void exportSpots( final RefSet< Spot > spots, final RefSet< Link > links, final File file )
+	static void exportSpotsAndLinks( final RefSet< Spot > spots, final RefSet< Link > links, final File file )
 	{
 		// Create a new directed graph
 		Graph< CustomLabelSpot, DefaultEdge > graph = new SimpleDirectedGraph<>( DefaultEdge.class );
