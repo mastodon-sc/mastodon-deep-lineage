@@ -17,14 +17,6 @@ public class InvalidLineageMotifException extends RuntimeException
 		this.uiMessage = uiMessage;
 	}
 
-	public InvalidLineageMotifException( String logMessage, String uiTitle, String uiMessage, Throwable cause )
-	{
-		super( logMessage, cause );
-		this.logMessage = logMessage;
-		this.uiTitle = uiTitle;
-		this.uiMessage = uiMessage;
-	}
-
 	public String getLogMessage()
 	{
 		return logMessage;
