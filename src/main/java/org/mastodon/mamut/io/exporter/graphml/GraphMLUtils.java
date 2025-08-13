@@ -161,44 +161,44 @@ public class GraphMLUtils
 	static void exportSpotsAndLinks( final RefSet< Spot > spots, final RefSet< Link > links, final File file )
 	{
 		// Create a new directed graph
-		Graph< CustomLabelSpot, DefaultEdge > graph = new SimpleDirectedGraph<>( DefaultEdge.class );
+		Graph< Spot, DefaultEdge > graph = new SimpleDirectedGraph<>( DefaultEdge.class );
 
 		// Add spots
 		for ( Spot spot : spots )
 		{
 			Spot copy = spots.createRef();
 			copy.refTo( spot );
-			graph.addVertex( new CustomLabelSpot( copy ) );
+			graph.addVertex( copy );
 		}
 		// Add links
 		for ( Link link : links )
 		{
-			CustomLabelSpot source = new CustomLabelSpot( link.getSource() );
-			CustomLabelSpot target = new CustomLabelSpot( link.getTarget() );
+			Spot source = link.getSource();
+			Spot target = link.getTarget();
 			if ( graph.containsVertex( source ) && graph.containsVertex( target ) )
 				graph.addEdge( source, target );
 		}
 
 		// Create exporter and make settings for it
-		GraphMLExporter< CustomLabelSpot, DefaultEdge > exporter = new GraphMLExporter<>();
+		GraphMLExporter< Spot, DefaultEdge > exporter = new GraphMLExporter<>();
 		exporter.setExportVertexLabels( false );
 		exporter.registerAttribute( X_ATTRIBUTE_NAME, GraphMLExporter.AttributeCategory.NODE, AttributeType.FLOAT );
 		exporter.registerAttribute( Y_ATTRIBUTE_NAME, GraphMLExporter.AttributeCategory.NODE, AttributeType.FLOAT );
 		exporter.registerAttribute( Z_ATTRIBUTE_NAME, GraphMLExporter.AttributeCategory.NODE, AttributeType.FLOAT );
 		exporter.registerAttribute( FRAME_ATTRIBUTE_NAME, GraphMLExporter.AttributeCategory.NODE, AttributeType.INT );
 		exporter.registerAttribute( LABEL_ATTRIBUTE_NAME, GraphMLExporter.AttributeCategory.NODE, AttributeType.INT );
-		exporter.setVertexAttributeProvider( customLabelSpot -> {
+		exporter.setVertexAttributeProvider( spot -> {
 			Map< String, Attribute > map = new LinkedHashMap<>();
 			double[][] covariance = new double[ 3 ][ 3 ];
-			customLabelSpot.spot.getCovariance( covariance );
-			map.put( X_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( customLabelSpot.spot.getDoublePosition( 0 ) ) );
-			map.put( Y_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( customLabelSpot.spot.getDoublePosition( 1 ) ) );
-			map.put( Z_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( customLabelSpot.spot.getDoublePosition( 2 ) ) );
-			map.put( FRAME_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( customLabelSpot.spot.getTimepoint() ) );
-			map.put( LABEL_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( customLabelSpot.spot.getInternalPoolIndex() ) );
+			spot.getCovariance( covariance );
+			map.put( X_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( spot.getDoublePosition( 0 ) ) );
+			map.put( Y_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( spot.getDoublePosition( 1 ) ) );
+			map.put( Z_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( spot.getDoublePosition( 2 ) ) );
+			map.put( FRAME_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( spot.getTimepoint() ) );
+			map.put( LABEL_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( spot.getInternalPoolIndex() ) );
 			return map;
 		} );
-		exporter.setVertexIdProvider( customLabelSpot -> String.valueOf( customLabelSpot.spot.getInternalPoolIndex() ) );
+		exporter.setVertexIdProvider( spot -> String.valueOf( spot.getInternalPoolIndex() ) );
 
 		// Export the graph to file
 		try (FileWriter fileWriter = new FileWriter( file ))
@@ -312,39 +312,6 @@ public class GraphMLUtils
 		public int hashCode()
 		{
 			return branchSpot.hashCode();
-		}
-	}
-
-	private static class CustomLabelSpot
-	{
-		private final Spot spot;
-
-		private CustomLabelSpot( final Spot spot )
-		{
-			this.spot = spot;
-		}
-
-		@Override
-		public String toString()
-		{
-			return spot.getLabel();
-		}
-
-		@Override
-		public boolean equals( Object o )
-		{
-			if ( this == o )
-				return true;
-			if ( o == null || getClass() != o.getClass() )
-				return false;
-			CustomLabelSpot that = ( CustomLabelSpot ) o;
-			return spot.equals( that.spot );
-		}
-
-		@Override
-		public int hashCode()
-		{
-			return spot.hashCode();
 		}
 	}
 }
