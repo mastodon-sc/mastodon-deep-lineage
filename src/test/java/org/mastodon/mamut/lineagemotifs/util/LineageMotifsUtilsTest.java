@@ -118,6 +118,16 @@ class LineageMotifsUtilsTest
 			selectionModel.setSelected( graph2.spot11, true );
 
 			assertThrows( InvalidLineageMotifException.class, () -> LineageMotifsUtils.getSelectedMotif( projectModel ) );
+			try
+			{
+				LineageMotifsUtils.getSelectedMotif( projectModel );
+			}
+			catch ( InvalidLineageMotifException e )
+			{
+				assertEquals( "Multiple lineage motifs (2) found. Only one is allowed.", e.getLogMessage() );
+				assertEquals( "You have selected 2 lineage motifs. Please select only one.", e.getUiMessage() );
+				assertEquals( "Multiple motifs selected", e.getUiTitle() );
+			}
 		}
 	}
 
