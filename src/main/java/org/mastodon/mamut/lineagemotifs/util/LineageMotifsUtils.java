@@ -60,8 +60,7 @@ public class LineageMotifsUtils
 	 * @return the {@link BranchSpotTree} representing the selected lineage motif
 	 * @throws InvalidLineageMotifException if the selection is invalid (e.g., no spots selected, or multiple motifs selected)
 	 */
-	public static BranchSpotTree getSelectedMotif( final ProjectModel projectModel )
-			throws InvalidLineageMotifException
+	public static BranchSpotTree getSelectedMotif( final ProjectModel projectModel ) throws InvalidLineageMotifException
 	{
 		Model model = projectModel.getModel();
 		SelectionModel< Spot, Link > selectionModel = projectModel.getSelectionModel();
@@ -368,13 +367,15 @@ public class LineageMotifsUtils
 	 * @param latch an optional {@link CountDownLatch} to signal when the tagging is complete, can be null
 	 */
 	public static void tagMotifs( final Model model, final BranchSpotTree originalMotif,
-			final List< Pair< BranchSpotTree, Double > > similarMotifs, final ColorRGB color, final CountDownLatch latch )
+			final List< Pair< BranchSpotTree, Double > > similarMotifs, final ColorRGB color, final double scaleFactor,
+			final CountDownLatch latch )
 	{
 		String tagSetName;
 		int numberOfDivisions = originalMotif.getNumberOfDivisions();
 		String lineageMotifName = originalMotif.getStartSpotName();
 		String optionalPlural = numberOfDivisions == 1 ? "" : "s";
-		tagSetName = TAG_SET_NAME + lineageMotifName + " (" + numberOfDivisions + " division" + optionalPlural + ")";
+		String optionalScale = scaleFactor == 1 ? "" : ", scaled by " + 1 / scaleFactor;
+		tagSetName = TAG_SET_NAME + lineageMotifName + " (" + numberOfDivisions + " division" + optionalPlural + optionalScale + ")";
 		LineageMotifsUtils.tagLineageMotifs( model, tagSetName, similarMotifs, new Color( color.getARGB() ) );
 		Notification.showSuccess( "Finding similar lineage motifs finished.", "New tag set added: " + tagSetName );
 		if ( latch != null )

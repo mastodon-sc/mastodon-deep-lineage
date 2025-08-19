@@ -73,7 +73,7 @@ public abstract class AbstractFindLineageMotifsCommand extends DynamicCommand
 			List< Pair< BranchSpotTree, Double > > similarMotifs = LineageMotifsUtils.getMostSimilarMotifs( lineageMotif,
 					getNumberOfSimilarLineage(), SimilarityMeasure.getByName( getSimilarityMeasure() ), getScaleFactor(), !runOnBranchGraph,
 					projectModel.getModel() );
-			LineageMotifsUtils.tagMotifs( projectModel.getModel(), lineageMotif, similarMotifs, getColor(), latch );
+			LineageMotifsUtils.tagMotifs( projectModel.getModel(), lineageMotif, similarMotifs, getColor(), getScaleFactor(), latch );
 		}
 		catch ( Exception e )
 		{
