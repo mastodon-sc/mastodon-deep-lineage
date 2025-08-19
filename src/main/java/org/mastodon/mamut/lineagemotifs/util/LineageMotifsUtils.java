@@ -120,7 +120,7 @@ public class LineageMotifsUtils
 	static RefDoubleMap< Spot > getMotifSimilarityBySpotIteration( final BranchSpotTree lineageMotif,
 			final SimilarityMeasure similarityMeasure, final BranchSpot branchRef, final double scaleFactor, final Model searchModel )
 	{
-		final int motifLength = lineageMotif.getDuration();
+		final int motifLength = ( int ) ( lineageMotif.getDuration() / scaleFactor );
 		RefDoubleMap< Spot > candidates = new RefDoubleHashMap<>( searchModel.getGraph().vertices().getRefPool(), Double.MAX_VALUE );
 		final int maxTimepoint = TreeUtils.getMaxTimepoint( searchModel );
 		RefSet< Spot > roots = RootFinder.getRoots( searchModel.getGraph() );
@@ -132,7 +132,7 @@ public class LineageMotifsUtils
 				if ( maxTimepoint - spot.getTimepoint() + 1 >= motifLength )
 				{
 					int startTimepoint = spot.getTimepoint();
-					int endTimepoint = startTimepoint + motifLength;
+					int endTimepoint = startTimepoint + motifLength + 1;
 					BranchSpot branchSpot = searchModel.getBranchGraph().getBranchVertex( spot, branchRef );
 					BranchSpotTree candidateMotif = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, searchModel );
 					double distance = similarityMeasure.compute( lineageMotif, candidateMotif, scaleFactor );
@@ -157,39 +157,53 @@ public class LineageMotifsUtils
 			final SimilarityMeasure similarityMeasure, final double scaleFactor, final Model searchModel )
 	{
 		final int motifLength = lineageMotif.getDuration();
-		int moduleStartTimepoint = lineageMotif.getStartTimepoint();
-		int firstDivisionTimepoint = lineageMotif.getBranchSpot().getTimepoint();
-		int timepointsUntilFirstDivision = firstDivisionTimepoint - moduleStartTimepoint;
+		final int motifStartTimepoint = lineageMotif.getStartTimepoint();
+		final int firstDivisionTimepoint = lineageMotif.getBranchSpot().getTimepoint();
+		final int timepointsUntilFirstDivision = ( int ) ( ( firstDivisionTimepoint - motifStartTimepoint + 1 ) / scaleFactor );
+
 		RefDoubleMap< Spot > candidates = new RefDoubleHashMap<>( searchModel.getGraph().vertices().getRefPool(), Double.MAX_VALUE );
 		final int maxTimepoint = TreeUtils.getMaxTimepoint( searchModel );
+		final MotifContext motifContext =
+				new MotifContext( lineageMotif, similarityMeasure, scaleFactor, motifLength, timepointsUntilFirstDivision );
+
 		for ( BranchSpot branchSpot : searchModel.getBranchGraph().vertices() )
 		{
-			int startTimepoint = branchSpot.getTimepoint() - timepointsUntilFirstDivision;
-			if ( maxTimepoint - startTimepoint >= motifLength )
-			{
-				int endTimepoint = startTimepoint + motifLength;
-				BranchSpotTree candidateMotif = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, searchModel );
-				double distance = similarityMeasure.compute( lineageMotif, candidateMotif, scaleFactor );
-				Iterator< Spot > spotIterator = searchModel.getBranchGraph().vertexBranchIterator( branchSpot );
-				// we need to iterate over the spots in the branch to get the correct spot for the candidate
-				boolean foundMatchingSpot = false;
-				Spot spot = null;
-				while ( spotIterator.hasNext() )
-				{
-					spot = spotIterator.next();
-					if ( spot.getTimepoint() == startTimepoint )
-					{
-						candidates.put( spot, distance );
-						foundMatchingSpot = true;
-						break;
-					}
-				}
-				if ( !foundMatchingSpot && spot != null )
-					candidates.put( spot, distance ); // if we don't find a matching spot, we still add the candidate with the distance using the last spot in the branch
-				searchModel.getBranchGraph().releaseIterator( spotIterator );
-			}
+			findBranchSpotCandidates( branchSpot, motifContext, maxTimepoint, searchModel, candidates );
 		}
 		return candidates;
+	}
+
+	private static void findBranchSpotCandidates( final BranchSpot branchSpot, final MotifContext motifContext, final int maxTimepoint,
+			final Model searchModel, final RefDoubleMap< Spot > candidates )
+	{
+		int startTimepoint = branchSpot.getTimepoint() - motifContext.timepointsUntilFirstDivision + 1;
+		int candidateMotifLength = ( int ) ( motifContext.motifLength / motifContext.scaleFactor );
+
+		if ( maxTimepoint - startTimepoint < candidateMotifLength )
+			return;
+
+		BranchSpotTree candidateMotif =
+				new BranchSpotTree( branchSpot, startTimepoint, startTimepoint + candidateMotifLength - 1, searchModel );
+
+		double distance = motifContext.similarityMeasure.compute( motifContext.lineageMotif, candidateMotif, motifContext.scaleFactor );
+		Spot candidateSpot = findCandidateSpotInBranchSpot( branchSpot, startTimepoint, searchModel );
+
+		if ( candidateSpot != null )
+			candidates.put( candidateSpot, distance );
+	}
+
+	private static Spot findCandidateSpotInBranchSpot( final BranchSpot branchSpot, final int startTimepoint, final Model searchModel )
+	{
+		Iterator< Spot > spotIterator = searchModel.getBranchGraph().vertexBranchIterator( branchSpot );
+		while ( spotIterator.hasNext() )
+		{
+			Spot spot = spotIterator.next();
+			if ( spot.getTimepoint() == startTimepoint )
+				return spot;
+		}
+		// fallback: return the first spot, if available
+		Iterator< Spot > fallback = searchModel.getBranchGraph().vertexBranchIterator( branchSpot );
+		return fallback.hasNext() ? fallback.next() : null;
 	}
 
 	/**
@@ -214,7 +228,7 @@ public class LineageMotifsUtils
 		BranchSpot branchRef = searchModel.getBranchGraph().vertexRef();
 		try
 		{
-			int motifLength = lineageMotif.getDuration();
+			int motifLength = ( int ) ( lineageMotif.getDuration() / scaleFactor );
 			RefDoubleMap< Spot > candidates;
 			if ( isSpotIteration )
 				candidates = getMotifSimilarityBySpotIteration( lineageMotif, similarityMeasure, branchRef, scaleFactor, searchModel );
@@ -226,7 +240,7 @@ public class LineageMotifsUtils
 			List< Pair< Integer, Double > > sortedMotifIds = getSortedMotifIds( candidates, refPool );
 			logger.debug( "lineage motif: {}, length: {}", lineageMotif, motifLength );
 			int addedMotifs = 0;
-			if ( searchModel.equals( lineageMotif.getModel() ) )
+			if ( searchModel.equals( lineageMotif.getModel() ) && scaleFactor == 1 ) // add the selected motif itself in case of scale equals 1
 				motifsSortedByDistance.add( Pair.of( lineageMotif, 0d ) );
 			for ( Pair< Integer, Double > entry : sortedMotifIds )
 			{
@@ -238,12 +252,11 @@ public class LineageMotifsUtils
 				if ( !lineageMotif.getBranchSpot().equals( branchSpot ) )
 				{
 					int startTimepoint = spot.getTimepoint();
-					int endTimepoint = startTimepoint + motifLength;
+					int endTimepoint = startTimepoint + motifLength - 1;
 					BranchSpotTree motif = new BranchSpotTree( branchSpot, startTimepoint, endTimepoint, searchModel );
 					motifsSortedByDistance.add( Pair.of( motif, distance ) );
 					addedMotifs++;
 				}
-
 				if ( addedMotifs >= maxNumberOfMotifs )
 					break;
 			}
@@ -258,7 +271,7 @@ public class LineageMotifsUtils
 		}
 	}
 
-	static List< Pair< BranchSpotTree, Double > > getMotifsSortedByGraphDepth( final List< Pair< BranchSpotTree, Double > > motifs )
+	private static List< Pair< BranchSpotTree, Double > > getMotifsSortedByGraphDepth( final List< Pair< BranchSpotTree, Double > > motifs )
 	{
 		Map< Pair< BranchSpotTree, Double >, Integer > depthMap = new HashMap<>();
 		motifs.forEach( pair -> depthMap.put( pair, pair.getKey().getGraphDepth() ) );
@@ -401,6 +414,29 @@ public class LineageMotifsUtils
 		{
 			this.motifAndDistance = motifAndDistance;
 			this.originalIndex = originalIndex;
+		}
+	}
+
+	private static class MotifContext
+	{
+		private final BranchSpotTree lineageMotif;
+
+		private final SimilarityMeasure similarityMeasure;
+
+		private final double scaleFactor;
+
+		private final int motifLength;
+
+		private final int timepointsUntilFirstDivision;
+
+		private MotifContext( final BranchSpotTree lineageMotif, final SimilarityMeasure similarityMeasure, final double scaleFactor,
+				final int motifLength, final int timepointsUntilFirstDivision )
+		{
+			this.lineageMotif = lineageMotif;
+			this.similarityMeasure = similarityMeasure;
+			this.scaleFactor = scaleFactor;
+			this.motifLength = motifLength;
+			this.timepointsUntilFirstDivision = timepointsUntilFirstDivision;
 		}
 	}
 }
