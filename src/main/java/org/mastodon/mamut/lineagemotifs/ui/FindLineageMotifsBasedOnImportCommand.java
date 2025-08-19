@@ -89,7 +89,7 @@ public class FindLineageMotifsBasedOnImportCommand extends AbstractFindLineageMo
 	@Override
 	protected double getScaleFactor()
 	{
-		return scaleFactor;
+		return 1d / scaleFactor;
 	}
 
 	@Override
