@@ -79,6 +79,8 @@ class StarDistDetectorTest
 			// set up the detector settings
 			Map< String, Object > settings = new HashMap<>();
 			settings.put( StarDistDetectorDescriptor.KEY_MODEL_TYPE, StarDist.ModelType.PLANT_NUCLEI_3D );
+			settings.put( StarDistDetectorDescriptor.KEY_NMS_THRESHOLD, StarDist.DEFAULT_NMS_THRESHOLD );
+			settings.put( StarDistDetectorDescriptor.KEY_PROB_THRESHOLD, StarDist.DEFAULT_PROB_THRESHOLD );
 			settings.put( DetectorKeys.KEY_MIN_TIMEPOINT, 0 );
 			settings.put( DetectorKeys.KEY_MAX_TIMEPOINT, 0 );
 			settings.put( DetectorKeys.KEY_SETUP_ID, 0 );
