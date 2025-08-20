@@ -94,7 +94,7 @@ public abstract class Segmentation implements AutoCloseable
 		if ( logger.isInfoEnabled() )
 			logger.info( "Set up environment. Path: {}. Time elapsed: {}", environment.base(), stopWatch.formatSplitTime() );
 		this.pythonWorker = environment.python();
-		// this.pythonWorker.debug( logger::info );
+		//this.pythonWorker.debug( logger::info );
 		this.inputs = new HashMap<>();
 	}
 
@@ -231,12 +231,12 @@ public abstract class Segmentation implements AutoCloseable
 
 	protected String getApposeVersion()
 	{
-		String os = System.getProperty( "os.name" ).toLowerCase();
-		if ( os.contains( "win" ) )
-			return "    - git+https://github.com/apposed/appose-python.git@dd3f49a35542a8ec1181f176d04890c317ec8182\n"; // latest commit on main branch that works on Windows
-		else
-			return "    - git+https://github.com/apposed/appose-python.git@54e0b8fe154d2b51576d34f9fd19dc2c9c56039c\n"; // latest commit on main branch that works on Linux and macOS
-		// return "    - appose==0.4.0\n";
+		return "    - appose==0.7.0\n";
+		//String os = System.getProperty( "os.name" ).toLowerCase();
+		//if ( os.contains( "win" ) )
+		//	return "    - git+https://github.com/apposed/appose-python.git@dd3f49a35542a8ec1181f176d04890c317ec8182\n"; // latest commit on main branch that works on Windows
+		//else
+		//	return "    - git+https://github.com/apposed/appose-python.git@54e0b8fe154d2b51576d34f9fd19dc2c9c56039c\n"; // latest commit on main branch that works on Linux and macOS
 	}
 
 	private static void logEnvFile( final File envFile )
