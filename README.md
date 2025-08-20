@@ -452,11 +452,13 @@ Tree2
 
 ## Lineage Motif Search
 
-* Menu Location: `Plugins > Lineage Analysis > Lineage Motif Search`
-* This command is capable of finding lineage motifs that are similar to a motif defined by a selection of the user.
-* The linage motif search operates on Mastodon's branch graph.
+* Menu Location: `Plugins > Lineage Analysis > Find lineage motifs`
+* This command is capable of finding lineage motifs that are similar to a motif defined by either a tracklet selected by
+  the user or a tracklet imported via a graph ml file.
+* The linage motif search can operate on Mastodon's branch graph or on the model graph. While using the model graph is
+  slightly more accurate, it is recommended to use the branch graph, since it is a lot faster.
 * Lineage trees are considered similar if they share a similar structure and thus represent a similar cell division
-  pattern. The structure of a lineage tree is represented by the tree topology.
+  pattern. The tree topology represents the structure of a lineage tree.
   This tree topology consists of the actual branching pattern and the cell lifetimes,
   i.e., the time points between two subsequent cell divisions.
 * The algorithm iterates over the branch graph
