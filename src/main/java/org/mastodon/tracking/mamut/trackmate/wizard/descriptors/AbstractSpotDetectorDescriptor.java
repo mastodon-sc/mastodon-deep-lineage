@@ -28,7 +28,11 @@
  */
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors;
 
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_LEVEL;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
+
 import java.awt.Font;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.swing.Icon;
@@ -36,6 +40,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import net.imagej.ops.OpService;
@@ -43,6 +50,7 @@ import net.miginfocom.swing.MigLayout;
 
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.tracking.detection.DetectorKeys;
 import org.mastodon.tracking.mamut.trackmate.Settings;
 import org.mastodon.tracking.mamut.trackmate.TrackMate;
 import org.mastodon.tracking.mamut.trackmate.wizard.Wizard;
@@ -65,6 +73,10 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 
 	private final Model previewModel;
 
+	private JSpinner level;
+
+	private JLabel levelLabel;
+
 	@Parameter
 	private OpService ops;
 
@@ -78,11 +90,37 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 		this.previewModel = new Model();
 	}
 
-	protected abstract void persistSettings();
+	protected void persistSettings()
+	{
+		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
+		detectorSettings.put( KEY_LEVEL, this.level.getValue() );
+	}
 
 	protected abstract void logSettings();
 
-	protected abstract void getSettingsAndUpdateConfigPanel();
+	protected void getSettingsAndUpdateConfigPanel()
+	{
+		// Get the values.
+		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
+
+		// Get the flow threshold.
+		final Object levelObject = detectorSettings.get( KEY_LEVEL );
+		final int levelValue;
+		if ( null == levelObject )
+			levelValue = DEFAULT_LEVEL; // default
+		else
+			levelValue = Integer.parseInt( String.valueOf( levelObject ) );
+		this.level.setValue( levelValue );
+		SpinnerModel model = this.level.getModel();
+		int setupId = ( int ) settings.values.getDetectorSettings().get( DetectorKeys.KEY_SETUP_ID );
+		int maxLevels = appModel.getSharedBdvData().getSources().get( setupId ).getSpimSource().getNumMipmapLevels() - 1;
+		if ( model instanceof SpinnerNumberModel )
+		{
+			final SpinnerNumberModel spinnerModel = ( SpinnerNumberModel ) model;
+			spinnerModel.setMaximum( maxLevels );
+		}
+		levelLabel.setText( getLevelText( maxLevels ) );
+	}
 
 	protected abstract String getDetectorName();
 
@@ -91,12 +129,25 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 	/**
 	 * Update the settings field of this descriptor with the values set on the GUI by the user.
 	 */
-	protected abstract void grabSettings();
+	protected void grabSettings()
+	{
+		if ( null == settings )
+			return;
+
+		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
+		detectorSettings.put( KEY_LEVEL, level.getValue() );
+	}
 
 	@Override
 	public void setAppModel( final ProjectModel appModel )
 	{
 		this.appModel = appModel;
+
+		if ( null == settings )
+			return;
+
+		// To display the detector settings values, either the default ones, or the one that were set previously, read these values from the TrackMate instance.
+		getSettingsAndUpdateConfigPanel();
 	}
 
 	@Override
@@ -119,12 +170,6 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 		// This method is called when the user 'enters' the config panel.
 		// Get the settings map to configure. It is updated with the values set by the user on the panel when they 'leave' the panel, cf. aboutToHidePanel().
 		this.settings = trackmate.getSettings();
-
-		if ( null == settings )
-			return;
-
-		// To display the detector settings values, either the default ones, or the one that were set previously, read these values from the TrackMate instance.
-		getSettingsAndUpdateConfigPanel();
 	}
 
 	protected class ConfigPanel extends JPanel
@@ -143,6 +188,11 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 			add( headlineLabel, "growx" );
 
 			configureDetectorSpecificFields( this );
+
+			level = new JSpinner( new SpinnerNumberModel( 0, 0, 0, 1 ) );
+			levelLabel = new JLabel( getLevelText( 0 ) );
+			add( levelLabel, "align left, wmin 200, wrap" );
+			add( level, "align left, grow" );
 
 			preview.addActionListener( e -> preview() );
 			add( preview, "align right, wrap" );
@@ -184,5 +234,11 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 				panel.preview.setEnabled( true );
 			}
 		}
+	}
+
+	private static String getLevelText( final int maxLevels )
+	{
+		return "<html>Resolution level:<br>0 ... highest (slower, more accurate)<br>" + maxLevels
+				+ " ... (faster, less accurate)</html>";
 	}
 }

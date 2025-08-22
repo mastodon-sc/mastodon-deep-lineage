@@ -93,6 +93,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 	@Override
 	protected void getSettingsAndUpdateConfigPanel()
 	{
+		super.getSettingsAndUpdateConfigPanel();
 		// Get the values.
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		// Get the model type.
@@ -170,6 +171,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 	@Override
 	protected void grabSettings()
 	{
+		super.grabSettings();
 		if ( null == settings )
 			return;
 

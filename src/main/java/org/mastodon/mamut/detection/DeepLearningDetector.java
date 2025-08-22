@@ -41,8 +41,9 @@ import net.imglib2.util.Cast;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
+import org.mastodon.mamut.util.ByteFormatter;
+import org.mastodon.mamut.util.ImgSizeUtils;
+import org.mastodon.mamut.detection.util.SpimImageProperties;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.util.LabelImageUtils;
 import org.mastodon.tracking.detection.DetectionUtil;
@@ -69,6 +70,11 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
+	/**
+	 * Represents the maximum allowable size in bytes for datasets handle via the appose java-python bridge.
+	 */
+	private static final int MAX_SIZE_IN_BYTES = Integer.MAX_VALUE - 1;
+
 	@Override
 	public void compute( final List< SourceAndConverter< ? > > sources, final ModelGraph graph )
 	{
@@ -80,14 +86,13 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		if ( !validateAndInitializeSettings() )
 			return;
 
-		Triple< Integer, Integer, Integer > settings = extractSettings( sources );
+		SpimImageProperties settings = extractSettings( sources );
 		if ( settings == null )
 			return;
 		// Now we are sure the settings are valid.
 
-		int minTimepoint = settings.getLeft();
-		int maxTimepoint = settings.getMiddle();
-		int setup = settings.getRight();
+		int minTimepoint = settings.getMinTimepoint();
+		int maxTimepoint = settings.getMaxTimepoint();
 
 		// Perform detection.
 		statusService.showStatus( "Detecting spots..." );
@@ -101,8 +106,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 				if ( isCanceled() )
 					break; // Exit but don't fail.
 
-				if ( DetectionUtil.isPresent( sources, setup, timepoint ) )
-					detectAndAddSpots( sources, graph, setup, timepoint );
+				if ( DetectionUtil.isPresent( sources, settings.getSetupId(), timepoint ) )
+					detectAndAddSpots( sources, graph, settings.getSetupId(), timepoint, settings.getResolutionLevel() );
 			}
 		}
 		catch ( Exception e )
@@ -119,12 +124,13 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		ok = true;
 	}
 
-	private Triple< Integer, Integer, Integer > extractSettings( final List< SourceAndConverter< ? > > sources )
+	private SpimImageProperties extractSettings( final List< SourceAndConverter< ? > > sources )
 	{
 		// Extract settings.
 		final int minTimepoint = ( int ) settings.get( DetectorKeys.KEY_MIN_TIMEPOINT );
 		final int maxTimepoint = ( int ) settings.get( DetectorKeys.KEY_MAX_TIMEPOINT );
 		final int setup = ( int ) settings.get( DetectorKeys.KEY_SETUP_ID );
+		final int level = ( int ) settings.get( DeepLearningDetectorKeys.KEY_LEVEL );
 
 		logger.info( "Settings contain, minTimepoint: {}, maxTimepoint: {} and setup: {}", minTimepoint, maxTimepoint, setup );
 
@@ -142,20 +148,46 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 			logger.error( "Invalid time-point range: {}", errorMessage );
 			return null;
 		}
-		return new ImmutableTriple<>( minTimepoint, maxTimepoint, setup );
+		int availableLevels = sources.get( setup ).getSpimSource().getNumMipmapLevels();
+		if ( level < 0 || level >= availableLevels )
+		{
+			errorMessage = "The parameter " + DeepLearningDetectorKeys.KEY_LEVEL
+					+ " is not in the range of available resolution levels ( 0 to " + ( availableLevels - 1 ) + "): " + level;
+			logger.error( "Invalid level: {}.", errorMessage );
+			return null;
+		}
+		return new SpimImageProperties( minTimepoint, maxTimepoint, setup, level );
 	}
 
 	private void detectAndAddSpots( final List< SourceAndConverter< ? > > sources, final ModelGraph graph, final int setup,
-			final int timepoint )
+			final int timepoint, final int level )
 	{
 		// First, get the source for the current channel (or setup) at the desired time-point. In BDV jargon, this is a source.
 		final Source< ? > source = sources.get( setup ).getSpimSource();
 
-		// level 0 is always the highest resolution.
-		final int level = 0;
-
 		// This is the 3D image of the current time-point and specified channel. It is always 3D. If the source is 2D, the 3rd dimension has a size of 1.
 		RandomAccessibleInterval< ? > image = source.getSource( timepoint, level );
+
+		long theoreticalImageSize = 0;
+		try
+		{
+			theoreticalImageSize = ImgSizeUtils.getSizeInBytes( image );
+		}
+		catch ( IllegalArgumentException e )
+		{
+			logger.info( "Could not estimate image size." );
+		}
+		if ( theoreticalImageSize > MAX_SIZE_IN_BYTES )
+		{
+			String actualSize = ByteFormatter.humanReadableByteCount( theoreticalImageSize );
+			String maxSize = ByteFormatter.humanReadableByteCount( MAX_SIZE_IN_BYTES );
+			logger.warn( "Size of image at timepoint {}, setup {} and level {} is {}, which is larger than the maximum size of {}.",
+					timepoint, setup, level, actualSize, maxSize );
+			String message = "Size of image at timepoint " + timepoint + ", setup " + setup + " and level " + level + " is " + actualSize
+					+ ", which is larger than the supported maximum size of " + maxSize
+					+ " per timepoint. Consider using a different resolution level or process only a region of interest.\n";
+			throw new InferenceException( message );
+		}
 
 		// Crop the image to the region of interest (ROI) if specified in the settings.
 		final Interval roi = ( Interval ) settings.get( DetectorKeys.KEY_ROI );
@@ -244,6 +276,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		defaultSettings.put( DetectorKeys.KEY_MIN_TIMEPOINT, DetectorKeys.DEFAULT_MIN_TIMEPOINT );
 		defaultSettings.put( DetectorKeys.KEY_MAX_TIMEPOINT, DetectorKeys.DEFAULT_MAX_TIMEPOINT );
 		defaultSettings.put( DetectorKeys.KEY_ROI, null ); // No ROI by default.
+		defaultSettings.put( DeepLearningDetectorKeys.KEY_LEVEL, DeepLearningDetectorKeys.DEFAULT_LEVEL );
 		addSpecificDefaultSettings( defaultSettings );
 		return defaultSettings;
 	}
