@@ -135,7 +135,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 
 		protected ConfigPanel()
 		{
-			setLayout( new MigLayout( "wrap 1", "[grow]", "[]20[]" ) );
+			setLayout( new MigLayout( "wrap 1", "[grow]", "[]8[]" ) );
 
 			JLabel headlineLabel = new JLabel( "Configure " + getDetectorName() + " detector" );
 			headlineLabel.setHorizontalAlignment( SwingConstants.LEFT );
