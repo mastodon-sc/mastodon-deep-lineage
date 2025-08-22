@@ -85,6 +85,7 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 	@Override
 	protected void getSettingsAndUpdateConfigPanel()
 	{
+		super.getSettingsAndUpdateConfigPanel();
 		// Get the values.
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 
@@ -175,6 +176,7 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 	@Override
 	protected void grabSettings()
 	{
+		super.grabSettings();
 		if ( null == settings )
 			return;
 
