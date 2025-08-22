@@ -93,7 +93,7 @@ public class Cellpose4Detector extends DeepLearningDetector
 		catch ( Exception e )
 		{
 			ok = false;
-			errorMessage = "Cellpose4 failed: " + e.getMessage();
+			errorMessage = " Cellpose4 failed: " + e.getMessage();
 			logger.error( "Cellpose4 failed: {}", e.getMessage() );
 			return null;
 		}
