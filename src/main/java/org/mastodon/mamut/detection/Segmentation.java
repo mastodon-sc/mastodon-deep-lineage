@@ -171,7 +171,8 @@ public abstract class Segmentation implements AutoCloseable
 		logger.debug( "Running script:\n{}", script );
 		long[] dimensions = inputImage.dimensionsAsLongArray();
 		String dimensionsAsString = Arrays.stream( dimensions ).mapToObj( String::valueOf ).collect( Collectors.joining( ", " ) );
-		logger.info( "Segmenting image with {} dimensions: ({})", inputImage.numDimensions(), dimensionsAsString );
+		logger.info( "Segmenting image with {} dimensions: ({}) of type: {}", inputImage.numDimensions(), dimensionsAsString,
+				inputImage.getType().getClass().getSimpleName() );
 		try (ShmImg< T > sharedMemoryImage = ShmImg.copyOf( inputImage ))
 		{
 			stopWatch.split();
