@@ -105,7 +105,16 @@ public abstract class Segmentation implements AutoCloseable
 		if ( logger.isInfoEnabled() )
 			logger.info( "Segmentation finished, stopping python process. Time elapsed: {}", stopWatch.formatTime() );
 		if ( pythonWorker != null )
-			pythonWorker.close();
+		{
+			try
+			{
+				pythonWorker.close();
+			}
+			catch ( Exception e )
+			{
+				logger.warn( "Could not properly close python worker: {}", e.getMessage() );
+			}
+		}
 	}
 
 	private Environment setUpEnv()
