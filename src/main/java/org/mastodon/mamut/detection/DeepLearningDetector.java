@@ -132,7 +132,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		final int setup = ( int ) settings.get( DetectorKeys.KEY_SETUP_ID );
 		final int level = ( int ) settings.get( DeepLearningDetectorKeys.KEY_LEVEL );
 
-		logger.info( "Settings contain, minTimepoint: {}, maxTimepoint: {} and setup: {}", minTimepoint, maxTimepoint, setup );
+		logger.info( "Settings contain, minTimepoint: {}, maxTimepoint: {}, setup: {} and level: {}", minTimepoint, maxTimepoint, setup,
+				level );
 
 		if ( setup < 0 || setup >= sources.size() )
 		{
