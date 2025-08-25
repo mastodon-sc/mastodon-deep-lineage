@@ -78,10 +78,7 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		diameter = new JFormattedTextField( getNumberFormatter() );
 		diameter.setColumns( 10 );
 
-		String diameterText =
-				"<html>"
-						+ "If you have a rough estimate of the size of a typical cell, enter it here. Units are in pixels.<br>"
-						+ "</html>";
+		String diameterText = "<html>If you have a rough estimate of the diameter of a typical cell (in pixels), enter it here.<br></html>";
 		JLabel diameterLabel = new JLabel( diameterText );
 		panel.add( diameterLabel, "align left, wmin 200, wrap" );
 		panel.add( diameter, "align left, grow" );
