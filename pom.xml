@@ -164,6 +164,12 @@
             <version>0.5.10</version>
         </dependency>
 
+        <!-- oshi for system / GPU information (used to limit gpu usage of cellpose) -->
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
