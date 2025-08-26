@@ -103,7 +103,6 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 		// Get the values.
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 
-		// Get the flow threshold.
 		final Object levelObject = detectorSettings.get( KEY_LEVEL );
 		final int levelValue;
 		if ( null == levelObject )
@@ -180,7 +179,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 
 		protected ConfigPanel()
 		{
-			setLayout( new MigLayout( "wrap 1", "[grow]", "[]8[]" ) );
+			setLayout( new MigLayout( "wrap 1", "[grow]", "[]5[]" ) );
 
 			JLabel headlineLabel = new JLabel( "Configure " + getDetectorName() + " detector" );
 			headlineLabel.setHorizontalAlignment( SwingConstants.LEFT );
