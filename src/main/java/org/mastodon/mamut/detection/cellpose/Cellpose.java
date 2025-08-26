@@ -104,8 +104,16 @@ public abstract class Cellpose extends Segmentation
 		return "import numpy as np" + "\n"
 				+ "from cellpose import models" + "\n"
 				+ "import appose" + "\n"
+				+ "import torch" + "\n"
 				+ "\n"
 				+ "task.update(message=\"Imports completed\")" + "\n"
+				+ "\n"
+				+ "torch.cuda.set_device(0)" + "\n" // pick GPU explicitly
+				+ "torch.cuda.set_per_process_memory_fraction(0.5, device=0)" + "\n" // cap memory usage of that GPU
+				+ "device_id = torch.cuda.current_device()" + "\n"
+				+ "device_name = torch.cuda.get_device_name(device_id)" + "\n"
+				+ "task.update(message=\"Running cellpose on GPU: \" + str(device_id) + \" (\"+device_name+\") \")" + "\n"
+				+ "\n"
 				+ "image_ndarray = image.ndarray()" + "\n"
 				+ "task.update(message=\"Image converted, Image shape: \" + \",\".join(str(dim) for dim in image.shape))" + "\n"
 				+ getLoadModelCommand()
