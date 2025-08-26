@@ -28,6 +28,7 @@
  */
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_DIAMETER;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
@@ -86,7 +87,8 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 		logger.info( String.format( "  - cell probability threshold: %s%n",
 				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
 		logger.info( String.format( "  - flow threshold: %s%n", settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
-		logger.info( String.format( "  - diameter: %s%n", settings.values.getDetectorSettings().get( KEY_DIAMETER ) ) );
+		logger.info( String.format( "  - estimated diameter: %s%n", settings.values.getDetectorSettings().get( KEY_DIAMETER ) ) );
+		logger.info( String.format( "  - resolution level: %s%n", settings.values.getDetectorSettings().get( KEY_LEVEL ) ) );
 		logger.info( String.format( "  - respect anisotropy: %s%n", settings.values.getDetectorSettings().get( KEY_RESPECT_ANISOTROPY ) ) );
 	}
 

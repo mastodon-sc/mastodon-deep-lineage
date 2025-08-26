@@ -28,6 +28,7 @@
  */
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors;
 
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
 import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_NMS_THRESHOLD;
 import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_PROB_THRESHOLD;
 
@@ -80,6 +81,9 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 	protected void logSettings()
 	{
 		logger.info( String.format( "  - model type: %s%n", settings.values.getDetectorSettings().get( KEY_MODEL_TYPE ) ) );
+		logger.info( String.format( "  - probability threshold: %s%n", settings.values.getDetectorSettings().get( KEY_PROB_THRESHOLD ) ) );
+		logger.info( String.format( "  - overlap threshold: %s%n ", settings.values.getDetectorSettings().get( KEY_NMS_THRESHOLD ) ) );
+		logger.info( String.format( "  - resolution level: %s%n ", settings.values.getDetectorSettings().get( KEY_LEVEL ) ) );
 	}
 
 	@Override
