@@ -168,6 +168,7 @@
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
+            <version>6.8.3</version>
         </dependency>
 
         <!-- Test dependencies -->
@@ -215,6 +216,10 @@
             <version>${mastodon.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
 
@@ -264,6 +269,11 @@
         <repository>
             <id>scijava.public</id>
             <url>https://maven.scijava.org/content/repositories/public/</url>
+        </repository>
+        <repository>
+            <!-- mvn central -->
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
     </repositories>
 

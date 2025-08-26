@@ -28,6 +28,8 @@
  */
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_MEMORY_FRACTION;
 import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_DIAMETER;
@@ -72,6 +74,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 	@Override
 	protected void persistSettings()
 	{
+		super.persistSettings();
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_MODEL_TYPE, modelTypeSelection.getSelectedItem() );
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, cellProbabilityThreshold.getValue() );
@@ -90,6 +93,9 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 		logger.info( String.format( "  - estimated diameter: %s%n", settings.values.getDetectorSettings().get( KEY_DIAMETER ) ) );
 		logger.info( String.format( "  - resolution level: %s%n", settings.values.getDetectorSettings().get( KEY_LEVEL ) ) );
 		logger.info( String.format( "  - respect anisotropy: %s%n", settings.values.getDetectorSettings().get( KEY_RESPECT_ANISOTROPY ) ) );
+		logger.info( String.format( "  - GPU ID: %s%n", settings.values.getDetectorSettings().get( KEY_GPU_ID ) ) );
+		logger.info(
+				String.format( "  - GPU memory fraction: %s%n", settings.values.getDetectorSettings().get( KEY_GPU_MEMORY_FRACTION ) ) );
 	}
 
 	@Override

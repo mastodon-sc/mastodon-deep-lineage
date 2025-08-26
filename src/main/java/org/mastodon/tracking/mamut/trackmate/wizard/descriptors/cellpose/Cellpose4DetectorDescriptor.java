@@ -28,6 +28,8 @@
  */
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_MEMORY_FRACTION;
 import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_DIAMETER;
@@ -60,6 +62,7 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 	@Override
 	protected void persistSettings()
 	{
+		super.persistSettings();
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, this.cellProbabilityThreshold.getValue() );
 		detectorSettings.put( KEY_FLOW_THRESHOLD, this.flowThreshold.getValue() );
@@ -71,12 +74,12 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 	{
 		logger.info( String.format( "  - cell probability threshold: %s%n",
 				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
-		logger.info( String.format( "  - flow threshold: %s%n",
-				settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
-		logger.info( String.format( "  - estimated diameter: %s%n",
-				settings.values.getDetectorSettings().get( KEY_DIAMETER ) ) );
-		logger.info( String.format( "  - resolution level: %s%n",
-				settings.values.getDetectorSettings().get( KEY_LEVEL ) ) );
+		logger.info( String.format( "  - flow threshold: %s%n", settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
+		logger.info( String.format( "  - estimated diameter: %s%n", settings.values.getDetectorSettings().get( KEY_DIAMETER ) ) );
+		logger.info( String.format( "  - resolution level: %s%n", settings.values.getDetectorSettings().get( KEY_LEVEL ) ) );
+		logger.info( String.format( "  - GPU ID: %s%n", settings.values.getDetectorSettings().get( KEY_GPU_ID ) ) );
+		logger.info(
+				String.format( "  - GPU memory fraction: %s%n", settings.values.getDetectorSettings().get( KEY_GPU_MEMORY_FRACTION ) ) );
 	}
 
 	@Override

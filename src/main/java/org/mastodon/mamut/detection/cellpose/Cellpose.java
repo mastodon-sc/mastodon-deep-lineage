@@ -48,6 +48,10 @@ public abstract class Cellpose extends Segmentation
 
 	protected boolean is3D = true;
 
+	protected int gpuID = 0;
+
+	protected double gpuMemoryFraction = 0.5d;
+
 	public static final double DEFAULT_CELLPROB_THRESHOLD = 3d;
 
 	public static final double DEFAULT_FLOW_THRESHOLD = 0.4d;
@@ -84,6 +88,16 @@ public abstract class Cellpose extends Segmentation
 		this.is3D = is3D;
 	}
 
+	public void setGpuID( final int gpuID )
+	{
+		this.gpuID = gpuID;
+	}
+
+	public void setGpuMemoryFraction( final double gpuMemoryFraction )
+	{
+		this.gpuMemoryFraction = gpuMemoryFraction;
+	}
+
 	protected String is3DParam()
 	{
 		return is3D ? "True" : "False";
@@ -92,6 +106,16 @@ public abstract class Cellpose extends Segmentation
 	protected String getDiameter()
 	{
 		return diameter > 0 ? String.valueOf( diameter ) : "None";
+	}
+
+	public int getGpuID()
+	{
+		return gpuID;
+	}
+
+	public double getGpuMemoryFraction()
+	{
+		return gpuMemoryFraction;
 	}
 
 	protected abstract String getLoadModelCommand();
@@ -108,11 +132,11 @@ public abstract class Cellpose extends Segmentation
 				+ "\n"
 				+ "task.update(message=\"Imports completed\")" + "\n"
 				+ "\n"
-				+ "torch.cuda.set_device(0)" + "\n" // pick GPU explicitly
-				+ "torch.cuda.set_per_process_memory_fraction(0.5, device=0)" + "\n" // cap memory usage of that GPU
+				+ "torch.cuda.set_device(" + getGpuID() + ")" + "\n" // pick GPU explicitly
+				+ "torch.cuda.set_per_process_memory_fraction(" + getGpuMemoryFraction() + ", device=" + getGpuID() + ")" + "\n" // cap memory usage of that GPU
 				+ "device_id = torch.cuda.current_device()" + "\n"
 				+ "device_name = torch.cuda.get_device_name(device_id)" + "\n"
-				+ "task.update(message=\"Running cellpose on GPU: \" + str(device_id) + \" (\"+device_name+\") \")" + "\n"
+				+ "task.update(message=\"Running cellpose on GPU: \" + str(device_id) + \" (\"+device_name+\")\")" + "\n"
 				+ "\n"
 				+ "image_ndarray = image.ndarray()" + "\n"
 				+ "task.update(message=\"Image converted, Image shape: \" + \",\".join(str(dim) for dim in image.shape))" + "\n"
