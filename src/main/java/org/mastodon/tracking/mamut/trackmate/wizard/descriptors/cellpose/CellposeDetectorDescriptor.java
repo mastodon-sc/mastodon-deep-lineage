@@ -28,15 +28,27 @@
  */
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
-import java.text.NumberFormat;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_GPU_MEMORY_FRACTION;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_MEMORY_FRACTION;
 
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.text.NumberFormatter;
 
+import org.apache.commons.lang.StringUtils;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDetectorDescriptor;
+
+import oshi.SystemInfo;
+import oshi.hardware.GraphicsCard;
 
 /**
  * The {@code CellposeDetectorDescriptor} is an abstract superclass for CellposeDetector descriptors.<br>
@@ -50,6 +62,10 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 	protected JSpinner flowThreshold;
 
 	protected JFormattedTextField diameter;
+
+	protected JComboBox< GpuEntry > gpuId;
+
+	protected JFormattedTextField gpuMemoryFraction;
 
 	protected abstract void addModelTypeSelection( final ConfigPanel panel );
 
@@ -75,7 +91,7 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		panel.add( flowLabel, "align left, wmin 200, wrap" );
 		panel.add( flowThreshold, "align left, grow" );
 
-		diameter = new JFormattedTextField( getNumberFormatter() );
+		diameter = new JFormattedTextField( getNumberFormatter( 0d, 1000d ) );
 		diameter.setColumns( 10 );
 
 		String diameterText = "<html>If you have a rough estimate of the diameter of a typical cell (in pixels), enter it here.<br></html>";
@@ -83,22 +99,109 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		panel.add( diameterLabel, "align left, wmin 200, wrap" );
 		panel.add( diameter, "align left, grow" );
 
+		SystemInfo si = new SystemInfo();
+		List< GraphicsCard > gpus = si.getHardware().getGraphicsCards();
+		gpuId = new JComboBox<>();
+		for ( int i = 0; i < gpus.size(); i++ )
+		{
+			gpuId.addItem( new GpuEntry( i, gpus.get( i ).getName() ) );
+		}
+		String gpuText = "<html>GPU to use for detection (if any):<br></html>";
+		JLabel gpuLabel = new JLabel( gpuText );
+		panel.add( gpuLabel, "align left, wmin 200, wrap" );
+		panel.add( gpuId, "align left, grow" );
+
+		gpuMemoryFraction = new JFormattedTextField( getNumberFormatter( 0d, 1d ) );
+		gpuMemoryFraction.setColumns( 10 );
+
+		String gpuMemText = "<html>Fraction of GPU memory to use (0.0 - 1.0):<br></html>";
+		JLabel gpuMemLabel = new JLabel( gpuMemText );
+		panel.add( gpuMemLabel, "align left, wmin 200, wrap" );
+		panel.add( gpuMemoryFraction, "align left, grow" );
+
 		addRespectAnisotropyCheckbox( panel );
 	}
 
-	private static NumberFormatter getNumberFormatter()
+	@Override
+	protected void getSettingsAndUpdateConfigPanel()
+	{
+		super.getSettingsAndUpdateConfigPanel();
+		// Get the values.
+		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
+
+		final Object gpuIdObject = detectorSettings.get( KEY_GPU_ID );
+		final int gpuIdValue;
+		if ( null == gpuIdObject )
+			gpuIdValue = DEFAULT_GPU_ID; // default
+		else
+			gpuIdValue = Integer.parseInt( String.valueOf( gpuIdObject ) );
+		this.gpuId.setSelectedIndex( gpuIdValue );
+
+		final Object gpuMemFractionObject =
+				detectorSettings.get( KEY_GPU_MEMORY_FRACTION );
+		final double gpuMemFractionValue;
+		if ( null == gpuMemFractionObject )
+			gpuMemFractionValue = DEFAULT_GPU_MEMORY_FRACTION; // default
+		else
+			gpuMemFractionValue = Double.parseDouble( String.valueOf( gpuMemFractionObject ) );
+		this.gpuMemoryFraction.setValue( gpuMemFractionValue );
+	}
+
+	@Override
+	protected void persistSettings()
+	{
+		super.persistSettings();
+		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
+		CellposeDetectorDescriptor.GpuEntry selected = ( GpuEntry ) this.gpuId.getSelectedItem();
+		if ( selected != null )
+			detectorSettings.put( KEY_GPU_ID, selected.id );
+		detectorSettings.put( KEY_GPU_MEMORY_FRACTION, this.gpuMemoryFraction.getValue() );
+	}
+
+	@Override
+	protected void grabSettings()
+	{
+		super.grabSettings();
+		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
+		CellposeDetectorDescriptor.GpuEntry selected = ( GpuEntry ) this.gpuId.getSelectedItem();
+		if ( selected != null )
+			detectorSettings.put( KEY_GPU_ID, selected.id );
+		detectorSettings.put( KEY_GPU_MEMORY_FRACTION, this.gpuMemoryFraction.getValue() );
+	}
+
+	private static NumberFormatter getNumberFormatter( final double min, final double max )
 	{
 		// Create a NumberFormat for doubles
 		NumberFormat doubleFormat = NumberFormat.getNumberInstance();
 		doubleFormat.setGroupingUsed( false ); // disables thousand separators
 
-		// Create a NumberFormatter that restricts values between 0 and 1000
+		// Create a NumberFormatter that restricts values between min and max
 		NumberFormatter numberFormatter = new NumberFormatter( doubleFormat );
 		numberFormatter.setValueClass( Double.class );
-		numberFormatter.setMinimum( 0.0 );
-		numberFormatter.setMaximum( 1000.0 );
+		numberFormatter.setMinimum( min );
+		numberFormatter.setMaximum( max );
 		numberFormatter.setAllowsInvalid( false ); // Disallow invalid input
 		numberFormatter.setCommitsOnValidEdit( true ); // Commit edits as soon as valid
 		return numberFormatter;
+	}
+
+	// Wrap GPU info in a simple model class
+	protected static class GpuEntry
+	{
+		int id;
+
+		String name;
+
+		GpuEntry( int id, String name )
+		{
+			this.id = id;
+			this.name = name;
+		}
+
+		@Override
+		public String toString()
+		{
+			return StringUtils.abbreviate( id + " – " + name, 25 );
+		}
 	}
 }

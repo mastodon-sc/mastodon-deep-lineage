@@ -71,6 +71,7 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 	@Override
 	protected void persistSettings()
 	{
+		super.persistSettings();
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_MODEL_TYPE, this.modelTypeSelection.getSelectedItem() );
 		detectorSettings.put( KEY_PROB_THRESHOLD, this.probThreshold.getValue() );

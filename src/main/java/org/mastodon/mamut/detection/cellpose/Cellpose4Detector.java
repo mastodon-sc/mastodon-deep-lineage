@@ -28,6 +28,12 @@
  */
 package org.mastodon.mamut.detection.cellpose;
 
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_GPU_MEMORY_FRACTION;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_LEVEL;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_MEMORY_FRACTION;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
@@ -44,6 +50,7 @@ import net.imglib2.util.Cast;
 
 import org.mastodon.mamut.detection.DeepLearningDetector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
+import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
@@ -74,9 +81,12 @@ public class Cellpose4Detector extends DeepLearningDetector
 	@Override
 	protected boolean validateSettings( final StringBuilder errorHolder )
 	{
-		return checkParameter( settings, KEY_CELL_PROBABILITY_THRESHOLD, Double.class, errorHolder )
-				&& checkParameter( settings, KEY_FLOW_THRESHOLD, Double.class, errorHolder )
-				&& checkParameter( settings, KEY_DIAMETER, Double.class, errorHolder );
+		return checkParameter( settings, Cellpose4DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD, Double.class, errorHolder )
+				&& checkParameter( settings, Cellpose4DetectorDescriptor.KEY_FLOW_THRESHOLD, Double.class, errorHolder )
+				&& checkParameter( settings, Cellpose4DetectorDescriptor.KEY_DIAMETER, Double.class, errorHolder )
+				&& checkParameter( settings, KEY_LEVEL, Integer.class, errorHolder )
+				&& checkParameter( settings, KEY_GPU_ID, Integer.class, errorHolder )
+				&& checkParameter( settings, KEY_GPU_MEMORY_FRACTION, Double.class, errorHolder );
 	}
 
 	@Override
@@ -88,6 +98,8 @@ public class Cellpose4Detector extends DeepLearningDetector
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );
 			cellpose.setDiameter( ( double ) settings.get( KEY_DIAMETER ) );
+			cellpose.setGpuID( ( int ) settings.get( KEY_GPU_ID ) );
+			cellpose.setGpuMemoryFraction( ( double ) settings.get( KEY_GPU_MEMORY_FRACTION ) );
 			return cellpose.segmentImage( Cast.unchecked( image ) );
 		}
 		catch ( Exception e )
@@ -105,6 +117,9 @@ public class Cellpose4Detector extends DeepLearningDetector
 		defaultSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, DEFAULT_CELLPROB_THRESHOLD );
 		defaultSettings.put( KEY_FLOW_THRESHOLD, DEFAULT_FLOW_THRESHOLD );
 		defaultSettings.put( KEY_DIAMETER, Cellpose.DEFAULT_DIAMETER );
+		defaultSettings.put( KEY_LEVEL, DEFAULT_LEVEL );
+		defaultSettings.put( KEY_GPU_ID, DEFAULT_GPU_ID );
+		defaultSettings.put( KEY_GPU_MEMORY_FRACTION, DEFAULT_GPU_MEMORY_FRACTION );
 	}
 
 	@Override
