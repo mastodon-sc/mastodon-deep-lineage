@@ -49,6 +49,8 @@ import org.mastodon.mamut.util.LabelImageUtils;
 import org.mastodon.tracking.detection.DetectionUtil;
 import org.mastodon.tracking.detection.DetectorKeys;
 import org.mastodon.tracking.mamut.detection.AbstractSpotDetectorOp;
+import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +71,9 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 {
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
+	@Parameter
+	protected Context context;
 
 	/**
 	 * Represents the maximum allowable size in bytes for datasets handle via the appose java-python bridge.
@@ -198,6 +203,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 			image = Views.interval( image, roi );
 		}
 
+		System.err.println(); // show the FIJI console
 		final Img< ? > segmentation = performSegmentation( image, source.getVoxelDimensions().dimensionsAsDoubleArray() );
 
 		if ( segmentation != null )
