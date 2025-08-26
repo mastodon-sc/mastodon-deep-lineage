@@ -34,8 +34,8 @@ import org.mastodon.mamut.detection.Segmentation;
 
 /**
  * The class contains the common functionality for Cellpose3- and Cellpose4-based cell segmentation<br>
- * It contains the configurable parameters <code>probability threshold</code>,
- * <code>flow threshold</code>, <code>diameter</code>, and <code>3D mode</code> toggling.<br>
+ * It contains the configurable parameters {@code probability threshold},
+ * {@code flow threshold}, {@code diameter}, and {@code 3D mode} toggling.<br>
  * Derived classes must implement methods to load and run the specific models.<br>
  */
 public abstract class Cellpose extends Segmentation
