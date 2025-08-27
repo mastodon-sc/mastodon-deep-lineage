@@ -78,44 +78,54 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		addModelTypeSelection( panel );
 
 		cellProbabilityThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 ) );
+		cellProbabilityThreshold.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		String cellProbText =
 				"<html>Cell probability threshold:<br>0 ... more detections<br>6 ... viewer detections (in dim regions)</html>";
 		JLabel cellProbLabel = new JLabel( cellProbText );
+		cellProbLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		panel.add( cellProbLabel, "align left, wmin 200, wrap" );
 		panel.add( cellProbabilityThreshold, "align left, grow" );
 
 		flowThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 ) );
+		flowThreshold.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		String flowText =
 				"<html>Flow threshold:<br>0 ... viewer (ill shaped) detections<br>6 ... more detections</html>";
 		JLabel flowLabel = new JLabel( flowText );
 		panel.add( flowLabel, "align left, wmin 200, wrap" );
+		flowLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		panel.add( flowThreshold, "align left, grow" );
 
 		diameter = new JFormattedTextField( getNumberFormatter( 0d, 1000d ) );
+		diameter.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		diameter.setColumns( 10 );
 
 		String diameterText = "<html>If you have a rough estimate of the diameter of a typical cell (in pixels), enter it here.<br></html>";
 		JLabel diameterLabel = new JLabel( diameterText );
+		diameterLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		panel.add( diameterLabel, "align left, wmin 200, wrap" );
 		panel.add( diameter, "align left, grow" );
 
 		SystemInfo si = new SystemInfo();
 		List< GraphicsCard > gpus = si.getHardware().getGraphicsCards();
 		gpuId = new JComboBox<>();
+		gpuId.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		for ( int i = 0; i < gpus.size(); i++ )
 		{
 			gpuId.addItem( new GpuEntry( i, gpus.get( i ).getName() ) );
 		}
 		String gpuText = "<html>GPU to use for detection (if any):<br></html>";
 		JLabel gpuLabel = new JLabel( gpuText );
+		gpuLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		panel.add( gpuLabel, "align left, wmin 200, wrap" );
 		panel.add( gpuId, "align left, grow" );
 
 		gpuMemoryFraction = new JFormattedTextField( getNumberFormatter( 0d, 1d ) );
+		gpuMemoryFraction.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		gpuMemoryFraction.setColumns( 10 );
 
 		String gpuMemText = "<html>Fraction of GPU memory to use (0.0 - 1.0):<br></html>";
 		JLabel gpuMemLabel = new JLabel( gpuMemText );
+		gpuMemLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		panel.add( gpuMemLabel, "align left, wmin 200, wrap" );
 		panel.add( gpuMemoryFraction, "align left, grow" );
 
@@ -201,7 +211,7 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		@Override
 		public String toString()
 		{
-			return StringUtils.abbreviate( id + " – " + name, 25 );
+			return StringUtils.abbreviate( id + " – " + name, 30 );
 		}
 	}
 }
