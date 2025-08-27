@@ -40,6 +40,7 @@ import java.util.Map;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.text.NumberFormatter;
@@ -67,69 +68,69 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 
 	protected JFormattedTextField gpuMemoryFraction;
 
-	protected abstract void addModelTypeSelection( final ConfigPanel panel );
+	protected abstract void addModelTypeSelection( final JPanel contentPanel );
 
-	protected abstract void addRespectAnisotropyCheckbox( final ConfigPanel panel );
+	protected abstract void addRespectAnisotropyCheckbox( final JPanel contentPanel );
 
 	@Override
-	protected void configureDetectorSpecificFields( final ConfigPanel panel )
+	protected void configureDetectorSpecificFields( final JPanel contentPanel )
 	{
 
-		addModelTypeSelection( panel );
+		addModelTypeSelection( contentPanel );
 
 		cellProbabilityThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 ) );
-		cellProbabilityThreshold.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
+		cellProbabilityThreshold.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		String cellProbText =
 				"<html>Cell probability threshold:<br>0 ... more detections<br>6 ... viewer detections (in dim regions)</html>";
 		JLabel cellProbLabel = new JLabel( cellProbText );
-		cellProbLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
-		panel.add( cellProbLabel, "align left, wmin 200, wrap" );
-		panel.add( cellProbabilityThreshold, "align left, grow" );
+		cellProbLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( cellProbLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( cellProbabilityThreshold, "align left, grow" );
 
 		flowThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 ) );
-		flowThreshold.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
+		flowThreshold.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		String flowText =
 				"<html>Flow threshold:<br>0 ... viewer (ill shaped) detections<br>6 ... more detections</html>";
 		JLabel flowLabel = new JLabel( flowText );
-		panel.add( flowLabel, "align left, wmin 200, wrap" );
-		flowLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
-		panel.add( flowThreshold, "align left, grow" );
+		contentPanel.add( flowLabel, "align left, wmax 220, growx, wrap" );
+		flowLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( flowThreshold, "align left, grow" );
 
 		diameter = new JFormattedTextField( getNumberFormatter( 0d, 1000d ) );
-		diameter.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
+		diameter.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		diameter.setColumns( 10 );
 
 		String diameterText = "<html>If you have a rough estimate of the diameter of a typical cell (in pixels), enter it here.<br></html>";
 		JLabel diameterLabel = new JLabel( diameterText );
-		diameterLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
-		panel.add( diameterLabel, "align left, wmin 200, wrap" );
-		panel.add( diameter, "align left, grow" );
+		diameterLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( diameterLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( diameter, "align left, grow" );
 
 		SystemInfo si = new SystemInfo();
 		List< GraphicsCard > gpus = si.getHardware().getGraphicsCards();
 		gpuId = new JComboBox<>();
-		gpuId.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
+		gpuId.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		for ( int i = 0; i < gpus.size(); i++ )
 		{
 			gpuId.addItem( new GpuEntry( i, gpus.get( i ).getName() ) );
 		}
 		String gpuText = "<html>GPU to use for detection (if any):<br></html>";
 		JLabel gpuLabel = new JLabel( gpuText );
-		gpuLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
-		panel.add( gpuLabel, "align left, wmin 200, wrap" );
-		panel.add( gpuId, "align left, grow" );
+		gpuLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( gpuLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( gpuId, "align left, grow" );
 
 		gpuMemoryFraction = new JFormattedTextField( getNumberFormatter( 0d, 1d ) );
-		gpuMemoryFraction.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
+		gpuMemoryFraction.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		gpuMemoryFraction.setColumns( 10 );
 
 		String gpuMemText = "<html>Fraction of GPU memory to use (0.0 - 1.0):<br></html>";
 		JLabel gpuMemLabel = new JLabel( gpuMemText );
-		gpuMemLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
-		panel.add( gpuMemLabel, "align left, wmin 200, wrap" );
-		panel.add( gpuMemoryFraction, "align left, grow" );
+		gpuMemLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( gpuMemLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( gpuMemoryFraction, "align left, grow" );
 
-		addRespectAnisotropyCheckbox( panel );
+		addRespectAnisotropyCheckbox( contentPanel );
 	}
 
 	@Override

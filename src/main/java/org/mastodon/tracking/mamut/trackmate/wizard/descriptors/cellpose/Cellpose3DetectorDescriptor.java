@@ -42,6 +42,7 @@ import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.mastodon.mamut.detection.cellpose.Cellpose3;
 import org.mastodon.mamut.detection.cellpose.Cellpose3Detector;
@@ -158,27 +159,27 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 	}
 
 	@Override
-	protected void addModelTypeSelection( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
+	protected void addModelTypeSelection( final JPanel contentPanel )
 	{
 		modelTypeSelection = new JComboBox<>( Cellpose3.ModelType.values() );
-		modelTypeSelection.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
+		modelTypeSelection.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		JLabel modelTypeLabel = new JLabel( "Model type:" );
-		panel.add( modelTypeLabel, "align left, wrap" );
-		modelTypeLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
-		panel.add( modelTypeSelection, "align left, grow" );
+		contentPanel.add( modelTypeLabel, "align left, wrap" );
+		modelTypeLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( modelTypeSelection, "align left, grow" );
 	}
 
 	@Override
-	protected void addRespectAnisotropyCheckbox( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
+	protected void addRespectAnisotropyCheckbox( final JPanel contentPanel )
 	{
 		respectAnisotropyCheckbox = new JCheckBox( "Respect anisotropy" );
-		respectAnisotropyCheckbox.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
-		panel.add( respectAnisotropyCheckbox, "align left, wrap" );
+		respectAnisotropyCheckbox.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( respectAnisotropyCheckbox, "align left, wrap" );
 		String respectAnisotropyText =
 				"<html>Respecting anisotropy may take significantly more time, but can lead to better detection results.</html>";
 		JLabel respectAnisotropyLabel = new JLabel( respectAnisotropyText );
-		respectAnisotropyLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
-		panel.add( respectAnisotropyLabel, "align left, wmin 200, grow" );
+		respectAnisotropyLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( respectAnisotropyLabel, "align left, wmax 220, growx, wrap" );
 	}
 
 	@Override

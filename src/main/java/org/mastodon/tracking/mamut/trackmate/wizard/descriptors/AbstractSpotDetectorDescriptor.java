@@ -40,7 +40,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
@@ -123,7 +125,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 
 	protected abstract String getDetectorName();
 
-	protected abstract void configureDetectorSpecificFields( final ConfigPanel panel );
+	protected abstract void configureDetectorSpecificFields( final JPanel contentPanel );
 
 	/**
 	 * Update the settings field of this descriptor with the values set on the GUI by the user.
@@ -177,29 +179,39 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 
 		private final JLabel info = new JLabel( "", SwingConstants.RIGHT );
 
+		protected final JPanel contentPanel;
+
 		protected ConfigPanel()
 		{
-			setLayout( new MigLayout( "wrap 1", "[grow]", "[]5[]" ) );
+			setLayout( new MigLayout( "fill", "[grow]", "[grow]" ) );
+
+			contentPanel = new JPanel();
+			contentPanel.setLayout( new MigLayout( "fillx, wrap 1", "[grow]", "[]5[]" ) );
+
+			final JScrollPane scrollPane = new JScrollPane( contentPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+
+			add( scrollPane, "grow, wrap" );
 
 			JLabel headlineLabel = new JLabel( "Configure " + getDetectorName() + " detector" );
 			headlineLabel.setHorizontalAlignment( SwingConstants.LEFT );
 			headlineLabel.setFont( getFont().deriveFont( Font.BOLD ) );
-			add( headlineLabel, "growx" );
+			contentPanel.add( headlineLabel, "growx" );
 
-			configureDetectorSpecificFields( this );
+			configureDetectorSpecificFields( contentPanel );
 
 			level = new JSpinner( new SpinnerNumberModel( 0, 0, 0, 1 ) );
 			level.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 			levelLabel = new JLabel( getLevelText( 0 ) );
 			levelLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
-			add( levelLabel, "align left, wmin 200, wrap" );
-			add( level, "align left, grow" );
+			contentPanel.add( levelLabel, "align left, wmax 220, growx, wrap" );
+			contentPanel.add( level, "align left, grow" );
 
 			preview.addActionListener( e -> preview() );
-			add( preview, "align right, wrap" );
+			contentPanel.add( preview, "align right, wrap" );
 
 			info.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
-			add( info, "align right, wrap" );
+			contentPanel.add( info, "align right, wrap" );
 		}
 
 		private void preview()
