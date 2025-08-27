@@ -79,6 +79,8 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 
 	private JLabel levelLabel;
 
+	protected final static String LAYOUT_CONSTRAINT = "align left, wmax 250, growx, wrap";
+
 	@Parameter
 	private OpService ops;
 
@@ -191,7 +193,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 			final JScrollPane scrollPane = new JScrollPane( contentPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED );
 
-			add( scrollPane, "grow, wrap" );
+			add( scrollPane, "grow" );
 
 			JLabel headlineLabel = new JLabel( "Configure " + getDetectorName() + " detector" );
 			headlineLabel.setHorizontalAlignment( SwingConstants.LEFT );
@@ -204,7 +206,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 			level.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 			levelLabel = new JLabel( getLevelText( 0 ) );
 			levelLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
-			contentPanel.add( levelLabel, "align left, wmax 220, growx, wrap" );
+			contentPanel.add( levelLabel, LAYOUT_CONSTRAINT );
 			contentPanel.add( level, "align left, grow" );
 
 			preview.addActionListener( e -> preview() );

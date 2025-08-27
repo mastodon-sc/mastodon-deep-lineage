@@ -157,8 +157,8 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 
 		JLabel modelTypeLabel = new JLabel( "Model type:" );
 		modelTypeLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
-		contentPanel.add( modelTypeLabel, "align left, wrap" );
-		contentPanel.add( modelTypeSelection, "align left, grow" );
+		contentPanel.add( modelTypeLabel, "align left, growx" );
+		contentPanel.add( modelTypeSelection, LAYOUT_CONSTRAINT );
 
 		probThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 1.0, 0.1 ) );
 		probThreshold.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
@@ -169,7 +169,7 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 						+ "</html>";
 		JLabel probLabel = new JLabel( probText );
 		probLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
-		contentPanel.add( probLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( probLabel, LAYOUT_CONSTRAINT );
 		contentPanel.add( probThreshold, "align left, grow" );
 
 		nmsThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 1.0, 0.1 ) );
@@ -181,7 +181,7 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 						+ "</html>";
 		JLabel nmsLabel = new JLabel( nmsText );
 		nmsLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
-		contentPanel.add( nmsLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( nmsLabel, LAYOUT_CONSTRAINT );
 		contentPanel.add( nmsThreshold, "align left, grow" );
 	}
 

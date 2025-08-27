@@ -84,7 +84,7 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 				"<html>Cell probability threshold:<br>0 ... more detections<br>6 ... viewer detections (in dim regions)</html>";
 		JLabel cellProbLabel = new JLabel( cellProbText );
 		cellProbLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
-		contentPanel.add( cellProbLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( cellProbLabel, LAYOUT_CONSTRAINT );
 		contentPanel.add( cellProbabilityThreshold, "align left, grow" );
 
 		flowThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 ) );
@@ -92,7 +92,7 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		String flowText =
 				"<html>Flow threshold:<br>0 ... viewer (ill shaped) detections<br>6 ... more detections</html>";
 		JLabel flowLabel = new JLabel( flowText );
-		contentPanel.add( flowLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( flowLabel, LAYOUT_CONSTRAINT );
 		flowLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		contentPanel.add( flowThreshold, "align left, grow" );
 
@@ -103,7 +103,7 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		String diameterText = "<html>If you have a rough estimate of the diameter of a typical cell (in pixels), enter it here.<br></html>";
 		JLabel diameterLabel = new JLabel( diameterText );
 		diameterLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
-		contentPanel.add( diameterLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( diameterLabel, LAYOUT_CONSTRAINT );
 		contentPanel.add( diameter, "align left, grow" );
 
 		SystemInfo si = new SystemInfo();
@@ -117,7 +117,7 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		String gpuText = "<html>GPU to use for detection (if any):<br></html>";
 		JLabel gpuLabel = new JLabel( gpuText );
 		gpuLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
-		contentPanel.add( gpuLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( gpuLabel, LAYOUT_CONSTRAINT );
 		contentPanel.add( gpuId, "align left, grow" );
 
 		gpuMemoryFraction = new JFormattedTextField( getNumberFormatter( 0d, 1d ) );
@@ -127,7 +127,7 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		String gpuMemText = "<html>Fraction of GPU memory to use (0.0 - 1.0):<br></html>";
 		JLabel gpuMemLabel = new JLabel( gpuMemText );
 		gpuMemLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
-		contentPanel.add( gpuMemLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( gpuMemLabel, LAYOUT_CONSTRAINT );
 		contentPanel.add( gpuMemoryFraction, "align left, grow" );
 
 		addRespectAnisotropyCheckbox( contentPanel );
