@@ -161,8 +161,10 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 	protected void addModelTypeSelection( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
 	{
 		modelTypeSelection = new JComboBox<>( Cellpose3.ModelType.values() );
+		modelTypeSelection.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		JLabel modelTypeLabel = new JLabel( "Model type:" );
 		panel.add( modelTypeLabel, "align left, wrap" );
+		modelTypeLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		panel.add( modelTypeSelection, "align left, grow" );
 	}
 
@@ -170,10 +172,13 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 	protected void addRespectAnisotropyCheckbox( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
 	{
 		respectAnisotropyCheckbox = new JCheckBox( "Respect anisotropy" );
+		respectAnisotropyCheckbox.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
 		panel.add( respectAnisotropyCheckbox, "align left, wrap" );
 		String respectAnisotropyText =
 				"<html>Respecting anisotropy may take significantly more time, but can lead to better detection results.</html>";
-		panel.add( new JLabel( respectAnisotropyText ), "align left, wmin 200, grow" );
+		JLabel respectAnisotropyLabel = new JLabel( respectAnisotropyText );
+		respectAnisotropyLabel.setFont( panel.getFont().deriveFont( panel.getFont().getSize2D() - 2f ) );
+		panel.add( respectAnisotropyLabel, "align left, wmin 200, grow" );
 	}
 
 	@Override

@@ -189,7 +189,9 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 			configureDetectorSpecificFields( this );
 
 			level = new JSpinner( new SpinnerNumberModel( 0, 0, 0, 1 ) );
+			level.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 			levelLabel = new JLabel( getLevelText( 0 ) );
+			levelLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 			add( levelLabel, "align left, wmin 200, wrap" );
 			add( level, "align left, grow" );
 
