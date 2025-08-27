@@ -41,6 +41,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
@@ -134,9 +135,10 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 	}
 
 	@Override
-	protected void configureDetectorSpecificFields( final ConfigPanel panel )
+	protected void configureDetectorSpecificFields( final JPanel contentPanel )
 	{
 		modelTypeSelection = new JComboBox<>( StarDist.ModelType.values() );
+		modelTypeSelection.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		modelTypeSelection.setRenderer( new DefaultListCellRenderer()
 		{
 			@Override
@@ -154,28 +156,33 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 		} );
 
 		JLabel modelTypeLabel = new JLabel( "Model type:" );
-		panel.add( modelTypeLabel, "align left, wrap" );
-		panel.add( modelTypeSelection, "align left, grow" );
+		modelTypeLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( modelTypeLabel, "align left, wrap" );
+		contentPanel.add( modelTypeSelection, "align left, grow" );
 
 		probThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 1.0, 0.1 ) );
+		probThreshold.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		String probText =
 				"<html>"
 						+ "Probability/Score Threshold: Determine the number of object candidates<br>"
 						+ "Higher values lead to fewer segmented objects, but will likely avoid false positives."
 						+ "</html>";
 		JLabel probLabel = new JLabel( probText );
-		panel.add( probLabel, "align left, wmin 200, wrap" );
-		panel.add( probThreshold, "align left, grow" );
+		probLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( probLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( probThreshold, "align left, grow" );
 
 		nmsThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 1.0, 0.1 ) );
+		nmsThreshold.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		String nmsText =
 				"<html>"
 						+ "Overlap Threshold: Determine when two objects are considered the same during non-maximum suppression.<br>"
 						+ "Higher values allow objects to overlap substantially."
 						+ "</html>";
 		JLabel nmsLabel = new JLabel( nmsText );
-		panel.add( nmsLabel, "align left, wmin 200, wrap" );
-		panel.add( nmsThreshold, "align left, grow" );
+		nmsLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( nmsLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( nmsThreshold, "align left, grow" );
 	}
 
 	@Override

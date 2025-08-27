@@ -39,6 +39,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.swing.JPanel;
+
 import org.mastodon.mamut.detection.cellpose.Cellpose4Detector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDetectorDescriptor;
@@ -125,13 +127,13 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 	}
 
 	@Override
-	protected void addModelTypeSelection( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
+	protected void addModelTypeSelection( final JPanel panel )
 	{
 		// No model type selection for Cellpose4.
 	}
 
 	@Override
-	protected void addRespectAnisotropyCheckbox( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
+	protected void addRespectAnisotropyCheckbox( final JPanel panel )
 	{
 		// No respect anisotropy checkbox for Cellpose4.
 	}
