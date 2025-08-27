@@ -179,7 +179,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 				"<html>Respecting anisotropy may take significantly more time, but can lead to better detection results.</html>";
 		JLabel respectAnisotropyLabel = new JLabel( respectAnisotropyText );
 		respectAnisotropyLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
-		contentPanel.add( respectAnisotropyLabel, "align left, wmax 220, growx, wrap" );
+		contentPanel.add( respectAnisotropyLabel, LAYOUT_CONSTRAINT );
 	}
 
 	@Override
