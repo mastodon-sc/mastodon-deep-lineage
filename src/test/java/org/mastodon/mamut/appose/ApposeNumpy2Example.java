@@ -64,23 +64,24 @@ public class ApposeNumpy2Example
 			writer.write( "  - pip\n" );
 			writer.write( "  - pip:\n" );
 			writer.write( "    - appose\n" );
-			writer.write( "  - numpy>=2\n" );
+			writer.write( "  - numpy==2.0.2\n" );
 		}
 		envFile.deleteOnExit();
 		Environment env = Appose.file( envFile, "environment.yml" ).logDebug().build();
 		System.out.println( "Created environment" );
 
 		String script = "import numpy\n";
+		script += "print(\"Hello world from python\")" + "\n";
 
 		try (Service python = env.python())
 		{
 			// Store our Img into a map of inputs to the Python script.
 			final Map< String, Object > inputs = new HashMap<>();
 			inputs.put( "image", NDArrays.asNDArray( shmImg ) );
+			python.debug( System.out::println );
 
 			// Run the script using provided inputs.
-			// Service.Task task = python.task( script ); // This line works
-			Service.Task task = python.task( script, inputs ); // This line throws an exception
+			Service.Task task = python.task( script, inputs );
 			task.waitFor();
 
 			// Verify that it worked.
