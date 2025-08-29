@@ -175,6 +175,8 @@ public class StarDist extends Segmentation
 		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
 			return "    - tensorflow-macos==2.10\n"
 					+ "    - tensorflow-metal==0.6.0\n";
+		// TODO: in order to let the following pickup the GPU, it is required that this combination of CUDA/cuDNN is installed on the system: CUDA 11.2 + cuDNN 8.1
+		// cf: https://biapol.github.io/blog/stefan_hahmann/stardist_gpu_2025/readme.html
 		return "    - tensorflow==2.10\n"
 				+ "    - tensorflow-gpu==2.10.0\n";
 	}
