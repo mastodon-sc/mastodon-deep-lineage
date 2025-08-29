@@ -33,6 +33,7 @@ import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_GPU_
 import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_ID;
 import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_MEMORY_FRACTION;
 
+import java.lang.invoke.MethodHandles;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,10 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.text.NumberFormatter;
 
 import org.apache.commons.lang.StringUtils;
+import org.mastodon.mamut.util.ByteFormatter;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDetectorDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import oshi.SystemInfo;
 import oshi.hardware.GraphicsCard;
@@ -58,6 +62,8 @@ import oshi.hardware.GraphicsCard;
  */
 public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDescriptor
 {
+	private static final Logger slf4Logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	protected JSpinner cellProbabilityThreshold;
 
 	protected JSpinner flowThreshold;
@@ -110,9 +116,22 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		List< GraphicsCard > gpus = si.getHardware().getGraphicsCards();
 		gpuId = new JComboBox<>();
 		gpuId.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
-		for ( int i = 0; i < gpus.size(); i++ )
+		int i = 0;
+		for ( GraphicsCard gpu : gpus )
 		{
-			gpuId.addItem( new GpuEntry( i, gpus.get( i ).getName() ) );
+			String vendor = gpu.getVendor();
+			String name = gpu.getName();
+			String deviceId = gpu.getDeviceId();
+			String vram = ByteFormatter.humanReadableByteCount( gpu.getVRam() );
+			if ( vendor.toLowerCase().contains( "nvidia" ) || name.toLowerCase().contains( "nvidia" ) )
+			{
+				gpuId.addItem( new GpuEntry( i++, name ) );
+				slf4Logger.debug( "Found GPU deviceId: {}, name: {}, vendor: {}, vram: {}", deviceId, name, vendor, vram );
+			}
+			else
+			{
+				slf4Logger.debug( "Ignoring GPU deviceId: {}, name: {}, vendor: {}, vram: {}", deviceId, name, vendor, vram );
+			}
 		}
 		String gpuText = "<html>GPU to use for detection (if any):<br></html>";
 		JLabel gpuLabel = new JLabel( gpuText );
