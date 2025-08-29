@@ -60,9 +60,9 @@ public class Cellpose3 extends Cellpose
 	protected String getLoadModelCommand()
 	{
 		if ( modelType.hasSizeModel() )
-			return "model = models.Cellpose(model_type=\"" + modelType.getModelName() + "\", gpu=True)" + "\n";
+			return "model = models.Cellpose(model_type=\"" + modelType.getModelName() + "\", gpu=torch.cuda.is_available())" + "\n";
 		else
-			return "model = models.CellposeModel(model_type=\"" + modelType.getModelName() + "\", gpu=True)" + "\n";
+			return "model = models.CellposeModel(model_type=\"" + modelType.getModelName() + "\", gpu=torch.cuda.is_available())" + "\n";
 	}
 
 	@Override

@@ -44,7 +44,7 @@ public class Cellpose4 extends Cellpose
 	@Override
 	protected String getLoadModelCommand()
 	{
-		return "model = models.CellposeModel(gpu=True)" + "\n";
+		return "model = models.CellposeModel(gpu=torch.cuda.is_available())" + "\n";
 	}
 
 	@Override
