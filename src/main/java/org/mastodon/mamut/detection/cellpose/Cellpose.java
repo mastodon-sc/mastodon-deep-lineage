@@ -132,11 +132,14 @@ public abstract class Cellpose extends Segmentation
 				+ "\n"
 				+ "task.update(message=\"Imports completed\")" + "\n"
 				+ "\n"
-				+ "torch.cuda.set_device(" + getGpuID() + ")" + "\n" // pick GPU explicitly
-				+ "torch.cuda.set_per_process_memory_fraction(" + getGpuMemoryFraction() + ", device=" + getGpuID() + ")" + "\n" // cap memory usage of that GPU
-				+ "device_id = torch.cuda.current_device()" + "\n"
-				+ "device_name = torch.cuda.get_device_name(device_id)" + "\n"
-				+ "task.update(message=\"Running cellpose on GPU: \" + str(device_id) + \" (\"+device_name+\")\")" + "\n"
+				+ "if torch.cuda.is_available():" + "\n"
+				+ "    torch.cuda.set_device(" + getGpuID() + ")" + "\n" // pick GPU explicitly
+				+ "    torch.cuda.set_per_process_memory_fraction(" + getGpuMemoryFraction() + ", device=" + getGpuID() + ")" + "\n" // cap memory usage of that GPU
+				+ "    device_id = torch.cuda.current_device()" + "\n"
+				+ "    device_name = torch.cuda.get_device_name(device_id)" + "\n"
+				+ "    task.update(message=\"Running cellpose on GPU: \" + str(device_id) + \" (\"+device_name+\")\")" + "\n"
+				+ "else:" + "\n"
+				+ "    task.update(message=\"Running cellpose on CPU\")" + "\n"
 				+ "\n"
 				+ "image_ndarray = image.ndarray()" + "\n"
 				+ "task.update(message=\"Image converted, Image shape: \" + \",\".join(str(dim) for dim in image.shape))" + "\n"
