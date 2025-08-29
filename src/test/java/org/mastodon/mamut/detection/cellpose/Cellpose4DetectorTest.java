@@ -46,6 +46,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.detection.DeepLearningDetectorKeys;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.io.importer.labelimage.util.SphereRenderer;
 import org.mastodon.mamut.model.Model;
@@ -77,6 +78,9 @@ class Cellpose4DetectorTest
 			settings.put( DetectorKeys.KEY_MIN_TIMEPOINT, 0 );
 			settings.put( DetectorKeys.KEY_MAX_TIMEPOINT, 0 );
 			settings.put( DetectorKeys.KEY_SETUP_ID, 0 );
+			settings.put( DeepLearningDetectorKeys.KEY_LEVEL, 0 );
+			settings.put( DeepLearningDetectorKeys.KEY_GPU_ID, 0 );
+			settings.put( DeepLearningDetectorKeys.KEY_GPU_MEMORY_FRACTION, 1d );
 
 			// make settings available for the detector
 			Field settingsField = ReflectionUtils.findFields( Cellpose4Detector.class, f -> f.getName().equals( "settings" ),
