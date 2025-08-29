@@ -73,10 +73,8 @@ public class Cellpose4 extends Cellpose
 				+ "channel_priority: strict\n"
 				+ "dependencies:\n"
 				+ "  - python=3.10\n"
-				+ "  - pip\n"
-				+ "  - pip:\n"
-				+ "    - cellpose==4.0.6\n"
-				+ getApposeVersion()
+				+ "  - cellpose==4.0.6\n"
+				+ getApposeVersion().substring( 2 ) + "\n"
 				+ "  - pytorch\n"
 				+ "  - pytorch-cuda\n"
 				+ "  - numpy\n";
