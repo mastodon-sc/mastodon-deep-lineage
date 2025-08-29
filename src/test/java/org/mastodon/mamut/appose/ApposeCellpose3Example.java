@@ -39,7 +39,7 @@ public class ApposeCellpose3Example
 			writer.write( "  - pip\n" );
 			writer.write( "  - pip:\n" );
 			writer.write( "    - cellpose==3.1.1.2\n" );
-			writer.write( "    - appose==0.7.0\n" );
+			writer.write( "    - appose==0.4.0\n" );
 			writer.write( "  - pytorch\n" );
 			writer.write( "  - pytorch-cuda\n" );
 			writer.write( "  - numpy\n" );
@@ -50,7 +50,7 @@ public class ApposeCellpose3Example
 
 		String script = "import appose" + "\n";
 		// script += "import torch" + "\n"; // adding this leads to the script not completing on windows
-		// script += "import numpy\n\n"; // adding this leads to the script not completing on windows
+		script += "import numpy\n\n"; // adding this leads to the script not completing on windows
 		// script += "from cellpose import models" + "\n"; // adding this leads to the script not completing on windows
 		script += "print(\"Hello world from python\")" + "\n";
 
