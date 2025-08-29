@@ -175,7 +175,8 @@ public class StarDist extends Segmentation
 		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
 			return "    - tensorflow-macos==2.10\n"
 					+ "    - tensorflow-metal==0.6.0\n";
-		return "    - tensorflow==2.10\n";
+		return "    - tensorflow==2.10\n"
+				+ "    - tensorflow-gpu==2.10.0\n";
 	}
 
 	@Override
