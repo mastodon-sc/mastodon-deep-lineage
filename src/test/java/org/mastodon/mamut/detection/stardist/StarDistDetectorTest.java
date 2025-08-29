@@ -44,6 +44,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.detection.DeepLearningDetectorKeys;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.tracking.detection.DetectorKeys;
@@ -84,6 +85,7 @@ class StarDistDetectorTest
 			settings.put( DetectorKeys.KEY_MIN_TIMEPOINT, 0 );
 			settings.put( DetectorKeys.KEY_MAX_TIMEPOINT, 0 );
 			settings.put( DetectorKeys.KEY_SETUP_ID, 0 );
+			settings.put( DeepLearningDetectorKeys.KEY_LEVEL, 0 );
 
 			// make settings available for the detector
 			Field settingsField = ReflectionUtils.findFields( StarDistDetector.class, f -> f.getName().equals( "settings" ),
@@ -108,13 +110,13 @@ class StarDistDetectorTest
 			// 3d
 			Assertions.assertEquals( 26, model.getGraph().vertices().size() ); // before detection
 			detector.compute( Collections.singletonList( projectModel.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
-			Assertions.assertEquals( 56, model.getGraph().vertices().size() ); // before detection
+			Assertions.assertEquals( 64, model.getGraph().vertices().size() ); // after detection
 
 			// 2d
 			ProjectModel projectModel2d = DemoUtils.wrapAsAppModel( img2d, model, context );
-			Assertions.assertEquals( 56, model.getGraph().vertices().size() ); // after detection
+			Assertions.assertEquals( 64, model.getGraph().vertices().size() ); // before detection
 			detector.compute( Collections.singletonList( projectModel2d.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
-			Assertions.assertEquals( 121, model.getGraph().vertices().size() ); // after detection
+			Assertions.assertEquals( 127, model.getGraph().vertices().size() ); // after detection
 		}
 	}
 }
