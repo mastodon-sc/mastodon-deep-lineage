@@ -38,6 +38,8 @@ public abstract class ApposeProcess implements AutoCloseable
 
 	protected abstract String generateScript();
 
+	protected abstract String generateImportStatements();
+
 	protected final Service pythonWorker;
 
 	protected final StopWatch stopWatch;
@@ -185,8 +187,20 @@ public abstract class ApposeProcess implements AutoCloseable
 
 	protected Service.Task runScript() throws IOException
 	{
+		Service.Task doImports = pythonWorker.task( generateImportStatements(), "main" );
+		doImports.listen( getTaskListener( stopWatch, doImports ) );
+		try
+		{
+			doImports.waitFor();
+		}
+		catch ( InterruptedException e )
+		{
+			logger.error( "Import task interrupted: {}", e.getMessage(), e );
+			Thread.currentThread().interrupt();
+		}
+
 		String script = generateScript();
-		Service.Task task = pythonWorker.task( script, inputs );
+		Service.Task task = pythonWorker.task( script, inputs, null );
 		stopWatch.split();
 		if ( logger.isInfoEnabled() )
 			logger.info( "Created python task. Time elapsed: {}", stopWatch.formatSplitTime() );

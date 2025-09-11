@@ -125,14 +125,7 @@ public abstract class Cellpose extends Segmentation
 	@Override
 	protected String generateScript()
 	{
-		return "import numpy as np" + "\n"
-				+ "from cellpose import models" + "\n"
-				+ "import appose" + "\n"
-				+ "import torch" + "\n"
-				+ "\n"
-				+ "task.update(message=\"Imports completed\")" + "\n"
-				+ "\n"
-				+ "if torch.cuda.is_available():" + "\n"
+		return "if torch.cuda.is_available():" + "\n"
 				+ "    torch.cuda.set_device(" + getGpuID() + ")" + "\n" // pick GPU explicitly
 				+ "    torch.cuda.set_per_process_memory_fraction(" + getGpuMemoryFraction() + ", device=" + getGpuID() + ")" + "\n" // cap memory usage of that GPU
 				+ "    device_id = torch.cuda.current_device()" + "\n"
@@ -156,5 +149,18 @@ public abstract class Cellpose extends Segmentation
 				+ "shared.ndarray()[:] = segmentation" + "\n"
 				+ "task.update(message=\"NDArray filled\")" + "\n"
 				+ "task.outputs['label_image'] = shared" + "\n";
+	}
+
+	@Override
+	protected String generateImportStatements()
+	{
+		return "import numpy as np" + "\n"
+				+ "from cellpose import models" + "\n"
+				+ "import appose" + "\n"
+				+ "import torch" + "\n"
+				+ "\n"
+				+ "task.update(message=\"Imports completed\")" + "\n"
+				+ "\n"
+				+ "task.export(np=np, models=models, appose=appose, torch=torch)" + "\n";
 	}
 }
