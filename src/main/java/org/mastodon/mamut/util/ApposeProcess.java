@@ -146,7 +146,7 @@ public abstract class ApposeProcess implements AutoCloseable
 
 	protected String getApposeVersion()
 	{
-		return "    - appose==0.4.0\n";
+		return "    - appose==0.7.0\n";
 	}
 
 	private static void logEnvFile( final File envFile )
