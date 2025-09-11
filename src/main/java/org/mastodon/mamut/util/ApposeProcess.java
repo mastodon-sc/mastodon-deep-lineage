@@ -167,4 +167,40 @@ public abstract class ApposeProcess implements AutoCloseable
 			logger.debug( "Error reading env file: {}", e.getMessage() );
 		}
 	}
+
+	protected static boolean isPythonTaskInterrupted( final Service.Task task )
+	{
+		try
+		{
+			task.waitFor();
+		}
+		catch ( InterruptedException e )
+		{
+			logger.error( "Task interrupted: {}", e.getMessage(), e );
+			Thread.currentThread().interrupt();
+			return true;
+		}
+		return false;
+	}
+
+	protected Service.Task runScript() throws IOException
+	{
+		String script = generateScript();
+		Service.Task task = pythonWorker.task( script, inputs );
+		stopWatch.split();
+		if ( logger.isInfoEnabled() )
+			logger.info( "Created python task. Time elapsed: {}", stopWatch.formatSplitTime() );
+		task.listen( getTaskListener( stopWatch, task ) );
+		if ( isPythonTaskInterrupted( task ) )
+			return null;
+
+		// Verify that it worked.
+		if ( task.status != Service.TaskStatus.COMPLETE )
+			throw new org.mastodon.mamut.detection.PythonRuntimeException( "Python task failed with error: " + task.error );
+
+		stopWatch.split();
+		if ( logger.isInfoEnabled() )
+			logger.info( "Python task completed. Total time {}", stopWatch.formatSplitTime() );
+		return task;
+	}
 }
