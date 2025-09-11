@@ -67,7 +67,7 @@ public abstract class ApposeProcess implements AutoCloseable
 		stopWatch.stop();
 		if ( logger.isInfoEnabled() )
 			logger.info( "Finished python process. Time elapsed: {}", stopWatch.formatTime() );
-		if ( pythonWorker != null )
+		if ( pythonWorker != null && pythonWorker.isAlive() )
 		{
 			try
 			{
