@@ -75,7 +75,7 @@ public abstract class ApposeProcess implements AutoCloseable
 			}
 			catch ( Exception e )
 			{
-				logger.warn( "Could not properly close python worker: {}", e.getMessage() );
+				logger.warn( "Could not properly close python worker: {}", e.getMessage(), e );
 			}
 		}
 	}
