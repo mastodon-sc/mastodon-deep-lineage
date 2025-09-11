@@ -184,13 +184,7 @@ public class StarDist extends Segmentation
 	@Override
 	protected String generateScript()
 	{
-		return "import numpy as np" + "\n"
-				+ "import appose" + "\n"
-				+ "from csbdeep.utils import normalize" + "\n"
-				+ getImportStarDistCommand()
-				+ "\n"
-				+ "task.update(message=\"Imports completed\")" + "\n"
-				+ "np.random.seed(6)" + "\n"
+		return "np.random.seed(6)" + "\n"
 				+ getAxesNormalizeCommand()
 				+ "\n"
 				+ "task.update(message=\"Loading StarDist pretrained model\")" + "\n"
@@ -206,6 +200,32 @@ public class StarDist extends Segmentation
 				+ "shared = appose.NDArray(image.dtype, image.shape)" + "\n"
 				+ "shared.ndarray()[:] = label_image" + "\n"
 				+ "task.outputs['label_image'] = shared" + "\n";
+	}
+
+	@Override
+	protected String generateImportStatements()
+	{
+		String starDistImport;
+		if ( modelType.getModelPath() == null )
+		{
+			if ( dataIs2D )
+				starDistImport = "StarDist2D=StarDist2D";
+			else
+				starDistImport = "StarDist3D=StarDist3D";
+		}
+		else if ( Boolean.TRUE.equals( modelType.is2D() ) )
+			starDistImport = "StarDist2D=StarDist2D";
+		else
+			starDistImport = "StarDist3D=StarDist3D";
+
+		return "import numpy as np" + "\n"
+				+ "import appose as appose" + "\n"
+				+ "from csbdeep.utils import normalize" + "\n"
+				+ getImportStarDistCommand()
+				+ "\n"
+				+ "task.update(message=\"Imports completed\")" + "\n"
+				+ "\n"
+				+ "task.export(np=np, appose=appose, normalize=normalize, " + starDistImport + ")" + "\n";
 	}
 
 	public ModelType getModelType()
