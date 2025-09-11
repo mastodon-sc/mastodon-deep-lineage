@@ -70,12 +70,11 @@ public abstract class Segmentation extends ApposeProcess
 	 */
 	public < T extends NativeType< T > > Img< T > segmentImage( final RandomAccessibleInterval< T > inputImage ) throws IOException
 	{
-		String script = generateScript();
-		logger.debug( "Running script:\n{}", script );
 		long[] dimensions = inputImage.dimensionsAsLongArray();
 		String dimensionsAsString = Arrays.stream( dimensions ).mapToObj( String::valueOf ).collect( Collectors.joining( ", " ) );
 		logger.info( "Segmenting image with {} dimensions: ({}) of type: {}", inputImage.numDimensions(), dimensionsAsString,
 				inputImage.getType().getClass().getSimpleName() );
+
 		try (ShmImg< T > sharedMemoryImage = ShmImg.copyOf( inputImage ))
 		{
 			stopWatch.split();
@@ -85,30 +84,10 @@ public abstract class Segmentation extends ApposeProcess
 			stopWatch.split();
 			if ( logger.isInfoEnabled() )
 				logger.info( "Converted image to nd array: {}, Time elapsed: {}", ndArray, stopWatch.formatSplitTime() );
-			inputs.put( "image", ndArray );
 
-			Service.Task task = pythonWorker.task( script, inputs );
-			stopWatch.split();
-			if ( logger.isInfoEnabled() )
-				logger.info( "Created python task. Time elapsed: {}", stopWatch.formatSplitTime() );
-			task.listen( getTaskListener( stopWatch, task ) );
-			try
-			{
-				task.waitFor();
-			}
-			catch ( InterruptedException e )
-			{
-				logger.error( "Task interrupted: {}", e.getMessage(), e );
-				Thread.currentThread().interrupt();
-				return null;
-			}
-			// Verify that it worked.
-			if ( task.status != Service.TaskStatus.COMPLETE )
-				throw new PythonRuntimeException( "Python task failed with error: " + task.error );
-			stopWatch.split();
-			if ( logger.isInfoEnabled() )
-				logger.info( "Python task completed. Total time {}", stopWatch.formatSplitTime() );
-			NDArray segmentedImageArray = ( NDArray ) task.outputs.get( "label_image" );
+			inputs.put( "image", ndArray );
+			Service.Task result = runScript();
+			NDArray segmentedImageArray = ( NDArray ) result.outputs.get( "label_image" );
 			ShmImg< T > segmentedImage = new ShmImg<>( segmentedImageArray );
 			stopWatch.split();
 			if ( logger.isInfoEnabled() )
