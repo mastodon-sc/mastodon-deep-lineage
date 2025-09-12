@@ -39,11 +39,14 @@ import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.DefaultLinearAxis;
+import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.cache.img.DiskCachedCellImg;
 import net.imglib2.cache.img.DiskCachedCellImgFactory;
 import net.imglib2.cache.img.DiskCachedCellImgOptions;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.loops.LoopBuilder;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -73,6 +76,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class ExportLabelImageController
@@ -158,6 +162,9 @@ public class ExportLabelImageController
 			int targetFrameId = sourceFrameId / frameRateReduction;
 			logger.trace( "sourceFrameId: {}, targetFrameId: {}", sourceFrameId, targetFrameId );
 			IntervalView< FloatType > frame = Views.hyperSlice( img, 3, targetFrameId );
+
+			// RandomAccessibleInterval< RealType< ? > > hdf5 = source.getSource( targetFrameId, mipMapLevel ); // use to export hdf5 source to tiffs
+			// LoopBuilder.setImages( hdf5, frame ).forEachPixel( ( realType, floatType ) -> floatType.set( realType.getRealFloat() ) );
 			AbstractSource< FloatType > frameSource =
 					new RandomAccessibleIntervalSource<>( frame, new FloatType(), transform, "Ellipsoids" );
 			final EllipsoidIterable< FloatType > ellipsoidIterable = new EllipsoidIterable<>( frameSource );
