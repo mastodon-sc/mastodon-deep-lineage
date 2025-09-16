@@ -63,7 +63,7 @@ public class FindLineageMotifsBasedOnImportCommand extends AbstractFindLineageMo
 	@Parameter( label = "Similarity measure", initializer = "initSimilarityMeasureChoices", callback = "update" )
 	private String similarityMeasure = SimilarityMeasure.NORMALIZED_ZHANG_DIFFERENCE.getName();
 
-	@Parameter( label = "Scale factor", min = "0", description = "Scale factor for the motif. This is useful, if the motif loaded from the file is known to have a different time scale than the motifs to be searched in this project." )
+	@Parameter( label = "Scaling of the search motif", min = "0", description = "Scaling applied to the search motif. This is useful, if the motif loaded from the file is known to have a different time scale than the motifs to be searched in this project." )
 	private double scaleFactor = 1d;
 
 	@Parameter( label = "Run on branch graph", required = false, description = "Running this command on the branch graph (recommended option) will be much faster, but a bit less accurate. Running it on the model graph will be more accurate, but slower." )
