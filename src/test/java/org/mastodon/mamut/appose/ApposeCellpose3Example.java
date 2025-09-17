@@ -36,23 +36,22 @@ public class ApposeCellpose3Example
 			writer.write( "channel_priority: strict\n" );
 			writer.write( "dependencies:\n" );
 			writer.write( "  - python=3.10\n" );
-			writer.write( "  - pip\n" );
-			writer.write( "  - pip:\n" );
-			writer.write( "    - cellpose==3.1.1.2\n" );
-			writer.write( "    - appose==0.4.0\n" );
-			writer.write( "  - pytorch\n" );
-			writer.write( "  - pytorch-cuda\n" );
+			writer.write( "  - cellpose==3.1.1.2\n" );
+			writer.write( "  - appose==0.7.0\n" );
+			writer.write( "  - pytorch\n" ); // if pytorch is added to the env, the import of numpy leads to the script not completing on windows
+			writer.write( "  - pytorch-cuda\n" ); // if pytorch is added to the env, the import of numpy leads to the script not completing on windows
 			writer.write( "  - numpy\n" );
 		}
 		envFile.deleteOnExit();
 		Environment env = Appose.file( envFile, "environment.yml" ).logDebug().build();
 		System.out.println( "Created environment" );
 
-		String script = "import appose" + "\n";
+		String script = "";
+		script += "import appose" + "\n";
 		// script += "import torch" + "\n"; // adding this leads to the script not completing on windows
-		script += "import numpy\n\n"; // adding this leads to the script not completing on windows
+		// script += "import numpy\n\n"; // adding this leads to the script not completing on windows
 		// script += "from cellpose import models" + "\n"; // adding this leads to the script not completing on windows
-		script += "print(\"Hello world from python\")" + "\n";
+		script += "print('Hello world from python')" + "\n";
 
 		try (Service python = env.python())
 		{
@@ -62,7 +61,7 @@ public class ApposeCellpose3Example
 			python.debug( System.out::println );
 
 			// Run the script using provided inputs.
-			Service.Task task = python.task( script, inputs );
+			Service.Task task = python.task( script, inputs, "main" );
 			task.waitFor();
 
 			// Verify that it worked.
