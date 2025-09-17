@@ -29,7 +29,7 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
-import org.mastodon.mamut.util.ColorUtils;
+import org.mastodon.mamut.util.ColorGenerator;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetStructure;
 import org.mastodon.util.DepthFirstIteration;
@@ -295,18 +295,21 @@ public class LineageMotifsUtils
 	 * a distinct tag and color. The tags and colors are applied to the spots within each motif.
 	 * The tagging information is saved in the project's tag set structure. <br>
 	 *
-	 * The colors for the tags are generated as a saturation fade from the provided base color. The first motif will get the given color,
-	 * all later motifs will get colors with less saturation compared to the base colors.<br>
+	 * The colors for the tags are generated as a gradient interpolation between the provided colors. The first motif (i.e., the most similar motif) will get {@code color1},
+	 * the last motif (i.e., the least similar motif) will get {@code color2}. The motifs in between get colors interpolated between these two colors.<br>
 	 *
+	 * @param model The {@link Model} containing the graph data and tag sets.
 	 * @param tagSetName The name to be assigned to the new tag set.
 	 * @param lineageMotifs A {@link List} of {@link BranchSpotTree} objects representing the lineage motifs to tag.
-	 * @param color The {@link Color} used as the base for generating unique colors for each motif's tag.
+	 * @param color1 The {@link Color} to be used for the first motif (most similar).
+	 * @param color2 The {@link Color} to be used for the last motif (least similar).
+	 *
 	 */
 	public static void tagLineageMotifs( final Model model, final String tagSetName,
-			final List< Pair< BranchSpotTree, Double > > lineageMotifs, final Color color )
+			final List< Pair< BranchSpotTree, Double > > lineageMotifs, final Color color1, final Color color2 )
 	{
 		final int count = lineageMotifs.size();
-		final List< Color > colors = ColorUtils.generateSaturationFade( color, count );
+		final List< Color > colors = ColorGenerator.interpolateColors( color1, color2, count );
 		final ReentrantReadWriteLock.WriteLock lock = model.getGraph().getLock().writeLock();
 		lock.lock();
 		try
@@ -363,11 +366,13 @@ public class LineageMotifsUtils
 	 * @param originalMotif the {@link BranchSpotTree} representing the reference lineage motif
 	 * @param similarMotifs a {@link List} of pairs where each pair consists of a {@link BranchSpotTree}
 	 *                      representing a similar motif and a {@link Double} value denoting its similarity score
-	 * @param color the {@link ColorRGB} specifying the base color to generate motif tags
-	 * @param latch an optional {@link CountDownLatch} to signal when the tagging is complete, can be null
+	 * @param color1 the {@link ColorRGB} specifying the first color for color interpolation to generate motif tags
+	 * @param color2 the {@link ColorRGB} specifying the second color for color interpolation to generate motif tags
+	 * @param latch an optional {@link CountDownLatch} to signal when the tagging is complete, can be {@code null}
 	 */
 	public static void tagMotifs( final Model model, final BranchSpotTree originalMotif,
-			final List< Pair< BranchSpotTree, Double > > similarMotifs, final ColorRGB color, final double scaleFactor,
+			final List< Pair< BranchSpotTree, Double > > similarMotifs, final ColorRGB color1, final ColorRGB color2,
+			final double scaleFactor,
 			final CountDownLatch latch )
 	{
 		String tagSetName;
@@ -376,7 +381,8 @@ public class LineageMotifsUtils
 		String optionalPlural = numberOfDivisions == 1 ? "" : "s";
 		String optionalScale = scaleFactor == 1 ? "" : ", scaled by " + 1 / scaleFactor;
 		tagSetName = TAG_SET_NAME + lineageMotifName + " (" + numberOfDivisions + " division" + optionalPlural + optionalScale + ")";
-		LineageMotifsUtils.tagLineageMotifs( model, tagSetName, similarMotifs, new Color( color.getARGB() ) );
+		LineageMotifsUtils.tagLineageMotifs( model, tagSetName, similarMotifs, new Color( color1.getARGB() ),
+				new Color( color2.getARGB() ) );
 		Notification.showSuccess( "Finding similar lineage motifs finished.", "New tag set added: " + tagSetName );
 		if ( latch != null )
 			latch.countDown();

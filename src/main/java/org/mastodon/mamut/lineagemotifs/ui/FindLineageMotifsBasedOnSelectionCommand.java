@@ -57,8 +57,11 @@ public class FindLineageMotifsBasedOnSelectionCommand extends AbstractFindLineag
 	@Parameter( label = "Number of similar lineage motifs", min = "1", max = "1000", stepSize = "1" )
 	private int numberOfSimilarLineage = 10;
 
-	@Parameter( label = "Color" )
-	private ColorRGB color = new ColorRGB( "red" );
+	@Parameter( label = "Color of most similar motif" )
+	private ColorRGB color1 = ColorRGB.fromHTMLColor( "#1f78b4" ); // blue-ish
+
+	@Parameter( label = "Color of least similar motif" )
+	private ColorRGB color2 = ColorRGB.fromHTMLColor( "#ff7f00" ); // orange-ish
 
 	@SuppressWarnings( "unused" )
 	@Parameter( label = "Similarity measure", initializer = "initSimilarityMeasureChoices", callback = "update" )
@@ -86,9 +89,15 @@ public class FindLineageMotifsBasedOnSelectionCommand extends AbstractFindLineag
 	}
 
 	@Override
-	protected ColorRGB getColor()
+	protected ColorRGB getColor1()
 	{
-		return color;
+		return color1;
+	}
+
+	@Override
+	protected ColorRGB getColor2()
+	{
+		return color2;
 	}
 
 	@Override

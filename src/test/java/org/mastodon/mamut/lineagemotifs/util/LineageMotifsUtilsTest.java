@@ -261,13 +261,15 @@ class LineageMotifsUtilsTest
 	void testTagLineageMotifs()
 	{
 		String tagSetName = "testTagSet";
-		Color color = Color.RED;
+		Color color1 = Color.RED;
+		Color color2 = Color.BLUE;
+		Color interpolatedColor = new Color( -8454017 );
 		Model model = graph2.getModel();
 		List< Pair< BranchSpotTree, Double > > lineageMotifs = new ArrayList<>();
 		lineageMotifs.add( Pair.of( new BranchSpotTree( graph2.branchSpotA, 0, 5, model ), 0.5d ) );
 		lineageMotifs.add( Pair.of( new BranchSpotTree( graph2.branchSpotB, 4, 7, model ), 0.7d ) );
 		lineageMotifs.add( Pair.of( new BranchSpotTree( graph2.branchSpotC, 3, 5, model ), 0.9d ) );
-		LineageMotifsUtils.tagLineageMotifs( graph2.getModel(), tagSetName, lineageMotifs, color );
+		LineageMotifsUtils.tagLineageMotifs( graph2.getModel(), tagSetName, lineageMotifs, color1, color2 );
 
 		List< TagSetStructure.TagSet > tagSets = graph2.getModel().getTagSetModel().getTagSetStructure().getTagSets();
 		TagSetStructure.TagSet tagSet = tagSets.get( 0 );
@@ -281,8 +283,8 @@ class LineageMotifsUtilsTest
 		assertEquals( "Lineage Motif 4 (distance: " + String.format( "%.2f", 0.7d ) + ")", tag1.label() );
 		assertEquals( "Lineage Motif 11 (distance: " + String.format( "%.2f", 0.9d ) + ")", tag2.label() );
 		assertEquals( Color.RED.getRGB(), tag0.color() );
-		assertEquals( -35981, tag1.color() );
-		assertEquals( -6426, tag2.color() );
+		assertEquals( interpolatedColor.getRGB(), tag1.color() );
+		assertEquals( Color.BLUE.getRGB(), tag2.color() );
 		assertEquals( tag0.label(), model.getTagSetModel().getVertexTags().tags( tagSet ).get( graph1.spot0 ).label() );
 		assertEquals( tag0.label(), model.getTagSetModel().getVertexTags().tags( tagSet ).get( graph2.spot1 ).label() );
 		assertEquals( tag0.label(), model.getTagSetModel().getVertexTags().tags( tagSet ).get( graph2.spot2 ).label() );
