@@ -121,7 +121,7 @@ public class GraphMLExportPlugin extends AbstractContextual implements MamutPlug
 				menu( "Export",
 						menu( "Export to GraphML (branches)",
 								item( EXPORT_BRANCH_GRAPH ), item( EXPORT_SELECTED_BRANCH_GRAPH ), item( EXPORT_LINEAGES ) ),
-						menu( "Export to GraphML (individual spots)", item( EXPORT_SELECTED_GRAPH ) ) ) ) );
+						item( EXPORT_SELECTED_GRAPH ) ) ) );
 	}
 
 	@Override
