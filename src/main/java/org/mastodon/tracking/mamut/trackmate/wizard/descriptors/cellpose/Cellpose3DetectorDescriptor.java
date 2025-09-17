@@ -28,6 +28,9 @@
  */
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_MEMORY_FRACTION;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_DIAMETER;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
@@ -39,6 +42,7 @@ import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.mastodon.mamut.detection.cellpose.Cellpose3;
 import org.mastodon.mamut.detection.cellpose.Cellpose3Detector;
@@ -71,6 +75,7 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 	@Override
 	protected void persistSettings()
 	{
+		super.persistSettings();
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_MODEL_TYPE, modelTypeSelection.getSelectedItem() );
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, cellProbabilityThreshold.getValue() );
@@ -86,13 +91,18 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 		logger.info( String.format( "  - cell probability threshold: %s%n",
 				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
 		logger.info( String.format( "  - flow threshold: %s%n", settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
-		logger.info( String.format( "  - diameter: %s%n", settings.values.getDetectorSettings().get( KEY_DIAMETER ) ) );
+		logger.info( String.format( "  - estimated diameter: %s%n", settings.values.getDetectorSettings().get( KEY_DIAMETER ) ) );
+		logger.info( String.format( "  - resolution level: %s%n", settings.values.getDetectorSettings().get( KEY_LEVEL ) ) );
 		logger.info( String.format( "  - respect anisotropy: %s%n", settings.values.getDetectorSettings().get( KEY_RESPECT_ANISOTROPY ) ) );
+		logger.info( String.format( "  - GPU ID: %s%n", settings.values.getDetectorSettings().get( KEY_GPU_ID ) ) );
+		logger.info(
+				String.format( "  - GPU memory fraction: %s%n", settings.values.getDetectorSettings().get( KEY_GPU_MEMORY_FRACTION ) ) );
 	}
 
 	@Override
 	protected void getSettingsAndUpdateConfigPanel()
 	{
+		super.getSettingsAndUpdateConfigPanel();
 		// Get the values.
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		// Get the model type.
@@ -149,27 +159,33 @@ public class Cellpose3DetectorDescriptor extends CellposeDetectorDescriptor
 	}
 
 	@Override
-	protected void addModelTypeSelection( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
+	protected void addModelTypeSelection( final JPanel contentPanel )
 	{
 		modelTypeSelection = new JComboBox<>( Cellpose3.ModelType.values() );
+		modelTypeSelection.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		JLabel modelTypeLabel = new JLabel( "Model type:" );
-		panel.add( modelTypeLabel, "align left, wrap" );
-		panel.add( modelTypeSelection, "align left, grow" );
+		contentPanel.add( modelTypeLabel, "align left, wrap" );
+		modelTypeLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( modelTypeSelection, "align left, grow" );
 	}
 
 	@Override
-	protected void addRespectAnisotropyCheckbox( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
+	protected void addRespectAnisotropyCheckbox( final JPanel contentPanel )
 	{
 		respectAnisotropyCheckbox = new JCheckBox( "Respect anisotropy" );
-		panel.add( respectAnisotropyCheckbox, "align left, wrap" );
+		respectAnisotropyCheckbox.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( respectAnisotropyCheckbox, "align left, wrap" );
 		String respectAnisotropyText =
 				"<html>Respecting anisotropy may take significantly more time, but can lead to better detection results.</html>";
-		panel.add( new JLabel( respectAnisotropyText ), "align left, wmin 200, grow" );
+		JLabel respectAnisotropyLabel = new JLabel( respectAnisotropyText );
+		respectAnisotropyLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( respectAnisotropyLabel, LAYOUT_CONSTRAINT );
 	}
 
 	@Override
 	protected void grabSettings()
 	{
+		super.grabSettings();
 		if ( null == settings )
 			return;
 
