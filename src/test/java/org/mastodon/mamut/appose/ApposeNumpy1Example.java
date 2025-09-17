@@ -50,9 +50,7 @@ public class ApposeNumpy1Example
 			writer.write( "  - conda-forge\n" );
 			writer.write( "dependencies:\n" );
 			writer.write( "  - python=3.10\n" );
-			writer.write( "  - pip\n" );
-			writer.write( "  - pip:\n" );
-			writer.write( "    - appose\n" );
+			writer.write( "  - appose\n" );
 			writer.write( "  - numpy<1.24\n" );
 		}
 		envFile.deleteOnExit();
