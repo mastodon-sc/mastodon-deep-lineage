@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
@@ -359,8 +358,7 @@ public class LineageMotifsUtils
 	 * <br>
 	 * This method generates a uniquely named tag set based on the original lineage motif's name and
 	 * number of divisions, assigns distinct tags to the provided list of similar motifs, and applies the given base
-	 * color for coloring the tags. A notification is displayed upon successful completion, and an optional
-	 * latch can be used for synchronization.
+	 * color for coloring the tags.
 	 *
 	 * @param model the {@link Model} containing the graph data and tag sets
 	 * @param originalMotif the {@link BranchSpotTree} representing the reference lineage motif
@@ -368,12 +366,10 @@ public class LineageMotifsUtils
 	 *                      representing a similar motif and a {@link Double} value denoting its similarity score
 	 * @param color1 the {@link ColorRGB} specifying the first color for color interpolation to generate motif tags
 	 * @param color2 the {@link ColorRGB} specifying the second color for color interpolation to generate motif tags
-	 * @param latch an optional {@link CountDownLatch} to signal when the tagging is complete, can be {@code null}
 	 */
 	public static void tagMotifs( final Model model, final BranchSpotTree originalMotif,
 			final List< Pair< BranchSpotTree, Double > > similarMotifs, final ColorRGB color1, final ColorRGB color2,
-			final double scaleFactor,
-			final CountDownLatch latch )
+			final double scaleFactor )
 	{
 		String tagSetName;
 		int numberOfDivisions = originalMotif.getNumberOfDivisions();
@@ -384,8 +380,6 @@ public class LineageMotifsUtils
 		LineageMotifsUtils.tagLineageMotifs( model, tagSetName, similarMotifs, new Color( color1.getARGB() ),
 				new Color( color2.getARGB() ) );
 		Notification.showSuccess( "Finding similar lineage motifs finished.", "New tag set added: " + tagSetName );
-		if ( latch != null )
-			latch.countDown();
 	}
 
 	private static void tagSpotsAndLinksWithinTimeInterval( final BranchSpotTree lineageMotif, final int startTimepoint,

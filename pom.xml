@@ -179,6 +179,14 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Awaitility used in some unit tests -->
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.3.0</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <!-- hierarchical clustering, tests only -->
         <dependency>

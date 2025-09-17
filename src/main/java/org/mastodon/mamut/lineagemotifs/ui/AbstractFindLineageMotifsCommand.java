@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -36,8 +35,6 @@ public abstract class AbstractFindLineageMotifsCommand extends DynamicCommand
 	@SuppressWarnings( "unused" )
 	@Parameter
 	protected ProjectModel projectModel;
-
-	protected CountDownLatch latch;
 
 	@Override
 	public void run()
@@ -73,8 +70,8 @@ public abstract class AbstractFindLineageMotifsCommand extends DynamicCommand
 			List< Pair< BranchSpotTree, Double > > similarMotifs = LineageMotifsUtils.getMostSimilarMotifs( lineageMotif,
 					getNumberOfSimilarLineage(), SimilarityMeasure.getByName( getSimilarityMeasure() ), getScaleFactor(), !runOnBranchGraph,
 					projectModel.getModel() );
-			LineageMotifsUtils.tagMotifs( projectModel.getModel(), lineageMotif, similarMotifs, getColor1(), getColor2(), getScaleFactor(),
-					latch );
+			LineageMotifsUtils.tagMotifs( projectModel.getModel(), lineageMotif, similarMotifs, getColor1(), getColor2(),
+					getScaleFactor() );
 		}
 		catch ( Exception e )
 		{

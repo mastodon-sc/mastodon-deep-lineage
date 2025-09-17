@@ -6,8 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.TestUtils;
@@ -24,7 +25,7 @@ class FindLineageMotifsBasedOnImportCommandTest
 {
 	@Test
 	void testFindLinageMotifsCommand()
-			throws NoSuchFieldException, IllegalAccessException, InterruptedException, IOException, SpimDataException
+			throws NoSuchFieldException, IllegalAccessException, IOException, SpimDataException
 	{
 		try (final Context context = new Context())
 		{
@@ -53,13 +54,13 @@ class FindLineageMotifsBasedOnImportCommandTest
 				Field motifFileField = FindLineageMotifsBasedOnImportCommand.class.getDeclaredField( "motifFile" );
 				motifFileField.setAccessible( true );
 				motifFileField.set( findLineageMotifsBasedOnImportCommand, graphMLFile );
-				CountDownLatch latch = new CountDownLatch( 1 );
-				findLineageMotifsBasedOnImportCommand.latch = latch;
+				assertEquals( 2, projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().size() );
 
 				findLineageMotifsBasedOnImportCommand.run();
 
-				latch.await();
 				assertNotNull( findLineageMotifsBasedOnImportCommand );
+				Awaitility.await().atMost( 5, TimeUnit.SECONDS )
+						.until( () -> projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().size() == 3 );
 				assertEquals( 10, projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().get( 2 ).getTags().size() );
 
 			}

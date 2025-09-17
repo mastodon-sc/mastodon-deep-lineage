@@ -36,8 +36,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.TestUtils;
@@ -57,7 +58,7 @@ class FindLineageMotifsBasedOnSelectionCommandTest
 
 	@Test
 	void testFindLinageMotifsCommand()
-			throws NoSuchFieldException, IllegalAccessException, InterruptedException, IOException, SpimDataException
+			throws NoSuchFieldException, IllegalAccessException, IOException, SpimDataException
 	{
 		try (final Context context = new Context())
 		{
@@ -90,13 +91,13 @@ class FindLineageMotifsBasedOnSelectionCommandTest
 				Field contextField = DynamicCommand.class.getDeclaredField( "context" );
 				contextField.setAccessible( true );
 				contextField.set( findLineageMotifsBasedOnSelectionCommand, context );
-				CountDownLatch latch = new CountDownLatch( 1 );
-				findLineageMotifsBasedOnSelectionCommand.latch = latch;
+				assertEquals( 2, projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().size() );
 
 				findLineageMotifsBasedOnSelectionCommand.run();
 
-				latch.await();
 				assertNotNull( findLineageMotifsBasedOnSelectionCommand );
+				Awaitility.await().atMost( 5, TimeUnit.SECONDS )
+						.until( () -> projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().size() == 3 );
 				assertEquals( 11, projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().get( 2 ).getTags().size() );
 
 			}
