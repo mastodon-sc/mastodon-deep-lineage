@@ -34,6 +34,7 @@ import org.mastodon.mamut.clustering.treesimilarity.tree.TreeUtils;
 import org.mastodon.mamut.clustering.treesimilarity.util.NodeMapping;
 import org.mastodon.mamut.clustering.treesimilarity.util.FlowNetwork;
 import org.mastodon.mamut.clustering.treesimilarity.util.NodeMappings;
+import org.mastodon.mamut.util.ToDoubleTriFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Function;
-import java.util.function.ToDoubleBiFunction;
 
 /**
  * Implementation of "A Constrained Edit Distance Between Unordered Labeled Trees", Kaizhong Zhang, Algorithmica (1996) 15:205-222<br>
@@ -151,12 +151,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * @param tree1 Tree object representing the first tree.
 	 * @param tree2 Tree object representing the second tree.
 	 * @param costFunction mandatory cost function.
+	 * @param scale scaling factor for the cost function, which is applied to the second tree's attributes.
 	 * @param <T> Attribute type of the tree nodes.
 	 *
 	 * @return The absolute Zhang edit distance between tree1 and tree2.
 	 */
 	public static < T > double distance( @Nullable final Tree< T > tree1, final @Nullable Tree< T > tree2,
-			final ToDoubleBiFunction< T, T > costFunction )
+			final ToDoubleTriFunction< T, T, T > costFunction, final T scale )
 	{
 		if ( costFunction == null )
 			throw new IllegalArgumentException( "The cost function is expected to be non-null, but it is null." );
@@ -165,11 +166,11 @@ public class ZhangUnorderedTreeEditDistance< T >
 		if ( tree1 == null && tree2 == null )
 			return 0;
 		if ( tree1 == null )
-			return distanceTreeToNull( tree2, costFunction );
+			return distanceTreeToNull( tree2, costFunction, scale );
 		else if ( tree2 == null )
-			return distanceTreeToNull( tree1, costFunction );
+			return distanceTreeToNull( tree1, costFunction, scale );
 
-		ZhangUnorderedTreeEditDistance< T > zhang = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction );
+		ZhangUnorderedTreeEditDistance< T > zhang = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction, scale );
 		return zhang.compute();
 	}
 
@@ -183,12 +184,14 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 *
 	 * @return The mapping between nodes.
 	 */
-	public static < T > Map< Tree< T >, Tree< T > > nodeMapping( Tree< T > tree1, Tree< T > tree2, ToDoubleBiFunction< T, T > costFunction )
+	public static < T > Map< Tree< T >, Tree< T > > nodeMapping( Tree< T > tree1, Tree< T > tree2,
+			ToDoubleTriFunction< T, T, T > costFunction,
+			T scale )
 	{
 		if ( tree1 == null || tree2 == null )
 			return Collections.emptyMap();
 
-		ZhangUnorderedTreeEditDistance< T > zhang = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction );
+		ZhangUnorderedTreeEditDistance< T > zhang = new ZhangUnorderedTreeEditDistance<>( tree1, tree2, costFunction, scale );
 		NodeMapping< T > mapping = zhang.treeMapping();
 		return mapping.asMap();
 	}
@@ -198,17 +201,18 @@ public class ZhangUnorderedTreeEditDistance< T >
 		return treeMapping( root1, root2 );
 	}
 
-	private static < T > double distanceTreeToNull( Tree< T > tree2, ToDoubleBiFunction< T, T > costFunction )
+	private static < T > double distanceTreeToNull( final Tree< T > tree2, final ToDoubleTriFunction< T, T, T > costFunction,
+			final T scale )
 	{
 		double distance = 0;
 		for ( Tree< T > subtree : TreeUtils.getAllChildren( tree2 ) )
-			distance += costFunction.applyAsDouble( null, subtree.getAttribute() );
+			distance += costFunction.applyAsDouble( null, subtree.getAttribute(), scale );
 		return distance;
 	}
 
 	@SuppressWarnings( "unchecked" )
 	private ZhangUnorderedTreeEditDistance( final Tree< T > tree1, final Tree< T > tree2,
-			final ToDoubleBiFunction< T, T > costFunction )
+			final ToDoubleTriFunction< T, T, T > costFunction, final T scale )
 	{
 
 		root1 = new CachedTree<>( tree1 );
@@ -223,13 +227,13 @@ public class ZhangUnorderedTreeEditDistance< T >
 		{
 			for ( CachedTree< T > subtree2 : subtrees2 )
 			{
-				double distance = costFunction.applyAsDouble( subtree1.attribute, subtree2.attribute );
+				double distance = costFunction.applyAsDouble( subtree1.attribute, subtree2.attribute, scale );
 				costMatrix[ subtree1.index ][ subtree2.index ] = distance;
 			}
 		}
 
-		computeChangeCosts( root1, costFunction );
-		computeChangeCosts( root2, costFunction );
+		computeChangeCosts( root1, costFunction, scale );
+		computeChangeCosts( root2, costFunction, scale );
 
 		treeMappings = new NodeMapping[ subtrees1.size() ][ subtrees2.size() ];
 		forestMappings = new NodeMapping[ subtrees1.size() ][ subtrees2.size() ];
@@ -260,15 +264,15 @@ public class ZhangUnorderedTreeEditDistance< T >
 	 * @param tree the tree or forest to compute the change costs for
 	 * @param costFunction the local cost function
 	 */
-	private void computeChangeCosts( CachedTree< T > tree, ToDoubleBiFunction< T, T > costFunction )
+	private void computeChangeCosts( final CachedTree< T > tree, final ToDoubleTriFunction< T, T, T > costFunction, final T scale )
 	{
 		double forestCosts = 0;
 		for ( CachedTree< T > child : tree.children )
 		{
-			computeChangeCosts( child, costFunction );
+			computeChangeCosts( child, costFunction, scale );
 			forestCosts += child.treeCost;
 		}
-		tree.treeCost = forestCosts + costFunction.applyAsDouble( tree.attribute, null );
+		tree.treeCost = forestCosts + costFunction.applyAsDouble( tree.attribute, null, scale );
 		tree.forestCost = forestCosts;
 	}
 

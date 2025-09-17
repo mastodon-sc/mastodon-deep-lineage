@@ -37,7 +37,10 @@ import org.jgrapht.nio.DefaultAttribute;
 import org.jgrapht.nio.graphml.GraphMLExporter;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.algorithm.RootFinder;
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.feature.branch.BranchSpotFeatureUtils;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.mamut.model.branch.ModelBranchGraph;
@@ -51,6 +54,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Utility class for exporting a model (branch) graph to GraphML.
@@ -60,9 +64,23 @@ public class GraphMLUtils
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	private static final String VERTEX_LABEL_ATTRIBUTE_NAME = "branchName";
+	private static final String BRANCH_SPOT_LABEL_ATTRIBUTE_NAME = "branchName";
 
 	private static final String DURATION_ATTRIBUTE_NAME = "duration";
+
+	private static final String X_ATTRIBUTE_NAME = "x";
+
+	private static final String Y_ATTRIBUTE_NAME = "y";
+
+	private static final String Z_ATTRIBUTE_NAME = "z";
+
+	private static final String FRAME_ATTRIBUTE_NAME = "frame";
+
+	private static final String LABEL_ATTRIBUTE_NAME = "label";
+
+	/**
+	 * Private constructor to prevent instantiation.
+	 */
 
 	private GraphMLUtils()
 	{
@@ -98,6 +116,102 @@ public class GraphMLUtils
 			RefSet< BranchLink > branchLinks = LineageTreeUtils.getAllEdgeSuccessors( root, branchGraph );
 			exportBranches( branchSpots, branchLinks, file );
 		} );
+	}
+
+	public static void exportSelectedSpotsAndLinks( final ProjectModel projectModel, final File file )
+	{
+		// Get the selected spots from the UI
+		RefSet< Spot > selectedSpots = projectModel.getSelectionModel().getSelectedVertices();
+		RefSet< Link > selectedLinks = projectModel.getSelectionModel().getSelectedEdges();
+
+		logger.debug( "Selected spots: {}", selectedSpots.size() );
+		logger.debug( "Selected links: {}", selectedLinks.size() );
+
+		ReentrantReadWriteLock.ReadLock lock = projectModel.getModel().getGraph().getLock().readLock();
+		lock.lock();
+
+		try
+		{
+			// Export the selected spots and their links to a GraphML file
+			GraphMLUtils.exportSpotsAndLinks( selectedSpots, selectedLinks, file );
+		}
+		finally
+		{
+			lock.unlock();
+		}
+	}
+
+	/**
+	 * Exports the given spots and links to a GraphML file.
+	 * <br><br>
+	 * The graph is directed. The spots are the vertices and the links are the edges.
+	 * <br><br>
+	 * <ul>
+	 *     <li>The vertices receive a label attribute with the spot label.</li>
+	 *     <li>The vertices receive attributes with x,y,z and t coordinates.</li>
+	 *     <li>The vertices receive attributes with all 9 elements of the covariance matrix.</li>
+	 *     <li>The edges are not labeled.</li>
+	 *     <li>The edges are not attributed.</li>
+	 * </ul>
+	 *
+	 * @param spots the spots
+	 * @param links the links. Only links between spots in the spot set are added to the graph.
+	 * @param file the file to write the graph to
+	 */
+	static void exportSpotsAndLinks( final RefSet< Spot > spots, final RefSet< Link > links, final File file )
+	{
+		// Create a new directed graph
+		Graph< Spot, DefaultEdge > graph = new SimpleDirectedGraph<>( DefaultEdge.class );
+
+		// Add spots
+		for ( Spot spot : spots )
+		{
+			Spot copy = spots.createRef();
+			copy.refTo( spot );
+			graph.addVertex( copy );
+		}
+		// Add links
+		for ( Link link : links )
+		{
+			Spot source = link.getSource();
+			Spot target = link.getTarget();
+			if ( graph.containsVertex( source ) && graph.containsVertex( target ) )
+				graph.addEdge( source, target );
+		}
+
+		// Create exporter and make settings for it
+		GraphMLExporter< Spot, DefaultEdge > exporter = new GraphMLExporter<>();
+		exporter.setExportVertexLabels( false );
+		exporter.registerAttribute( X_ATTRIBUTE_NAME, GraphMLExporter.AttributeCategory.NODE, AttributeType.FLOAT );
+		exporter.registerAttribute( Y_ATTRIBUTE_NAME, GraphMLExporter.AttributeCategory.NODE, AttributeType.FLOAT );
+		exporter.registerAttribute( Z_ATTRIBUTE_NAME, GraphMLExporter.AttributeCategory.NODE, AttributeType.FLOAT );
+		exporter.registerAttribute( FRAME_ATTRIBUTE_NAME, GraphMLExporter.AttributeCategory.NODE, AttributeType.INT );
+		exporter.registerAttribute( LABEL_ATTRIBUTE_NAME, GraphMLExporter.AttributeCategory.NODE, AttributeType.INT );
+		exporter.setVertexAttributeProvider( spot -> {
+			Map< String, Attribute > map = new LinkedHashMap<>();
+			double[][] covariance = new double[ 3 ][ 3 ];
+			spot.getCovariance( covariance );
+			map.put( X_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( spot.getDoublePosition( 0 ) ) );
+			map.put( Y_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( spot.getDoublePosition( 1 ) ) );
+			map.put( Z_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( spot.getDoublePosition( 2 ) ) );
+			map.put( FRAME_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( spot.getTimepoint() ) );
+			map.put( LABEL_ATTRIBUTE_NAME, DefaultAttribute.createAttribute( spot.getInternalPoolIndex() ) );
+			return map;
+		} );
+		exporter.setVertexIdProvider( spot -> String.valueOf( spot.getInternalPoolIndex() ) );
+
+		// Export the graph to file
+		try (FileWriter fileWriter = new FileWriter( file ))
+		{
+			exporter.exportGraph( graph, fileWriter );
+		}
+		catch ( IOException e )
+		{
+			logger.warn( "Could not export graph to file: {}. Message: {}", file.getAbsolutePath(), e.getMessage() );
+		}
+
+		logger.info( "Exported {} spot(s) and {} link(s) to {}", graph.vertexSet().size(), graph.edgeSet().size(),
+				file.getAbsolutePath() );
 	}
 
 	/**
@@ -143,7 +257,7 @@ public class GraphMLUtils
 		// Create exporter and make settings for it
 		GraphMLExporter< CustomLabelBranchSpot, DefaultEdge > exporter = new GraphMLExporter<>();
 		exporter.setExportVertexLabels( true );
-		exporter.setVertexLabelAttributeName( VERTEX_LABEL_ATTRIBUTE_NAME );
+		exporter.setVertexLabelAttributeName( BRANCH_SPOT_LABEL_ATTRIBUTE_NAME );
 		exporter.registerAttribute( DURATION_ATTRIBUTE_NAME, GraphMLExporter.AttributeCategory.NODE, AttributeType.INT );
 		exporter.setVertexAttributeProvider( customLabelBranchSpot -> {
 			Map< String, Attribute > map = new LinkedHashMap<>();
@@ -164,7 +278,7 @@ public class GraphMLUtils
 			logger.warn( "Could not export branch graph to file: {}. Message: {}", file.getAbsolutePath(), e.getMessage() );
 		}
 
-		logger.info( "Exported {} branch spot(s) and {} branch link(s) to {}", graph.vertexSet().size(), graph.edgeSet().size(),
+		logger.info( "Exported {} branch-spot(s) and {} branch-link(s) to {}", graph.vertexSet().size(), graph.edgeSet().size(),
 				file.getAbsolutePath() );
 	}
 

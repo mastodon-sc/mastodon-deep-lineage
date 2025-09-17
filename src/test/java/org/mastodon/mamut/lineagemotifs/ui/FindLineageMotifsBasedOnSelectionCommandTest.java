@@ -36,8 +36,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.TestUtils;
@@ -48,21 +49,21 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.mastodon.model.SelectionModel;
 import org.scijava.Context;
-import org.scijava.thread.ThreadService;
+import org.scijava.command.DynamicCommand;
 
 import mpicbg.spim.data.SpimDataException;
 
-class FindLinageMotifsCommandTest
+class FindLineageMotifsBasedOnSelectionCommandTest
 {
 
 	@Test
 	void testFindLinageMotifsCommand()
-			throws NoSuchFieldException, IllegalAccessException, InterruptedException, IOException, SpimDataException
+			throws NoSuchFieldException, IllegalAccessException, IOException, SpimDataException
 	{
 		try (final Context context = new Context())
 		{
 			File tempFile1 = TestUtils.getTempFileCopy(
-					"src/test/resources/org/mastodon/mamut/lineagemotifs/util/lineage_modules.mastodon", "model",
+					"src/test/resources/org/mastodon/mamut/lineagemotifs/util/lineage_motifs.mastodon", "model",
 					".mastodon"
 			);
 			ProjectModel projectModel = ProjectLoader.open( tempFile1.getAbsolutePath(), context, false, true );
@@ -82,25 +83,21 @@ class FindLinageMotifsCommandTest
 					if ( list.contains( spot.getLabel() ) )
 						selectionModel.setSelected( spot, true );
 				}
-				ThreadService threadService = context.getService( ThreadService.class );
-
-				FindLineageMotifsCommand findLineageMotifsCommand = new FindLineageMotifsCommand();
-
-				Field projectModelField = FindLineageMotifsCommand.class.getDeclaredField( "projectModel" );
+				FindLineageMotifsBasedOnSelectionCommand findLineageMotifsBasedOnSelectionCommand =
+						new FindLineageMotifsBasedOnSelectionCommand();
+				Field projectModelField = AbstractFindLineageMotifsCommand.class.getDeclaredField( "projectModel" );
 				projectModelField.setAccessible( true );
-				projectModelField.set( findLineageMotifsCommand, projectModel );
-				Field threadServiceField = FindLineageMotifsCommand.class.getDeclaredField( "threadService" );
-				threadServiceField.setAccessible( true );
-				threadServiceField.set( findLineageMotifsCommand, threadService );
-				CountDownLatch latch = new CountDownLatch( 1 );
-				Field latchField = FindLineageMotifsCommand.class.getDeclaredField( "latch" );
-				latchField.setAccessible( true );
-				latchField.set( findLineageMotifsCommand, latch );
+				projectModelField.set( findLineageMotifsBasedOnSelectionCommand, projectModel );
+				Field contextField = DynamicCommand.class.getDeclaredField( "context" );
+				contextField.setAccessible( true );
+				contextField.set( findLineageMotifsBasedOnSelectionCommand, context );
+				assertEquals( 2, projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().size() );
 
-				findLineageMotifsCommand.run();
+				findLineageMotifsBasedOnSelectionCommand.run();
 
-				latch.await();
-				assertNotNull( findLineageMotifsCommand );
+				assertNotNull( findLineageMotifsBasedOnSelectionCommand );
+				Awaitility.await().atMost( 5, TimeUnit.SECONDS )
+						.until( () -> projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().size() == 3 );
 				assertEquals( 11, projectModel.getModel().getTagSetModel().getTagSetStructure().getTagSets().get( 2 ).getTags().size() );
 
 			}
