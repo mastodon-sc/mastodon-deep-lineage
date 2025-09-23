@@ -16,8 +16,7 @@ import org.scijava.plugin.Plugin;
 		+ "<i>Gallusser, B. & Weigert, M.</i>, Computer Vision – ECCV 2024.<br><br>"
 		+ "Trackastra uses a transformer based architecture to directly learn pairwise associations of cells within a temporal window from annotated data.<br>"
 		+ "Trackastra can account for dividing objects such as cells and allows for accurate tracking even with simple greedy linking.<br>"
-		+ "The architecture operates on the full spatio-temporal context of detections within a time window while avoiding the computational burden of processing dense images.<br><br>"
-		+ "<strong>This linker requires that the feature 'Trackastra linker features' has been computed with the feature computer.</strong><br><br>"
+		+ "The architecture operates solely on the full spatio-temporal context of detections.<br><br>"
 		+ "<strong>When this linker method is used for the first time, internet connection is needed, since an internal installation process is started. The installation consumes ~2.5GB hard disk space.</strong><br>"
 		+ "</html>" )
 public class TrackastraLinkerMamut extends AbstractSpotLinkerOp
