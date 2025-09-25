@@ -94,6 +94,9 @@ public class TrackastraRegionProps extends ApposeProcess
 			inputs.put( "image", imageNDArray );
 			inputs.put( "mask", masksNDArray );
 
+			logger.info( "Starting python process.\n" );
+			logger.info( "On first time use, this installs a Python new environment, which can take a while.\n" );
+
 			Service.Task result = runScript();
 			ShmImg< IntType > labels = new ShmImg<>( ( NDArray ) result.outputs.get( "labels" ) );
 			LoopBuilder.setImages( labels ).multiThreaded().forEachPixel( p -> p.set( p.get() - 1 ) ); // make labels zero based again
