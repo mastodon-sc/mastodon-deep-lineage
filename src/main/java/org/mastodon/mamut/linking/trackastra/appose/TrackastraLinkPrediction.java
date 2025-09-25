@@ -138,7 +138,7 @@ public class TrackastraLinkPrediction extends ApposeProcess
 	protected String generateScript()
 	{
 		String mode = ( ( TrackastraMode ) settings.get( KEY_TRACKASTRA_MODE ) ).getName();
-		double threshold = ( Double ) settings.get( KEY_EDGE_THRESHOLD );
+		double t = ( Double ) settings.get( KEY_EDGE_THRESHOLD );
 		int nDim = ( Integer ) settings.get( KEY_NUM_DIMENSIONS );
 		return "import appose\n"
 				+ "import numpy as np" + "\n"
@@ -152,6 +152,7 @@ public class TrackastraLinkPrediction extends ApposeProcess
 				+ "from tqdm import tqdm" + "\n"
 				+ "from pathlib import Path" + "\n"
 				+ "from collections import OrderedDict" + "\n"
+				+ "from trackastra.tracking.utils import graph_to_edge_table" + "\n"
 				+ "\n"
 				+ "task.update(message=\"Imports completed\")" + "\n"
 				+ "\n"
@@ -206,12 +207,12 @@ public class TrackastraLinkPrediction extends ApposeProcess
 				+ "task.update(message=f\"(Downloaded) and loaded pretrained model. Folder: {folder}\")" + "\n"
 				+ "\n"
 				+ "window_size = model.transformer.config['window']" + "\n" // TODO make it a setting - or does it have to match the model?
-				+ "windows = wrfeat.build_windows(features, window_size, tqdm)" + "\n"
+				+ "windows = wrfeat.build_windows(features, window_size, tqdm, True)" + "\n"
 				+ "\n"
 				+ "task.update(message='Window building from features completed')" + "\n"
 				+ "\n"
 				+ "model.transformer.eval()" + "\n"
-				+ "predictions = predict.predict_windows(windows,features,model.transformer,0,1," + threshold + "," + nDim + ",tqdm)" + "\n"
+				+ "predictions = predict.predict_windows(windows,features,model.transformer,0,1," + t + "," + nDim + ",1,tqdm)" + "\n"
 				+ "task.update(message=\"Predictions completed\")" + "\n"
 				+ "\n"
 				+ "track_graph = model._track_from_predictions(predictions,'" + mode + "')" + "\n"
@@ -220,7 +221,7 @@ public class TrackastraLinkPrediction extends ApposeProcess
 				+ "\n"
 				+ "task.update(message='Tracking graph construction completed. Nodes: '+str(nodes)+', Edges: '+str(n_edges)+'')" + "\n"
 				+ "\n"
-				+ "edges_table = utils.graph_to_edge_table(graph=track_graph)" + "\n"
+				+ "edges_table = graph_to_edge_table(track_graph)" + "\n"
 				+ "edges = edges_table.to_numpy(dtype=np.float32)" + "\n"
 				+ "shared_edges = appose.NDArray(str(edges.dtype), edges.shape)" + "\n"
 				+ "shared_edges.ndarray()[:] = edges" + "\n"

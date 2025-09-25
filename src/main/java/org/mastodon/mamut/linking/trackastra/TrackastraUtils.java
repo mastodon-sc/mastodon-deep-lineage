@@ -18,8 +18,7 @@ import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.trackastra.Track
 
 public class TrackastraUtils
 {
-	public static final String TRACKASTRA_VERSION = "0.3.2";
-	// TODO: upgrade to trackastra 0.4.0
+	public static final String TRACKASTRA_VERSION = "0.4.0";
 
 	private static final int DEFAULT_SETUP_ID = 0;
 
@@ -45,7 +44,8 @@ public class TrackastraUtils
 				+ apposeVersion.substring( 2 ) + "\n"
 				+ "  - pip\n"
 				+ "  - pip:\n"
-				+ "    - trackastra==" + TRACKASTRA_VERSION + "\n";
+				+ "    - trackastra==" + TRACKASTRA_VERSION + "\n"
+				+ "    - geff==0.5.0" + "\n";
 	}
 
 	public static Map< String, Object > getDefaultTrackAstraSettingsMap()
