@@ -3,7 +3,7 @@ package org.mastodon.mamut.linking.trackastra;
 import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MAX_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.trackastra.TrackastraLinkerDescriptor.KEY_SOURCE;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_SOURCE;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;

@@ -1,5 +1,13 @@
 package org.mastodon.mamut.linking.trackastra.appose;
 
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.BORDER_DIST;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.COORDS;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.DIAMETER;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.INERTIA_TENSOR;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.INTENSITY;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.LABELS;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.TIMEPOINTS;
+
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.text.NumberFormat;
@@ -34,6 +42,10 @@ public class TrackastraRegionProps extends ApposeProcess
 	private static final Logger slf4Logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final org.scijava.log.Logger logger;
+
+	private static final String IMAGE = "image";
+
+	private static final String MASK = "mask";
 
 	public TrackastraRegionProps( final org.scijava.log.Logger logger ) throws IOException
 	{
@@ -91,22 +103,22 @@ public class TrackastraRegionProps extends ApposeProcess
 				slf4Logger.info( "Converted image and masks to nd arrays: {} and {}. Time elapsed: {}", imageNDArray, masksNDArray,
 						stopWatch.formatSplitTime() );
 
-			inputs.put( "image", imageNDArray );
-			inputs.put( "mask", masksNDArray );
+			inputs.put( IMAGE, imageNDArray );
+			inputs.put( MASK, masksNDArray );
 
 			logger.info( "Starting python process.\n" );
 			logger.info( "On first time use, this installs a Python new environment, which can take a while.\n" );
 
 			Service.Task result = runScript();
-			ShmImg< IntType > labels = new ShmImg<>( ( NDArray ) result.outputs.get( "labels" ) );
+			ShmImg< IntType > labels = new ShmImg<>( ( NDArray ) result.outputs.get( LABELS ) );
 			LoopBuilder.setImages( labels ).multiThreaded().forEachPixel( p -> p.set( p.get() - 1 ) ); // make labels zero based again
-			ShmImg< IntType > timepoints = new ShmImg<>( ( NDArray ) result.outputs.get( "timepoints" ) );
+			ShmImg< IntType > timepoints = new ShmImg<>( ( NDArray ) result.outputs.get( TIMEPOINTS ) );
 			LoopBuilder.setImages( timepoints ).multiThreaded().forEachPixel( p -> p.set( timepoint ) ); // all timepoints are the same
-			ShmImg< FloatType > coords = new ShmImg<>( ( NDArray ) result.outputs.get( "coords" ) );
-			ShmImg< FloatType > diameter = new ShmImg<>( ( NDArray ) result.outputs.get( "equivalent_diameter_area" ) );
-			ShmImg< FloatType > intensity = new ShmImg<>( ( NDArray ) result.outputs.get( "intensity_mean" ) );
-			ShmImg< FloatType > inertiaTensor = new ShmImg<>( ( NDArray ) result.outputs.get( "inertia_tensor" ) );
-			ShmImg< FloatType > borderDist = new ShmImg<>( ( NDArray ) result.outputs.get( "border_dist" ) );
+			ShmImg< FloatType > coords = new ShmImg<>( ( NDArray ) result.outputs.get( COORDS ) );
+			ShmImg< FloatType > diameter = new ShmImg<>( ( NDArray ) result.outputs.get( DIAMETER ) );
+			ShmImg< FloatType > intensity = new ShmImg<>( ( NDArray ) result.outputs.get( INTENSITY ) );
+			ShmImg< FloatType > inertiaTensor = new ShmImg<>( ( NDArray ) result.outputs.get( INERTIA_TENSOR ) );
+			ShmImg< FloatType > borderDist = new ShmImg<>( ( NDArray ) result.outputs.get( BORDER_DIST ) );
 			return new RegionProps( labels, timepoints, coords, diameter, intensity, inertiaTensor, borderDist );
 		}
 		catch ( IOException e )
@@ -135,8 +147,8 @@ public class TrackastraRegionProps extends ApposeProcess
 				+ "\n"
 				+ "task.update(message=\"Imports completed\")" + "\n"
 				+ "\n"
-				+ "image_ndarray = image.ndarray()" + "\n"
-				+ "mask_ndarray = mask.ndarray().astype('int32')" + "\n"
+				+ "image_ndarray = " + IMAGE + ".ndarray()" + "\n"
+				+ "mask_ndarray = " + MASK + ".ndarray().astype('int32')" + "\n"
 				+ "\n"
 				+ "ndim = image_ndarray.ndim" + "\n"
 				+ "if ndim == 3:" + "\n"
@@ -178,13 +190,13 @@ public class TrackastraRegionProps extends ApposeProcess
 				+ "shared_border_dist = appose.NDArray(str(border_dist.dtype), border_dist.shape)" + "\n"
 				+ "shared_border_dist.ndarray()[:] = border_dist" + "\n"
 				+ "\n"
-				+ "task.outputs['labels'] = shared_labels" + "\n"
-				+ "task.outputs['timepoints'] = shared_timepoints" + "\n"
-				+ "task.outputs['coords'] = shared_coords" + "\n"
-				+ "task.outputs['equivalent_diameter_area'] = shared_diameter" + "\n"
-				+ "task.outputs['intensity_mean'] = shared_intensity" + "\n"
-				+ "task.outputs['inertia_tensor'] = shared_inertia_tensor" + "\n"
-				+ "task.outputs['border_dist'] = shared_border_dist" + "\n"
+				+ "task.outputs['" + LABELS + "'] = shared_labels" + "\n"
+				+ "task.outputs['" + TIMEPOINTS + "'] = shared_timepoints" + "\n"
+				+ "task.outputs['" + COORDS + "'] = shared_coords" + "\n"
+				+ "task.outputs['" + DIAMETER + "'] = shared_diameter" + "\n"
+				+ "task.outputs['" + INTENSITY + "'] = shared_intensity" + "\n"
+				+ "task.outputs['" + INERTIA_TENSOR + "'] = shared_inertia_tensor" + "\n"
+				+ "task.outputs['" + BORDER_DIST + "'] = shared_border_dist" + "\n"
 				+ "\n"
 				+ "task.update(message=\"Feature extraction completed. Found {} objects\".format(len(labels)))" + "\n";
 	}

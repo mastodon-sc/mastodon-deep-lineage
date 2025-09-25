@@ -1,6 +1,11 @@
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.trackastra;
 
 import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_EDGE_THRESHOLD;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_MODEL;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_NUM_DIMENSIONS;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_SOURCE;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_TRACKASTRA_MODE;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MAX_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_SETUP_ID;
@@ -22,6 +27,7 @@ import net.miginfocom.swing.MigLayout;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.linking.trackastra.TrackastraLinkerMamut;
 import org.mastodon.mamut.linking.trackastra.TrackastraMode;
+import org.mastodon.mamut.linking.trackastra.TrackastraModel;
 import org.mastodon.tracking.detection.DetectorKeys;
 import org.mastodon.tracking.mamut.linking.SpotLinkerOp;
 import org.mastodon.tracking.mamut.trackmate.Settings;
@@ -41,16 +47,6 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 {
 
 	public static final String IDENTIFIER = "Configure Trackastra linker";
-
-	public static final String KEY_EDGE_THRESHOLD = "trackastraEdgeThreshold";
-
-	public static final String KEY_TRACKASTRA_MODE = "trackastraMode";
-
-	public static final String KEY_NUM_DIMENSIONS = "trackastraNumDimensions";
-
-	public static final String KEY_NUM_SOURCES = "trackastraNumSources";
-
-	public static final String KEY_SOURCE = "trackastraSource";
 
 	@Parameter
 	private PluginService pluginService;
@@ -81,6 +77,7 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 		logger.log( LogLevel.INFO, String.format( "  - resolution level: %d%n", ( int ) linkerSettings.get( KEY_LEVEL ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - edge threshold: %s%n", linkerSettings.get( KEY_EDGE_THRESHOLD ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - mode: %s%n", linkerSettings.get( KEY_TRACKASTRA_MODE ) ) );
+		logger.log( LogLevel.INFO, String.format( "  - model: %s%n", linkerSettings.get( KEY_MODEL ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - num dimensions: %d%n", ( int ) linkerSettings.get( KEY_NUM_DIMENSIONS ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - min time-point: %d%n", ( int ) linkerSettings.get( KEY_MIN_TIMEPOINT ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - max time-point: %d%n", ( int ) linkerSettings.get( KEY_MAX_TIMEPOINT ) ) );
@@ -116,6 +113,8 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 
 		private final JComboBox< TrackastraMode > modeComboBox;
 
+		private final JComboBox< TrackastraModel > modelComboBox;
+
 		private final SetupIDComboBox sourcesComboBox;
 
 		private final JLabel levelDesc;
@@ -126,9 +125,12 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 		{
 			edgeThreshold = new JSpinner( new SpinnerNumberModel( 0.05, 0.0, 1.0, 0.01 ) );
 			modeComboBox = new JComboBox<>( TrackastraMode.values() );
+			modelComboBox = new JComboBox<>();
 			sourcesComboBox = new SetupIDComboBox( settings.values.getSources() );
-			levelDesc = new JLabel( getLevelText( sourcesComboBox.getSelectedSetupID() ) );
-			levelSpinner = new JSpinner( new SpinnerNumberModel( 0, 0, 0, 1 ) );
+			levelDesc = new JLabel();
+			levelSpinner = new JSpinner();
+			updateModels();
+			updateResolutionLevels();
 			initBehaviour();
 			initLayout();
 		}
@@ -154,12 +156,21 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 			JLabel modeLabel = new JLabel( "Mode:" );
 			modeLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 			modeComboBox.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
-			JLabel modeDesc = new JLabel( "<html>Select the algorithm mode.<br>Options: greedy with or without divisions.</html>" );
+			JLabel modeDesc = new JLabel(
+					"<html>Select the algorithm mode.<br><ul><li>greedy linking with divisions</li><li>greedy linking without divisions</li></html>" );
 			modeDesc.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 
 			add( modeLabel, "wrap" );
 			add( modeComboBox, "wrap" );
 			add( modeDesc, "span 2, wrap, gapbottom 10" );
+
+			JLabel modelLabel = new JLabel( "Model:" );
+			modelLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
+			modelComboBox.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
+			modeDesc.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
+
+			add( modelLabel, "wrap" );
+			add( modelComboBox, "wrap, gapbottom 10" );
 
 			JLabel sourceLabel = new JLabel( "Source:" );
 			sourceLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
@@ -182,13 +193,47 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 
 			edgeThreshold.addFocusListener( onFocusListener );
 			modeComboBox.addFocusListener( onFocusListener );
+			modelComboBox.addFocusListener( onFocusListener );
 			sourcesComboBox.addFocusListener( onFocusListener );
 
 			sourcesComboBox.addActionListener( e -> {
-				int levels = settings.values.getSources().get( sourcesComboBox.getSelectedIndex() ).getSpimSource().getNumMipmapLevels();
-				( ( SpinnerNumberModel ) levelSpinner.getModel() ).setMaximum( levels - 1 );
-				levelDesc.setText( getLevelText( levels ) );
+				updateResolutionLevels();
+				updateModels();
 			} );
+		}
+
+		private void updateModels()
+		{
+			int nDimensions = settings.values.getSources().get( sourcesComboBox.getSelectedIndex() ).getSpimSource()
+					.getVoxelDimensions().dimensionsAsDoubleArray().length;
+			TrackastraModel selectedModel = ( TrackastraModel ) modelComboBox.getSelectedItem();
+			modelComboBox.removeAllItems();
+			if ( nDimensions > 2 )
+			{
+				for ( final TrackastraModel model : TrackastraModel.values() )
+				{
+					if ( model.is3D() )
+						modelComboBox.addItem( model );
+				}
+			}
+			else
+			{
+				for ( final TrackastraModel model : TrackastraModel.values() )
+					modelComboBox.addItem( model );
+			}
+			if ( selectedModel != null )
+				modelComboBox.setSelectedItem( selectedModel );
+			else
+				modelComboBox.setSelectedIndex( 0 );
+		}
+
+		private void updateResolutionLevels()
+		{
+			int numLevels = settings.values.getSources().get( sourcesComboBox.getSelectedIndex() ).getSpimSource().getNumMipmapLevels();
+			int selectedLevel = levelSpinner.getValue() == null ? 0 : ( Integer ) levelSpinner.getValue();
+			SpinnerNumberModel model = new SpinnerNumberModel( selectedLevel, 0, numLevels, 1 );
+			levelSpinner.setModel( model );
+			levelDesc.setText( getLevelText( numLevels ) );
 		}
 
 		private Map< String, Object > getSettings()
@@ -202,17 +247,21 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 			linkerSettings.put( KEY_NUM_DIMENSIONS, dimensions );
 			linkerSettings.put( KEY_EDGE_THRESHOLD, edgeThreshold.getValue() );
 			linkerSettings.put( KEY_TRACKASTRA_MODE, modeComboBox.getSelectedItem() );
+			linkerSettings.put( KEY_MODEL, modelComboBox.getSelectedItem() );
 			linkerSettings.put( KEY_LEVEL, levelSpinner.getValue() );
-			linkerSettings.put( KEY_NUM_SOURCES, settings.values.getSources().size() );
 
 			return linkerSettings;
 		}
 
 		private void loadSettings( final Map< String, Object > linkerSettings )
 		{
-			sourcesComboBox.setSelectedSetupID( ( int ) linkerSettings.get( KEY_SETUP_ID ) );
+			synchronized ( this )
+			{
+				sourcesComboBox.setSelectedSetupID( ( int ) linkerSettings.get( KEY_SETUP_ID ) );
+			}
 			edgeThreshold.setValue( linkerSettings.get( KEY_EDGE_THRESHOLD ) );
 			modeComboBox.setSelectedItem( linkerSettings.get( KEY_TRACKASTRA_MODE ) );
+			modelComboBox.setSelectedItem( linkerSettings.get( KEY_MODEL ) );
 			levelSpinner.setValue( linkerSettings.get( KEY_LEVEL ) );
 		}
 	}

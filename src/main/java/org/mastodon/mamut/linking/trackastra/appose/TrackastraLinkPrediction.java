@@ -1,8 +1,15 @@
 package org.mastodon.mamut.linking.trackastra.appose;
 
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.trackastra.TrackastraLinkerDescriptor.KEY_EDGE_THRESHOLD;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.trackastra.TrackastraLinkerDescriptor.KEY_NUM_DIMENSIONS;
-import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.trackastra.TrackastraLinkerDescriptor.KEY_TRACKASTRA_MODE;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.BORDER_DIST;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.COORDS;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.DIAMETER;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.INERTIA_TENSOR;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.INTENSITY;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.LABELS;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.TIMEPOINTS;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_EDGE_THRESHOLD;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_NUM_DIMENSIONS;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_TRACKASTRA_MODE;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -16,6 +23,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import org.apposed.appose.NDArray;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.linking.trackastra.TrackastraMode;
+import org.mastodon.mamut.linking.trackastra.TrackastraModel;
 import org.mastodon.mamut.linking.trackastra.TrackastraUtils;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.util.ApposeProcess;
@@ -58,13 +66,13 @@ public class TrackastraLinkPrediction extends ApposeProcess
 			message += "Time elapsed: " + stopWatch.formatSplitTime();
 			slf4jLogger.info( message );
 
-			inputs.put( "labels", NDArrays.asNDArray( regionProps.labels ) );
-			inputs.put( "timepoints", NDArrays.asNDArray( regionProps.timepoints ) );
-			inputs.put( "coords", NDArrays.asNDArray( regionProps.coords ) );
-			inputs.put( "diameters", NDArrays.asNDArray( regionProps.diameters ) );
-			inputs.put( "intensities", NDArrays.asNDArray( regionProps.intensities ) );
-			inputs.put( "tensors", NDArrays.asNDArray( regionProps.inertiaTensors ) );
-			inputs.put( "border_dists", NDArrays.asNDArray( regionProps.borderDists ) );
+			inputs.put( LABELS, NDArrays.asNDArray( regionProps.labels ) );
+			inputs.put( TIMEPOINTS, NDArrays.asNDArray( regionProps.timepoints ) );
+			inputs.put( COORDS, NDArrays.asNDArray( regionProps.coords ) );
+			inputs.put( DIAMETER, NDArrays.asNDArray( regionProps.diameters ) );
+			inputs.put( INTENSITY, NDArrays.asNDArray( regionProps.intensities ) );
+			inputs.put( INERTIA_TENSOR, NDArrays.asNDArray( regionProps.inertiaTensors ) );
+			inputs.put( BORDER_DIST, NDArrays.asNDArray( regionProps.borderDists ) );
 
 			Service.Task result = runScript();
 			writesEdges( result );
@@ -138,6 +146,7 @@ public class TrackastraLinkPrediction extends ApposeProcess
 	protected String generateScript()
 	{
 		String mode = ( ( TrackastraMode ) settings.get( KEY_TRACKASTRA_MODE ) ).getName();
+		String model = ( ( TrackastraModel ) settings.get( TrackastraUtils.KEY_MODEL ) ).getName();
 		double t = ( Double ) settings.get( KEY_EDGE_THRESHOLD );
 		int nDim = ( Integer ) settings.get( KEY_NUM_DIMENSIONS );
 		return "import appose\n"
@@ -156,13 +165,13 @@ public class TrackastraLinkPrediction extends ApposeProcess
 				+ "\n"
 				+ "task.update(message=\"Imports completed\")" + "\n"
 				+ "\n"
-				+ "coords_ndarray = coords.ndarray()" + "\n"
-				+ "labels_ndarray = labels.ndarray()" + "\n"
-				+ "timepoints_ndarray = timepoints.ndarray()" + "\n"
-				+ "diameters_ndarray = diameters.ndarray()" + "\n"
-				+ "intensities_ndarray = intensities.ndarray()" + "\n"
-				+ "tensors_ndarray = tensors.ndarray()" + "\n"
-				+ "border_dists_ndarray = border_dists.ndarray()" + "\n"
+				+ "labels_ndarray = " + LABELS + ".ndarray()" + "\n"
+				+ "timepoints_ndarray = " + TIMEPOINTS + ".ndarray()" + "\n"
+				+ "coords_ndarray = " + COORDS + ".ndarray()" + "\n"
+				+ "diameters_ndarray = " + DIAMETER + ".ndarray()" + "\n"
+				+ "intensities_ndarray = " + INTENSITY + ".ndarray()" + "\n"
+				+ "tensors_ndarray = " + INERTIA_TENSOR + ".ndarray()" + "\n"
+				+ "border_dists_ndarray = " + BORDER_DIST + ".ndarray()" + "\n"
 				+ "\n"
 				+ "wrfeatures_list = []" + "\n"
 				+ "timepoints = labels_ndarray.shape[1]" + "\n"
@@ -198,7 +207,7 @@ public class TrackastraLinkPrediction extends ApposeProcess
 				+ "task.update(message='Read data from Region Props')" + "\n"
 				+ "\n"
 				+ "features = tuple(wrfeatures_list)" + "\n"
-				+ "name='ctc'" + "\n" // TODO make it a setting
+				+ "name='" + model + "'" + "\n"
 				+ "device='cpu'" + "\n"
 				+ "download_dir=Path.home() / '.local' / 'share' / 'appose' / 'trackastra' / 'pretrained_models'" + "\n"
 				+ "folder = pretrained.download_pretrained(name=name, download_dir=download_dir)" + "\n"

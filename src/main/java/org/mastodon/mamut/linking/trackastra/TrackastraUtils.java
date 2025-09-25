@@ -11,20 +11,29 @@ import static org.mastodon.tracking.linking.LinkerKeys.KEY_DO_LINK_SELECTION;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.tracking.detection.DetectorKeys;
-import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.trackastra.TrackastraLinkerDescriptor;
 
 public class TrackastraUtils
 {
 	public static final String TRACKASTRA_VERSION = "0.4.0";
+
+	public static final String KEY_EDGE_THRESHOLD = "trackastraEdgeThreshold";
+
+	public static final String KEY_TRACKASTRA_MODE = "trackastraMode";
+
+	public static final String KEY_SOURCE = "trackastraSource";
+
+	public static final String KEY_NUM_DIMENSIONS = "trackastraNumDimensions";
+
+	public static final String KEY_MODEL = "trackastraModel";
 
 	private static final int DEFAULT_SETUP_ID = 0;
 
 	private static final double DEFAULT_EDGE_THRESHOLD = 0.05;
 
 	public static final TrackastraMode DEFAULT_TRACKASTRA_MODE = TrackastraMode.GREEDY;
+
+	public static final TrackastraModel DEFAULT_MODEL = TrackastraModel.CTC;
 
 	private static final int DEFAULT_LEVEL = 0;
 
@@ -56,21 +65,10 @@ public class TrackastraUtils
 		settings.put( KEY_DO_LINK_SELECTION, DEFAULT_DO_LINK_SELECTION );
 
 		settings.put( DetectorKeys.KEY_SETUP_ID, DEFAULT_SETUP_ID );
-		settings.put( TrackastraLinkerDescriptor.KEY_EDGE_THRESHOLD, DEFAULT_EDGE_THRESHOLD );
-		settings.put( TrackastraLinkerDescriptor.KEY_TRACKASTRA_MODE, DEFAULT_TRACKASTRA_MODE );
+		settings.put( KEY_EDGE_THRESHOLD, DEFAULT_EDGE_THRESHOLD );
+		settings.put( KEY_TRACKASTRA_MODE, DEFAULT_TRACKASTRA_MODE );
+		settings.put( KEY_MODEL, DEFAULT_MODEL );
 		settings.put( KEY_LEVEL, DEFAULT_LEVEL );
 		return settings;
-	}
-
-	static int getMaxSpots( final int minTimepoint, final int maxTimepoint, final SpatioTemporalIndex< Spot > index )
-	{
-		int maxSpots = Integer.MIN_VALUE;
-		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
-		{
-			int nSpots = index.getSpatialIndex( timepoint ).size();
-			if ( nSpots > maxSpots )
-				maxSpots = nSpots;
-		}
-		return maxSpots;
 	}
 }

@@ -2,7 +2,7 @@ package org.mastodon.mamut.linking.trackastra;
 
 public enum TrackastraModel
 {
-	CTC( true, "CTC", "Cell Tracking Challenge (2D+3D" ),
+	CTC( true, "ctc", "Cell Tracking Challenge (2D+3D" ),
 	GENERAL_2D( false, "general_2d", "General Model (2D)" );
 
 	private final boolean is3D;
