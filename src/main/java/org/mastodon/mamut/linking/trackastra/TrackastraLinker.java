@@ -53,7 +53,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		}
 		catch ( Exception e )
 		{
-			slf4jLogger.error( "Error during TrackAstra RegionProps computing", e );
+			slf4jLogger.error( "Error during TrackAstra RegionProps computing: {}", e.getMessage(), e );
 			ok = false;
 			errorMessage = e.getMessage();
 			return;
@@ -69,7 +69,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		}
 		catch ( Exception e )
 		{
-			slf4jLogger.error( "Error during TrackAstra linking", e );
+			slf4jLogger.error( "Error during TrackAstra linking: {}", e.getMessage(), e );
 			ok = false;
 			errorMessage = e.getMessage();
 			return;

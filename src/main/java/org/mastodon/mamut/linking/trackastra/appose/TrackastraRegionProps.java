@@ -61,14 +61,15 @@ public class TrackastraRegionProps extends ApposeProcess
 		int done = 0;
 		slf4Logger.info( "Computing region props for source: {}", source.getName() );
 		logger.info( "Computing region props for source: " + source.getName() + "\n" );
+		logger.info( "On first time use, this installs a Python new environment. This takes a while an requires internet connection.\n" );
 		List< RegionProps > list = new ArrayList<>();
 		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++, done++ )
 		{
 			if ( spatioTemporalIndex.getSpatialIndex( timepoint ).isEmpty() )
 			{
-				slf4Logger.info( "No spots. Skipping region props computation for timepoint: {}", timepoint );
-				logger.info( "No spots. Skipping region props computation for timepoint: " + timepoint + "\n" );
-				done++;
+				slf4Logger.info( "No spots. Adding empty region props for timepoint: {}", timepoint );
+				logger.info( "No spots. Adding empty region props for timepoint: " + timepoint + "\n" );
+				list.add( null );
 				continue;
 			}
 			RegionProps regionProps = computeSource( source, timepoint, level, spatioTemporalIndex );
@@ -114,12 +115,9 @@ public class TrackastraRegionProps extends ApposeProcess
 			inputs.put( IMAGE, imageNDArray );
 			inputs.put( MASK, masksNDArray );
 
-			logger.info( "Starting python process.\n" );
-			logger.info( "On first time use, this installs a Python new environment, which can take a while.\n" );
-
 			Service.Task result = runScript();
 			ShmImg< IntType > labels = new ShmImg<>( ( NDArray ) result.outputs.get( LABELS ) );
-			LoopBuilder.setImages( labels ).multiThreaded().forEachPixel( p -> p.set( p.get() - 1 ) ); // make labels zero based again
+			LoopBuilder.setImages( labels ).multiThreaded().forEachPixel( p -> p.set( p.get() - 1 ) ); // make labels zero-based again
 			ShmImg< IntType > timepoints = new ShmImg<>( ( NDArray ) result.outputs.get( TIMEPOINTS ) );
 			LoopBuilder.setImages( timepoints ).multiThreaded().forEachPixel( p -> p.set( timepoint ) ); // all timepoints are the same
 			ShmImg< FloatType > coords = new ShmImg<>( ( NDArray ) result.outputs.get( COORDS ) );

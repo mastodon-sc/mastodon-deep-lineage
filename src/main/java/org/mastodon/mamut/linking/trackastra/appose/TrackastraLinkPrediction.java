@@ -160,7 +160,7 @@ public class TrackastraLinkPrediction extends ApposeProcess
 				+ "timepoints = labels_ndarray.shape[1]" + "\n"
 				+ "for t in range(0, timepoints):" + "\n"
 				+ "  labels_t = labels_ndarray[:, t]" + "\n"
-				+ "  num_labels_t = np.max(np.nonzero(labels_t)) + 1" + "\n"
+				+ "  num_labels_t = np.count_nonzero(labels_t)" + "\n"
 				+ "  labels_t = labels_t[:num_labels_t]" + "\n"
 				+ "  labels_flat = np.asarray(labels_t).ravel()" + "\n"
 				+ "  sort_idx = np.argsort(labels_t)" + "\n"
