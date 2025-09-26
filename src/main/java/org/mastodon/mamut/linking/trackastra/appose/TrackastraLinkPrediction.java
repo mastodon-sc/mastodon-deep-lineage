@@ -56,7 +56,7 @@ public class TrackastraLinkPrediction extends ApposeProcess
 		this.logger = logger;
 	}
 
-	public void compute()
+	public void compute() throws IOException
 	{
 		try
 		{
@@ -76,12 +76,10 @@ public class TrackastraLinkPrediction extends ApposeProcess
 
 			Service.Task result = runScript();
 			writesEdges( result );
-
-			regionProps.close();
 		}
-		catch ( IOException e )
+		finally
 		{
-			throw new RuntimeException( e );
+			regionProps.close();
 		}
 	}
 
