@@ -69,13 +69,14 @@ public class Cellpose3 extends Cellpose
 	protected String getEvaluateModelCommand()
 	{
 		String diams = modelType.hasSizeModel() ? ", diams" : "";
+		String zAxis = is3D() ? "0" : "None";
 		return "segmentation, flows, styles" + diams + " = model.eval("
 				+ "image_ndarray, "
 				+ "diameter=" + getDiameter() + ", "
 				+ "channels=[0, 0], "
 				+ "do_3D=" + is3DParam() + ", "
 				+ "anisotropy=" + anisotropyParam() + ", "
-				+ "z_axis=0, "
+				+ "z_axis=" + zAxis + ", "
 				+ "normalize=True, "
 				+ "batch_size=8, "
 				+ "flow3D_smooth=0, "

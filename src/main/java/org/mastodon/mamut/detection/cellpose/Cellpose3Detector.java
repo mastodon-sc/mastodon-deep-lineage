@@ -51,6 +51,7 @@ import java.util.Map;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.util.Cast;
+import net.imglib2.view.Views;
 
 import org.mastodon.mamut.detection.DeepLearningDetector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
@@ -102,14 +103,15 @@ public class Cellpose3Detector extends DeepLearningDetector
 	{
 		try (Cellpose3 cellpose = new Cellpose3( ( Cellpose3.ModelType ) settings.get( KEY_MODEL_TYPE ) ))
 		{
-			cellpose.set3D( is3D( image ) );
+			boolean is3D = is3D( image );
+			cellpose.set3D( is3D );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );
 			cellpose.setDiameter( ( double ) settings.get( KEY_DIAMETER ) );
 			cellpose.setGpuID( ( int ) settings.get( KEY_GPU_ID ) );
 			cellpose.setGpuMemoryFraction( ( double ) settings.get( KEY_GPU_MEMORY_FRACTION ) );
 			final boolean respectAnisotropy = ( boolean ) settings.get( KEY_RESPECT_ANISOTROPY );
-			double anisotropy = respectAnisotropy ? getAnisotropy( voxelDimensions ) : 1.0;
+			double anisotropy = respectAnisotropy ? getAnisotropy( voxelDimensions, is3D ) : 1.0;
 			cellpose.setAnisotropy( ( float ) anisotropy );
 			return cellpose.segmentImage( Cast.unchecked( image ) );
 		}

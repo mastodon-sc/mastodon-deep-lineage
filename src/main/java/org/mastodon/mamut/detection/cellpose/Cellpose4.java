@@ -50,11 +50,12 @@ public class Cellpose4 extends Cellpose
 	@Override
 	protected String getEvaluateModelCommand()
 	{
+		String zAxis = is3D() ? "0" : "None";
 		return "segmentation, flows, styles = model.eval("
 				+ "image_ndarray, "
 				+ "diameter=" + getDiameter() + ", "
 				+ "do_3D=" + is3DParam() + ", "
-				+ "z_axis=0, "
+				+ "z_axis=" + zAxis + ", "
 				+ "normalize=True, "
 				+ "batch_size=8, "
 				+ "flow3D_smooth=0, "

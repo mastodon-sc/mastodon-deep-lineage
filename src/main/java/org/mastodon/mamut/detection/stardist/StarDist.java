@@ -275,14 +275,15 @@ public class StarDist extends Segmentation
 
 	private String getAxesNormalizeCommand()
 	{
-		return "axes_normalize = (0, 1, 2)" + "\n ";
+		return dataIs2D ? "axes_normalize = (0, 1)" + "\n " : // for 2D data (Y, X) or 3D data with 2D slices (Z, Y, X)
+				"axes_normalize = (0, 1, 2)" + "\n "; // for 3D data (Z, Y, X)
 	}
 
 	private String getPredictionCommand()
 	{
-		return "label_image, details = model.predict_instances(image_normalized, axes='ZYX', n_tiles=guessed_tiles, nms_thresh=" + nmsThresh
-				+ ", prob_thresh=" + probThresh + ")"
-				+ "\n";
+		String axes = dataIs2D ? "YX" : "ZYX";
+		return "label_image, details = model.predict_instances(image_normalized, axes='" + axes + "', n_tiles=guessed_tiles, nms_thresh="
+				+ nmsThresh + ", prob_thresh=" + probThresh + ")" + "\n";
 	}
 
 	private String getLoadModelCommand()

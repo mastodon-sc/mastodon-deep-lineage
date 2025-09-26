@@ -204,7 +204,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		}
 
 		System.err.println(); // show the FIJI console
-		final Img< ? > segmentation = performSegmentation( image, source.getVoxelDimensions().dimensionsAsDoubleArray() );
+		final Img< ? > segmentation =
+				performSegmentation( Views.dropSingletonDimensions( image ), source.getVoxelDimensions().dimensionsAsDoubleArray() );
 
 		if ( segmentation != null )
 		{
@@ -234,8 +235,11 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		return true;
 	}
 
-	protected double getAnisotropy( double[] voxelSizes )
+	protected double getAnisotropy( double[] voxelSizes, boolean is3D )
 	{
+		if ( !is3D )
+			return 1.0;
+
 		if ( voxelSizes == null || voxelSizes.length == 0 )
 		{
 			throw new IllegalArgumentException( "Array must not be empty" );
