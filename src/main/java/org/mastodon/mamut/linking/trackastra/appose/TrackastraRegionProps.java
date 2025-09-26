@@ -22,6 +22,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Cast;
+import net.imglib2.view.Views;
 
 import org.apposed.appose.NDArray;
 import org.apposed.appose.Service;
@@ -97,8 +98,8 @@ public class TrackastraRegionProps extends ApposeProcess
 		RandomAccessibleInterval< IntType > masksImage = ExportLabelImageUtils.getLabelImageFromSpots( transform,
 				image.dimensionsAsLongArray(), level, timepoint, spatioTemporalIndex );
 		// Prepare inputs.
-		try (ShmImg< ? > sharedMemoryImage = ShmImg.copyOf( Cast.unchecked( image ) );
-				ShmImg< ? > sharedMemoryMasks = ShmImg.copyOf( Cast.unchecked( masksImage ) ))
+		try (ShmImg< ? > sharedMemoryImage = ShmImg.copyOf( Cast.unchecked( Views.dropSingletonDimensions( image ) ) );
+				ShmImg< ? > sharedMemoryMasks = ShmImg.copyOf( Cast.unchecked( Views.dropSingletonDimensions( masksImage ) ) ))
 		{
 			stopWatch.split();
 			if ( slf4Logger.isInfoEnabled() )

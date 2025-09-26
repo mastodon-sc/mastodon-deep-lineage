@@ -56,8 +56,10 @@ public class RegionProps implements AutoCloseable
 			ShmImg< IntType > labelsAtTimepoint = regionProps.get( timepoint ).labels;
 			long numLabelsAtTimepoint = labelsAtTimepoint.dimension( 0 );
 			Interval interval = new FinalInterval( numLabelsAtTimepoint );
-			Interval interval3 = new FinalInterval( new long[] { 0, 0 }, new long[] { numLabelsAtTimepoint - 1, 2 } );
-			Interval interval9 = new FinalInterval( new long[] { 0, 0 }, new long[] { numLabelsAtTimepoint - 1, 8 } );
+			long numDimensions = regionProps.get( 0 ).coords.dimension( 1 );
+			Interval interval3 = new FinalInterval( new long[] { 0, 0 }, new long[] { numLabelsAtTimepoint - 1, numDimensions - 1 } );
+			long numTensors = regionProps.get( 0 ).inertiaTensors.dimension( 1 );
+			Interval interval9 = new FinalInterval( new long[] { 0, 0 }, new long[] { numLabelsAtTimepoint - 1, numTensors - 1 } );
 
 			RandomAccessibleInterval< IntType > sliceInt = Views.hyperSlice( labelsAllTimepoints, 0, timepoint );
 			RandomAccessibleInterval< IntType > restrictedIntervalInt = Views.interval( sliceInt, interval );
