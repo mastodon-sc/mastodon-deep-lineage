@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
+import net.imglib2.view.Views;
 import net.miginfocom.swing.MigLayout;
 
 import org.mastodon.mamut.WindowManager;
@@ -204,11 +205,13 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 
 		private void updateModels()
 		{
-			int nDimensions = settings.values.getSources().get( sourcesComboBox.getSelectedIndex() ).getSpimSource()
-					.getVoxelDimensions().dimensionsAsDoubleArray().length;
+			int nDimensions = Views
+					.dropSingletonDimensions(
+							settings.values.getSources().get( sourcesComboBox.getSelectedIndex() ).getSpimSource().getSource( 0, 0 ) )
+					.numDimensions();
 			TrackastraModel selectedModel = ( TrackastraModel ) modelComboBox.getSelectedItem();
 			modelComboBox.removeAllItems();
-			if ( nDimensions > 2 )
+			if ( nDimensions >= 3 )
 			{
 				for ( final TrackastraModel model : TrackastraModel.values() )
 				{

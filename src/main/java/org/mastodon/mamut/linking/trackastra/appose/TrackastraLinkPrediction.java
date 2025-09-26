@@ -149,23 +149,8 @@ public class TrackastraLinkPrediction extends ApposeProcess
 		String model = ( ( TrackastraModel ) settings.get( TrackastraUtils.KEY_MODEL ) ).getName();
 		double t = ( Double ) settings.get( KEY_EDGE_THRESHOLD );
 		int nDim = ( Integer ) settings.get( KEY_NUM_DIMENSIONS );
-		return "import appose\n"
-				+ "import numpy as np" + "\n"
-				+ "\n"
-				+ "import trackastra.data.wrfeat as wrfeat" + "\n"
-				+ "import trackastra.model.predict as predict" + "\n"
-				+ "import trackastra.model.pretrained as pretrained" + "\n"
-				+ "import trackastra.tracking.utils as utils" + "\n"
-				+ "from trackastra.model import Trackastra" + "\n"
-				+ "\n"
-				+ "from tqdm import tqdm" + "\n"
-				+ "from pathlib import Path" + "\n"
-				+ "from collections import OrderedDict" + "\n"
-				+ "from trackastra.tracking.utils import graph_to_edge_table" + "\n"
-				+ "\n"
-				+ "task.update(message=\"Imports completed\")" + "\n"
-				+ "\n"
-				+ "labels_ndarray = " + LABELS + ".ndarray()" + "\n"
+
+		return "labels_ndarray = " + LABELS + ".ndarray()" + "\n"
 				+ "timepoints_ndarray = " + TIMEPOINTS + ".ndarray()" + "\n"
 				+ "coords_ndarray = " + COORDS + ".ndarray()" + "\n"
 				+ "diameters_ndarray = " + DIAMETER + ".ndarray()" + "\n"
@@ -230,12 +215,34 @@ public class TrackastraLinkPrediction extends ApposeProcess
 				+ "\n"
 				+ "task.update(message='Tracking graph construction completed. Nodes: '+str(nodes)+', Edges: '+str(n_edges)+'')" + "\n"
 				+ "\n"
-				+ "edges_table = graph_to_edge_table(track_graph)" + "\n"
+				+ "edges_table = utils.graph_to_edge_table(track_graph)" + "\n"
 				+ "edges = edges_table.to_numpy(dtype=np.float32)" + "\n"
 				+ "shared_edges = appose.NDArray(str(edges.dtype), edges.shape)" + "\n"
 				+ "shared_edges.ndarray()[:] = edges" + "\n"
 				+ "task.outputs['edges'] = shared_edges" + "\n"
 				+ "\n"
 				+ "task.update(message=str(n_edges) + ' edges saved to shared memory')" + "\n";
+	}
+
+	@Override
+	protected String generateImportStatements()
+	{
+		return "import appose\n"
+				+ "import numpy as np" + "\n"
+				+ "\n"
+				+ "import trackastra.data.wrfeat as wrfeat" + "\n"
+				+ "import trackastra.model.predict as predict" + "\n"
+				+ "import trackastra.model.pretrained as pretrained" + "\n"
+				+ "import trackastra.tracking.utils as utils" + "\n"
+				+ "from trackastra.model import Trackastra" + "\n"
+				+ "\n"
+				+ "from tqdm import tqdm" + "\n"
+				+ "from pathlib import Path" + "\n"
+				+ "from collections import OrderedDict" + "\n"
+				+ "\n"
+				+ "task.update(message=\"Imports completed\")" + "\n"
+				+ "\n"
+				+ "task.export(np=np,appose=appose,wrfeat=wrfeat,predict=predict,pretrained=pretrained,utils=utils,Trackastra=Trackastra,tqdm=tqdm,Path=Path,OrderedDict=OrderedDict)"
+				+ "\n";
 	}
 }

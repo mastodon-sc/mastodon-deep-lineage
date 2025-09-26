@@ -136,18 +136,7 @@ public class TrackastraRegionProps extends ApposeProcess
 	@Override
 	protected String generateScript()
 	{
-		return "import appose" + "\n"
-				+ "import numpy as np" + "\n"
-				+ "\n"
-				+ "import trackastra.data.wrfeat as wrfeat\n"
-				+ "import trackastra.utils as utils" + "\n"
-				+ "\n"
-				+ "from tqdm import tqdm" + "\n"
-				+ "from pathlib import Path" + "\n"
-				+ "\n"
-				+ "task.update(message=\"Imports completed\")" + "\n"
-				+ "\n"
-				+ "image_ndarray = " + IMAGE + ".ndarray()" + "\n"
+		return "image_ndarray = " + IMAGE + ".ndarray()" + "\n"
 				+ "mask_ndarray = " + MASK + ".ndarray().astype('int32')" + "\n"
 				+ "\n"
 				+ "ndim = image_ndarray.ndim" + "\n"
@@ -199,5 +188,22 @@ public class TrackastraRegionProps extends ApposeProcess
 				+ "task.outputs['" + BORDER_DIST + "'] = shared_border_dist" + "\n"
 				+ "\n"
 				+ "task.update(message=\"Feature extraction completed. Found {} objects\".format(len(labels)))" + "\n";
+	}
+
+	@Override
+	protected String generateImportStatements()
+	{
+		return "import appose" + "\n"
+				+ "import numpy as np" + "\n"
+				+ "\n"
+				+ "import trackastra.data.wrfeat as wrfeat\n"
+				+ "import trackastra.utils as utils" + "\n"
+				+ "\n"
+				+ "from tqdm import tqdm" + "\n"
+				+ "from pathlib import Path" + "\n"
+				+ "\n"
+				+ "task.update(message=\"Imports completed\")" + "\n"
+				+ "\n"
+				+ "task.export(np=np,appose=appose,wrfeat=wrfeat,utils=utils,tqdm=tqdm,Path=Path)" + "\n";
 	}
 }
