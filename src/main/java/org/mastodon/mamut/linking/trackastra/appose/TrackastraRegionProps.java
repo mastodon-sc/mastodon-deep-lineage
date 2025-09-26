@@ -61,11 +61,18 @@ public class TrackastraRegionProps extends ApposeProcess
 		slf4Logger.info( "Computing region props for source: {}", source.getName() );
 		logger.info( "Computing region props for source: " + source.getName() + "\n" );
 		List< RegionProps > list = new ArrayList<>();
-		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
+		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++, done++ )
 		{
+			if ( spatioTemporalIndex.getSpatialIndex( timepoint ).isEmpty() )
+			{
+				slf4Logger.info( "No spots. Skipping region props computation for timepoint: {}", timepoint );
+				logger.info( "No spots. Skipping region props computation for timepoint: " + timepoint + "\n" );
+				done++;
+				continue;
+			}
 			RegionProps regionProps = computeSource( source, timepoint, level, spatioTemporalIndex );
 			list.add( regionProps );
-			double progress = ( double ) done++ / todo;
+			double progress = ( double ) done / todo;
 			NumberFormat nf = NumberFormat.getPercentInstance();
 			nf.setMinimumFractionDigits( 0 );
 			nf.setMaximumFractionDigits( 0 );
