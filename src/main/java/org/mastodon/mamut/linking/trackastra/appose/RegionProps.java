@@ -1,8 +1,6 @@
 package org.mastodon.mamut.linking.trackastra.appose;
 
-import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.function.Consumer;
 
 import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
@@ -14,9 +12,6 @@ import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RegionProps implements AutoCloseable
 {

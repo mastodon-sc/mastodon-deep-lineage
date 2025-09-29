@@ -27,6 +27,8 @@ public class TrackastraUtils
 
 	public static final String KEY_MODEL = "trackastraModel";
 
+	public static final String KEY_WINDOW_SIZE = "trackastraWindowSize";
+
 	private static final int DEFAULT_SETUP_ID = 0;
 
 	private static final double DEFAULT_EDGE_THRESHOLD = 0.05;
@@ -36,6 +38,8 @@ public class TrackastraUtils
 	public static final TrackastraModel DEFAULT_MODEL = TrackastraModel.CTC;
 
 	private static final int DEFAULT_LEVEL = 0;
+
+	private static final int DEFAULT_WINDOW_SIZE = 4;
 
 	private TrackastraUtils()
 	{
@@ -69,6 +73,7 @@ public class TrackastraUtils
 		settings.put( KEY_TRACKASTRA_MODE, DEFAULT_TRACKASTRA_MODE );
 		settings.put( KEY_MODEL, DEFAULT_MODEL );
 		settings.put( KEY_LEVEL, DEFAULT_LEVEL );
+		settings.put( KEY_WINDOW_SIZE, DEFAULT_WINDOW_SIZE );
 		return settings;
 	}
 }

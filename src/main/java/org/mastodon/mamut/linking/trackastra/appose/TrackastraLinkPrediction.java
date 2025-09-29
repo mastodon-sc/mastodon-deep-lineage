@@ -10,6 +10,7 @@ import static org.mastodon.mamut.linking.trackastra.appose.Contants.TIMEPOINTS;
 import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_EDGE_THRESHOLD;
 import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_NUM_DIMENSIONS;
 import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_TRACKASTRA_MODE;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_WINDOW_SIZE;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -147,6 +148,7 @@ public class TrackastraLinkPrediction extends ApposeProcess
 		String model = ( ( TrackastraModel ) settings.get( TrackastraUtils.KEY_MODEL ) ).getName();
 		double t = ( Double ) settings.get( KEY_EDGE_THRESHOLD );
 		int nDim = ( Integer ) settings.get( KEY_NUM_DIMENSIONS );
+		int windowSize = ( Integer ) settings.get( KEY_WINDOW_SIZE );
 
 		return "labels_ndarray = " + LABELS + ".ndarray()" + "\n"
 				+ "timepoints_ndarray = " + TIMEPOINTS + ".ndarray()" + "\n"
@@ -198,7 +200,7 @@ public class TrackastraLinkPrediction extends ApposeProcess
 				+ "\n"
 				+ "task.update(message=f\"(Downloaded) and loaded pretrained model. Folder: {folder}\")" + "\n"
 				+ "\n"
-				+ "window_size = model.transformer.config['window']" + "\n" // TODO make it a setting - or does it have to match the model?
+				+ "window_size = " + windowSize + "\n"
 				+ "windows = wrfeat.build_windows(features, window_size, tqdm, True)" + "\n"
 				+ "\n"
 				+ "task.update(message='Window building from features completed')" + "\n"

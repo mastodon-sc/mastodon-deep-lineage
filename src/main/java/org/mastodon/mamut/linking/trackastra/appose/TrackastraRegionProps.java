@@ -44,14 +44,17 @@ public class TrackastraRegionProps extends ApposeProcess
 
 	private final org.scijava.log.Logger logger;
 
+	private final int windowSize;
+
 	private static final String IMAGE = "image";
 
 	private static final String MASK = "mask";
 
-	public TrackastraRegionProps( final org.scijava.log.Logger logger ) throws IOException
+	public TrackastraRegionProps( final org.scijava.log.Logger logger, final int windowSize ) throws IOException
 	{
 		super();
 		this.logger = logger;
+		this.windowSize = windowSize;
 	}
 
 	public List< RegionProps > compute( final Source< ? > source, final int level, final SpatioTemporalIndex< Spot > spatioTemporalIndex,
@@ -63,6 +66,7 @@ public class TrackastraRegionProps extends ApposeProcess
 		logger.info( "Computing region props for source: " + source.getName() + "\n" );
 		logger.info( "On first time use, this installs a Python new environment. This takes a while an requires internet connection.\n" );
 		List< RegionProps > list = new ArrayList<>();
+		int consecutiveEmptyFrames = 0;
 		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++, done++ )
 		{
 			if ( spatioTemporalIndex.getSpatialIndex( timepoint ).isEmpty() )
@@ -70,8 +74,17 @@ public class TrackastraRegionProps extends ApposeProcess
 				slf4Logger.info( "No spots. Adding empty region props for timepoint: {}", timepoint );
 				logger.info( "No spots. Adding empty region props for timepoint: " + timepoint + "\n" );
 				list.add( null );
+				consecutiveEmptyFrames++;
+				if ( consecutiveEmptyFrames >= windowSize )
+				{
+					throw new IllegalArgumentException(
+							"Found " + consecutiveEmptyFrames + " consecutive frames without spots before timepoint " + timepoint + ".\n"
+									+ "This exceeds the configured window size of " + windowSize + " and is currently not supported.\n"
+									+ "Please adjust the window size or check your data." );
+				}
 				continue;
 			}
+			consecutiveEmptyFrames = 0;
 			RegionProps regionProps = computeSource( source, timepoint, level, spatioTemporalIndex );
 			list.add( regionProps );
 			double progress = ( double ) done / todo;

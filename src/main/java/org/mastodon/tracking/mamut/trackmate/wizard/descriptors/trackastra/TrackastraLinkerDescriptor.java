@@ -6,6 +6,7 @@ import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_MODEL;
 import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_NUM_DIMENSIONS;
 import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_SOURCE;
 import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_TRACKASTRA_MODE;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_WINDOW_SIZE;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MAX_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_SETUP_ID;
@@ -79,6 +80,7 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 		logger.log( LogLevel.INFO, String.format( "  - edge threshold: %s%n", linkerSettings.get( KEY_EDGE_THRESHOLD ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - mode: %s%n", linkerSettings.get( KEY_TRACKASTRA_MODE ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - model: %s%n", linkerSettings.get( KEY_MODEL ) ) );
+		logger.log( LogLevel.INFO, String.format( "  - model: %s%n", linkerSettings.get( KEY_WINDOW_SIZE ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - num dimensions: %d%n", ( int ) linkerSettings.get( KEY_NUM_DIMENSIONS ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - min time-point: %d%n", ( int ) linkerSettings.get( KEY_MIN_TIMEPOINT ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - max time-point: %d%n", ( int ) linkerSettings.get( KEY_MAX_TIMEPOINT ) ) );
@@ -122,6 +124,8 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 
 		private final JSpinner levelSpinner;
 
+		private final JSpinner windowSizeSpinner;
+
 		public ParameterPanel()
 		{
 			edgeThreshold = new JSpinner( new SpinnerNumberModel( 0.05, 0.0, 1.0, 0.01 ) );
@@ -130,6 +134,7 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 			sourcesComboBox = new SetupIDComboBox( settings.values.getSources() );
 			levelDesc = new JLabel();
 			levelSpinner = new JSpinner();
+			windowSizeSpinner = new JSpinner( new SpinnerNumberModel( 1, 1, Integer.MAX_VALUE, 1 ) );
 			updateModels();
 			updateResolutionLevels();
 			initBehaviour();
@@ -185,7 +190,17 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 			levelSpinner.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 			add( levelLabel, "wrap" );
 			add( levelSpinner, "wrap" );
-			add( levelDesc, "span 2" );
+			add( levelDesc, "span 2, wrap, gapbottom 10" );
+
+			JLabel windowSizeLabel = new JLabel( "Window size:" );
+			windowSizeLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
+			windowSizeSpinner.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
+			JLabel windowSizeDesc = new JLabel( "<html>Size of the temporal window to consider for linking.<br>" +
+					"Must not be higher than the number of time-points.</html>" );
+			windowSizeDesc.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
+			add( windowSizeLabel, "wrap" );
+			add( windowSizeSpinner, "wrap" );
+			add( windowSizeDesc, "span 2" );
 		}
 
 		private void initBehaviour()
@@ -252,6 +267,7 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 			linkerSettings.put( KEY_TRACKASTRA_MODE, modeComboBox.getSelectedItem() );
 			linkerSettings.put( KEY_MODEL, modelComboBox.getSelectedItem() );
 			linkerSettings.put( KEY_LEVEL, levelSpinner.getValue() );
+			linkerSettings.put( KEY_WINDOW_SIZE, windowSizeSpinner.getValue() );
 
 			return linkerSettings;
 		}
@@ -266,6 +282,7 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 			modeComboBox.setSelectedItem( linkerSettings.get( KEY_TRACKASTRA_MODE ) );
 			modelComboBox.setSelectedItem( linkerSettings.get( KEY_MODEL ) );
 			levelSpinner.setValue( linkerSettings.get( KEY_LEVEL ) );
+			windowSizeSpinner.setValue( linkerSettings.get( KEY_WINDOW_SIZE ) );
 		}
 	}
 

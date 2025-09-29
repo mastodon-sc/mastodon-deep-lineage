@@ -1,6 +1,7 @@
 package org.mastodon.mamut.linking.trackastra;
 
 import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_WINDOW_SIZE;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MAX_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
 import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_SOURCE;
@@ -42,10 +43,17 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 	{
 		slf4jLogger.info( "compute region props for trackastra linking" );
 		List< RegionProps > list;
-		try (final TrackastraRegionProps trackAstraRegionProps = new TrackastraRegionProps( logger ))
+		int windowSize = ( Integer ) settings.get( KEY_WINDOW_SIZE );
+		try (final TrackastraRegionProps trackAstraRegionProps = new TrackastraRegionProps( logger, windowSize ))
 		{
 			int minTimepoint = ( int ) settings.get( KEY_MIN_TIMEPOINT );
 			int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );
+			int timeRange = maxTimepoint - minTimepoint + 1;
+			if ( windowSize > ( maxTimepoint - minTimepoint + 1 ) )
+			{
+				throw new IllegalArgumentException( "The window size (" + windowSize + ") is larger than the time range (" + timeRange
+						+ ").\nPlease adjust the window size or the time range." );
+			}
 			int level = (int) settings.get(KEY_LEVEL);
 			Source< ? > source = ( Source< ? > ) settings.get( KEY_SOURCE );
 			logger.info( "Computing region props\n" );
