@@ -29,7 +29,7 @@ public class RegionProps implements AutoCloseable
 
 	final ShmImg< FloatType > borderDists;
 
-	public RegionProps( final List< RegionProps > regionProps )
+	public RegionProps( final List< SingleTimepointRegionProps > singleTimepointRegionProps )
 	{
 
 		try
@@ -38,7 +38,7 @@ public class RegionProps implements AutoCloseable
 			int maxEntries = Integer.MIN_VALUE;
 			int coordDimensions = -1;
 			int tensorDimensions = -1;
-			for ( RegionProps rp : regionProps )
+			for ( SingleTimepointRegionProps rp : singleTimepointRegionProps )
 			{
 				if ( rp == null )
 					continue;
@@ -53,20 +53,20 @@ public class RegionProps implements AutoCloseable
 				throw new IllegalArgumentException( "No spots found in any timepoint." );
 
 			// Create arrays big enough to hold all timepoints
-			Img< IntType > labelsAllTimepoints = ArrayImgs.ints( regionProps.size(), maxEntries );
-			Img< IntType > timepointsAllTimepoints = ArrayImgs.ints( regionProps.size(), maxEntries );
+			Img< IntType > labelsAllTimepoints = ArrayImgs.ints( singleTimepointRegionProps.size(), maxEntries );
+			Img< IntType > timepointsAllTimepoints = ArrayImgs.ints( singleTimepointRegionProps.size(), maxEntries );
 			Img< FloatType > coordsAllTimepoints =
-					ArrayImgs.floats( regionProps.size(), maxEntries, coordDimensions );
-			Img< FloatType > diametersAllTimepoints = ArrayImgs.floats( regionProps.size(), maxEntries );
-			Img< FloatType > intensitiesAllTimepoints = ArrayImgs.floats( regionProps.size(), maxEntries );
+					ArrayImgs.floats( singleTimepointRegionProps.size(), maxEntries, coordDimensions );
+			Img< FloatType > diametersAllTimepoints = ArrayImgs.floats( singleTimepointRegionProps.size(), maxEntries );
+			Img< FloatType > intensitiesAllTimepoints = ArrayImgs.floats( singleTimepointRegionProps.size(), maxEntries );
 			Img< FloatType > inertiaTensorsAllTimepoints =
-					ArrayImgs.floats( regionProps.size(), maxEntries, tensorDimensions );
-			Img< FloatType > borderDistsAllTimepoints = ArrayImgs.floats( regionProps.size(), maxEntries );
+					ArrayImgs.floats( singleTimepointRegionProps.size(), maxEntries, tensorDimensions );
+			Img< FloatType > borderDistsAllTimepoints = ArrayImgs.floats( singleTimepointRegionProps.size(), maxEntries );
 
 			// Copy data
-			for ( int timepoint = 0; timepoint < regionProps.size(); timepoint++ )
+			for ( int timepoint = 0; timepoint < singleTimepointRegionProps.size(); timepoint++ )
 			{
-				RegionProps rp = regionProps.get( timepoint );
+				SingleTimepointRegionProps rp = singleTimepointRegionProps.get( timepoint );
 				if ( rp == null )
 					continue;
 				long numLabelsAtTimepoint = rp.labels.dimension( 0 );
@@ -125,24 +125,11 @@ public class RegionProps implements AutoCloseable
 		finally
 		{
 			// close shared memory images of this timepoint as they are no longer needed
-			regionProps.forEach( rp -> {
+			singleTimepointRegionProps.forEach( rp -> {
 				if ( rp != null )
 					rp.close();
 			} );
 		}
-	}
-
-	public RegionProps( final ShmImg< IntType > labels, final ShmImg< IntType > timepoints, final ShmImg< FloatType > coords,
-			final ShmImg< FloatType > diameters, final ShmImg< FloatType > intensities,
-			final ShmImg< FloatType > inertiaTensors, final ShmImg< FloatType > borderDists )
-	{
-		this.labels = labels;
-		this.timepoints = timepoints;
-		this.coords = coords;
-		this.diameters = diameters;
-		this.intensities = intensities;
-		this.inertiaTensors = inertiaTensors;
-		this.borderDists = borderDists;
 	}
 
 	@Override

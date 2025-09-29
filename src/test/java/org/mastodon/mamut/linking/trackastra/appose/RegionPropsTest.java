@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RegionPropsTest
+class RegionPropsTest
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
@@ -125,19 +125,18 @@ public class RegionPropsTest
 			logger.info( "inertiaTensors0 class: {}", shmInertiaTensors0.getImg().getClass() );
 			logger.info( "borderDists0 class: {}", shmBorderDists0.getImg().getClass() );
 
-			RegionProps rp0 = new RegionProps( shmLabels0, shmTimepoint0, shmCoords0, shmDiameters0, shmIntensities0, shmInertiaTensors0,
-					shmBorderDists0 );
-			RegionProps rp1 = new RegionProps( shmLabels1, shmTimepoint1, shmCoords1, shmDiameters1, shmIntensities1, shmInertiaTensors1,
-					shmBorderDists1 );
-			RegionProps rp2 = new RegionProps( shmLabels2, shmTimepoint2, shmCoords2, shmDiameters2, shmIntensities2, shmInertiaTensors2,
-					shmBorderDists2 );
-			List< RegionProps > list = Arrays.asList( rp0, rp1, rp2 );
-			try (RegionProps all = new RegionProps( list ))
+			SingleTimepointRegionProps rp0 = new SingleTimepointRegionProps( shmLabels0, shmTimepoint0, shmCoords0, shmDiameters0,
+					shmIntensities0, shmInertiaTensors0, shmBorderDists0 );
+			SingleTimepointRegionProps rp1 = new SingleTimepointRegionProps( shmLabels1, shmTimepoint1, shmCoords1, shmDiameters1,
+					shmIntensities1, shmInertiaTensors1, shmBorderDists1 );
+			SingleTimepointRegionProps rp2 = new SingleTimepointRegionProps( shmLabels2, shmTimepoint2, shmCoords2, shmDiameters2,
+					shmIntensities2, shmInertiaTensors2, shmBorderDists2 );
+			List< SingleTimepointRegionProps > singleTimepointRegionProps = Arrays.asList( rp0, rp1, rp2 );
+			try (RegionProps all = new RegionProps( singleTimepointRegionProps ))
 			{
 				assertEquals( 3, all.labels.dimensionsAsLongArray()[ 0 ] );
 				assertEquals( 95, all.labels.dimensionsAsLongArray()[ 1 ] );
 			}
 		}
-
 	}
 }

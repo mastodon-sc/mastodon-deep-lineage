@@ -18,6 +18,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.linking.trackastra.appose.RegionProps;
+import org.mastodon.mamut.linking.trackastra.appose.SingleTimepointRegionProps;
 import org.mastodon.mamut.linking.trackastra.appose.TrackastraLinkPrediction;
 import org.mastodon.mamut.linking.trackastra.appose.TrackastraRegionProps;
 import org.mastodon.spatial.HasTimepoint;
@@ -42,7 +43,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 	public void mutate1( final ReadOnlyGraph< V, E > graph, final SpatioTemporalIndex< V > index )
 	{
 		slf4jLogger.info( "compute region props for trackastra linking" );
-		List< RegionProps > list;
+		List< SingleTimepointRegionProps > singleTimepointRegionProps;
 		int windowSize = ( Integer ) settings.get( KEY_WINDOW_SIZE );
 		try (final TrackastraRegionProps trackAstraRegionProps = new TrackastraRegionProps( logger, windowSize ))
 		{
@@ -57,7 +58,8 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 			int level = (int) settings.get(KEY_LEVEL);
 			Source< ? > source = ( Source< ? > ) settings.get( KEY_SOURCE );
 			logger.info( "Computing region props\n" );
-			list = trackAstraRegionProps.compute( source, level, Cast.unchecked( index ), minTimepoint, maxTimepoint );
+			singleTimepointRegionProps =
+					trackAstraRegionProps.compute( source, level, Cast.unchecked( index ), minTimepoint, maxTimepoint );
 		}
 		catch ( Exception e )
 		{
@@ -68,7 +70,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		}
 
 		slf4jLogger.info( "Perform trackastra linking\n" );
-		try (RegionProps regionProps = new RegionProps( list );
+		try (RegionProps regionProps = new RegionProps( singleTimepointRegionProps );
 				final TrackastraLinkPrediction trackAstraLinkPrediction = new TrackastraLinkPrediction( settings, Cast.unchecked( index ),
 						Cast.unchecked( edgeCreator ), regionProps, logger ))
 		{

@@ -57,7 +57,8 @@ public class TrackastraRegionProps extends ApposeProcess
 		this.windowSize = windowSize;
 	}
 
-	public List< RegionProps > compute( final Source< ? > source, final int level, final SpatioTemporalIndex< Spot > spatioTemporalIndex,
+	public List< SingleTimepointRegionProps > compute( final Source< ? > source, final int level,
+			final SpatioTemporalIndex< Spot > spatioTemporalIndex,
 			final int minTimepoint, final int maxTimepoint )
 	{
 		int todo = ( maxTimepoint - minTimepoint + 1 );
@@ -65,7 +66,7 @@ public class TrackastraRegionProps extends ApposeProcess
 		slf4Logger.info( "Computing region props for source: {}", source.getName() );
 		logger.info( "Computing region props for source: " + source.getName() + "\n" );
 		logger.info( "On first time use, this installs a Python new environment. This takes a while an requires internet connection.\n" );
-		List< RegionProps > list = new ArrayList<>();
+		List< SingleTimepointRegionProps > singleTimepointRegionProps = new ArrayList<>();
 		int consecutiveEmptyFrames = 0;
 		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++, done++ )
 		{
@@ -73,7 +74,7 @@ public class TrackastraRegionProps extends ApposeProcess
 			{
 				slf4Logger.info( "No spots. Adding empty region props for timepoint: {}", timepoint );
 				logger.info( "No spots. Adding empty region props for timepoint: " + timepoint + "\n" );
-				list.add( null );
+				singleTimepointRegionProps.add( null );
 				consecutiveEmptyFrames++;
 				if ( consecutiveEmptyFrames >= windowSize )
 				{
@@ -85,8 +86,8 @@ public class TrackastraRegionProps extends ApposeProcess
 				continue;
 			}
 			consecutiveEmptyFrames = 0;
-			RegionProps regionProps = computeSource( source, timepoint, level, spatioTemporalIndex );
-			list.add( regionProps );
+			SingleTimepointRegionProps regionProps = computeSource( source, timepoint, level, spatioTemporalIndex );
+			singleTimepointRegionProps.add( regionProps );
 			double progress = ( double ) done / todo;
 			NumberFormat nf = NumberFormat.getPercentInstance();
 			nf.setMinimumFractionDigits( 0 );
@@ -96,10 +97,10 @@ public class TrackastraRegionProps extends ApposeProcess
 			slf4Logger.info( message );
 			logger.info( message + "\n" );
 		}
-		return list;
+		return singleTimepointRegionProps;
 	}
 
-	private RegionProps computeSource( final Source< ? > source, final int timepoint, final int level,
+	private SingleTimepointRegionProps computeSource( final Source< ? > source, final int timepoint, final int level,
 			final SpatioTemporalIndex< Spot > spatioTemporalIndex )
 	{
 		AffineTransform3D transform = new AffineTransform3D();
@@ -138,7 +139,7 @@ public class TrackastraRegionProps extends ApposeProcess
 			ShmImg< FloatType > intensity = new ShmImg<>( ( NDArray ) result.outputs.get( INTENSITY ) );
 			ShmImg< FloatType > inertiaTensor = new ShmImg<>( ( NDArray ) result.outputs.get( INERTIA_TENSOR ) );
 			ShmImg< FloatType > borderDist = new ShmImg<>( ( NDArray ) result.outputs.get( BORDER_DIST ) );
-			return new RegionProps( labels, timepoints, coords, diameter, intensity, inertiaTensor, borderDist );
+			return new SingleTimepointRegionProps( labels, timepoints, coords, diameter, intensity, inertiaTensor, borderDist );
 		}
 		catch ( IOException e )
 		{
