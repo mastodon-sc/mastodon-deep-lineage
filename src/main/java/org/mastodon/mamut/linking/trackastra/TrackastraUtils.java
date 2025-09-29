@@ -15,7 +15,7 @@ import org.mastodon.tracking.detection.DetectorKeys;
 
 public class TrackastraUtils
 {
-	public static final String TRACKASTRA_VERSION = "0.4.0";
+	public static final String TRACKASTRA_VERSION = "0.4.1";
 
 	public static final String KEY_EDGE_THRESHOLD = "trackastraEdgeThreshold";
 
@@ -57,8 +57,7 @@ public class TrackastraUtils
 				+ apposeVersion.substring( 2 ) + "\n"
 				+ "  - pip\n"
 				+ "  - pip:\n"
-				+ "    - trackastra==" + TRACKASTRA_VERSION + "\n"
-				+ "    - geff==0.5.0" + "\n";
+				+ "    - trackastra==" + TRACKASTRA_VERSION + "\n";
 	}
 
 	public static Map< String, Object > getDefaultTrackAstraSettingsMap()

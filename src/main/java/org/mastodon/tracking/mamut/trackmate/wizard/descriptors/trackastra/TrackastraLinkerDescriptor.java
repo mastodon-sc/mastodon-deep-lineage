@@ -162,18 +162,13 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 			JLabel modeLabel = new JLabel( "Mode:" );
 			modeLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 			modeComboBox.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
-			JLabel modeDesc = new JLabel(
-					"<html>Select the algorithm mode.<br><ul><li>greedy linking with divisions</li><li>greedy linking without divisions</li></html>" );
-			modeDesc.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 
 			add( modeLabel, "wrap" );
-			add( modeComboBox, "wrap" );
-			add( modeDesc, "span 2, wrap, gapbottom 10" );
+			add( modeComboBox, "wrap, gapbottom 10" );
 
 			JLabel modelLabel = new JLabel( "Model:" );
 			modelLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 			modelComboBox.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
-			modeDesc.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
 
 			add( modelLabel, "wrap" );
 			add( modelComboBox, "wrap, gapbottom 10" );
