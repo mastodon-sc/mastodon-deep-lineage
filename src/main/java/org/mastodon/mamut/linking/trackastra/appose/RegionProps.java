@@ -9,6 +9,8 @@ import net.imglib2.appose.ShmImg;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.loops.LoopBuilder;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
@@ -32,95 +34,48 @@ public class RegionProps implements AutoCloseable
 	public RegionProps( final List< SingleTimepointRegionProps > singleTimepointRegionProps )
 	{
 
+		if ( singleTimepointRegionProps == null || singleTimepointRegionProps.isEmpty() )
+		{
+			throw new IllegalArgumentException( "No timepoints provided." );
+		}
+
+		int[] dimensions = computeDimensions( singleTimepointRegionProps );
+		int maxEntries = dimensions[ 0 ];
+		int coordDims = dimensions[ 1 ];
+		int tensorDims = dimensions[ 2 ];
+		int numTimepoints = singleTimepointRegionProps.size();
+
+		// Allocate arrays
+		Img< IntType > labelsAll = ArrayImgs.ints( numTimepoints, maxEntries );
+		Img< IntType > timepointsAll = ArrayImgs.ints( numTimepoints, maxEntries );
+		Img< FloatType > coordsAll = ArrayImgs.floats( numTimepoints, maxEntries, coordDims );
+		Img< FloatType > diametersAll = ArrayImgs.floats( numTimepoints, maxEntries );
+		Img< FloatType > intensitiesAll = ArrayImgs.floats( numTimepoints, maxEntries );
+		Img< FloatType > inertiaTensorsAll = ArrayImgs.floats( numTimepoints, maxEntries, tensorDims );
+		Img< FloatType > borderDistsAll = ArrayImgs.floats( numTimepoints, maxEntries );
+
+		DataArrays arrays =
+				new DataArrays( labelsAll, timepointsAll, coordsAll, diametersAll, intensitiesAll, inertiaTensorsAll, borderDistsAll );
+		DimensionInfo dimensionInfo = new DimensionInfo( coordDims, tensorDims );
+		Data data = new Data( arrays, dimensionInfo );
+
 		try
 		{
-			// Find max number of entries
-			int maxEntries = Integer.MIN_VALUE;
-			int coordDimensions = -1;
-			int tensorDimensions = -1;
-			for ( SingleTimepointRegionProps rp : singleTimepointRegionProps )
+			// Copy data from single timepoints
+			for ( int timepoint = 0; timepoint < numTimepoints; timepoint++ )
 			{
-				if ( rp == null )
-					continue;
-				if ( coordDimensions < 0 )
-					coordDimensions = ( int ) rp.coords.dimension( 1 );
-				if ( tensorDimensions < 0 )
-					tensorDimensions = ( int ) rp.inertiaTensors.dimension( 1 );
-				if ( rp.labels.dimension( 0 ) > maxEntries )
-					maxEntries = ( int ) rp.labels.dimension( 0 );
-			}
-			if ( maxEntries <= 0 )
-				throw new IllegalArgumentException( "No spots found in any timepoint." );
-
-			// Create arrays big enough to hold all timepoints
-			Img< IntType > labelsAllTimepoints = ArrayImgs.ints( singleTimepointRegionProps.size(), maxEntries );
-			Img< IntType > timepointsAllTimepoints = ArrayImgs.ints( singleTimepointRegionProps.size(), maxEntries );
-			Img< FloatType > coordsAllTimepoints =
-					ArrayImgs.floats( singleTimepointRegionProps.size(), maxEntries, coordDimensions );
-			Img< FloatType > diametersAllTimepoints = ArrayImgs.floats( singleTimepointRegionProps.size(), maxEntries );
-			Img< FloatType > intensitiesAllTimepoints = ArrayImgs.floats( singleTimepointRegionProps.size(), maxEntries );
-			Img< FloatType > inertiaTensorsAllTimepoints =
-					ArrayImgs.floats( singleTimepointRegionProps.size(), maxEntries, tensorDimensions );
-			Img< FloatType > borderDistsAllTimepoints = ArrayImgs.floats( singleTimepointRegionProps.size(), maxEntries );
-
-			// Copy data
-			for ( int timepoint = 0; timepoint < singleTimepointRegionProps.size(); timepoint++ )
-			{
-				SingleTimepointRegionProps rp = singleTimepointRegionProps.get( timepoint );
-				if ( rp == null )
-					continue;
-				long numLabelsAtTimepoint = rp.labels.dimension( 0 );
-				Interval interval = new FinalInterval( numLabelsAtTimepoint );
-				Interval intervalCoords =
-						new FinalInterval( new long[] { 0, 0 }, new long[] { numLabelsAtTimepoint - 1, coordDimensions - 1 } );
-				Interval intervalTensors =
-						new FinalInterval( new long[] { 0, 0 }, new long[] { numLabelsAtTimepoint - 1, tensorDimensions - 1 } );
-
-				RandomAccessibleInterval< IntType > sliceInt = Views.hyperSlice( labelsAllTimepoints, 0, timepoint );
-				RandomAccessibleInterval< IntType > restrictedIntervalInt = Views.interval( sliceInt, interval );
-				LoopBuilder.setImages( rp.labels, restrictedIntervalInt ).multiThreaded()
-						.forEachPixel( ( source, target ) -> target.set( source ) );
-
-				sliceInt = Views.hyperSlice( timepointsAllTimepoints, 0, timepoint );
-				restrictedIntervalInt = Views.interval( sliceInt, interval );
-				LoopBuilder.setImages( rp.timepoints, restrictedIntervalInt ).multiThreaded()
-						.forEachPixel( ( source, target ) -> target.set( source ) );
-
-				RandomAccessibleInterval< FloatType > sliceFloat = Views.hyperSlice( coordsAllTimepoints, 0, timepoint );
-				RandomAccessibleInterval< FloatType > restrictedFloat = Views.interval( sliceFloat, intervalCoords );
-
-				LoopBuilder.setImages( rp.coords, restrictedFloat )
-						.forEachPixel( ( source, target ) -> target.set( source ) );
-
-				sliceFloat = Views.hyperSlice( diametersAllTimepoints, 0, timepoint );
-				restrictedFloat = Views.interval( sliceFloat, interval );
-
-				LoopBuilder.setImages( rp.diameters, restrictedFloat ).multiThreaded()
-						.forEachPixel( ( source, target ) -> target.set( source ) );
-
-				sliceFloat = Views.hyperSlice( intensitiesAllTimepoints, 0, timepoint );
-				restrictedFloat = Views.interval( sliceFloat, interval );
-				LoopBuilder.setImages( rp.intensities, restrictedFloat ).multiThreaded()
-						.forEachPixel( ( source, target ) -> target.set( source ) );
-
-				sliceFloat = Views.hyperSlice( inertiaTensorsAllTimepoints, 0, timepoint );
-				restrictedFloat = Views.interval( sliceFloat, intervalTensors );
-				LoopBuilder.setImages( rp.inertiaTensors, restrictedFloat ).multiThreaded()
-						.forEachPixel( ( source, target ) -> target.set( source ) );
-
-				sliceFloat = Views.hyperSlice( borderDistsAllTimepoints, 0, timepoint );
-				restrictedFloat = Views.interval( sliceFloat, interval );
-				LoopBuilder.setImages( rp.borderDists, restrictedFloat ).multiThreaded()
-						.forEachPixel( ( source, target ) -> target.set( source ) );
+				SingleTimepointRegionProps regionProps = singleTimepointRegionProps.get( timepoint );
+				if ( regionProps != null )
+					copyTimepointData( regionProps, timepoint, data );
 			}
 			// Copy to ShmImgs
-			this.labels = ShmImg.copyOf( labelsAllTimepoints );
-			this.timepoints = ShmImg.copyOf( timepointsAllTimepoints );
-			this.coords = ShmImg.copyOf( coordsAllTimepoints );
-			this.diameters = ShmImg.copyOf( diametersAllTimepoints );
-			this.intensities = ShmImg.copyOf( intensitiesAllTimepoints );
-			this.inertiaTensors = ShmImg.copyOf( inertiaTensorsAllTimepoints );
-			this.borderDists = ShmImg.copyOf( borderDistsAllTimepoints );
+			this.labels = ShmImg.copyOf( data.arrays.labels );
+			this.timepoints = ShmImg.copyOf( data.arrays.timepoints );
+			this.coords = ShmImg.copyOf( data.arrays.coords );
+			this.diameters = ShmImg.copyOf( data.arrays.diameters );
+			this.intensities = ShmImg.copyOf( data.arrays.intensities );
+			this.inertiaTensors = ShmImg.copyOf( data.arrays.inertiaTensors );
+			this.borderDists = ShmImg.copyOf( data.arrays.borderDists );
 		}
 		finally
 		{
@@ -142,5 +97,118 @@ public class RegionProps implements AutoCloseable
 		intensities.close();
 		inertiaTensors.close();
 		borderDists.close();
+	}
+
+	private static int[] computeDimensions( final List< SingleTimepointRegionProps > props )
+	{
+		int maxEntries = Integer.MIN_VALUE;
+		int coordDims = -1;
+		int tensorDims = -1;
+
+		for ( SingleTimepointRegionProps rp : props )
+		{
+			if ( rp == null )
+				continue;
+			if ( coordDims < 0 )
+				coordDims = ( int ) rp.coords.dimension( 1 );
+			if ( tensorDims < 0 )
+				tensorDims = ( int ) rp.inertiaTensors.dimension( 1 );
+			if ( rp.labels.dimension( 0 ) > maxEntries )
+				maxEntries = ( int ) rp.labels.dimension( 0 );
+		}
+
+		if ( maxEntries <= 0 )
+			throw new IllegalArgumentException( "No spots found in any timepoint." );
+
+		return new int[] { maxEntries, coordDims, tensorDims };
+	}
+
+	private static < T extends NativeType< T > & RealType< T > > void copySlice( final RandomAccessibleInterval< T > source,
+			final RandomAccessibleInterval< T > target )
+	{
+		LoopBuilder.setImages( source, target ).multiThreaded().forEachPixel( ( s, t ) -> t.set( s ) );
+	}
+
+	private static Interval createInterval( final long size )
+	{
+		return new FinalInterval( size );
+	}
+
+	private static Interval createInterval( final long rows, final long cols )
+	{
+		return new FinalInterval( new long[] { 0, 0 }, new long[] { rows - 1, cols - 1 } );
+	}
+
+	private static void copyTimepointData( final SingleTimepointRegionProps rp, final int timepoint, final Data data )
+	{
+		long nLabels = rp.labels.dimension( 0 );
+		DataArrays arrays = data.arrays;
+		DimensionInfo dims = data.dims;
+
+		copySlice( rp.labels, Views.interval( Views.hyperSlice( arrays.labels, 0, timepoint ), createInterval( nLabels ) ) );
+		copySlice( rp.timepoints, Views.interval( Views.hyperSlice( arrays.timepoints, 0, timepoint ), createInterval( nLabels ) ) );
+		copySlice( rp.coords,
+				Views.interval( Views.hyperSlice( arrays.coords, 0, timepoint ), createInterval( nLabels, dims.coordDims ) ) );
+		copySlice( rp.diameters, Views.interval( Views.hyperSlice( arrays.diameters, 0, timepoint ), createInterval( nLabels ) ) );
+		copySlice( rp.intensities, Views.interval( Views.hyperSlice( arrays.intensities, 0, timepoint ), createInterval( nLabels ) ) );
+		copySlice( rp.inertiaTensors,
+				Views.interval( Views.hyperSlice( arrays.inertiaTensors, 0, timepoint ), createInterval( nLabels, dims.tensorDims ) ) );
+		copySlice( rp.borderDists, Views.interval( Views.hyperSlice( arrays.borderDists, 0, timepoint ), createInterval( nLabels ) ) );
+	}
+
+	private static class DataArrays
+	{
+		final Img< IntType > labels;
+
+		final Img< IntType > timepoints;
+
+		final Img< FloatType > coords;
+
+		final Img< FloatType > diameters;
+
+		final Img< FloatType > intensities;
+
+		final Img< FloatType > inertiaTensors;
+
+		final Img< FloatType > borderDists;
+
+		DataArrays( final Img< IntType > labels, final Img< IntType > timepoints, final Img< FloatType > coords,
+				final Img< FloatType > diameters, final Img< FloatType > intensities, final Img< FloatType > inertiaTensors,
+				final Img< FloatType > borderDists )
+		{
+			this.labels = labels;
+			this.timepoints = timepoints;
+			this.coords = coords;
+			this.diameters = diameters;
+			this.intensities = intensities;
+			this.inertiaTensors = inertiaTensors;
+			this.borderDists = borderDists;
+		}
+	}
+
+	private static class DimensionInfo
+	{
+		final int coordDims;
+
+		final int tensorDims;
+
+		DimensionInfo( final int coordDims, final int tensorDims )
+		{
+			this.coordDims = coordDims;
+			this.tensorDims = tensorDims;
+		}
+	}
+
+	private static class Data
+	{
+		final DataArrays arrays;
+
+		final DimensionInfo dims;
+
+		Data( final DataArrays arrays, final DimensionInfo dims )
+		{
+			this.arrays = arrays;
+			this.dims = dims;
+		}
 	}
 }
