@@ -44,8 +44,9 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 	{
 		slf4jLogger.info( "compute region props for trackastra linking" );
 		List< SingleTimepointRegionProps > singleTimepointRegionProps;
+		String model = ( ( TrackastraModel ) settings.get( TrackastraUtils.KEY_MODEL ) ).getName();
 		int windowSize = ( Integer ) settings.get( KEY_WINDOW_SIZE );
-		try (final TrackastraRegionProps trackAstraRegionProps = new TrackastraRegionProps( logger, windowSize ))
+		try (final TrackastraRegionProps trackAstraRegionProps = new TrackastraRegionProps( logger, model, windowSize ))
 		{
 			int minTimepoint = ( int ) settings.get( KEY_MIN_TIMEPOINT );
 			int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );

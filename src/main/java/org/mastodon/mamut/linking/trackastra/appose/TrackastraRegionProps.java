@@ -44,16 +44,19 @@ public class TrackastraRegionProps extends ApposeProcess
 
 	private final org.scijava.log.Logger logger;
 
+	private final String model;
+
 	private final int windowSize;
 
 	private static final String IMAGE = "image";
 
 	private static final String MASK = "mask";
 
-	public TrackastraRegionProps( final org.scijava.log.Logger logger, final int windowSize ) throws IOException
+	public TrackastraRegionProps( final org.scijava.log.Logger logger, final String model, final int windowSize ) throws IOException
 	{
 		super();
 		this.logger = logger;
+		this.model = model;
 		this.windowSize = windowSize;
 	}
 
@@ -170,7 +173,14 @@ public class TrackastraRegionProps extends ApposeProcess
 				+ "task.update(message=\"Image and mask loaded into numpy arrays\")" + "\n"
 				+ "\n"
 				+ "image = utils.normalize(image)" + "\n"
-				+ "features = wrfeat.get_features(mask,image,'wrfeat',ndim,0,tqdm)" + "\n"
+				+ "\n"
+				+ "name='" + model + "'" + "\n"
+				+ "device='cpu'" + "\n"
+				+ "download_dir=Path.home() / '.local' / 'share' / 'appose' / 'trackastra' / 'pretrained_models'" + "\n"
+				+ "folder = pretrained.download_pretrained(name=name, download_dir=download_dir)" + "\n"
+				+ "model = Trackastra.from_folder(dir=folder, device=device)" + "\n"
+				+ "model.transformer.eval()" + "\n"
+				+ "features = wrfeat.get_features(mask,image,'wrfeat',model.transformer.config['coord_dim'],0,tqdm)" + "\n"
 				+ "\n"
 				+ "task.update(message=\"Feature computation completed\")" + "\n"
 				+ "\n"
@@ -218,12 +228,15 @@ public class TrackastraRegionProps extends ApposeProcess
 				+ "\n"
 				+ "import trackastra.data.wrfeat as wrfeat\n"
 				+ "import trackastra.utils as utils" + "\n"
+				+ "import trackastra.model.pretrained as pretrained" + "\n"
+				+ "from trackastra.model import Trackastra" + "\n"
 				+ "\n"
 				+ "from tqdm import tqdm" + "\n"
 				+ "from pathlib import Path" + "\n"
 				+ "\n"
 				+ "task.update(message=\"Imports completed\")" + "\n"
 				+ "\n"
-				+ "task.export(np=np,appose=appose,wrfeat=wrfeat,utils=utils,tqdm=tqdm,Path=Path)" + "\n";
+				+ "task.export(np=np,appose=appose,wrfeat=wrfeat,utils=utils,tqdm=tqdm,Path=Path,Trackastra=Trackastra,pretrained=pretrained)"
+				+ "\n";
 	}
 }
