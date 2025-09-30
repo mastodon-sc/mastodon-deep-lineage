@@ -7,6 +7,10 @@ public class Contants
 		// prevent instantiation
 	}
 
+	static final String IMAGE = "image";
+
+	static final String MASK = "mask";
+
 	static final String LABELS = "labels";
 
 	static final String TIMEPOINTS = "timepoints";

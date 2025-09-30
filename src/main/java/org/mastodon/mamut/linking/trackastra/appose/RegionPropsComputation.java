@@ -3,12 +3,15 @@ package org.mastodon.mamut.linking.trackastra.appose;
 import static org.mastodon.mamut.linking.trackastra.appose.Contants.BORDER_DIST;
 import static org.mastodon.mamut.linking.trackastra.appose.Contants.COORDS;
 import static org.mastodon.mamut.linking.trackastra.appose.Contants.DIAMETER;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.IMAGE;
 import static org.mastodon.mamut.linking.trackastra.appose.Contants.INERTIA_TENSOR;
 import static org.mastodon.mamut.linking.trackastra.appose.Contants.INTENSITY;
 import static org.mastodon.mamut.linking.trackastra.appose.Contants.LABELS;
+import static org.mastodon.mamut.linking.trackastra.appose.Contants.MASK;
 import static org.mastodon.mamut.linking.trackastra.appose.Contants.TIMEPOINTS;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.invoke.MethodHandles;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -38,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import bdv.viewer.Source;
 
-public class TrackastraRegionProps extends ApposeProcess
+public class RegionPropsComputation extends ApposeProcess
 {
 	private static final Logger slf4Logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
@@ -48,11 +51,7 @@ public class TrackastraRegionProps extends ApposeProcess
 
 	private final int windowSize;
 
-	private static final String IMAGE = "image";
-
-	private static final String MASK = "mask";
-
-	public TrackastraRegionProps( final org.scijava.log.Logger logger, final String model, final int windowSize ) throws IOException
+	public RegionPropsComputation( final org.scijava.log.Logger logger, final String model, final int windowSize ) throws IOException
 	{
 		super();
 		this.logger = logger;
@@ -60,9 +59,8 @@ public class TrackastraRegionProps extends ApposeProcess
 		this.windowSize = windowSize;
 	}
 
-	public List< SingleTimepointRegionProps > compute( final Source< ? > source, final int level,
-			final SpatioTemporalIndex< Spot > spatioTemporalIndex,
-			final int minTimepoint, final int maxTimepoint )
+	public List< SingleTimepointRegionProps > computeRegionPropsForSource( final Source< ? > source, final int level,
+			final SpatioTemporalIndex< Spot > spatioTemporalIndex, final int minTimepoint, final int maxTimepoint )
 	{
 		int todo = ( maxTimepoint - minTimepoint + 1 );
 		int done = 0;
@@ -81,7 +79,7 @@ public class TrackastraRegionProps extends ApposeProcess
 				consecutiveEmptyFrames++;
 				if ( consecutiveEmptyFrames >= windowSize )
 				{
-					throw new IllegalArgumentException(
+					throw new UnsupportedDataException(
 							"Found " + consecutiveEmptyFrames + " consecutive frames without spots before timepoint " + timepoint + ".\n"
 									+ "This exceeds the configured window size of " + windowSize + " and is currently not supported.\n"
 									+ "Please adjust the window size or check your data." );
@@ -89,21 +87,26 @@ public class TrackastraRegionProps extends ApposeProcess
 				continue;
 			}
 			consecutiveEmptyFrames = 0;
-			SingleTimepointRegionProps regionProps = computeSource( source, timepoint, level, spatioTemporalIndex );
+			SingleTimepointRegionProps regionProps = computeSingleTimepointProps( source, timepoint, level, spatioTemporalIndex );
 			singleTimepointRegionProps.add( regionProps );
-			double progress = ( double ) done / todo;
-			NumberFormat nf = NumberFormat.getPercentInstance();
-			nf.setMinimumFractionDigits( 0 );
-			nf.setMaximumFractionDigits( 0 );
-			String message = String.format( "Computed region props for timepoint %d/%d. Progress: %s", timepoint, maxTimepoint,
-					nf.format( progress ) );
-			slf4Logger.info( message );
-			logger.info( message + "\n" );
+			formatProgress( maxTimepoint, done, todo, timepoint );
 		}
 		return singleTimepointRegionProps;
 	}
 
-	private SingleTimepointRegionProps computeSource( final Source< ? > source, final int timepoint, final int level,
+	private void formatProgress( final int maxTimepoint, final double done, final int todo, final int timepoint )
+	{
+		double progress = done / todo;
+		NumberFormat percentFormatter = NumberFormat.getPercentInstance();
+		percentFormatter.setMinimumFractionDigits( 0 );
+		percentFormatter.setMaximumFractionDigits( 0 );
+		String message = String.format( "Computed region props for timepoint %d/%d. Progress: %s", timepoint, maxTimepoint,
+				percentFormatter.format( progress ) );
+		slf4Logger.info( message );
+		logger.info( message + "\n" );
+	}
+
+	private SingleTimepointRegionProps computeSingleTimepointProps( final Source< ? > source, final int timepoint, final int level,
 			final SpatioTemporalIndex< Spot > spatioTemporalIndex )
 	{
 		AffineTransform3D transform = new AffineTransform3D();
@@ -146,7 +149,7 @@ public class TrackastraRegionProps extends ApposeProcess
 		}
 		catch ( IOException e )
 		{
-			throw new PythonRuntimeException( e.getMessage() );
+			throw new UncheckedIOException( e );
 		}
 	}
 

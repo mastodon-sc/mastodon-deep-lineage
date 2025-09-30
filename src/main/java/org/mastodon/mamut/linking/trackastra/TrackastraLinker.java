@@ -20,7 +20,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.linking.trackastra.appose.RegionProps;
 import org.mastodon.mamut.linking.trackastra.appose.SingleTimepointRegionProps;
 import org.mastodon.mamut.linking.trackastra.appose.TrackastraLinkPrediction;
-import org.mastodon.mamut.linking.trackastra.appose.TrackastraRegionProps;
+import org.mastodon.mamut.linking.trackastra.appose.RegionPropsComputation;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.tracking.linking.graph.AbstractGraphParticleLinkerOp;
@@ -46,7 +46,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		List< SingleTimepointRegionProps > singleTimepointRegionProps;
 		String model = ( ( TrackastraModel ) settings.get( TrackastraUtils.KEY_MODEL ) ).getName();
 		int windowSize = ( Integer ) settings.get( KEY_WINDOW_SIZE );
-		try (final TrackastraRegionProps trackAstraRegionProps = new TrackastraRegionProps( logger, model, windowSize ))
+		try (final RegionPropsComputation regionPropsComputation = new RegionPropsComputation( logger, model, windowSize ))
 		{
 			int minTimepoint = ( int ) settings.get( KEY_MIN_TIMEPOINT );
 			int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );
@@ -58,9 +58,9 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 			}
 			int level = (int) settings.get(KEY_LEVEL);
 			Source< ? > source = ( Source< ? > ) settings.get( KEY_SOURCE );
-			logger.info( "Computing region props\n" );
-			singleTimepointRegionProps =
-					trackAstraRegionProps.compute( source, level, Cast.unchecked( index ), minTimepoint, maxTimepoint );
+			logger.info( "Computing region props for source: " + source + "\n" );
+			singleTimepointRegionProps = regionPropsComputation.computeRegionPropsForSource( source, level, Cast.unchecked( index ),
+					minTimepoint, maxTimepoint );
 		}
 		catch ( Exception e )
 		{
