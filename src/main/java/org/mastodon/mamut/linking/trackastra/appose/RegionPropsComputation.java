@@ -29,12 +29,12 @@ import net.imglib2.view.Views;
 
 import org.apposed.appose.NDArray;
 import org.apposed.appose.Service;
-import org.mastodon.mamut.detection.PythonRuntimeException;
 import org.mastodon.mamut.io.exporter.labelimage.ExportLabelImageUtils;
 import org.mastodon.mamut.linking.trackastra.TrackastraUtils;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.util.ApposeProcess;
 import org.mastodon.mamut.util.ImgUtils;
+import org.mastodon.mamut.util.ResourceUtils;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,18 +94,6 @@ public class RegionPropsComputation extends ApposeProcess
 		return singleTimepointRegionProps;
 	}
 
-	private void formatProgress( final int maxTimepoint, final double done, final int todo, final int timepoint )
-	{
-		double progress = done / todo;
-		NumberFormat percentFormatter = NumberFormat.getPercentInstance();
-		percentFormatter.setMinimumFractionDigits( 0 );
-		percentFormatter.setMaximumFractionDigits( 0 );
-		String message = String.format( "Computed region props for timepoint %d/%d. Progress: %s", timepoint, maxTimepoint,
-				percentFormatter.format( progress ) );
-		slf4Logger.info( message );
-		logger.info( message + "\n" );
-	}
-
 	private SingleTimepointRegionProps computeSingleTimepointProps( final Source< ? > source, final int timepoint, final int level,
 			final SpatioTemporalIndex< Spot > spatioTemporalIndex )
 	{
@@ -153,6 +141,18 @@ public class RegionPropsComputation extends ApposeProcess
 		}
 	}
 
+	private void formatProgress( final int maxTimepoint, final double done, final int todo, final int timepoint )
+	{
+		double progress = done / todo;
+		NumberFormat percentFormatter = NumberFormat.getPercentInstance();
+		percentFormatter.setMinimumFractionDigits( 0 );
+		percentFormatter.setMaximumFractionDigits( 0 );
+		String message = String.format( "Computed region props for timepoint %d/%d. Progress: %s", timepoint, maxTimepoint,
+				percentFormatter.format( progress ) );
+		slf4Logger.info( message );
+		logger.info( message + "\n" );
+	}
+
 	@Override
 	protected String generateEnvFileContent()
 	{
@@ -162,84 +162,24 @@ public class RegionPropsComputation extends ApposeProcess
 	@Override
 	protected String generateScript()
 	{
-		return "image_ndarray = " + IMAGE + ".ndarray()" + "\n"
-				+ "mask_ndarray = " + MASK + ".ndarray().astype('int32')" + "\n"
-				+ "\n"
-				+ "ndim = image_ndarray.ndim" + "\n"
-				+ "if ndim == 3:" + "\n"
-				+ "  image = np.expand_dims(np.transpose(image_ndarray, (2, 1, 0)), axis=0)" + "\n" // reorder to z,y,x + add a dummy t axis
-				+ "  mask = np.expand_dims(np.transpose(mask_ndarray, (2, 1, 0)), axis=0)" + "\n"
-				+ "else:" + "\n"
-				+ "  image = np.expand_dims(np.transpose(image_ndarray, (1, 0)), axis=0) " + "\n" // reorder to y,x + add a dummy t axis
-				+ "  mask = np.expand_dims(np.transpose(mask_ndarray, (1, 0)), axis=0)" + "\n"
-				+ "\n"
-				+ "task.update(message=\"Image and mask loaded into numpy arrays\")" + "\n"
-				+ "\n"
-				+ "image = utils.normalize(image)" + "\n"
-				+ "\n"
-				+ "name='" + model + "'" + "\n"
-				+ "device='cpu'" + "\n"
-				+ "download_dir=Path.home() / '.local' / 'share' / 'appose' / 'trackastra' / 'pretrained_models'" + "\n"
-				+ "folder = pretrained.download_pretrained(name=name, download_dir=download_dir)" + "\n"
-				+ "model = Trackastra.from_folder(dir=folder, device=device)" + "\n"
-				+ "model.transformer.eval()" + "\n"
-				+ "features = wrfeat.get_features(mask,image,'wrfeat',model.transformer.config['coord_dim'],0,tqdm)" + "\n"
-				+ "\n"
-				+ "task.update(message=\"Feature computation completed\")" + "\n"
-				+ "\n"
-				+ "labels = features[0].labels" + "\n"
-				+ "shared_labels = appose.NDArray(str(labels.dtype), labels.shape)" + "\n"
-				+ "shared_labels.ndarray()[:] = labels" + "\n"
-				+ "timepoints = features[0].timepoints" + "\n"
-				+ "shared_timepoints = appose.NDArray(str(timepoints.dtype), timepoints.shape)" + "\n"
-				+ "shared_timepoints.ndarray()[:] = timepoints" + "\n"
-				+ "coords = features[0].coords.T" + "\n"
-				+ "shared_coords = appose.NDArray(str(coords.dtype), coords.shape)" + "\n"
-				+ "shared_coords.ndarray()[:] = coords" + "\n"
-				+ "diameter = features[0].features['equivalent_diameter_area']" + "\n"
-				+ "diameter = diameter[:, 0]" + "\n"
-				+ "shared_diameter = appose.NDArray(str(diameter.dtype), diameter.shape)" + "\n"
-				+ "shared_diameter.ndarray()[:] = diameter" + "\n"
-				+ "intensity = features[0].features['intensity_mean']" + "\n"
-				+ "intensity = intensity[:, 0]" + "\n"
-				+ "shared_intensity = appose.NDArray(str(intensity.dtype), intensity.shape)" + "\n"
-				+ "shared_intensity.ndarray()[:] = intensity" + "\n"
-				+ "inertia_tensor = features[0].features['inertia_tensor'].T" + "\n"
-				+ "shared_inertia_tensor = appose.NDArray(str(inertia_tensor.dtype), inertia_tensor.shape)" + "\n"
-				+ "shared_inertia_tensor.ndarray()[:] = inertia_tensor" + "\n"
-				+ "border_dist = features[0].features['border_dist']" + "\n"
-				+ "border_dist = border_dist[:, 0]" + "\n"
-				+ "shared_border_dist = appose.NDArray(str(border_dist.dtype), border_dist.shape)" + "\n"
-				+ "shared_border_dist.ndarray()[:] = border_dist" + "\n"
-				+ "\n"
-				+ "task.outputs['" + LABELS + "'] = shared_labels" + "\n"
-				+ "task.outputs['" + TIMEPOINTS + "'] = shared_timepoints" + "\n"
-				+ "task.outputs['" + COORDS + "'] = shared_coords" + "\n"
-				+ "task.outputs['" + DIAMETER + "'] = shared_diameter" + "\n"
-				+ "task.outputs['" + INTENSITY + "'] = shared_intensity" + "\n"
-				+ "task.outputs['" + INERTIA_TENSOR + "'] = shared_inertia_tensor" + "\n"
-				+ "task.outputs['" + BORDER_DIST + "'] = shared_border_dist" + "\n"
-				+ "\n"
-				+ "task.update(message=\"Feature extraction completed. Found {} objects\".format(len(labels)))" + "\n";
+		final String template =
+				ResourceUtils.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/region_props.py", getClass() );
+		return template
+				.replace( "{IMAGE}", IMAGE )
+				.replace( "{MASK}", MASK )
+				.replace( "{MODEL}", model )
+				.replace( "{LABELS}", LABELS )
+				.replace( "{TIMEPOINTS}", TIMEPOINTS )
+				.replace( "{COORDS}", COORDS )
+				.replace( "{DIAMETER}", DIAMETER )
+				.replace( "{INTENSITY}", INTENSITY )
+				.replace( "{INERTIA_TENSOR}", INERTIA_TENSOR )
+				.replace( "{BORDER_DIST}", BORDER_DIST );
 	}
 
 	@Override
 	protected String generateImportStatements()
 	{
-		return "import appose" + "\n"
-				+ "import numpy as np" + "\n"
-				+ "\n"
-				+ "import trackastra.data.wrfeat as wrfeat\n"
-				+ "import trackastra.utils as utils" + "\n"
-				+ "import trackastra.model.pretrained as pretrained" + "\n"
-				+ "from trackastra.model import Trackastra" + "\n"
-				+ "\n"
-				+ "from tqdm import tqdm" + "\n"
-				+ "from pathlib import Path" + "\n"
-				+ "\n"
-				+ "task.update(message=\"Imports completed\")" + "\n"
-				+ "\n"
-				+ "task.export(np=np,appose=appose,wrfeat=wrfeat,utils=utils,tqdm=tqdm,Path=Path,Trackastra=Trackastra,pretrained=pretrained)"
-				+ "\n";
+		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/region_props_imports.py", getClass() );
 	}
 }
