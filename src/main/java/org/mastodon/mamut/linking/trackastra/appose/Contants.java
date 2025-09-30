@@ -24,4 +24,6 @@ public class Contants
 	static final String INERTIA_TENSOR = "inertia_tensor";
 
 	static final String BORDER_DIST = "border_dist";
+
+	static final String EDGES = "edges";
 }

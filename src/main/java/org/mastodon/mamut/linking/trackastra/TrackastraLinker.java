@@ -19,7 +19,7 @@ import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.linking.trackastra.appose.RegionProps;
 import org.mastodon.mamut.linking.trackastra.appose.SingleTimepointRegionProps;
-import org.mastodon.mamut.linking.trackastra.appose.TrackastraLinkPrediction;
+import org.mastodon.mamut.linking.trackastra.appose.LinkPrediction;
 import org.mastodon.mamut.linking.trackastra.appose.RegionPropsComputation;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.spatial.SpatioTemporalIndex;
@@ -72,11 +72,11 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 
 		slf4jLogger.info( "Perform trackastra linking\n" );
 		try (RegionProps regionProps = new RegionProps( singleTimepointRegionProps );
-				final TrackastraLinkPrediction trackAstraLinkPrediction = new TrackastraLinkPrediction( settings, Cast.unchecked( index ),
+				final LinkPrediction trackAstraLinkPrediction = new LinkPrediction( settings, Cast.unchecked( index ),
 						Cast.unchecked( edgeCreator ), regionProps, logger ))
 		{
 			logger.info( "Perform linking\n" );
-			trackAstraLinkPrediction.compute();
+			trackAstraLinkPrediction.predictAndCreateLinks();
 		}
 		catch ( Exception e )
 		{
