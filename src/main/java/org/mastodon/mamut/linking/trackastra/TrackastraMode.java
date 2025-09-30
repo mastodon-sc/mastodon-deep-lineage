@@ -2,7 +2,8 @@ package org.mastodon.mamut.linking.trackastra;
 
 public enum TrackastraMode
 {
-	GREEDY( "greedy", "Greedy linking with divisions" ), GREEDY_NODIV( "gredy_nodiv", "Greedy linking without divisions" );
+	GREEDY( "greedy", "Greedy linking with divisions" ),
+	GREEDY_NODIV( "gredy_nodiv", "Greedy linking without divisions" );
 
 	private final String name;
 
@@ -23,13 +24,5 @@ public enum TrackastraMode
 	public String getName()
 	{
 		return name;
-	}
-
-	public static TrackastraMode fromString( final String name )
-	{
-		for ( final TrackastraMode mode : values() )
-			if ( mode.name.equalsIgnoreCase( name ) )
-				return mode;
-		return null;
 	}
 }
