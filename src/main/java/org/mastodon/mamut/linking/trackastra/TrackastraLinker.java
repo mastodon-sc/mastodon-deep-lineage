@@ -1,10 +1,10 @@
 package org.mastodon.mamut.linking.trackastra;
 
 import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
+import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_SOURCE;
 import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_WINDOW_SIZE;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MAX_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
-import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_SOURCE;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -13,14 +13,15 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.Benchmark;
 import net.imglib2.util.Cast;
 
+import org.apache.commons.lang.StringUtils;
 import org.mastodon.Ref;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.mamut.linking.trackastra.appose.RegionProps;
-import org.mastodon.mamut.linking.trackastra.appose.SingleTimepointRegionProps;
 import org.mastodon.mamut.linking.trackastra.appose.LinkPrediction;
+import org.mastodon.mamut.linking.trackastra.appose.RegionProps;
 import org.mastodon.mamut.linking.trackastra.appose.RegionPropsComputation;
+import org.mastodon.mamut.linking.trackastra.appose.SingleTimepointRegionProps;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.tracking.linking.graph.AbstractGraphParticleLinkerOp;
@@ -37,61 +38,79 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		implements Benchmark
 {
 
-	private static final Logger slf4jLogger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+	private static final Logger log = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
+	private long processingTime;
 
 	@Override
 	public void mutate1( final ReadOnlyGraph< V, E > graph, final SpatioTemporalIndex< V > index )
 	{
-		slf4jLogger.info( "compute region props for trackastra linking" );
-		List< SingleTimepointRegionProps > singleTimepointRegionProps;
+		long start = System.currentTimeMillis();
+		try
+		{
+			List< SingleTimepointRegionProps > regionProps = computeRegionProps( index );
+			runLinkPrediction( index, regionProps );
+			ok = true;
+		}
+		catch ( TrackastraLinkingException e )
+		{
+			log.error( "Error during Trackastra Linking: {}", StringUtils.defaultString( e.getMessage(), e.toString() ) );
+			ok = false;
+			errorMessage = e.getMessage();
+		}
+		finally
+		{
+			processingTime = System.currentTimeMillis() - start;
+		}
+	}
+
+	private List< SingleTimepointRegionProps > computeRegionProps( final SpatioTemporalIndex< V > index ) throws TrackastraLinkingException
+	{
+		log.info( "Computing region props for Trackastra" );
 		String model = ( ( TrackastraModel ) settings.get( TrackastraUtils.KEY_MODEL ) ).getName();
 		int windowSize = ( Integer ) settings.get( KEY_WINDOW_SIZE );
-		try (final RegionPropsComputation regionPropsComputation = new RegionPropsComputation( logger, model, windowSize ))
-		{
-			int minTimepoint = ( int ) settings.get( KEY_MIN_TIMEPOINT );
-			int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );
-			int timeRange = maxTimepoint - minTimepoint + 1;
-			if ( windowSize > ( maxTimepoint - minTimepoint + 1 ) )
-			{
-				throw new IllegalArgumentException( "The window size (" + windowSize + ") is larger than the time range (" + timeRange
-						+ ").\nPlease adjust the window size or the time range." );
-			}
-			int level = (int) settings.get(KEY_LEVEL);
-			Source< ? > source = ( Source< ? > ) settings.get( KEY_SOURCE );
-			logger.info( "Computing region props for source: " + source + "\n" );
-			singleTimepointRegionProps = regionPropsComputation.computeRegionPropsForSource( source, level, Cast.unchecked( index ),
-					minTimepoint, maxTimepoint );
-		}
-		catch ( Exception e )
-		{
-			slf4jLogger.error( "Error during TrackAstra RegionProps computing: {}", e.getMessage(), e );
-			ok = false;
-			errorMessage = e.getMessage();
-			return;
-		}
+		int minTimepoint = ( int ) settings.get( KEY_MIN_TIMEPOINT );
+		int maxTimepoint = ( int ) settings.get( KEY_MAX_TIMEPOINT );
+		int level = ( int ) settings.get( KEY_LEVEL );
+		Source< ? > source = ( Source< ? > ) settings.get( KEY_SOURCE );
 
-		slf4jLogger.info( "Perform trackastra linking\n" );
-		try (RegionProps regionProps = new RegionProps( singleTimepointRegionProps );
-				final LinkPrediction trackAstraLinkPrediction = new LinkPrediction( settings, Cast.unchecked( index ),
-						Cast.unchecked( edgeCreator ), regionProps, logger ))
+		log.info( "Source: {}", source );
+
+		int timeRange = maxTimepoint - minTimepoint + 1;
+		if ( windowSize > timeRange )
+			throw new IllegalArgumentException(
+					String.format( "Window size (%d) exceeds time range (%d). Adjust window size or time range.", windowSize, timeRange ) );
+
+		try (RegionPropsComputation computation = new RegionPropsComputation( logger, model, windowSize ))
 		{
-			logger.info( "Perform linking\n" );
-			trackAstraLinkPrediction.predictAndCreateLinks();
+			return computation.computeRegionPropsForSource( source, level, Cast.unchecked( index ), minTimepoint, maxTimepoint );
 		}
 		catch ( Exception e )
 		{
-			slf4jLogger.error( "Error during TrackAstra linking: {}", e.getMessage(), e );
-			ok = false;
-			errorMessage = e.getMessage();
-			return;
+			throw new TrackastraLinkingException( "Failed to compute region props", e );
 		}
-		ok = true;
+	}
+
+	private void runLinkPrediction( final SpatioTemporalIndex< V > index, final List< SingleTimepointRegionProps > regionProps )
+			throws TrackastraLinkingException
+	{
+		log.info( "Performing Trackastra link prediction" );
+		try (RegionProps props = new RegionProps( regionProps );
+				LinkPrediction prediction =
+						new LinkPrediction( settings, Cast.unchecked( index ), Cast.unchecked( edgeCreator ), props, logger ))
+		{
+			prediction.predictAndCreateLinks();
+		}
+		catch ( Exception e )
+		{
+			throw new TrackastraLinkingException( "Failed to perform link prediction", e );
+		}
 	}
 
 	@Override
 	public long getProcessingTime()
 	{
-		return 0;
+		return processingTime;
 	}
 
 	@Override
