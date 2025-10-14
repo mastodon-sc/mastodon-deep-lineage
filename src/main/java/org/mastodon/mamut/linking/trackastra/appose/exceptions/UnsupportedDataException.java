@@ -1,4 +1,4 @@
-package org.mastodon.mamut.linking.trackastra.appose;
+package org.mastodon.mamut.linking.trackastra.appose.exceptions;
 
 public class UnsupportedDataException extends RuntimeException
 {

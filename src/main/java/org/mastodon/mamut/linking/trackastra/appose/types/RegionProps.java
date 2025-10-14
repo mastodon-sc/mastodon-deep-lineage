@@ -1,4 +1,4 @@
-package org.mastodon.mamut.linking.trackastra.appose;
+package org.mastodon.mamut.linking.trackastra.appose.types;
 
 import java.util.List;
 
@@ -17,19 +17,19 @@ import net.imglib2.view.Views;
 
 public class RegionProps implements AutoCloseable
 {
-	final ShmImg< IntType > labels;
+	public final ShmImg< IntType > labels;
 
-	final ShmImg< IntType > timepoints;
+	public final ShmImg< IntType > timepoints;
 
-	final ShmImg< FloatType > coords;
+	public final ShmImg< FloatType > coords;
 
-	final ShmImg< FloatType > diameters;
+	public final ShmImg< FloatType > diameters;
 
-	final ShmImg< FloatType > intensities;
+	public final ShmImg< FloatType > intensities;
 
-	final ShmImg< FloatType > inertiaTensors;
+	public final ShmImg< FloatType > inertiaTensors;
 
-	final ShmImg< FloatType > borderDists;
+	public final ShmImg< FloatType > borderDists;
 
 	public RegionProps( final List< SingleTimepointRegionProps > singleTimepointRegionProps )
 	{

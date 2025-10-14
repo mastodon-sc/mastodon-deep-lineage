@@ -1,4 +1,4 @@
-package org.mastodon.mamut.linking.trackastra.appose;
+package org.mastodon.mamut.linking.trackastra.appose.types;
 
 import net.imglib2.appose.ShmImg;
 import net.imglib2.type.numeric.integer.IntType;

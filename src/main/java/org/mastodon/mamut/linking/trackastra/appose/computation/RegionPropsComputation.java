@@ -1,14 +1,14 @@
-package org.mastodon.mamut.linking.trackastra.appose;
+package org.mastodon.mamut.linking.trackastra.appose.computation;
 
-import static org.mastodon.mamut.linking.trackastra.appose.Contants.BORDER_DIST;
-import static org.mastodon.mamut.linking.trackastra.appose.Contants.COORDS;
-import static org.mastodon.mamut.linking.trackastra.appose.Contants.DIAMETER;
-import static org.mastodon.mamut.linking.trackastra.appose.Contants.IMAGE;
-import static org.mastodon.mamut.linking.trackastra.appose.Contants.INERTIA_TENSOR;
-import static org.mastodon.mamut.linking.trackastra.appose.Contants.INTENSITY;
-import static org.mastodon.mamut.linking.trackastra.appose.Contants.LABELS;
-import static org.mastodon.mamut.linking.trackastra.appose.Contants.MASK;
-import static org.mastodon.mamut.linking.trackastra.appose.Contants.TIMEPOINTS;
+import static org.mastodon.mamut.linking.trackastra.appose.constants.Contants.BORDER_DIST;
+import static org.mastodon.mamut.linking.trackastra.appose.constants.Contants.COORDS;
+import static org.mastodon.mamut.linking.trackastra.appose.constants.Contants.DIAMETER;
+import static org.mastodon.mamut.linking.trackastra.appose.constants.Contants.IMAGE;
+import static org.mastodon.mamut.linking.trackastra.appose.constants.Contants.INERTIA_TENSOR;
+import static org.mastodon.mamut.linking.trackastra.appose.constants.Contants.INTENSITY;
+import static org.mastodon.mamut.linking.trackastra.appose.constants.Contants.LABELS;
+import static org.mastodon.mamut.linking.trackastra.appose.constants.Contants.MASK;
+import static org.mastodon.mamut.linking.trackastra.appose.constants.Contants.TIMEPOINTS;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -31,6 +31,8 @@ import org.apposed.appose.NDArray;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.io.exporter.labelimage.ExportLabelImageUtils;
 import org.mastodon.mamut.linking.trackastra.TrackastraUtils;
+import org.mastodon.mamut.linking.trackastra.appose.types.SingleTimepointRegionProps;
+import org.mastodon.mamut.linking.trackastra.appose.exceptions.UnsupportedDataException;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.util.ApposeProcess;
 import org.mastodon.mamut.util.ImgUtils;

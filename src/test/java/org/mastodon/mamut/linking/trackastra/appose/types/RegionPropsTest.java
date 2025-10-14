@@ -1,4 +1,4 @@
-package org.mastodon.mamut.linking.trackastra.appose;
+package org.mastodon.mamut.linking.trackastra.appose.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
