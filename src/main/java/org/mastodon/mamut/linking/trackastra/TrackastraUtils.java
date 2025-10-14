@@ -15,7 +15,7 @@ import org.mastodon.tracking.detection.DetectorKeys;
 
 public class TrackastraUtils
 {
-	public static final String TRACKASTRA_VERSION = "0.4.1";
+	public static final String TRACKASTRA_VERSION = "0.4.2";
 
 	public static final String KEY_EDGE_THRESHOLD = "trackastraEdgeThreshold";
 

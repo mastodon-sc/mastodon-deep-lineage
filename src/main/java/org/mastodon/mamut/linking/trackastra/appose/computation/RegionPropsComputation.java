@@ -32,7 +32,6 @@ import org.apposed.appose.Service;
 import org.mastodon.mamut.io.exporter.labelimage.ExportLabelImageUtils;
 import org.mastodon.mamut.linking.trackastra.TrackastraUtils;
 import org.mastodon.mamut.linking.trackastra.appose.types.SingleTimepointRegionProps;
-import org.mastodon.mamut.linking.trackastra.appose.exceptions.UnsupportedDataException;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.util.ApposeProcess;
 import org.mastodon.mamut.util.ImgUtils;
@@ -51,14 +50,11 @@ public class RegionPropsComputation extends ApposeProcess
 
 	private final String model;
 
-	private final int windowSize;
-
-	public RegionPropsComputation( final org.scijava.log.Logger logger, final String model, final int windowSize ) throws IOException
+	public RegionPropsComputation( final org.scijava.log.Logger logger, final String model ) throws IOException
 	{
 		super();
 		this.logger = logger;
 		this.model = model;
-		this.windowSize = windowSize;
 	}
 
 	public List< SingleTimepointRegionProps > computeRegionPropsForSource( final Source< ? > source, final int level,
@@ -70,7 +66,6 @@ public class RegionPropsComputation extends ApposeProcess
 		logger.info( "Computing region props for source: " + source.getName() + "\n" );
 		logger.info( "On first time use, this installs a Python new environment. This takes a while an requires internet connection.\n" );
 		List< SingleTimepointRegionProps > singleTimepointRegionProps = new ArrayList<>();
-		int consecutiveEmptyFrames = 0;
 		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++, done++ )
 		{
 			if ( spatioTemporalIndex.getSpatialIndex( timepoint ).isEmpty() )
@@ -78,17 +73,8 @@ public class RegionPropsComputation extends ApposeProcess
 				slf4Logger.info( "No spots. Adding empty region props for timepoint: {}", timepoint );
 				logger.info( "No spots. Adding empty region props for timepoint: " + timepoint + "\n" );
 				singleTimepointRegionProps.add( null );
-				consecutiveEmptyFrames++;
-				if ( consecutiveEmptyFrames >= windowSize )
-				{
-					throw new UnsupportedDataException(
-							"Found " + consecutiveEmptyFrames + " consecutive frames without spots before timepoint " + timepoint + ".\n"
-									+ "This exceeds the configured window size of " + windowSize + " and is currently not supported.\n"
-									+ "Please adjust the window size or check your data." );
-				}
 				continue;
 			}
-			consecutiveEmptyFrames = 0;
 			SingleTimepointRegionProps regionProps = computeSingleTimepointProps( source, timepoint, level, spatioTemporalIndex );
 			singleTimepointRegionProps.add( regionProps );
 			formatProgress( maxTimepoint, done, todo, timepoint );

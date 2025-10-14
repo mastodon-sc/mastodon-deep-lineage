@@ -54,7 +54,12 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		}
 		catch ( TrackastraLinkingException e )
 		{
-			log.error( "Error during Trackastra Linking: {}", StringUtils.defaultString( e.getMessage(), e.toString() ) );
+			Throwable cause = e.getCause();
+			String msg = "";
+			if ( cause != null )
+				msg = cause.getMessage();
+
+			log.error( "Error during Trackastra Linking: {}. Cause: {}.", StringUtils.defaultString( e.getMessage(), e.toString() ), msg );
 			ok = false;
 			errorMessage = e.getMessage();
 		}
@@ -81,7 +86,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 			throw new IllegalArgumentException(
 					String.format( "Window size (%d) exceeds time range (%d). Adjust window size or time range.", windowSize, timeRange ) );
 
-		try (RegionPropsComputation computation = new RegionPropsComputation( logger, model, windowSize ))
+		try (RegionPropsComputation computation = new RegionPropsComputation( logger, model ))
 		{
 			return computation.computeRegionPropsForSource( source, level, Cast.unchecked( index ), minTimepoint, maxTimepoint );
 		}
