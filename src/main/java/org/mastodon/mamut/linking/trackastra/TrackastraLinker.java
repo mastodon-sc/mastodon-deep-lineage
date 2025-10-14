@@ -61,7 +61,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 
 			log.error( "Error during Trackastra Linking: {}. Cause: {}.", StringUtils.defaultString( e.getMessage(), e.toString() ), msg );
 			ok = false;
-			errorMessage = e.getMessage();
+			errorMessage = e.getMessage() + ( ( msg != null && !msg.isEmpty() ) ? " Caused by: " + msg : "" );
 		}
 		finally
 		{
