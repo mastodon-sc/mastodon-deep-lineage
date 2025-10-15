@@ -1,5 +1,6 @@
 package org.mastodon.mamut.linking.trackastra.appose.types;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import net.imglib2.FinalInterval;
@@ -15,8 +16,13 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class RegionProps implements AutoCloseable
 {
+	private static final Logger log = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	public final ShmImg< IntType > labels;
 
 	public final ShmImg< IntType > timepoints;
@@ -44,6 +50,7 @@ public class RegionProps implements AutoCloseable
 		int coordDims = dimensions[ 1 ];
 		int tensorDims = dimensions[ 2 ];
 		int numTimepoints = singleTimepointRegionProps.size();
+		log.debug( "numTimepoints: {}", numTimepoints );
 
 		// Allocate arrays
 		Img< IntType > labelsAll = ArrayImgs.ints( numTimepoints, maxEntries );
@@ -76,6 +83,7 @@ public class RegionProps implements AutoCloseable
 			this.intensities = ShmImg.copyOf( data.arrays.intensities );
 			this.inertiaTensors = ShmImg.copyOf( data.arrays.inertiaTensors );
 			this.borderDists = ShmImg.copyOf( data.arrays.borderDists );
+			log.debug( "labels dimensions: {}", labels.dimensionsAsLongArray() );
 		}
 		finally
 		{
