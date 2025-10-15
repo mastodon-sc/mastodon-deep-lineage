@@ -42,7 +42,7 @@ class TrackastraLinkerTest
 		final MamutProject project = MamutProjectIO.load( tinyExampleProject.toFile().getAbsolutePath() );
 		final ProjectModel appModel = ProjectLoader.open( project, context, false, true );
 		ModelGraph graph = appModel.getModel().getGraph();
-		assertEquals( 5, graph.vertices().size() );
+		assertEquals( 10, graph.vertices().size() );
 		assertEquals( 0, graph.edges().size() );
 		TrackastraLinker< Spot, Link > linker = new TrackastraLinker<>();
 		Map< String, Object > settingsMap = TrackastraUtils.getDefaultTrackAstraSettingsMap();
@@ -65,8 +65,8 @@ class TrackastraLinkerTest
 		edgeCreator.set( linker, spotEdgeCreator );
 
 		linker.mutate1( graph, appModel.getModel().getSpatioTemporalIndex() );
-		assertEquals( 5, graph.vertices().size() );
-		assertEquals( 4, graph.edges().size() );
+		assertEquals( 10, graph.vertices().size() );
+		assertEquals( 8, graph.edges().size() );
 		// close the project
 		appModel.close();
 	}
