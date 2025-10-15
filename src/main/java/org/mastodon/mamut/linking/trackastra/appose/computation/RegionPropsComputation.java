@@ -16,6 +16,7 @@ import java.lang.invoke.MethodHandles;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.appose.NDArrays;
@@ -93,6 +94,7 @@ public class RegionPropsComputation extends ApposeProcess
 		log.info( "Processing timepoint: {}", timepoint );
 		log.info( "Getting features from image with {} dimensions: ({}) of type: {}", image.numDimensions(), imageDimensions,
 				image.getType().getClass().getSimpleName() );
+		// converts spots to label image. Uses spot internal index + 1 as label, i.e., 1-based labels.
 		RandomAccessibleInterval< IntType > masksImage = ExportLabelImageUtils.getLabelImageFromSpots( transform,
 				image.dimensionsAsLongArray(), level, timepoint, spatioTemporalIndex );
 		// Prepare inputs.
@@ -114,7 +116,6 @@ public class RegionPropsComputation extends ApposeProcess
 
 			Service.Task result = runScript();
 			ShmImg< IntType > labels = new ShmImg<>( ( NDArray ) result.outputs.get( LABELS ) );
-			LoopBuilder.setImages( labels ).multiThreaded().forEachPixel( p -> p.set( p.get() - 1 ) ); // make labels zero-based again
 			ShmImg< IntType > timepoints = new ShmImg<>( ( NDArray ) result.outputs.get( TIMEPOINTS ) );
 			LoopBuilder.setImages( timepoints ).multiThreaded().forEachPixel( p -> p.set( timepoint ) ); // all timepoints are the same
 			ShmImg< FloatType > coords = new ShmImg<>( ( NDArray ) result.outputs.get( COORDS ) );

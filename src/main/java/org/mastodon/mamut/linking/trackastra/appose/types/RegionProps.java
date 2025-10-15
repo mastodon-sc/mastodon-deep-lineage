@@ -50,7 +50,6 @@ public class RegionProps implements AutoCloseable
 		int coordDims = dimensions[ 1 ];
 		int tensorDims = dimensions[ 2 ];
 		int numTimepoints = singleTimepointRegionProps.size();
-		log.debug( "numTimepoints: {}", numTimepoints );
 
 		// Allocate arrays
 		Img< IntType > labelsAll = ArrayImgs.ints( numTimepoints, maxEntries );
@@ -83,7 +82,6 @@ public class RegionProps implements AutoCloseable
 			this.intensities = ShmImg.copyOf( data.arrays.intensities );
 			this.inertiaTensors = ShmImg.copyOf( data.arrays.inertiaTensors );
 			this.borderDists = ShmImg.copyOf( data.arrays.borderDists );
-			log.debug( "labels dimensions: {}", labels.dimensionsAsLongArray() );
 		}
 		finally
 		{

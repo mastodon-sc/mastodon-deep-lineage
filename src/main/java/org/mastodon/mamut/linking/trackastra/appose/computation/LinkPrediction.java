@@ -108,9 +108,9 @@ public class LinkPrediction extends ApposeProcess
 		for ( int row = 0; row < rows; row++ )
 		{
 			int startFrame = getInt( randomAccess, 0, row );
-			int startId = getInt( randomAccess, 1, row );
+			int startId = getInt( randomAccess, 1, row ) - 1; // Trackastra uses 1-based labels
 			int endFrame = getInt( randomAccess, 2, row );
-			int endId = getInt( randomAccess, 3, row );
+			int endId = getInt( randomAccess, 3, row ) - 1; // Trackastra uses 1-based labels
 			float weight = getFloat( randomAccess, 4, row );
 
 			Spot source = null;
