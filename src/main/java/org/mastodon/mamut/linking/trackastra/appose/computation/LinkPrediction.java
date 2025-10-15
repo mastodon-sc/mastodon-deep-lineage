@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
 public class LinkPrediction extends ApposeProcess
 {
 
-	private static final Logger slf4jLogger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+	private static final Logger log = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	private final org.scijava.log.Logger logger;
+	private final org.scijava.log.Logger uiLogger;
 
 	private final Map< String, Object > settings;
 	private final SpatioTemporalIndex< Spot > index;
@@ -50,14 +50,15 @@ public class LinkPrediction extends ApposeProcess
 	private final RegionProps regionProps;
 
 	public LinkPrediction( final Map< String, Object > settings, final SpatioTemporalIndex< Spot > index,
-			final EdgeCreator< Spot > edgeCreator, final RegionProps regionProps, final org.scijava.log.Logger logger ) throws IOException
+			final EdgeCreator< Spot > edgeCreator, final RegionProps regionProps, final org.scijava.log.Logger uiLogger
+	) throws IOException
 	{
 		super();
 		this.settings = settings;
 		this.index = index;
 		this.edgeCreator = edgeCreator;
 		this.regionProps = regionProps;
-		this.logger = logger;
+		this.uiLogger = uiLogger;
 	}
 
 	public void predictAndCreateLinks() throws IOException
@@ -66,9 +67,9 @@ public class LinkPrediction extends ApposeProcess
 		{
 			stopWatch.split();
 			String message = "Copied region prop data to shared memory for linking.";
-			logger.info( message + "\n" );
+			uiLogger.info( message + "\n" );
 			message += "Time elapsed: " + stopWatch.formatSplitTime();
-			slf4jLogger.info( message );
+			log.info( message );
 
 			inputs.put( LABELS, NDArrays.asNDArray( regionProps.labels ) );
 			inputs.put( TIMEPOINTS, NDArrays.asNDArray( regionProps.timepoints ) );
@@ -92,15 +93,15 @@ public class LinkPrediction extends ApposeProcess
 		NDArray edges = ( NDArray ) task.outputs.get( "edges" );
 		if ( edges == null )
 		{
-			slf4jLogger.warn( "No edges were predicted." );
-			logger.info( "No edges were predicted.\n" );
+			log.warn( "No edges were predicted." );
+			uiLogger.info( "No edges were predicted.\n" );
 			return;
 		}
 		ShmImg< ? > edgesData = new ShmImg<>( edges );
 
 		long[] dims = edgesData.dimensionsAsLongArray();
 		int rows = ( int ) dims[ 1 ];
-		slf4jLogger.debug( "Edges: {}", rows );
+		log.debug( "Edges: {}", rows );
 		RandomAccess< ? > randomAccess = edgesData.randomAccess();
 		int linksCreated = 0;
 
@@ -132,13 +133,13 @@ public class LinkPrediction extends ApposeProcess
 			}
 			if ( source == null || target == null )
 			{
-				slf4jLogger.warn( "Could not find source or target spot for edge: {}({}) -> {}({})", startId, startFrame, endId, endFrame );
+				log.warn( "Could not find source or target spot for edge: {}({}) -> {}({})", startId, startFrame, endId, endFrame );
 				continue;
 			}
 			edgeCreator.createEdge( source, target, weight );
 			linksCreated++;
 		}
-		logger.info( "Created " + linksCreated + " links.\n" );
+		uiLogger.info( "Created " + linksCreated + " links.\n" );
 	}
 
 	private int getInt( RandomAccess< ? > ra, int col, int row )

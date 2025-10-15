@@ -44,16 +44,16 @@ import bdv.viewer.Source;
 
 public class RegionPropsComputation extends ApposeProcess
 {
-	private static final Logger slf4Logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+	private static final Logger log = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	private final org.scijava.log.Logger logger;
+	private final org.scijava.log.Logger uiLogger;
 
 	private final String model;
 
-	public RegionPropsComputation( final org.scijava.log.Logger logger, final String model ) throws IOException
+	public RegionPropsComputation( final org.scijava.log.Logger uiLogger, final String model ) throws IOException
 	{
 		super();
-		this.logger = logger;
+		this.uiLogger = uiLogger;
 		this.model = model;
 	}
 
@@ -62,16 +62,16 @@ public class RegionPropsComputation extends ApposeProcess
 	{
 		int todo = ( maxTimepoint - minTimepoint + 1 );
 		int done = 0;
-		slf4Logger.info( "Computing region props for source: {}", source.getName() );
-		logger.info( "Computing region props for source: " + source.getName() + "\n" );
-		logger.info( "On first time use, this installs a Python new environment. This takes a while an requires internet connection.\n" );
+		log.info( "Computing region props for source: {}", source.getName() );
+		uiLogger.info( "Computing region props for source: " + source.getName() + "\n" );
+		uiLogger.info( "On first time use, this installs a Python new environment. This takes a while an requires internet connection.\n" );
 		List< SingleTimepointRegionProps > singleTimepointRegionProps = new ArrayList<>();
 		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++, done++ )
 		{
 			if ( spatioTemporalIndex.getSpatialIndex( timepoint ).isEmpty() )
 			{
-				slf4Logger.info( "No spots. Adding empty region props for timepoint: {}", timepoint );
-				logger.info( "No spots. Adding empty region props for timepoint: " + timepoint + "\n" );
+				log.info( "No spots. Adding empty region props for timepoint: {}", timepoint );
+				uiLogger.info( "No spots. Adding empty region props for timepoint: " + timepoint + "\n" );
 				singleTimepointRegionProps.add( null );
 				continue;
 			}
@@ -89,8 +89,8 @@ public class RegionPropsComputation extends ApposeProcess
 		source.getSourceTransform( timepoint, level, transform );
 		RandomAccessibleInterval< ? > image = source.getSource( timepoint, level );
 		String imageDimensions = ImgUtils.getImageDimensionsAsString( image );
-		slf4Logger.info( "Processing timepoint: {}", timepoint );
-		slf4Logger.info( "Getting features from image with {} dimensions: ({}) of type: {}", image.numDimensions(), imageDimensions,
+		log.info( "Processing timepoint: {}", timepoint );
+		log.info( "Getting features from image with {} dimensions: ({}) of type: {}", image.numDimensions(), imageDimensions,
 				image.getType().getClass().getSimpleName() );
 		RandomAccessibleInterval< IntType > masksImage = ExportLabelImageUtils.getLabelImageFromSpots( transform,
 				image.dimensionsAsLongArray(), level, timepoint, spatioTemporalIndex );
@@ -99,13 +99,13 @@ public class RegionPropsComputation extends ApposeProcess
 				ShmImg< ? > sharedMemoryMasks = ShmImg.copyOf( Cast.unchecked( Views.dropSingletonDimensions( masksImage ) ) ))
 		{
 			stopWatch.split();
-			if ( slf4Logger.isInfoEnabled() )
-				slf4Logger.info( "Copied image and masks to shared memory. Time elapsed: {}", stopWatch.formatSplitTime() );
+			if ( log.isInfoEnabled() )
+				log.info( "Copied image and masks to shared memory. Time elapsed: {}", stopWatch.formatSplitTime() );
 			NDArray imageNDArray = NDArrays.asNDArray( sharedMemoryImage );
 			NDArray masksNDArray = NDArrays.asNDArray( sharedMemoryMasks );
 			stopWatch.split();
-			if ( slf4Logger.isInfoEnabled() )
-				slf4Logger.info( "Converted image and masks to nd arrays: {} and {}. Time elapsed: {}", imageNDArray, masksNDArray,
+			if ( log.isInfoEnabled() )
+				log.info( "Converted image and masks to nd arrays: {} and {}. Time elapsed: {}", imageNDArray, masksNDArray,
 						stopWatch.formatSplitTime() );
 
 			inputs.put( IMAGE, imageNDArray );
@@ -137,8 +137,8 @@ public class RegionPropsComputation extends ApposeProcess
 		percentFormatter.setMaximumFractionDigits( 0 );
 		String message = String.format( "Computed region props for timepoint %d/%d. Progress: %s", timepoint, maxTimepoint,
 				percentFormatter.format( progress ) );
-		slf4Logger.info( message );
-		logger.info( message + "\n" );
+		log.info( message );
+		uiLogger.info( message + "\n" );
 	}
 
 	@Override
