@@ -60,7 +60,7 @@ public class RegionPropsComputation extends ApposeProcess
 	public List< SingleTimepointRegionProps > computeRegionPropsForSource( final Source< ? > source, final int level,
 			final SpatioTemporalIndex< Spot > spatioTemporalIndex, final int minTimepoint, final int maxTimepoint )
 	{
-		int todo = ( maxTimepoint - minTimepoint + 1 );
+		int todo = maxTimepoint - minTimepoint + 1;
 		int done = 0;
 		log.info( "Computing region props for source: {}", source.getName() );
 		uiLogger.info( "Computing region props for source: " + source.getName() + "\n" );
@@ -78,7 +78,7 @@ public class RegionPropsComputation extends ApposeProcess
 			}
 			SingleTimepointRegionProps regionProps = computeSingleTimepointProps( source, timepoint, level, spatioTemporalIndex );
 			singleTimepointRegionProps.add( regionProps );
-			formatProgress( maxTimepoint, done, todo, timepoint );
+			formatProgress( done + 1, todo );
 		}
 		return singleTimepointRegionProps;
 	}
@@ -130,13 +130,13 @@ public class RegionPropsComputation extends ApposeProcess
 		}
 	}
 
-	private void formatProgress( final int maxTimepoint, final double done, final int todo, final int timepoint )
+	private void formatProgress( final int done, final int todo )
 	{
-		double progress = done / todo;
+		double progress = ( double ) done / todo;
 		NumberFormat percentFormatter = NumberFormat.getPercentInstance();
 		percentFormatter.setMinimumFractionDigits( 0 );
 		percentFormatter.setMaximumFractionDigits( 0 );
-		String message = String.format( "Computed region props for timepoint %d/%d. Progress: %s", timepoint, maxTimepoint,
+		String message = String.format( "Computed region props for timepoint %d/%d. Progress: %s", done, todo,
 				percentFormatter.format( progress ) );
 		log.info( message );
 		uiLogger.info( message + "\n" );
