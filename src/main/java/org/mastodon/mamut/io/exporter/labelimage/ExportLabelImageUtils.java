@@ -40,7 +40,7 @@ public class ExportLabelImageUtils
 			spotCount++;
 		}
 		String masksDimensions = ImgUtils.getImageDimensionsAsString( masksImage );
-		logger.info( "Wrote {} spots into image with dimensions: {} and type: {} ", spotCount, masksDimensions,
+		logger.info( "Wrote {} spot(s) into image with dimensions: {} and type: {} ", spotCount, masksDimensions,
 				masksSource.getType().getClass().getSimpleName() );
 		return masksImage;
 	}

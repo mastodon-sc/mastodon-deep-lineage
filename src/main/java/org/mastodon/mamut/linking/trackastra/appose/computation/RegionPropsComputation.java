@@ -64,7 +64,8 @@ public class RegionPropsComputation extends ApposeProcess
 		int done = 0;
 		log.info( "Computing region props for source: {}", source.getName() );
 		uiLogger.info( "Computing region props for source: " + source.getName() + "\n" );
-		uiLogger.info( "On first time use, this installs a Python new environment. This takes a while an requires internet connection.\n" );
+		uiLogger.info(
+				"On first time use, this installs a Python new environment. This takes a while and requires internet connection.\n" );
 		List< SingleTimepointRegionProps > singleTimepointRegionProps = new ArrayList<>();
 		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++, done++ )
 		{
