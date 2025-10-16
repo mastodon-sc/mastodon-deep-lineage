@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.mamut.ProjectManagerTest;
 import org.mastodon.mamut.ProjectModel;
@@ -38,6 +39,7 @@ class TrackastraLinkerTest
 
 	private final Context context = new Context();
 
+	@Disabled( "This test is disabled, because it has very long runtime (> 5 minutes)" )
 	@Test
 	void testLinking3D() throws IOException, SpimDataException, NoSuchFieldException, IllegalAccessException
 	{
@@ -73,6 +75,7 @@ class TrackastraLinkerTest
 		appModel.close();
 	}
 
+	@Disabled( "This test is disabled, because it has very long runtime (> 5 minutes)" )
 	@Test
 	void testLinking2D() throws IOException, SpimDataException, NoSuchFieldException, IllegalAccessException
 	{
