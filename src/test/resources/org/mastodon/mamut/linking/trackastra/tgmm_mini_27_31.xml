@@ -3,7 +3,7 @@
   <BasePath type="relative">.</BasePath>
   <SequenceDescription>
     <ImageLoader format="bdv.hdf5">
-      <hdf5 type="relative">hdf5_27_31.h5</hdf5>
+        <hdf5 type="relative">tgmm_mini_27_31.h5</hdf5>
     </ImageLoader>
     <ViewSetups>
       <ViewSetup>
