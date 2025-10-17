@@ -28,32 +28,34 @@
  */
 package org.mastodon.mamut.feature.dimensionalityreduction.tsne;
 
-import com.jujutsu.tsne.TSneConfiguration;
-import com.jujutsu.tsne.barneshut.BarnesHutTSne;
-import com.jujutsu.tsne.barneshut.ParallelBHTsne;
-import com.jujutsu.utils.TSneUtils;
+import java.util.Properties;
 
 import org.mastodon.mamut.feature.dimensionalityreduction.PlotPoints;
 import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
+
+import smile.manifold.TSNE;
 
 public class TSneDemo
 {
 	public static void main( final String[] args )
 	{
 		double[][] inputData = RandomDataTools.generateSampleData();
-		TSneConfiguration config = setUpTSne( inputData );
-		BarnesHutTSne tsne = new ParallelBHTsne(); // according to https://github.com/lejon/T-SNE-Java/ the parallel version is faster at same accuracy
-		double[][] tsneResult = tsne.tsne( config );
-		PlotPoints.plot( inputData, tsneResult, resultValues -> resultValues[ 0 ] > 18 );
+		double[][] tsneResult = setUpTSne( inputData );
+		PlotPoints.plot( inputData, tsneResult, resultValues -> resultValues[ 1 ] > 0 );
 	}
 
-	static TSneConfiguration setUpTSne( double[][] inputData )
+	static double[][] setUpTSne( double[][] inputData )
 	{
-		// Recommendations for t-SNE defaults: https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
-		int initialDimensions = 50; // used if PCA is true and dimensions of the input data are greater than this value
-		double perplexity = 30d; // recommended value is between 5 and 50
-		int maxIterations = 1000; // should be at least 250
-
-		return TSneUtils.buildConfig( inputData, 2, initialDimensions, perplexity, maxIterations, true, 0.5d, false, true );
+		int d = 2; // target dimension
+		double perplexity = 30d;
+		double eta = 200; // learning rate
+		int maxIter = 1000; // maximum number of iterations
+		Properties p = new Properties();
+		p.setProperty( "smile.t_sne.d", String.valueOf( d ) );
+		p.setProperty( "smile.t_sne.perplexity", String.valueOf( perplexity ) );
+		p.setProperty( "smile.t_sne.eta", String.valueOf( eta ) );
+		p.setProperty( "smile.t_sne.iterations", String.valueOf( maxIter ) );
+		TSNE tsne = TSNE.fit( inputData, TSNE.Options.of( p ) );
+		return tsne.coordinates();
 	}
 }
