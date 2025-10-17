@@ -75,9 +75,12 @@ public class Cellpose4 extends Cellpose
 				+ "dependencies:\n"
 				+ "  - python=3.10\n"
 				+ "  - cellpose==4.0.6\n"
-				+ getApposeVersion().substring( 2 ) + "\n"
+				// + getApposeVersion().substring( 2 ) + "\n"
 				+ "  - pytorch\n"
 				+ "  - pytorch-cuda\n"
-				+ "  - numpy\n";
+				+ "  - numpy\n"
+				+ "  - pip\n"
+				+ "  - pip:\n"
+				+ "    " + getApposeVersion() + "\n";
 	}
 }

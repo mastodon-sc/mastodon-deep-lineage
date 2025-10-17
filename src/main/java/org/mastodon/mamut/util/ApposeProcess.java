@@ -148,7 +148,8 @@ public abstract class ApposeProcess implements AutoCloseable
 
 	protected String getApposeVersion()
 	{
-		return "    - appose==0.7.0\n";
+		// return "    - appose==0.7.0\n";
+		return "    - git+https://github.com/stefanhahmann/appose-python.git@stefanhahmann-patch-3\n";
 	}
 
 	private static void logEnvFile( final File envFile )
