@@ -1,31 +1,3 @@
-/*-
- * #%L
- * mastodon-deep-lineage
- * %%
- * Copyright (C) 2022 - 2025 Stefan Hahmann
- * %%
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- * #L%
- */
 package org.mastodon.mamut.detection.cellpose;
 
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
@@ -42,8 +14,6 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.real.FloatType;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.detection.DeepLearningDetectorKeys;
@@ -53,13 +23,9 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.tracking.detection.DetectorKeys;
 import org.scijava.Context;
 
-
-class Cellpose4DetectorTest
+public class Cellpose4DetectorDemo
 {
-
-	@Disabled( "This test is disabled, because it has very long runtime (> 5 minutes)" )
-	@Test
-	void testCompute3D() throws IllegalAccessException
+	public static void main( String[] args ) throws Exception
 	{
 		Cellpose4Detector detector = new Cellpose4Detector();
 		Model model = new Model();

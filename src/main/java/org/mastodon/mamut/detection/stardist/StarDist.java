@@ -175,19 +175,16 @@ public class StarDist extends Segmentation
 		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
 			return "    - tensorflow-macos==2.10\n"
 					+ "    - tensorflow-metal==0.6.0\n";
-		return "    - tensorflow==2.10\n";
+		// TODO: in order to let the following pickup the GPU, it is required that this combination of CUDA/cuDNN is installed on the system: CUDA 11.2 + cuDNN 8.1
+		// cf: https://biapol.github.io/blog/stefan_hahmann/stardist_gpu_2025/readme.html
+		return "    - tensorflow==2.10\n"
+				+ "    - tensorflow-gpu==2.10.0\n";
 	}
 
 	@Override
 	protected String generateScript()
 	{
-		return "import numpy as np" + "\n"
-				+ "import appose" + "\n"
-				+ "from csbdeep.utils import normalize" + "\n"
-				+ getImportStarDistCommand()
-				+ "\n"
-				+ "task.update(message=\"Imports completed\")" + "\n"
-				+ "np.random.seed(6)" + "\n"
+		return "np.random.seed(6)" + "\n"
 				+ getAxesNormalizeCommand()
 				+ "\n"
 				+ "task.update(message=\"Loading StarDist pretrained model\")" + "\n"
@@ -203,6 +200,32 @@ public class StarDist extends Segmentation
 				+ "shared = appose.NDArray(image.dtype, image.shape)" + "\n"
 				+ "shared.ndarray()[:] = label_image" + "\n"
 				+ "task.outputs['label_image'] = shared" + "\n";
+	}
+
+	@Override
+	protected String generateImportStatements()
+	{
+		String starDistImport;
+		if ( modelType.getModelPath() == null )
+		{
+			if ( dataIs2D )
+				starDistImport = "StarDist2D=StarDist2D";
+			else
+				starDistImport = "StarDist3D=StarDist3D";
+		}
+		else if ( Boolean.TRUE.equals( modelType.is2D() ) )
+			starDistImport = "StarDist2D=StarDist2D";
+		else
+			starDistImport = "StarDist3D=StarDist3D";
+
+		return "import numpy as np" + "\n"
+				+ "import appose as appose" + "\n"
+				+ "from csbdeep.utils import normalize" + "\n"
+				+ getImportStarDistCommand()
+				+ "\n"
+				+ "task.update(message=\"Imports completed\")" + "\n"
+				+ "\n"
+				+ "task.export(np=np, appose=appose, normalize=normalize, " + starDistImport + ")" + "\n";
 	}
 
 	public ModelType getModelType()
@@ -252,14 +275,15 @@ public class StarDist extends Segmentation
 
 	private String getAxesNormalizeCommand()
 	{
-		return "axes_normalize = (0, 1, 2)" + "\n ";
+		return dataIs2D ? "axes_normalize = (0, 1)" + "\n " : // for 2D data (Y, X) or 3D data with 2D slices (Z, Y, X)
+				"axes_normalize = (0, 1, 2)" + "\n "; // for 3D data (Z, Y, X)
 	}
 
 	private String getPredictionCommand()
 	{
-		return "label_image, details = model.predict_instances(image_normalized, axes='ZYX', n_tiles=guessed_tiles, nms_thresh=" + nmsThresh
-				+ ", prob_thresh=" + probThresh + ")"
-				+ "\n";
+		String axes = dataIs2D ? "YX" : "ZYX";
+		return "label_image, details = model.predict_instances(image_normalized, axes='" + axes + "', n_tiles=guessed_tiles, nms_thresh="
+				+ nmsThresh + ", prob_thresh=" + probThresh + ")" + "\n";
 	}
 
 	private String getLoadModelCommand()

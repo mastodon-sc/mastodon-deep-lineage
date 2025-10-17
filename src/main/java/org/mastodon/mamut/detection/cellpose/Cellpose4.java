@@ -44,17 +44,18 @@ public class Cellpose4 extends Cellpose
 	@Override
 	protected String getLoadModelCommand()
 	{
-		return "model = models.CellposeModel(gpu=True)" + "\n";
+		return "model = models.CellposeModel(gpu=torch.cuda.is_available())" + "\n";
 	}
 
 	@Override
 	protected String getEvaluateModelCommand()
 	{
+		String zAxis = is3D() ? "0" : "None";
 		return "segmentation, flows, styles = model.eval("
 				+ "image_ndarray, "
 				+ "diameter=" + getDiameter() + ", "
 				+ "do_3D=" + is3DParam() + ", "
-				+ "z_axis=0, "
+				+ "z_axis=" + zAxis + ", "
 				+ "normalize=True, "
 				+ "batch_size=8, "
 				+ "flow3D_smooth=0, "
@@ -73,12 +74,13 @@ public class Cellpose4 extends Cellpose
 				+ "channel_priority: strict\n"
 				+ "dependencies:\n"
 				+ "  - python=3.10\n"
-				+ "  - pip\n"
-				+ "  - pip:\n"
-				+ "    - cellpose==4.0.2\n"
-				+ getApposeVersion()
+				+ "  - cellpose==4.0.6\n"
+				// + getApposeVersion().substring( 2 ) + "\n"
 				+ "  - pytorch\n"
 				+ "  - pytorch-cuda\n"
-				+ "  - numpy\n";
+				+ "  - numpy\n"
+				+ "  - pip\n"
+				+ "  - pip:\n"
+				+ "    " + getApposeVersion() + "\n";
 	}
 }

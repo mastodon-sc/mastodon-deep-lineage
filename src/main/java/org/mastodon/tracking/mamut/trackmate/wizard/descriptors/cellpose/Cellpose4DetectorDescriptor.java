@@ -28,6 +28,9 @@
  */
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_MEMORY_FRACTION;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_DIAMETER;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
@@ -35,6 +38,8 @@ import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESH
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+
+import javax.swing.JPanel;
 
 import org.mastodon.mamut.detection.cellpose.Cellpose4Detector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
@@ -59,6 +64,7 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 	@Override
 	protected void persistSettings()
 	{
+		super.persistSettings();
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		detectorSettings.put( KEY_CELL_PROBABILITY_THRESHOLD, this.cellProbabilityThreshold.getValue() );
 		detectorSettings.put( KEY_FLOW_THRESHOLD, this.flowThreshold.getValue() );
@@ -70,13 +76,18 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 	{
 		logger.info( String.format( "  - cell probability threshold: %s%n",
 				settings.values.getDetectorSettings().get( KEY_CELL_PROBABILITY_THRESHOLD ) ) );
-		logger.info( String.format( "  - flow threshold: %s%n",
-				settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
+		logger.info( String.format( "  - flow threshold: %s%n", settings.values.getDetectorSettings().get( KEY_FLOW_THRESHOLD ) ) );
+		logger.info( String.format( "  - estimated diameter: %s%n", settings.values.getDetectorSettings().get( KEY_DIAMETER ) ) );
+		logger.info( String.format( "  - resolution level: %s%n", settings.values.getDetectorSettings().get( KEY_LEVEL ) ) );
+		logger.info( String.format( "  - GPU ID: %s%n", settings.values.getDetectorSettings().get( KEY_GPU_ID ) ) );
+		logger.info(
+				String.format( "  - GPU memory fraction: %s%n", settings.values.getDetectorSettings().get( KEY_GPU_MEMORY_FRACTION ) ) );
 	}
 
 	@Override
 	protected void getSettingsAndUpdateConfigPanel()
 	{
+		super.getSettingsAndUpdateConfigPanel();
 		// Get the values.
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 		// Get the cell probability threshold.
@@ -116,13 +127,13 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 	}
 
 	@Override
-	protected void addModelTypeSelection( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
+	protected void addModelTypeSelection( final JPanel panel )
 	{
 		// No model type selection for Cellpose4.
 	}
 
 	@Override
-	protected void addRespectAnisotropyCheckbox( final AbstractSpotDetectorDescriptor.ConfigPanel panel )
+	protected void addRespectAnisotropyCheckbox( final JPanel panel )
 	{
 		// No respect anisotropy checkbox for Cellpose4.
 	}
@@ -130,6 +141,7 @@ public class Cellpose4DetectorDescriptor extends CellposeDetectorDescriptor
 	@Override
 	protected void grabSettings()
 	{
+		super.grabSettings();
 		if ( null == settings )
 			return;
 

@@ -29,6 +29,7 @@
 package org.mastodon.mamut.detection.cellpose;
 
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_DIAMETER;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_FLOW_THRESHOLD;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_MODEL_TYPE;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose3DetectorDescriptor.KEY_RESPECT_ANISOTROPY;
@@ -49,6 +50,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mastodon.mamut.ProjectModel;
+import org.mastodon.mamut.detection.DeepLearningDetectorKeys;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.tracking.detection.DetectorKeys;
@@ -87,9 +89,13 @@ class Cellpose3DetectorTest
 			settings.put( KEY_CELL_PROBABILITY_THRESHOLD, Cellpose.DEFAULT_CELLPROB_THRESHOLD );
 			settings.put( KEY_FLOW_THRESHOLD, Cellpose.DEFAULT_FLOW_THRESHOLD );
 			settings.put( KEY_RESPECT_ANISOTROPY, true );
+			settings.put( KEY_DIAMETER, Cellpose.DEFAULT_DIAMETER );
 			settings.put( DetectorKeys.KEY_MIN_TIMEPOINT, 0 );
 			settings.put( DetectorKeys.KEY_MAX_TIMEPOINT, 0 );
 			settings.put( DetectorKeys.KEY_SETUP_ID, 0 );
+			settings.put( DeepLearningDetectorKeys.KEY_LEVEL, 0 );
+			settings.put( DeepLearningDetectorKeys.KEY_GPU_ID, 0 );
+			settings.put( DeepLearningDetectorKeys.KEY_GPU_MEMORY_FRACTION, 1d );
 
 			// make settings available for the detector
 			Field settingsField = ReflectionUtils.findFields( Cellpose3Detector.class, f -> f.getName().equals( "settings" ),

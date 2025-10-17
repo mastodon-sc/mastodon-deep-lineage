@@ -28,6 +28,12 @@
  */
 package org.mastodon.mamut.detection.cellpose;
 
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_GPU_MEMORY_FRACTION;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_LEVEL;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_MEMORY_FRACTION;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_LEVEL;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_CELLPROB_THRESHOLD;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_DIAMETER;
 import static org.mastodon.mamut.detection.cellpose.Cellpose.DEFAULT_FLOW_THRESHOLD;
@@ -45,6 +51,7 @@ import java.util.Map;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.util.Cast;
+import net.imglib2.view.Views;
 
 import org.mastodon.mamut.detection.DeepLearningDetector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
@@ -85,7 +92,10 @@ public class Cellpose3Detector extends DeepLearningDetector
 				&& checkParameter( settings, KEY_CELL_PROBABILITY_THRESHOLD, Double.class, errorHolder )
 				&& checkParameter( settings, KEY_FLOW_THRESHOLD, Double.class, errorHolder )
 				&& checkParameter( settings, KEY_DIAMETER, Double.class, errorHolder )
-				&& checkParameter( settings, KEY_RESPECT_ANISOTROPY, Boolean.class, errorHolder );
+				&& checkParameter( settings, KEY_LEVEL, Integer.class, errorHolder )
+				&& checkParameter( settings, KEY_RESPECT_ANISOTROPY, Boolean.class, errorHolder )
+				&& checkParameter( settings, KEY_GPU_ID, Integer.class, errorHolder )
+				&& checkParameter( settings, KEY_GPU_MEMORY_FRACTION, Double.class, errorHolder );
 	}
 
 	@Override
@@ -93,19 +103,22 @@ public class Cellpose3Detector extends DeepLearningDetector
 	{
 		try (Cellpose3 cellpose = new Cellpose3( ( Cellpose3.ModelType ) settings.get( KEY_MODEL_TYPE ) ))
 		{
-			cellpose.set3D( is3D( image ) );
+			boolean is3D = is3D( image );
+			cellpose.set3D( is3D );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );
 			cellpose.setDiameter( ( double ) settings.get( KEY_DIAMETER ) );
+			cellpose.setGpuID( ( int ) settings.get( KEY_GPU_ID ) );
+			cellpose.setGpuMemoryFraction( ( double ) settings.get( KEY_GPU_MEMORY_FRACTION ) );
 			final boolean respectAnisotropy = ( boolean ) settings.get( KEY_RESPECT_ANISOTROPY );
-			double anisotropy = respectAnisotropy ? getAnisotropy( voxelDimensions ) : 1.0;
+			double anisotropy = respectAnisotropy ? getAnisotropy( voxelDimensions, is3D ) : 1.0;
 			cellpose.setAnisotropy( ( float ) anisotropy );
 			return cellpose.segmentImage( Cast.unchecked( image ) );
 		}
 		catch ( Exception e )
 		{
 			ok = false;
-			errorMessage = "Cellpose3 failed: " + e.getMessage();
+			errorMessage = " Cellpose3 failed: " + e.getMessage();
 			logger.error( "Cellpose3 failed: {}", e.getMessage() );
 			return null;
 		}
@@ -119,6 +132,9 @@ public class Cellpose3Detector extends DeepLearningDetector
 		defaultSettings.put( KEY_FLOW_THRESHOLD, DEFAULT_FLOW_THRESHOLD );
 		defaultSettings.put( KEY_DIAMETER, DEFAULT_DIAMETER );
 		defaultSettings.put( KEY_RESPECT_ANISOTROPY, true );
+		defaultSettings.put( KEY_LEVEL, DEFAULT_LEVEL );
+		defaultSettings.put( KEY_GPU_ID, DEFAULT_GPU_ID );
+		defaultSettings.put( KEY_GPU_MEMORY_FRACTION, DEFAULT_GPU_MEMORY_FRACTION );
 	}
 
 	@Override

@@ -28,15 +28,32 @@
  */
 package org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose;
 
-import java.text.NumberFormat;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.DEFAULT_GPU_MEMORY_FRACTION;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_ID;
+import static org.mastodon.mamut.detection.DeepLearningDetectorKeys.KEY_GPU_MEMORY_FRACTION;
 
+import java.lang.invoke.MethodHandles;
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.text.NumberFormatter;
 
+import org.apache.commons.lang.StringUtils;
+import org.mastodon.mamut.util.ByteFormatter;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDetectorDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import oshi.SystemInfo;
+import oshi.hardware.GraphicsCard;
 
 /**
  * The {@code CellposeDetectorDescriptor} is an abstract superclass for CellposeDetector descriptors.<br>
@@ -45,63 +62,176 @@ import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.AbstractSpotDete
  */
 public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDescriptor
 {
+	private static final Logger slf4Logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
 	protected JSpinner cellProbabilityThreshold;
 
 	protected JSpinner flowThreshold;
 
 	protected JFormattedTextField diameter;
 
-	protected abstract void addModelTypeSelection( final ConfigPanel panel );
+	protected JComboBox< GpuEntry > gpuId;
 
-	protected abstract void addRespectAnisotropyCheckbox( final ConfigPanel panel );
+	protected JFormattedTextField gpuMemoryFraction;
+
+	protected abstract void addModelTypeSelection( final JPanel contentPanel );
+
+	protected abstract void addRespectAnisotropyCheckbox( final JPanel contentPanel );
 
 	@Override
-	protected void configureDetectorSpecificFields( final ConfigPanel panel )
+	protected void configureDetectorSpecificFields( final JPanel contentPanel )
 	{
 
-		addModelTypeSelection( panel );
+		addModelTypeSelection( contentPanel );
 
 		cellProbabilityThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 ) );
+		cellProbabilityThreshold.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		String cellProbText =
 				"<html>Cell probability threshold:<br>0 ... more detections<br>6 ... viewer detections (in dim regions)</html>";
 		JLabel cellProbLabel = new JLabel( cellProbText );
-		panel.add( cellProbLabel, "align left, wmin 200, wrap" );
-		panel.add( cellProbabilityThreshold, "align left, grow" );
+		cellProbLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( cellProbLabel, LAYOUT_CONSTRAINT );
+		contentPanel.add( cellProbabilityThreshold, "align left, grow" );
 
 		flowThreshold = new JSpinner( new SpinnerNumberModel( 0.0, 0.0, 6.0, 0.1 ) );
+		flowThreshold.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		String flowText =
 				"<html>Flow threshold:<br>0 ... viewer (ill shaped) detections<br>6 ... more detections</html>";
 		JLabel flowLabel = new JLabel( flowText );
-		panel.add( flowLabel, "align left, wmin 200, wrap" );
-		panel.add( flowThreshold, "align left, grow" );
+		contentPanel.add( flowLabel, LAYOUT_CONSTRAINT );
+		flowLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( flowThreshold, "align left, grow" );
 
-		diameter = new JFormattedTextField( getNumberFormatter() );
+		diameter = new JFormattedTextField( getNumberFormatter( 0d, 1000d ) );
+		diameter.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		diameter.setColumns( 10 );
 
-		String diameterText =
-				"<html>"
-						+ "If you have a rough estimate of the size of a typical cell, enter it here. Units are in pixels.<br>"
-						+ "</html>";
+		String diameterText = "<html>If you have a rough estimate of the diameter of a typical cell (in pixels), enter it here.<br></html>";
 		JLabel diameterLabel = new JLabel( diameterText );
-		panel.add( diameterLabel, "align left, wmin 200, wrap" );
-		panel.add( diameter, "align left, grow" );
+		diameterLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( diameterLabel, LAYOUT_CONSTRAINT );
+		contentPanel.add( diameter, "align left, grow" );
 
-		addRespectAnisotropyCheckbox( panel );
+		SystemInfo si = new SystemInfo();
+		List< GraphicsCard > gpus = si.getHardware().getGraphicsCards();
+		gpuId = new JComboBox<>();
+		gpuId.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		int i = 0;
+		for ( GraphicsCard gpu : gpus )
+		{
+			String vendor = gpu.getVendor();
+			String name = gpu.getName();
+			String deviceId = gpu.getDeviceId();
+			String vram = ByteFormatter.humanReadableByteCount( gpu.getVRam() );
+			if ( vendor.toLowerCase().contains( "nvidia" ) || name.toLowerCase().contains( "nvidia" ) )
+			{
+				gpuId.addItem( new GpuEntry( i++, name ) );
+				slf4Logger.debug( "Found GPU deviceId: {}, name: {}, vendor: {}, vram: {}", deviceId, name, vendor, vram );
+			}
+			else
+			{
+				slf4Logger.debug( "Ignoring GPU deviceId: {}, name: {}, vendor: {}, vram: {}", deviceId, name, vendor, vram );
+			}
+		}
+		String gpuText = "<html>GPU to use for detection (if any):<br></html>";
+		JLabel gpuLabel = new JLabel( gpuText );
+		gpuLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( gpuLabel, LAYOUT_CONSTRAINT );
+		contentPanel.add( gpuId, "align left, grow" );
+
+		gpuMemoryFraction = new JFormattedTextField( getNumberFormatter( 0d, 1d ) );
+		gpuMemoryFraction.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		gpuMemoryFraction.setColumns( 10 );
+
+		String gpuMemText = "<html>Fraction of GPU memory to use (0.0 - 1.0):<br></html>";
+		JLabel gpuMemLabel = new JLabel( gpuMemText );
+		gpuMemLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( gpuMemLabel, LAYOUT_CONSTRAINT );
+		contentPanel.add( gpuMemoryFraction, "align left, grow" );
+
+		addRespectAnisotropyCheckbox( contentPanel );
 	}
 
-	private static NumberFormatter getNumberFormatter()
+	@Override
+	protected void getSettingsAndUpdateConfigPanel()
+	{
+		super.getSettingsAndUpdateConfigPanel();
+		// Get the values.
+		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
+
+		final Object gpuIdObject = detectorSettings.get( KEY_GPU_ID );
+		final int gpuIdValue;
+		if ( null == gpuIdObject )
+			gpuIdValue = DEFAULT_GPU_ID; // default
+		else
+			gpuIdValue = Integer.parseInt( String.valueOf( gpuIdObject ) );
+		this.gpuId.setSelectedIndex( gpuIdValue );
+
+		final Object gpuMemFractionObject =
+				detectorSettings.get( KEY_GPU_MEMORY_FRACTION );
+		final double gpuMemFractionValue;
+		if ( null == gpuMemFractionObject )
+			gpuMemFractionValue = DEFAULT_GPU_MEMORY_FRACTION; // default
+		else
+			gpuMemFractionValue = Double.parseDouble( String.valueOf( gpuMemFractionObject ) );
+		this.gpuMemoryFraction.setValue( gpuMemFractionValue );
+	}
+
+	@Override
+	protected void persistSettings()
+	{
+		super.persistSettings();
+		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
+		CellposeDetectorDescriptor.GpuEntry selected = ( GpuEntry ) this.gpuId.getSelectedItem();
+		if ( selected != null )
+			detectorSettings.put( KEY_GPU_ID, selected.id );
+		detectorSettings.put( KEY_GPU_MEMORY_FRACTION, this.gpuMemoryFraction.getValue() );
+	}
+
+	@Override
+	protected void grabSettings()
+	{
+		super.grabSettings();
+		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
+		CellposeDetectorDescriptor.GpuEntry selected = ( GpuEntry ) this.gpuId.getSelectedItem();
+		if ( selected != null )
+			detectorSettings.put( KEY_GPU_ID, selected.id );
+		detectorSettings.put( KEY_GPU_MEMORY_FRACTION, this.gpuMemoryFraction.getValue() );
+	}
+
+	private static NumberFormatter getNumberFormatter( final double min, final double max )
 	{
 		// Create a NumberFormat for doubles
 		NumberFormat doubleFormat = NumberFormat.getNumberInstance();
 		doubleFormat.setGroupingUsed( false ); // disables thousand separators
 
-		// Create a NumberFormatter that restricts values between 0 and 1000
+		// Create a NumberFormatter that restricts values between min and max
 		NumberFormatter numberFormatter = new NumberFormatter( doubleFormat );
 		numberFormatter.setValueClass( Double.class );
-		numberFormatter.setMinimum( 0.0 );
-		numberFormatter.setMaximum( 1000.0 );
+		numberFormatter.setMinimum( min );
+		numberFormatter.setMaximum( max );
 		numberFormatter.setAllowsInvalid( false ); // Disallow invalid input
 		numberFormatter.setCommitsOnValidEdit( true ); // Commit edits as soon as valid
 		return numberFormatter;
+	}
+
+	// Wrap GPU info in a simple model class
+	protected static class GpuEntry
+	{
+		int id;
+
+		String name;
+
+		GpuEntry( int id, String name )
+		{
+			this.id = id;
+			this.name = name;
+		}
+
+		@Override
+		public String toString()
+		{
+			return StringUtils.abbreviate( id + " – " + name, 30 );
+		}
 	}
 }
