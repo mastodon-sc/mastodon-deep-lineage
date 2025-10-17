@@ -42,6 +42,7 @@ import java.util.function.Supplier;
 import net.imglib2.util.Cast;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.FeatureModel;
