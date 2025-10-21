@@ -33,6 +33,7 @@ import org.mastodon.mamut.util.ApposeProcess;
 import org.mastodon.mamut.util.ResourceUtils;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.tracking.linking.EdgeCreator;
+import org.scijava.Cancelable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +50,11 @@ public class LinkPrediction extends ApposeProcess
 
 	private final RegionProps regionProps;
 
+	private final Cancelable cancelable;
+
 	public LinkPrediction( final Map< String, Object > settings, final SpatioTemporalIndex< Spot > index,
-			final EdgeCreator< Spot > edgeCreator, final RegionProps regionProps, final org.scijava.log.Logger uiLogger
+			final EdgeCreator< Spot > edgeCreator, final RegionProps regionProps, final org.scijava.log.Logger uiLogger,
+			final Cancelable cancelable
 	) throws IOException
 	{
 		super();
@@ -59,6 +63,7 @@ public class LinkPrediction extends ApposeProcess
 		this.edgeCreator = edgeCreator;
 		this.regionProps = regionProps;
 		this.uiLogger = uiLogger;
+		this.cancelable = cancelable;
 	}
 
 	public void predictAndCreateLinks() throws IOException
@@ -80,6 +85,11 @@ public class LinkPrediction extends ApposeProcess
 			inputs.put( BORDER_DIST, NDArrays.asNDArray( regionProps.borderDists ) );
 
 			Service.Task result = runScript();
+			if ( cancelable.isCanceled() )
+			{
+				uiLogger.info( "Link prediction canceled by user.\n" );
+				return;
+			}
 			writeEdges( result );
 		}
 		finally
@@ -107,6 +117,11 @@ public class LinkPrediction extends ApposeProcess
 
 		for ( int row = 0; row < rows; row++ )
 		{
+			if ( cancelable.isCanceled() )
+			{
+				uiLogger.info( "Link creation canceled by user.\n" );
+				return;
+			}
 			int startFrame = getInt( randomAccess, 0, row );
 			int startId = getInt( randomAccess, 1, row ) - 1; // Trackastra uses 1-based labels
 			int endFrame = getInt( randomAccess, 2, row );

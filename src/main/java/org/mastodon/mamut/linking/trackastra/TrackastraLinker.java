@@ -49,7 +49,8 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		try
 		{
 			List< SingleTimepointRegionProps > regionProps = computeRegionProps( index );
-			runLinkPrediction( index, regionProps );
+			if ( !isCanceled() )
+				runLinkPrediction( index, regionProps );
 			ok = true;
 		}
 		catch ( TrackastraLinkingException e )
@@ -86,7 +87,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 			throw new IllegalArgumentException(
 					String.format( "Window size (%d) exceeds time range (%d). Adjust window size or time range.", windowSize, timeRange ) );
 
-		try (RegionPropsComputation computation = new RegionPropsComputation( logger, model ))
+		try (RegionPropsComputation computation = new RegionPropsComputation( logger, model, this ))
 		{
 			return computation.computeRegionPropsForSource( source, level, Cast.unchecked( index ), minTimepoint, maxTimepoint );
 		}
@@ -102,7 +103,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		log.info( "Performing Trackastra link prediction" );
 		try (RegionProps props = new RegionProps( regionProps );
 				LinkPrediction prediction =
-						new LinkPrediction( settings, Cast.unchecked( index ), Cast.unchecked( edgeCreator ), props, logger ))
+						new LinkPrediction( settings, Cast.unchecked( index ), Cast.unchecked( edgeCreator ), props, logger, this ))
 		{
 			prediction.predictAndCreateLinks();
 		}
