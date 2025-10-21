@@ -16,7 +16,6 @@ import java.lang.invoke.MethodHandles;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.appose.NDArrays;
@@ -38,6 +37,8 @@ import org.mastodon.mamut.util.ApposeProcess;
 import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.mamut.util.ResourceUtils;
 import org.mastodon.spatial.SpatioTemporalIndex;
+import org.scijava.Cancelable;
+import org.scijava.app.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +52,19 @@ public class RegionPropsComputation extends ApposeProcess
 
 	private final String model;
 
-	public RegionPropsComputation( final org.scijava.log.Logger uiLogger, final String model ) throws IOException
+	private final Cancelable cancelable;
+
+	private final StatusService statusService;
+
+	public RegionPropsComputation( final org.scijava.log.Logger uiLogger, final String model, final Cancelable cancelable,
+			final StatusService statusService )
+			throws IOException
 	{
 		super();
 		this.uiLogger = uiLogger;
 		this.model = model;
+		this.cancelable = cancelable;
+		this.statusService = statusService;
 	}
 
 	public List< SingleTimepointRegionProps > computeRegionPropsForSource( final Source< ? > source, final int level,
@@ -70,15 +79,23 @@ public class RegionPropsComputation extends ApposeProcess
 		List< SingleTimepointRegionProps > singleTimepointRegionProps = new ArrayList<>();
 		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++, done++ )
 		{
+			if ( cancelable.isCanceled() )
+			{
+				log.info( "Region props computation canceled at timepoint: {}", timepoint );
+				uiLogger.info( "Region props computation canceled at timepoint: " + timepoint + "\n" );
+				break;
+			}
 			if ( spatioTemporalIndex.getSpatialIndex( timepoint ).isEmpty() )
 			{
 				log.info( "No spots. Adding empty region props for timepoint: {}", timepoint );
 				uiLogger.info( "No spots. Adding empty region props for timepoint: " + timepoint + "\n" );
 				singleTimepointRegionProps.add( null );
-				continue;
 			}
-			SingleTimepointRegionProps regionProps = computeSingleTimepointProps( source, timepoint, level, spatioTemporalIndex );
-			singleTimepointRegionProps.add( regionProps );
+			else
+			{
+				SingleTimepointRegionProps regionProps = computeSingleTimepointProps( source, timepoint, level, spatioTemporalIndex );
+				singleTimepointRegionProps.add( regionProps );
+			}
 			formatProgress( done + 1, todo );
 		}
 		return singleTimepointRegionProps;
@@ -134,6 +151,7 @@ public class RegionPropsComputation extends ApposeProcess
 	private void formatProgress( final int done, final int todo )
 	{
 		double progress = ( double ) done / todo;
+		statusService.showProgress( ( int ) ( 0.75d * done ), todo ); // reserve 25% for link prediction
 		NumberFormat percentFormatter = NumberFormat.getPercentInstance();
 		percentFormatter.setMinimumFractionDigits( 0 );
 		percentFormatter.setMaximumFractionDigits( 0 );
