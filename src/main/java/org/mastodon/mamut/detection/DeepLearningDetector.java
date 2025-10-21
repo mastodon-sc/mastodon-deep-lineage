@@ -103,6 +103,9 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		statusService.showStatus( "Detecting spots..." );
 		try
 		{
+			log.info( "Initialize python environment." );
+			log.info( "On first time use this requires internet connection and may take a couple of minutes." );
+			log.info( "Progress can be observed using FIJI console: FIJI > Window > Console." );
 			for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
 			{
 				// We use the `statusService to show progress.
@@ -203,7 +206,6 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 			image = Views.interval( image, roi );
 		}
 
-		System.err.println(); // show the FIJI console
 		final Img< ? > segmentation =
 				performSegmentation( Views.dropSingletonDimensions( image ), source.getVoxelDimensions().dimensionsAsDoubleArray() );
 
