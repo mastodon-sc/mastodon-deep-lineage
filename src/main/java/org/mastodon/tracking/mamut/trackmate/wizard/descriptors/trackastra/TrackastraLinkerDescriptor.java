@@ -80,7 +80,7 @@ public class TrackastraLinkerDescriptor extends SpotLinkerDescriptor
 		logger.log( LogLevel.INFO, String.format( "  - edge threshold: %s%n", linkerSettings.get( KEY_EDGE_THRESHOLD ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - mode: %s%n", linkerSettings.get( KEY_TRACKASTRA_MODE ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - model: %s%n", linkerSettings.get( KEY_MODEL ) ) );
-		logger.log( LogLevel.INFO, String.format( "  - model: %s%n", linkerSettings.get( KEY_WINDOW_SIZE ) ) );
+		logger.log( LogLevel.INFO, String.format( "  - window size: %s%n", linkerSettings.get( KEY_WINDOW_SIZE ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - num dimensions: %d%n", ( int ) linkerSettings.get( KEY_NUM_DIMENSIONS ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - min time-point: %d%n", ( int ) linkerSettings.get( KEY_MIN_TIMEPOINT ) ) );
 		logger.log( LogLevel.INFO, String.format( "  - max time-point: %d%n", ( int ) linkerSettings.get( KEY_MAX_TIMEPOINT ) ) );
