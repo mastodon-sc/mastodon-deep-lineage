@@ -38,6 +38,7 @@ import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.mamut.util.ResourceUtils;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.scijava.Cancelable;
+import org.scijava.app.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +54,17 @@ public class RegionPropsComputation extends ApposeProcess
 
 	private final Cancelable cancelable;
 
-	public RegionPropsComputation( final org.scijava.log.Logger uiLogger, final String model, final Cancelable cancelable )
+	private final StatusService statusService;
+
+	public RegionPropsComputation( final org.scijava.log.Logger uiLogger, final String model, final Cancelable cancelable,
+			final StatusService statusService )
 			throws IOException
 	{
 		super();
 		this.uiLogger = uiLogger;
 		this.model = model;
 		this.cancelable = cancelable;
+		this.statusService = statusService;
 	}
 
 	public List< SingleTimepointRegionProps > computeRegionPropsForSource( final Source< ? > source, final int level,
@@ -146,6 +151,7 @@ public class RegionPropsComputation extends ApposeProcess
 	private void formatProgress( final int done, final int todo )
 	{
 		double progress = ( double ) done / todo;
+		statusService.showProgress( ( int ) ( 0.75d * done ), todo ); // reserve 25% for link prediction
 		NumberFormat percentFormatter = NumberFormat.getPercentInstance();
 		percentFormatter.setMinimumFractionDigits( 0 );
 		percentFormatter.setMaximumFractionDigits( 0 );

@@ -34,6 +34,7 @@ import org.mastodon.mamut.util.ResourceUtils;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.tracking.linking.EdgeCreator;
 import org.scijava.Cancelable;
+import org.scijava.app.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +53,11 @@ public class LinkPrediction extends ApposeProcess
 
 	private final Cancelable cancelable;
 
+	private final StatusService statusService;
+
 	public LinkPrediction( final Map< String, Object > settings, final SpatioTemporalIndex< Spot > index,
 			final EdgeCreator< Spot > edgeCreator, final RegionProps regionProps, final org.scijava.log.Logger uiLogger,
-			final Cancelable cancelable
+			final Cancelable cancelable, final StatusService statusService
 	) throws IOException
 	{
 		super();
@@ -64,6 +67,7 @@ public class LinkPrediction extends ApposeProcess
 		this.regionProps = regionProps;
 		this.uiLogger = uiLogger;
 		this.cancelable = cancelable;
+		this.statusService = statusService;
 	}
 
 	public void predictAndCreateLinks() throws IOException
@@ -90,7 +94,10 @@ public class LinkPrediction extends ApposeProcess
 				uiLogger.info( "Link prediction canceled by user.\n" );
 				return;
 			}
+			uiLogger.info( "Link prediction finished. Now writing edges.\n" );
+			statusService.showProgress( 9, 10 ); // 90% after prediction
 			writeEdges( result );
+			statusService.showProgress( 1, 1 ); // 100% after writing edges
 		}
 		finally
 		{
