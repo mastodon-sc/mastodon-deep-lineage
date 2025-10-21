@@ -42,9 +42,9 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import org.mastodon.mamut.util.ByteFormatter;
-import org.mastodon.mamut.util.ImgSizeUtils;
 import org.mastodon.mamut.detection.util.SpimImageProperties;
 import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.mamut.util.LabelImageUtils;
 import org.mastodon.tracking.detection.DetectionUtil;
 import org.mastodon.tracking.detection.DetectorKeys;
@@ -177,7 +177,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		long theoreticalImageSize = 0;
 		try
 		{
-			theoreticalImageSize = ImgSizeUtils.getSizeInBytes( image );
+			theoreticalImageSize = ImgUtils.getSizeInBytes( image );
 		}
 		catch ( IllegalArgumentException e )
 		{

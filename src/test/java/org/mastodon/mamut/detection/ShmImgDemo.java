@@ -5,14 +5,14 @@ import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 
 import org.mastodon.mamut.util.ByteFormatter;
-import org.mastodon.mamut.util.ImgSizeUtils;
+import org.mastodon.mamut.util.ImgUtils;
 
 public class ShmImgDemo
 {
 	public static void main( String[] args )
 	{
 		ArrayImg< ?, ? > works = ArrayImgs.unsignedShorts( 1024, 1024, 1023 );
-		long size = ImgSizeUtils.getSizeInBytes( works );
+		long size = ImgUtils.getSizeInBytes( works );
 		String formattedSize = ByteFormatter.humanReadableByteCount( size );
 		System.out.println( "Size of the image: " + size + " bytes (" + formattedSize + ")" );
 		try (ShmImg< ? > shmImg = ShmImg.copyOf( works ))
