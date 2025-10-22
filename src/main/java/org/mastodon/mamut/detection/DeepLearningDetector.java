@@ -41,6 +41,7 @@ import net.imglib2.util.Cast;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
+import org.mastodon.mamut.util.ApposeProcess;
 import org.mastodon.mamut.util.ByteFormatter;
 import org.mastodon.mamut.detection.util.SpimImageProperties;
 import org.mastodon.mamut.model.ModelGraph;
@@ -81,6 +82,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	 * Represents the maximum allowable size in bytes for datasets handle via the appose java-python bridge.
 	 */
 	private static final int MAX_SIZE_IN_BYTES = Integer.MAX_VALUE - 1;
+
+	protected ApposeProcess apposeProcess;
 
 	@Override
 	public void compute( final List< SourceAndConverter< ? > > sources, final ModelGraph graph )
@@ -310,6 +313,15 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	{
 		// this is a workaround to avoid a null pointer exception during the cancel operation
 		detector = new DummyDetectorOp();
+		try
+		{
+			if ( apposeProcess != null )
+				apposeProcess.cancel();
+		}
+		catch ( InterruptedException e )
+		{
+			logger.info( "Interrupted while cancelling detector: {}", e.getMessage() );
+		}
 		super.cancel( reason );
 	}
 

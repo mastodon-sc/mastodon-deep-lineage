@@ -105,6 +105,7 @@ public class StarDistDetector extends DeepLearningDetector
 	{
 		try (StarDist starDist = new StarDist( ( StarDist.ModelType ) settings.get( KEY_MODEL_TYPE ) ))
 		{
+			this.apposeProcess = starDist;
 			boolean isData3D = is3D( image );
 			Boolean isModelType2D = starDist.getModelType().is2D();
 			if ( isModelType2D != null )

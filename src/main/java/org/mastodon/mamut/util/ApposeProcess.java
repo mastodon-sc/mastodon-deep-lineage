@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.time.StopWatch;
+import org.apposed.appose.Builder;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.apposed.appose.TaskEvent;
@@ -45,6 +46,8 @@ public abstract class ApposeProcess implements AutoCloseable
 	protected final StopWatch stopWatch;
 
 	protected final Map< String, Object > inputs;
+
+	protected Service.Task currentTask;
 
 	protected ApposeProcess() throws IOException
 	{
@@ -101,8 +104,9 @@ public abstract class ApposeProcess implements AutoCloseable
 				writer.write( content );
 			}
 			logEnvFile( envFile );
-			environment = org.apposed.appose.Appose.file( envFile, "environment.yml" )
-					.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
+			Builder envBuilder = org.apposed.appose.Appose.file( envFile, "environment.yml" );
+			environment =
+					envBuilder.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
 					.subscribeOutput( msg -> {
 						if ( !msg.isEmpty() )
 							logger.info( msg );
@@ -138,6 +142,9 @@ public abstract class ApposeProcess implements AutoCloseable
 				break;
 			case FAILURE:
 				logger.error( "Task failed with error: {}. Time elapsed: {}", task.error, stopWatch.formatSplitTime() );
+				break;
+			case CRASH:
+				logger.error( "Task crashed with error. Error: {}. Time elapsed: {}", task.error, stopWatch.formatSplitTime() );
 				break;
 			default:
 				logger.warn( "Unhandled task event: {}.", taskEvent.responseType );
@@ -201,21 +208,26 @@ public abstract class ApposeProcess implements AutoCloseable
 		}
 
 		String script = generateScript();
-		Service.Task task = pythonWorker.task( script, inputs, null );
+		currentTask = pythonWorker.task( script, inputs, null );
 		stopWatch.split();
 		if ( logger.isInfoEnabled() )
 			logger.info( "Created python task. Time elapsed: {}", stopWatch.formatSplitTime() );
-		task.listen( getTaskListener( stopWatch, task ) );
-		if ( isPythonTaskInterrupted( task ) )
+		currentTask.listen( getTaskListener( stopWatch, currentTask ) );
+		if ( isPythonTaskInterrupted( currentTask ) )
 			return null;
 
 		// Verify that it worked.
-		if ( task.status != Service.TaskStatus.COMPLETE )
-			throw new org.mastodon.mamut.detection.PythonRuntimeException( "Python task failed with error: " + task.error );
+		if ( currentTask.status != Service.TaskStatus.COMPLETE )
+			throw new PythonRuntimeException( "Python task failed with error: " + currentTask.error );
 
 		stopWatch.split();
 		if ( logger.isInfoEnabled() )
 			logger.info( "Python task completed. Total time {}", stopWatch.formatSplitTime() );
-		return task;
+		return currentTask;
+	}
+
+	public void cancel() throws InterruptedException
+	{
+		pythonWorker.kill();
 	}
 }
