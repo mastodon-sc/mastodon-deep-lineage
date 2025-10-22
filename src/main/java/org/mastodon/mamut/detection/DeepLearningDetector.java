@@ -46,6 +46,8 @@ import org.mastodon.mamut.detection.util.SpimImageProperties;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.mamut.util.LabelImageUtils;
+import org.mastodon.tracking.detection.AbstractDetectorOp;
+import org.mastodon.tracking.detection.DetectionCreatorFactory;
 import org.mastodon.tracking.detection.DetectionUtil;
 import org.mastodon.tracking.detection.DetectorKeys;
 import org.mastodon.tracking.mamut.detection.AbstractSpotDetectorOp;
@@ -301,4 +303,22 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	protected abstract void addSpecificDefaultSettings( final Map< String, Object > defaultSettings );
 
 	protected abstract String getDetectorName();
+
+	/** Cancels the command execution, with the given reason for doing so. */
+	@Override
+	public void cancel( final String reason )
+	{
+		// this is a workaround to avoid a null pointer exception during the cancel operation
+		detector = new DummyDetectorOp();
+		super.cancel( reason );
+	}
+
+	private class DummyDetectorOp extends AbstractDetectorOp
+	{
+		@Override
+		public void mutate1( final DetectionCreatorFactory arg, final List< SourceAndConverter< ? > > in )
+		{
+			// Do nothing
+		}
+	}
 }
