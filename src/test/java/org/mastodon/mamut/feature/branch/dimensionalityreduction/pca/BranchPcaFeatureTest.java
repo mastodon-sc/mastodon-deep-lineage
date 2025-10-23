@@ -2,7 +2,7 @@
  * #%L
  * mastodon-deep-lineage
  * %%
- * Copyright (C) 2022 - 2025 Stefan Hahmann
+ * Copyright (C) 2022 - 2024 Stefan Hahmann
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.branch.dimensionalityreduction.tsne;
+package org.mastodon.mamut.feature.branch.dimensionalityreduction.pca;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -42,7 +42,6 @@ import java.util.function.Supplier;
 import net.imglib2.util.Cast;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.FeatureModel;
@@ -55,20 +54,17 @@ import org.mastodon.mamut.feature.FeatureUtils;
 import org.mastodon.mamut.feature.branch.BranchDisplacementDurationFeature;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph7;
 import org.mastodon.mamut.feature.branch.sinuosity.BranchSinuosityFeature;
-import org.mastodon.mamut.feature.dimensionalityreduction.CommonSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionAlgorithm;
 import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionController;
-import org.mastodon.mamut.feature.dimensionalityreduction.tsne.TSneSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.branch.BranchLink;
 import org.mastodon.mamut.model.branch.BranchSpot;
 import org.scijava.Context;
 
-@Disabled( "mvn test takes too long" )
-class BranchTSneFeatureTest extends AbstractFeatureTest< BranchSpot >
+class BranchPcaFeatureTest extends AbstractFeatureTest< BranchSpot >
 {
-	private BranchTSneFeature tSneFeature;
+	private BranchPcaFeature pcaFeature;
 
 	private final ExampleGraph7 graph7 = new ExampleGraph7();
 
@@ -97,18 +93,13 @@ class BranchTSneFeatureTest extends AbstractFeatureTest< BranchSpot >
 			// set up the controller and compute the feature
 			Supplier< List< InputDimension< BranchSpot > > > inputDimensionsSupplier = () -> inputDimensions;
 			DimensionalityReductionController controller = new DimensionalityReductionController( graph7.getModel(), context );
-			TSneSettings tSneSettings = controller.getTSneSettings();
-			tSneSettings.setPerplexity( 10 );
-			tSneSettings.setMaxIterations( 1_000 );
-			CommonSettings commonSettings = controller.getCommonSettings();
-			commonSettings.setNumberOfOutputDimensions( 2 );
 			controller.setModelGraph( false );
-			controller.setAlgorithm( DimensionalityReductionAlgorithm.TSNE );
+			controller.setAlgorithm( DimensionalityReductionAlgorithm.PCA );
 			controller.computeFeature( inputDimensionsSupplier );
-			tSneFeature = FeatureUtils.getFeature( graph7.getModel(), BranchTSneFeature.BranchSpotTSneFeatureSpec.class );
-			assertNotNull( tSneFeature );
-			spec0 = new FeatureProjectionSpec( tSneFeature.getProjectionName( 0 ), Dimension.NONE );
-			spec1 = new FeatureProjectionSpec( tSneFeature.getProjectionName( 1 ), Dimension.NONE );
+			pcaFeature = FeatureUtils.getFeature( graph7.getModel(), BranchPcaFeature.BranchSpotPcaFeatureSpec.class );
+			assertNotNull( pcaFeature );
+			spec0 = new FeatureProjectionSpec( pcaFeature.getProjectionName( 0 ), Dimension.NONE );
+			spec1 = new FeatureProjectionSpec( pcaFeature.getProjectionName( 1 ), Dimension.NONE );
 
 		}
 	}
@@ -117,9 +108,9 @@ class BranchTSneFeatureTest extends AbstractFeatureTest< BranchSpot >
 	@Override
 	public void testFeatureComputation()
 	{
-		assertNotNull( tSneFeature );
-		FeatureProjection< BranchSpot > projection0 = getProjection( tSneFeature, spec0 );
-		FeatureProjection< BranchSpot > projection1 = getProjection( tSneFeature, spec1 );
+		assertNotNull( pcaFeature );
+		FeatureProjection< BranchSpot > projection0 = getProjection( pcaFeature, spec0 );
+		FeatureProjection< BranchSpot > projection1 = getProjection( pcaFeature, spec1 );
 		Iterator< BranchSpot > branchSpotIterator = graph7.getModel().getBranchGraph().vertices().iterator();
 		BranchSpot branchSpot = branchSpotIterator.next();
 		assertFalse( Double.isNaN( projection0.value( branchSpot ) ) );
@@ -132,17 +123,17 @@ class BranchTSneFeatureTest extends AbstractFeatureTest< BranchSpot >
 	@Override
 	public void testFeatureSerialization() throws IOException
 	{
-		BranchTSneFeature tSneFeatureReloaded;
+		BranchPcaFeature pcaFeatureReloaded;
 		try (Context context = new Context())
 		{
-			tSneFeatureReloaded =
-					( BranchTSneFeature ) FeatureSerializerTestUtils.saveAndReload( context, graph7.getModel(), this.tSneFeature );
+			pcaFeatureReloaded =
+					( BranchPcaFeature ) FeatureSerializerTestUtils.saveAndReload( context, graph7.getModel(), this.pcaFeature );
 		}
-		assertNotNull( tSneFeatureReloaded );
+		assertNotNull( pcaFeatureReloaded );
 		Iterator< BranchSpot > branchSpotIterator = graph7.getModel().getBranchGraph().vertices().iterator();
 		BranchSpot branchSpot = branchSpotIterator.next();
 		// check that the feature has correct values after saving and reloading
-		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( this.tSneFeature, tSneFeatureReloaded,
+		assertTrue( FeatureSerializerTestUtils.checkFeatureProjectionEquality( this.pcaFeature, pcaFeatureReloaded,
 				Collections.singleton( branchSpot ) ) );
 	}
 
@@ -154,14 +145,14 @@ class BranchTSneFeatureTest extends AbstractFeatureTest< BranchSpot >
 		BranchSpot branchSpot = branchSpotIterator.next();
 
 		// test, if features are not NaN before invalidation
-		assertFalse( Double.isNaN( getProjection( tSneFeature, spec0 ).value( branchSpot ) ) );
-		assertFalse( Double.isNaN( getProjection( tSneFeature, spec1 ).value( branchSpot ) ) );
+		assertFalse( Double.isNaN( getProjection( pcaFeature, spec0 ).value( branchSpot ) ) );
+		assertFalse( Double.isNaN( getProjection( pcaFeature, spec1 ).value( branchSpot ) ) );
 
 		// invalidate feature
-		tSneFeature.invalidate( branchSpot );
+		pcaFeature.invalidate( branchSpot );
 
 		// test, if features are NaN after invalidation
-		assertTrue( Double.isNaN( getProjection( tSneFeature, spec0 ).value( branchSpot ) ) );
-		assertTrue( Double.isNaN( getProjection( tSneFeature, spec1 ).value( branchSpot ) ) );
+		assertTrue( Double.isNaN( getProjection( pcaFeature, spec0 ).value( branchSpot ) ) );
+		assertTrue( Double.isNaN( getProjection( pcaFeature, spec1 ).value( branchSpot ) ) );
 	}
 }

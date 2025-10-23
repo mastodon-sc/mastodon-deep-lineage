@@ -29,22 +29,18 @@
 package org.mastodon.mamut.feature.dimensionalityreduction.tsne;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 
-import com.jujutsu.tsne.TSneConfiguration;
-import com.jujutsu.tsne.barneshut.BarnesHutTSne;
-import com.jujutsu.tsne.barneshut.ParallelBHTsne;
-import com.jujutsu.utils.TSneUtils;
-
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mastodon.mamut.feature.dimensionalityreduction.DimensionalityReductionTestUtils;
 import org.mastodon.mamut.feature.dimensionalityreduction.RandomDataTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Disabled( "mvn test takes too long" )
+import smile.manifold.TSNE;
+
 class TSneTest
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
@@ -55,25 +51,28 @@ class TSneTest
 		int numCluster1 = 50;
 		int numCluster2 = 100;
 		double[][] inputData = RandomDataTools.generateSampleData( numCluster1, numCluster2 );
+		for ( int i = 0; i < inputData.length; i++ )
+		{
+			logger.debug( "inputData[{}]: {}, {}", i, inputData[ i ][ 0 ], inputData[ i ][ 1 ] );
+		}
 		logger.debug( "dimensions rows: {}, columns:{}", inputData.length, inputData[ 0 ].length );
 
+
 		// Recommendations for t-SNE defaults: https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
-		int initialDimensions = 50; // used if PCA is true and dimensions of the input data are greater than this value
 		double perplexity = 30d; // recommended value is between 5 and 50
 		int maxIterations = 1000; // should be at least 250
-
-		TSneConfiguration tSneConfig =
-				TSneUtils.buildConfig( inputData, 2, initialDimensions, perplexity, maxIterations, true, 0.5d, false, true );
-
-		BarnesHutTSne tsne = new ParallelBHTsne();
-		double[][] tsneResult = tsne.tsne( tSneConfig );
+		int d = 2; // target dimension
+		double eta = 200; // learning rate
+		double earlyExaggeration = 12; // default value
+		TSNE tsne = TSNE.fit( inputData, new TSNE.Options( d, perplexity, eta, earlyExaggeration, maxIterations ) );
+		double[][] tsneResult = tsne.coordinates();
 
 		assertEquals( tsneResult.length, inputData.length );
 		assertEquals( 2, tsneResult[ 0 ].length );
 
-		for ( int i = 0; i < numCluster1; i++ )
-			assertTrue( tsneResult[ i ][ 0 ] > 18 );
-		for ( int i = numCluster1; i < numCluster1 + numCluster2; i++ )
-			assertTrue( tsneResult[ i ][ 0 ] < 18 );
+		double[][] tsneResult1 = Arrays.copyOfRange( tsneResult, 0, numCluster1 );
+		double[][] tsneResult2 = Arrays.copyOfRange( tsneResult, numCluster1, numCluster1 + numCluster2 );
+
+		DimensionalityReductionTestUtils.testNonOverlappingClusters( tsneResult1, tsneResult2 );
 	}
 }
