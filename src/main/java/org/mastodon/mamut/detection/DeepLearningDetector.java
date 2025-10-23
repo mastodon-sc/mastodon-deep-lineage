@@ -41,11 +41,14 @@ import net.imglib2.util.Cast;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
+import org.mastodon.mamut.util.ApposeProcess;
 import org.mastodon.mamut.util.ByteFormatter;
 import org.mastodon.mamut.detection.util.SpimImageProperties;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.mamut.util.LabelImageUtils;
+import org.mastodon.tracking.detection.AbstractDetectorOp;
+import org.mastodon.tracking.detection.DetectionCreatorFactory;
 import org.mastodon.tracking.detection.DetectionUtil;
 import org.mastodon.tracking.detection.DetectorKeys;
 import org.mastodon.tracking.mamut.detection.AbstractSpotDetectorOp;
@@ -80,6 +83,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	 */
 	private static final int MAX_SIZE_IN_BYTES = Integer.MAX_VALUE - 1;
 
+	protected ApposeProcess apposeProcess;
+
 	@Override
 	public void compute( final List< SourceAndConverter< ? > > sources, final ModelGraph graph )
 	{
@@ -103,6 +108,9 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		statusService.showStatus( "Detecting spots..." );
 		try
 		{
+			log.info( "Initialize python environment." );
+			log.info( "On first time use this requires internet connection and may take a couple of minutes." );
+			log.info( "Progress can be observed using FIJI console: FIJI > Window > Console." );
 			for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
 			{
 				// We use the `statusService to show progress.
@@ -203,7 +211,6 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 			image = Views.interval( image, roi );
 		}
 
-		System.err.println(); // show the FIJI console
 		final Img< ? > segmentation =
 				performSegmentation( Views.dropSingletonDimensions( image ), source.getVoxelDimensions().dimensionsAsDoubleArray() );
 
@@ -299,4 +306,31 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	protected abstract void addSpecificDefaultSettings( final Map< String, Object > defaultSettings );
 
 	protected abstract String getDetectorName();
+
+	/** Cancels the command execution, with the given reason for doing so. */
+	@Override
+	public void cancel( final String reason )
+	{
+		// this is a workaround to avoid a null pointer exception during the cancel operation
+		detector = new DummyDetectorOp();
+		try
+		{
+			if ( apposeProcess != null )
+				apposeProcess.cancel();
+		}
+		catch ( InterruptedException e )
+		{
+			logger.info( "Interrupted while cancelling detector: {}", e.getMessage() );
+		}
+		super.cancel( reason );
+	}
+
+	private class DummyDetectorOp extends AbstractDetectorOp
+	{
+		@Override
+		public void mutate1( final DetectionCreatorFactory arg, final List< SourceAndConverter< ? > > in )
+		{
+			// Do nothing
+		}
+	}
 }
