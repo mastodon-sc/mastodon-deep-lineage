@@ -188,7 +188,7 @@ public abstract class ApposeProcess implements AutoCloseable
 		return currentTask;
 	}
 
-	public void cancel() throws InterruptedException
+	public void cancel()
 	{
 		pythonWorker.kill();
 	}
