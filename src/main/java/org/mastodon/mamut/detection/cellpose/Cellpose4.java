@@ -81,6 +81,6 @@ public class Cellpose4 extends Cellpose
 				+ "  - numpy\n"
 				+ "  - pip\n"
 				+ "  - pip:\n"
-				+ "    " + getApposeVersion() + "\n";
+				+ "    " + getApposePythonVersion() + "\n";
 	}
 }

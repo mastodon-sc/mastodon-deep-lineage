@@ -39,7 +39,15 @@ public class ApposeMinimalDemo
 {
 	public static void main( String[] args ) throws InterruptedException, IOException
 	{
-		Environment env = Appose.file( new File( "target/test-classes/org/mastodon/mamut/appose/appose.yml" ), "environment.yml" ).build();
+		String content = "name: appose\n"
+				+ "channels:\n"
+				+ "  - conda-forge\n"
+				+ "dependencies:\n"
+				+ "  - python=3.10\n"
+				+ "  - pip\n"
+				+ "  - pip:\n"
+				+ "      - appose";
+		Environment env = Appose.mamba().scheme( "environment.yml" ).content( content ).logDebug().build();
 		try (Service python = env.python())
 		{
 			Service.Task task = python.task( "5 + 6" );

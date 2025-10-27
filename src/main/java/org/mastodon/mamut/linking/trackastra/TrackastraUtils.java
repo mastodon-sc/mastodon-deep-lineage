@@ -54,9 +54,9 @@ public class TrackastraUtils
 				+ "channel_priority: strict\n"
 				+ "dependencies:\n"
 				+ "  - python=3.10\n"
-				+ apposeVersion.substring( 2 ) + "\n"
 				+ "  - pip\n"
 				+ "  - pip:\n"
+				+ apposeVersion + "\n"
 				+ "    - trackastra==" + TRACKASTRA_VERSION + "\n";
 	}
 

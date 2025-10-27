@@ -179,7 +179,7 @@ public class LinkPrediction extends ApposeProcess
 	@Override
 	protected String generateEnvFileContent()
 	{
-		return TrackastraUtils.getEnv( getApposeVersion() );
+		return TrackastraUtils.getEnv( getApposePythonVersion() );
 	}
 
 	@Override

@@ -53,19 +53,14 @@ public class ApposeNumpy2Example
 		Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
 		Img< FloatType > shmImg = ShmImg.copyOf( img );
 
-		File envFile = Files.createTempFile( "env", "yml" ).toFile();
-		try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
-		{
-			writer.write( "name: numpy2\n" );
-			writer.write( "channels:\n" );
-			writer.write( "  - conda-forge\n" );
-			writer.write( "dependencies:\n" );
-			writer.write( "  - python=3.10\n" );
-			writer.write( "  - appose\n" );
-			writer.write( "  - numpy==2.0.2\n" );
-		}
-		envFile.deleteOnExit();
-		Environment env = Appose.file( envFile, "environment.yml" ).logDebug().build();
+		String content = "name: numpy2\n"
+				+ "channels:\n"
+				+ "  - conda-forge\n"
+				+ "dependencies:\n"
+				+ "  - python=3.10\n"
+				+ "  - appose\n"
+				+ "  - numpy==2.0.2\n";
+		Environment env = Appose.mamba().scheme( "environment.yml" ).content( content ).logDebug().build();
 		System.out.println( "Created environment" );
 
 		String script = "import numpy\n";

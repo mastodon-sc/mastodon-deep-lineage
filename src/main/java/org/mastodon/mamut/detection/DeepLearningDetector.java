@@ -313,19 +313,12 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	{
 		// this is a workaround to avoid a null pointer exception during the cancel operation
 		detector = new DummyDetectorOp();
-		try
-		{
-			if ( apposeProcess != null )
-				apposeProcess.cancel();
-		}
-		catch ( InterruptedException e )
-		{
-			logger.info( "Interrupted while cancelling detector: {}", e.getMessage() );
-		}
+		if ( apposeProcess != null )
+			apposeProcess.cancel();
 		super.cancel( reason );
 	}
 
-	private class DummyDetectorOp extends AbstractDetectorOp
+	private static class DummyDetectorOp extends AbstractDetectorOp
 	{
 		@Override
 		public void mutate1( final DetectionCreatorFactory arg, final List< SourceAndConverter< ? > > in )

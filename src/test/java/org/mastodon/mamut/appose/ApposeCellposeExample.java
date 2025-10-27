@@ -72,10 +72,21 @@ public class ApposeCellposeExample
 				+ "shared.ndarray()[:] = segmentation" + "\n"
 				+ "task.outputs['label_image'] = shared" + "\n";
 
-		String envYmlPath = "target/test-classes/org/mastodon/mamut/appose/cellpose.yml";
-		File envYmlFile = new File( envYmlPath );
-		System.out.println( envYmlFile.getAbsoluteFile() );
-		Environment env = Appose.file( envYmlFile, "environment.yml" ).logDebug().build();
+		String content = "name: cellpose3\n"
+				+ "channels:\n"
+				+ "  - nvidia\n"
+				+ "  - pytorch\n"
+				+ "  - conda-forge\n"
+				+ "dependencies:\n"
+				+ "  - python=3.10\n"
+				+ "  - pip\n"
+				+ "  - pip:\n"
+				+ "      - cellpose==3.1.1.2\n"
+				+ "      - appose==0.4.0\n"
+				+ "  - pytorch\n"
+				+ "  - pytorch-cuda=11.8\n"
+				+ "  - numpy=2.0.2";
+		Environment env = Appose.mamba().scheme( "environment.yml" ).content( content ).logDebug().build();
 		System.out.println( "Created environment" );
 
 		try (Service python = env.python())

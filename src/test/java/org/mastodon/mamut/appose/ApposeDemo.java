@@ -80,10 +80,21 @@ public class ApposeDemo
 
 		System.out.println( "Script: " + script );
 
-		String envYmlPath = "target/test-classes/org/mastodon/mamut/appose/stardist.yml";
-		File envYmlFile = new File( envYmlPath );
-		System.out.println( "env yml file: " + envYmlFile.getAbsoluteFile() );
-		Environment env = Appose.file( envYmlFile, "environment.yml" ).logDebug().build();
+		String content = "name: stardist\n"
+				+ "channels:\n"
+				+ "  - conda-forge\n"
+				+ "dependencies:\n"
+				+ "  - python=3.10\n"
+				+ "  - cudatoolkit=11.2\n"
+				+ "  - cudnn=8.1.0\n"
+				+ "  - numpy<1.24\n"
+				+ "  - pip\n"
+				+ "  - pip:\n"
+				+ "      - numpy<1.24\n"
+				+ "      - tensorflow==2.10\n"
+				+ "      - stardist==0.8.5\n"
+				+ "      - appose";
+		Environment env = Appose.mamba().scheme( "environment.yml" ).content( content ).logDebug().build();
 		System.out.println( "Created environment" );
 
 		// Display the first image in a new BDV instance
