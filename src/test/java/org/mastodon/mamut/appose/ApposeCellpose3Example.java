@@ -1,8 +1,8 @@
 package org.mastodon.mamut.appose;
 
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +16,7 @@ import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.apposed.appose.builder.Builders;
+import org.apposed.appose.util.Environments;
 
 public class ApposeCellpose3Example
 {
@@ -39,9 +40,8 @@ public class ApposeCellpose3Example
 				+ "  - pip\n"
 				+ "  - pip:\n"
 				+ "    - appose==0.7.1\n";
-		boolean envExists =
-				Builders.canWrap( Paths.get( System.getProperty( "user.home" ), ".local", "share", "appose", "cellpose3" ).toFile() );
-		System.out.println( "envExists: " + envExists );
+		System.out.println( "appose envs dir: " + Environments.apposeEnvsDir() );
+		System.out.println( "envExists: " + Builders.canWrap( new File( Environments.apposeEnvsDir(), "cellpose3" ) ) );
 		Environment env = Appose.mamba().content( sb ).scheme( "environment.yml" ).logDebug().build();
 		System.out.println( "Created environment" );
 
