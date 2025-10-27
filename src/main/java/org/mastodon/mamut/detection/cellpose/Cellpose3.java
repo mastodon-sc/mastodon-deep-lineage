@@ -98,7 +98,7 @@ public class Cellpose3 extends Cellpose
 				+ "  - pip\n"
 				+ "  - pip:\n"
 				+ "    - cellpose==3.1.1.2\n"
-				+ getApposeVersion()
+				+ getApposePythonVersion()
 				+ "  - pytorch\n"
 				+ "  - pytorch-cuda\n"
 				+ "  - numpy\n";

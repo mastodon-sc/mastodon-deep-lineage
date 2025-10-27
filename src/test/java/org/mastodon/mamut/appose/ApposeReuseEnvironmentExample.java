@@ -43,26 +43,22 @@ public class ApposeReuseEnvironmentExample
 {
 	public static void main( String[] args ) throws IOException, InterruptedException
 	{
-		File envFile = Files.createTempFile( "env", "yml" ).toFile();
-		try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
-		{
-			writer.write( "name: cellpose\n" );
-			writer.write( "channels:\n" );
-			writer.write( "  - nvidia\n" );
-			writer.write( "  - pytorch\n" );
-			writer.write( "  - conda-forge\n" );
-			writer.write( "dependencies:\n" );
-			writer.write( "  - python=3.10\n" );
-			writer.write( "  - pip\n" );
-			writer.write( "  - pip:\n" );
-			writer.write( "    - cellpose[gui]\n" );
-			writer.write( "    - appose\n" );
-			writer.write( "  - pytorch\n" );
-			writer.write( "  - pytorch-cuda=11.8\n" );
-			writer.write( "  - numpy=2.0.2\n" );
-		}
-		envFile.deleteOnExit();
-		Environment env = Appose.file( envFile, "environment.yml" ).logDebug().build();
+		String content = "name: cellpose\n"
+				+ "channels:\n"
+				+ "  - nvidia\n"
+				+ "  - pytorch\n"
+				+ "  - conda-forge\n"
+				+ "dependencies:\n"
+				+ "  - python=3.10\n"
+				+ "  - pip\n"
+				+ "  - pip:\n"
+				+ "    - cellpose[gui]\n"
+				+ "    - appose\n"
+				+ "  - pytorch\n"
+				+ "  - pytorch-cuda=11.8\n"
+				+ "  - numpy=2.0.2\n";
+
+		Environment env = Appose.mamba().scheme( "environment.yml" ).content( content ).logDebug().build();
 		System.out.println( "Created environment" );
 		StopWatch stopWatch = StopWatch.createStarted();
 

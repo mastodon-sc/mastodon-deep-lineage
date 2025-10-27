@@ -53,26 +53,21 @@ public class ApposeFailingStarDist3DExample
 		Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
 		Img< FloatType > shmImg = ShmImg.copyOf( img );
 
-		File envFile = Files.createTempFile( "env", "yml" ).toFile();
-		try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
-		{
-			writer.write( "name: stardist\n" );
-			writer.write( "channels:\n" );
-			writer.write( "  - conda-forge\n" );
-			writer.write( "dependencies:\n" );
-			writer.write( "  - python=3.10\n" );
-			writer.write( "  - cudatoolkit=11.2\n" );
-			writer.write( "  - cudnn=8.1.0\n" );
-			writer.write( "  - numpy<1.24\n" );
-			writer.write( "  - pip\n" );
-			writer.write( "  - pip:\n" );
-			writer.write( "    - numpy<1.24\n" );
-			writer.write( "    - tensorflow==2.10\n" );
-			writer.write( "    - stardist==0.8.5\n" );
-			writer.write( "    - appose\n" );
-		}
-		envFile.deleteOnExit();
-		Environment env = Appose.file( envFile, "environment.yml" ).logDebug().build();
+		String content = "name: stardist\n"
+				+ "channels:\n"
+				+ "  - conda-forge\n"
+				+ "dependencies:\n"
+				+ "  - python=3.10\n"
+				+ "  - cudatoolkit=11.2\n"
+				+ "  - cudnn=8.1.0\n"
+				+ "  - numpy<1.24\n"
+				+ "  - pip\n"
+				+ "  - pip:\n"
+				+ "    - numpy<1.24\n"
+				+ "    - tensorflow==2.10\n"
+				+ "    - stardist==0.8.5\n"
+				+ "    - appose";
+		Environment env = Appose.mamba().scheme( "environment.yml" ).content( content ).logDebug().build();
 		System.out.println( "Created environment" );
 
 		String script = "import skimage" + "\n"

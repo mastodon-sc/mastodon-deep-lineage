@@ -54,21 +54,17 @@ public class ApposeFailingInputExample
 		Img< FloatType > shmImg = ShmImg.copyOf( img );
 
 		File envFile = Files.createTempFile( "env", "yml" ).toFile();
-		try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
-		{
-			writer.write( "name: example\n" );
-			writer.write( "channels:\n" );
-			writer.write( "  - conda-forge\n" );
-			writer.write( "dependencies:\n" );
-			writer.write( "  - python=3.10\n" );
-			writer.write( "  - numpy\n" );
-			writer.write( "  - scikit-image\n" );
-			writer.write( "  - pip\n" );
-			writer.write( "  - pip:\n" );
-			writer.write( "    - appose\n" );
-		}
-		envFile.deleteOnExit();
-		Environment env = Appose.file( envFile, "environment.yml" ).logDebug().build();
+		String content = "name: example\n"
+				+ "channels:\n"
+				+ "  - conda-forge\n"
+				+ "dependencies:\n"
+				+ "  - python=3.10\n"
+				+ "  - numpy\n"
+				+ "  - scikit-image\n"
+				+ "  - pip\n"
+				+ "  - pip:\n"
+				+ "    - appose\n";
+		Environment env = Appose.mamba().scheme( "environment.yml" ).content( content ).logDebug().build();
 		System.out.println( "Created environment" );
 
 		String script = "import skimage\n";

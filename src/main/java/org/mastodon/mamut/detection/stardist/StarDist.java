@@ -159,7 +159,7 @@ public class StarDist extends Segmentation
 				+ "    - numpy<1.24\n"
 				+ getTensorflow()
 				+ "    - stardist==0.8.5\n"
-				+ getApposeVersion();
+				+ getApposePythonVersion();
 	}
 
 	private String getCuda()

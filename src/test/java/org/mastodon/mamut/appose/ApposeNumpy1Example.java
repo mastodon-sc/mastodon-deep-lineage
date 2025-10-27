@@ -42,19 +42,14 @@ public class ApposeNumpy1Example
 {
 	public static void main( String[] args ) throws IOException, InterruptedException
 	{
-		File envFile = Files.createTempFile( "env", "yml" ).toFile();
-		try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
-		{
-			writer.write( "name: numpy1\n" );
-			writer.write( "channels:\n" );
-			writer.write( "  - conda-forge\n" );
-			writer.write( "dependencies:\n" );
-			writer.write( "  - python=3.10\n" );
-			writer.write( "  - appose\n" );
-			writer.write( "  - numpy<1.24\n" );
-		}
-		envFile.deleteOnExit();
-		Environment env = Appose.file( envFile, "environment.yml" ).logDebug().build();
+		String content = "name: numpy1\n" +
+				"channels:\n" +
+				"  - conda-forge\n" +
+				"dependencies:\n" +
+				"  - python=3.10\n" +
+				"  - appose\n" +
+				"  - numpy<1.24\n";
+		Environment env = Appose.mamba().scheme( "environment.yml" ).content( content ).logDebug().build();
 		System.out.println( "Created environment" );
 
 		String script = "import numpy\n";

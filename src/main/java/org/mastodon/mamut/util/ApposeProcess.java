@@ -1,21 +1,15 @@
 package org.mastodon.mamut.util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.invoke.MethodHandles;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.apposed.appose.Builder;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.apposed.appose.TaskEvent;
@@ -62,6 +56,7 @@ public abstract class ApposeProcess implements AutoCloseable
 		if ( logger.isInfoEnabled() )
 			logger.info( "Set up environment. Path: {}. Time elapsed: {}", environment.base(), stopWatch.formatSplitTime() );
 		this.pythonWorker = environment.python();
+		runInitScript();
 		// this.pythonWorker.debug( logger::info );
 		this.inputs = new HashMap<>();
 	}
@@ -97,25 +92,11 @@ public abstract class ApposeProcess implements AutoCloseable
 				throw new UncheckedIOException( "Failed to create environment directory: " + envFileDirectory.getAbsolutePath(),
 						new IOException() );
 			}
-			File envFile = File.createTempFile( "env", "yml", envFileDirectory );
 			String content = generateEnvFileContent();
-			try (BufferedWriter writer = new BufferedWriter( new FileWriter( envFile ) ))
-			{
-				writer.write( content );
-			}
-			logEnvFile( envFile );
-			Builder envBuilder = org.apposed.appose.Appose.file( envFile, "environment.yml" );
-			environment =
-					envBuilder.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
-					.subscribeOutput( msg -> {
-						if ( !msg.isEmpty() )
-							logger.info( msg );
-					} )
-					.subscribeError( msg -> {
-						if ( !msg.isEmpty() )
-							logger.error( msg );
-					} ).build();
-			Files.deleteIfExists( envFile.toPath() );
+			environment = org.apposed.appose.Appose.mamba().scheme( "environment.yml" ).content( content ).logDebug()
+					.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
+					.subscribeOutput( logger::info )
+					.subscribeError( logger::error ).build();
 		}
 		catch ( IOException e )
 		{
@@ -153,29 +134,9 @@ public abstract class ApposeProcess implements AutoCloseable
 		};
 	}
 
-	protected String getApposeVersion()
+	protected String getApposePythonVersion()
 	{
-		// return "    - appose==0.7.0\n";
-		return "    - git+https://github.com/stefanhahmann/appose-python.git@stefanhahmann-patch-3\n";
-	}
-
-	private static void logEnvFile( final File envFile )
-	{
-		// Read the file to check its contents
-		try (BufferedReader reader = new BufferedReader( new FileReader( envFile ) ))
-		{
-			String line;
-			StringBuilder content = new StringBuilder();
-			while ( ( line = reader.readLine() ) != null )
-			{
-				content.append( line ).append( "\n" );
-			}
-			logger.trace( "Environment file content:\n{}", content );
-		}
-		catch ( IOException e )
-		{
-			logger.debug( "Error reading env file: {}", e.getMessage() );
-		}
+		return "    - appose==0.7.1\n";
 	}
 
 	protected static boolean isPythonTaskInterrupted( final Service.Task task )
@@ -195,6 +156,7 @@ public abstract class ApposeProcess implements AutoCloseable
 
 	protected Service.Task runScript() throws IOException
 	{
+		runInitScript();
 		Service.Task doImports = pythonWorker.task( generateImportStatements(), "main" );
 		doImports.listen( getTaskListener( stopWatch, doImports ) );
 		try
@@ -229,5 +191,17 @@ public abstract class ApposeProcess implements AutoCloseable
 	public void cancel() throws InterruptedException
 	{
 		pythonWorker.kill();
+	}
+
+	protected void runInitScript()
+	{
+		if ( isWindows() )
+			pythonWorker.init( "import numpy" );
+	}
+
+	protected static boolean isWindows()
+	{
+		String os = System.getProperty( "os.name" ).toLowerCase();
+		return os.contains( "win" );
 	}
 }
