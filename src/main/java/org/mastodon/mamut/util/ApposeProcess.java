@@ -29,6 +29,8 @@ public abstract class ApposeProcess implements AutoCloseable
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
+	public static final String APPOSE_PYTHON_VERSION = "0.7.1";
+
 	protected abstract String generateEnvFileContent();
 
 	protected abstract String generateScript();
@@ -132,11 +134,6 @@ public abstract class ApposeProcess implements AutoCloseable
 				break;
 			}
 		};
-	}
-
-	protected String getApposePythonVersion()
-	{
-		return "    - appose==0.7.1\n";
 	}
 
 	protected static boolean isPythonTaskInterrupted( final Service.Task task )

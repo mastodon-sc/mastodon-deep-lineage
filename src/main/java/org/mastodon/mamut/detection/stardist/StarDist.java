@@ -57,6 +57,23 @@ import io.bioimage.modelrunner.utils.JSONUtils;
  */
 public class StarDist extends Segmentation
 {
+	public static final String ENV_NAME = "stardist";
+
+	public static final String ENV_FILE_CONTENT = "name: " + ENV_NAME + "\n"
+			+ "channels:\n"
+			+ "  - conda-forge\n"
+			+ "channel_priority: strict\n"
+			+ "dependencies:\n"
+			+ "  - python=3.10\n"
+			+ getCuda()
+			+ "  - numpy<1.24\n"
+			+ "  - pip\n"
+			+ "  - pip:\n"
+			+ "    - numpy<1.24\n"
+			+ getTensorflow()
+			+ "    - stardist==0.8.5\n"
+			+ "    - appose==" + APPOSE_PYTHON_VERSION + "\n";
+
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	private final ModelType modelType;
@@ -146,23 +163,10 @@ public class StarDist extends Segmentation
 	@Override
 	protected String generateEnvFileContent()
 	{
-		return "name: stardist\n"
-				+ "channels:\n"
-				+ "  - conda-forge\n"
-				+ "channel_priority: strict\n"
-				+ "dependencies:\n"
-				+ "  - python=3.10\n"
-				+ getCuda()
-				+ "  - numpy<1.24\n"
-				+ "  - pip\n"
-				+ "  - pip:\n"
-				+ "    - numpy<1.24\n"
-				+ getTensorflow()
-				+ "    - stardist==0.8.5\n"
-				+ getApposePythonVersion();
+		return ENV_FILE_CONTENT;
 	}
 
-	private String getCuda()
+	private static String getCuda()
 	{
 		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
 			return "";
@@ -170,7 +174,7 @@ public class StarDist extends Segmentation
 				+ "  - cudnn=8.1.0\n";
 	}
 
-	private String getTensorflow()
+	private static String getTensorflow()
 	{
 		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
 			return "    - tensorflow-macos==2.10\n"
