@@ -11,7 +11,7 @@ import static org.mastodon.tracking.linking.LinkerKeys.KEY_DO_LINK_SELECTION;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mastodon.mamut.util.ApposeProcess;
+import org.mastodon.mamut.util.appose.ApposeProcess;
 import org.mastodon.tracking.detection.DetectorKeys;
 
 public class TrackastraUtils

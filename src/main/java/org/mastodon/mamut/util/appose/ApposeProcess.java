@@ -1,4 +1,4 @@
-package org.mastodon.mamut.util;
+package org.mastodon.mamut.util.appose;
 
 import java.io.File;
 import java.io.IOException;

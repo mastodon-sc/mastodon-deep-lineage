@@ -33,7 +33,7 @@ import org.mastodon.mamut.io.exporter.labelimage.ExportLabelImageUtils;
 import org.mastodon.mamut.linking.trackastra.TrackastraUtils;
 import org.mastodon.mamut.linking.trackastra.appose.types.SingleTimepointRegionProps;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.util.ApposeProcess;
+import org.mastodon.mamut.util.appose.ApposeProcess;
 import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.mamut.util.ResourceUtils;
 import org.mastodon.spatial.SpatioTemporalIndex;

@@ -41,7 +41,7 @@ import net.imglib2.type.NativeType;
 
 import org.apposed.appose.NDArray;
 import org.apposed.appose.Service;
-import org.mastodon.mamut.util.ApposeProcess;
+import org.mastodon.mamut.util.appose.ApposeProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
