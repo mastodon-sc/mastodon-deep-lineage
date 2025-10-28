@@ -37,6 +37,24 @@ import java.io.IOException;
  */
 public class Cellpose3 extends Cellpose
 {
+	public static final String ENV_NAME = "cellpose3";
+
+	public static final String ENV_FILE_CONTENT = "name: " + ENV_NAME + "\n"
+			+ "channels:\n"
+			+ "  - nvidia\n"
+			+ "  - pytorch\n"
+			+ "  - conda-forge\n"
+			+ "channel_priority: strict\n"
+			+ "dependencies:\n"
+			+ "  - python=3.10\n"
+			+ "  - pip\n"
+			+ "  - pip:\n"
+			+ "    - cellpose==3.1.1.2\n"
+			+ "    - appose==" + APPOSE_PYTHON_VERSION + "\n"
+			+ "  - pytorch\n"
+			+ "  - pytorch-cuda\n"
+			+ "  - numpy\n";
+
 	private final ModelType modelType;
 	private double anisotropy = 1;
 
@@ -87,21 +105,7 @@ public class Cellpose3 extends Cellpose
 	@Override
 	protected String generateEnvFileContent()
 	{
-		return "name: cellpose3\n"
-				+ "channels:\n"
-				+ "  - nvidia\n"
-				+ "  - pytorch\n"
-				+ "  - conda-forge\n"
-				+ "channel_priority: strict\n"
-				+ "dependencies:\n"
-				+ "  - python=3.10\n"
-				+ "  - pip\n"
-				+ "  - pip:\n"
-				+ "    - cellpose==3.1.1.2\n"
-				+ getApposePythonVersion()
-				+ "  - pytorch\n"
-				+ "  - pytorch-cuda\n"
-				+ "  - numpy\n";
+		return ENV_FILE_CONTENT;
 	}
 
 	public enum ModelType

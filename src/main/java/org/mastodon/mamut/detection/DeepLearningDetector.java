@@ -41,7 +41,7 @@ import net.imglib2.util.Cast;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
-import org.mastodon.mamut.util.ApposeProcess;
+import org.mastodon.mamut.util.appose.ApposeProcess;
 import org.mastodon.mamut.util.ByteFormatter;
 import org.mastodon.mamut.detection.util.SpimImageProperties;
 import org.mastodon.mamut.model.ModelGraph;
