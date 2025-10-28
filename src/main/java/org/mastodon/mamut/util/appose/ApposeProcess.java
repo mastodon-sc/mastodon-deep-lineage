@@ -1,10 +1,9 @@
-package org.mastodon.mamut.util;
+package org.mastodon.mamut.util.appose;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.invoke.MethodHandles;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -13,6 +12,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.apposed.appose.TaskEvent;
+import org.apposed.appose.util.Environments;
 import org.mastodon.mamut.detection.PythonRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,8 @@ public abstract class ApposeProcess implements AutoCloseable
 {
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
+
+	public static final String APPOSE_PYTHON_VERSION = "0.7.1";
 
 	protected abstract String generateEnvFileContent();
 
@@ -85,7 +87,7 @@ public abstract class ApposeProcess implements AutoCloseable
 		Environment environment;
 		try
 		{
-			File envFileDirectory = Paths.get( System.getProperty( "user.home" ), ".local", "share", "appose" ).toFile();
+			File envFileDirectory = new File( Environments.apposeEnvsDir() );
 			if ( !envFileDirectory.exists() && !envFileDirectory.mkdirs() )
 			{
 				logger.error( "Failed to create environment directory: {}", envFileDirectory.getAbsolutePath() );
@@ -132,11 +134,6 @@ public abstract class ApposeProcess implements AutoCloseable
 				break;
 			}
 		};
-	}
-
-	protected String getApposePythonVersion()
-	{
-		return "    - appose==0.7.1\n";
 	}
 
 	protected static boolean isPythonTaskInterrupted( final Service.Task task )

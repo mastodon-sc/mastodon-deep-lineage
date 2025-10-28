@@ -29,7 +29,7 @@ import org.mastodon.mamut.linking.trackastra.TrackastraModel;
 import org.mastodon.mamut.linking.trackastra.TrackastraUtils;
 import org.mastodon.mamut.linking.trackastra.appose.types.RegionProps;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.util.ApposeProcess;
+import org.mastodon.mamut.util.appose.ApposeProcess;
 import org.mastodon.mamut.util.ResourceUtils;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.tracking.linking.EdgeCreator;
@@ -179,7 +179,7 @@ public class LinkPrediction extends ApposeProcess
 	@Override
 	protected String generateEnvFileContent()
 	{
-		return TrackastraUtils.getEnv( getApposePythonVersion() );
+		return TrackastraUtils.getEnv();
 	}
 
 	@Override

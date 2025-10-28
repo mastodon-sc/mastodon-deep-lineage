@@ -36,6 +36,24 @@ import java.io.IOException;
  */
 public class Cellpose4 extends Cellpose
 {
+	public static final String ENV_NAME = "cellpose4";
+
+	public static final String ENV_FILE_CONTENT = "name: " + ENV_NAME + "\n"
+			+ "channels:\n"
+			+ "  - nvidia\n"
+			+ "  - pytorch\n"
+			+ "  - conda-forge\n"
+			+ "channel_priority: strict\n"
+			+ "dependencies:\n"
+			+ "  - python=3.10\n"
+			+ "  - cellpose==4.0.6\n"
+			+ "  - pytorch\n"
+			+ "  - pytorch-cuda\n"
+			+ "  - numpy\n"
+			+ "  - pip\n"
+			+ "  - pip:\n"
+			+ "    - appose==" + APPOSE_PYTHON_VERSION + "\n";
+
 	public Cellpose4() throws IOException
 	{
 		super();
@@ -66,21 +84,6 @@ public class Cellpose4 extends Cellpose
 	@Override
 	protected String generateEnvFileContent()
 	{
-		return "name: cellpose4\n"
-				+ "channels:\n"
-				+ "  - nvidia\n"
-				+ "  - pytorch\n"
-				+ "  - conda-forge\n"
-				+ "channel_priority: strict\n"
-				+ "dependencies:\n"
-				+ "  - python=3.10\n"
-				+ "  - cellpose==4.0.6\n"
-				// + getApposeVersion().substring( 2 ) + "\n"
-				+ "  - pytorch\n"
-				+ "  - pytorch-cuda\n"
-				+ "  - numpy\n"
-				+ "  - pip\n"
-				+ "  - pip:\n"
-				+ "    " + getApposePythonVersion() + "\n";
+		return ENV_FILE_CONTENT;
 	}
 }

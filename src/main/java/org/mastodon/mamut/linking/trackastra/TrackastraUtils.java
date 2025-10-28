@@ -11,11 +11,26 @@ import static org.mastodon.tracking.linking.LinkerKeys.KEY_DO_LINK_SELECTION;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mastodon.mamut.util.appose.ApposeProcess;
 import org.mastodon.tracking.detection.DetectorKeys;
 
 public class TrackastraUtils
 {
+
 	public static final String TRACKASTRA_VERSION = "0.4.2";
+
+	public static final String ENV_NAME = "trackastra";
+
+	public static final String ENV_FILE_CONTENT = "name: " + ENV_NAME + "\n"
+			+ "channels:\n"
+			+ "  - conda-forge\n"
+			+ "channel_priority: strict\n"
+			+ "dependencies:\n"
+			+ "  - python=3.10\n"
+			+ "  - pip\n"
+			+ "  - pip:\n"
+			+ "    - appose==" + ApposeProcess.APPOSE_PYTHON_VERSION + "\n"
+			+ "    - trackastra==" + TRACKASTRA_VERSION + "\n";
 
 	public static final String KEY_EDGE_THRESHOLD = "trackastraEdgeThreshold";
 
@@ -46,18 +61,9 @@ public class TrackastraUtils
 		// prevent instantiation
 	}
 
-	public static String getEnv( final String apposeVersion )
+	public static String getEnv()
 	{
-		return "name: trackastra\n"
-				+ "channels:\n"
-				+ "  - conda-forge\n"
-				+ "channel_priority: strict\n"
-				+ "dependencies:\n"
-				+ "  - python=3.10\n"
-				+ "  - pip\n"
-				+ "  - pip:\n"
-				+ apposeVersion + "\n"
-				+ "    - trackastra==" + TRACKASTRA_VERSION + "\n";
+		return ENV_FILE_CONTENT;
 	}
 
 	public static Map< String, Object > getDefaultTrackAstraSettingsMap()
