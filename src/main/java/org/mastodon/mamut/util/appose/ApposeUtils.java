@@ -4,8 +4,16 @@ import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -129,13 +137,109 @@ public class ApposeUtils
 	 * @param directory The directory whose size is to be calculated. Must not be null and must represent a valid directory.
 	 * @return The total size of the directory in bytes. If the directory does not exist or is null, the method will return 0.
 	 */
-	public static long calculateDirectorySize( final File directory )
+	public static long calculateDirectorySize( File directory )
+	{
+		if ( directory == null || !directory.exists() )
+		{
+			return 0;
+		}
+
+		String os = System.getProperty( "os.name" ).toLowerCase();
+		boolean isUnix = os.contains( "nix" ) || os.contains( "nux" ) || os.contains( "mac" );
+
+		if ( isUnix )
+		{
+			try
+			{
+				return calculateDiskUsageUnix( directory.toPath() );
+			}
+			catch ( IOException e )
+			{
+				// fallback to generic method if attribute not supported
+				return calculateFileLengthRecursive( directory );
+			}
+		}
+		else
+		{
+			return calculateFileLengthRecursive( directory );
+		}
+	}
+
+	// --- Linux/macOS: actual disk usage, like du -sb ---
+	private static long calculateDiskUsageUnix( Path directory ) throws IOException
+	{
+		final long[] total = { 0 };
+		boolean hasUnixView = supportsUnixAttributes();
+
+		Files.walkFileTree( directory, new SimpleFileVisitor< Path >()
+		{
+			@Nonnull
+			@Override
+			public FileVisitResult preVisitDirectory( @Nonnull Path dir, @Nonnull BasicFileAttributes attrs ) throws IOException
+			{
+				return Files.isSymbolicLink( dir )
+						? FileVisitResult.SKIP_SUBTREE
+						: FileVisitResult.CONTINUE;
+			}
+
+			@Nonnull
+			@Override
+			public FileVisitResult visitFile( @Nonnull Path file, @Nonnull BasicFileAttributes attrs ) throws IOException
+			{
+				if ( !Files.isSymbolicLink( file ) )
+					total[ 0 ] += getFileDiskUsage( file, hasUnixView );
+				return FileVisitResult.CONTINUE;
+			}
+		} );
+
+		return total[ 0 ];
+	}
+
+	private static boolean supportsUnixAttributes()
+	{
+		Set< String > views = FileSystems.getDefault().supportedFileAttributeViews();
+		return views.contains( "unix" );
+	}
+
+	/**
+	 * Returns the disk usage (in bytes) for a single file.
+	 * Uses actual allocated blocks if the unix view is supported.
+	 */
+	private static long getFileDiskUsage( Path file, boolean hasUnixView ) throws IOException
+	{
+		if ( !hasUnixView )
+			return Files.size( file );
+
+		try
+		{
+			Object blocksAttr = Files.getAttribute( file, "unix:blocks", LinkOption.NOFOLLOW_LINKS );
+			if ( blocksAttr instanceof Number )
+				return ( ( Number ) blocksAttr ).longValue() * 512L; // du uses 512-byte blocks
+		}
+		catch ( IllegalArgumentException | UnsupportedOperationException e )
+		{
+			// ignore and fall back to logical size
+		}
+		return Files.size( file );
+	}
+
+	// --- Windows / fallback: logical file sizes only ---
+	private static long calculateFileLengthRecursive( File directory )
 	{
 		long size = 0;
 		File[] files = directory.listFiles();
 		if ( files != null )
+		{
 			for ( File file : files )
-				size += file.isFile() ? file.length() : calculateDirectorySize( file );
+			{
+				if ( Files.isSymbolicLink( file.toPath() ) )
+					continue;
+				if ( file.isFile() )
+					size += file.length();
+				else if ( file.isDirectory() )
+					size += calculateFileLengthRecursive( file );
+			}
+		}
 		return size;
 	}
 }
