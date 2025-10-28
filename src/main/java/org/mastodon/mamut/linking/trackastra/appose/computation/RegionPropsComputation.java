@@ -131,7 +131,7 @@ public class RegionPropsComputation extends ApposeProcess
 			inputs.put( IMAGE, imageNDArray );
 			inputs.put( MASK, masksNDArray );
 
-			Service.Task result = runScript();
+			Service.Task result = runScriptWithRetries( 1, 10 );
 			ShmImg< IntType > labels = new ShmImg<>( ( NDArray ) result.outputs.get( LABELS ) );
 			ShmImg< IntType > timepoints = new ShmImg<>( ( NDArray ) result.outputs.get( TIMEPOINTS ) );
 			LoopBuilder.setImages( timepoints ).multiThreaded().forEachPixel( p -> p.set( timepoint ) ); // all timepoints are the same
