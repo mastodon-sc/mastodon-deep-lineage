@@ -185,6 +185,27 @@ public abstract class ApposeProcess implements AutoCloseable
 		return currentTask;
 	}
 
+	protected Service.Task runScriptWithRetries( final int attempt, final int maxRetries ) throws IOException
+	{
+		try
+		{
+			return runScript();
+		}
+		catch ( PythonRuntimeException e )
+		{
+			if ( attempt <= maxRetries )
+			{
+				logger.warn( "Python runtime exception on attempt {}/{}. Retrying...", attempt, maxRetries );
+				return runScriptWithRetries( attempt + 1, maxRetries );
+			}
+			else
+			{
+				logger.error( "Python runtime exception on final attempt {}/{}. No more retries.", attempt, maxRetries );
+				throw e;
+			}
+		}
+	}
+
 	public void cancel()
 	{
 		pythonWorker.kill();
