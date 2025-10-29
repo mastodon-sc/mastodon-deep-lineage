@@ -28,63 +28,72 @@
  */
 package org.mastodon.mamut.appose;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskEvent;
+import org.mastodon.mamut.detection.cellpose.Cellpose3;
 
 public class ApposeReuseEnvironmentExample
 {
 	public static void main( String[] args ) throws IOException, InterruptedException
 	{
-		String content = "name: cellpose\n"
-				+ "channels:\n"
-				+ "  - nvidia\n"
-				+ "  - pytorch\n"
-				+ "  - conda-forge\n"
-				+ "dependencies:\n"
-				+ "  - python=3.10\n"
-				+ "  - pip\n"
-				+ "  - pip:\n"
-				+ "    - cellpose[gui]\n"
-				+ "    - appose\n"
-				+ "  - pytorch\n"
-				+ "  - pytorch-cuda=11.8\n"
-				+ "  - numpy=2.0.2\n";
-
-		Environment env = Appose.mamba().scheme( "environment.yml" ).content( content ).logDebug().build();
+		Environment env = Appose.mamba().scheme( "environment.yml" ).content( Cellpose3.ENV_FILE_CONTENT ).logDebug().build();
 		System.out.println( "Created environment" );
 		StopWatch stopWatch = StopWatch.createStarted();
 
-		String script = "import numpy as np" + "\n"
-				+ "from cellpose import models" + "\n"
-				+ "import appose" + "\n\n"
-				+ "5 + 6" + "\n";
+		String importScript = "import networkx as nx\n"
+				+ "import appose\n"
+				+ "from pandas import DataFrame\n"
+				+ "\n"
+				+ "task.update(message='Hello from import script')\n"
+				+ "task.export(nx=nx, appose=appose, DataFrame=DataFrame)\n";
 
-		try (Service python = env.python())
+		String script = "task.update(message='Creating a graph...')\n"
+				+ "G = nx.Graph()\n"
+				+ "G.add_nodes_from(['A', 'B', 'C'])\n"
+				+ "G.add_edges_from([('A', 'B'), ('B', 'C')])\n"
+				+ "print('Nodes:', G.nodes())\n"
+				+ "print('Edges:', G.edges())\n"
+				+ "data = {'name': ['Alice', 'Bob'], 'age': [25, 30]}\n"
+				+ "df = DataFrame(data)\n"
+				+ "task.update(message='Graph created with ' + str(len(G.nodes())) + ' nodes and ' + str(len(G.edges())) + ' edges.')\n"
+				+ "task.update(message='DataFrame created: ' + df.to_string())\n"
+				+ "task.outputs['result']=len(G.nodes()) + len(G.edges())\n";
+
+		try (Service python = env.python().init( "import numpy" ))
 		{
 			stopWatch.split();
 			System.out.println( "Python service started: " + stopWatch.formatSplitTime() );
-			Service.Task task1 = python.task( script );
+			Service.Task task1 = python.task( importScript, "main" );
+			task1.listen( getTaskListener() );
 			task1.waitFor();
-			Object result1 = task1.outputs.get( "result" );
-			System.out.println( "result1: " + result1 );
+			System.out.println( "Import script ran successfully." );
 			stopWatch.split();
-			System.out.println( "Python task1 finished: " + stopWatch.formatSplitTime() );
+			System.out.println( "Import task finished: " + stopWatch.formatSplitTime() );
 
+			// Now run the payload script that uses the imported modules
 			Service.Task task2 = python.task( script );
+			task2.listen( getTaskListener() );
 			task2.waitFor();
-			Object result2 = task2.outputs.get( "result" );
-			System.out.println( "result2: " + result2 );
+			Object result = task2.outputs.get( "result" );
+			System.out.println( "Nodes + Edges (result): " + result );
 
 			stopWatch.split();
-			System.out.println( "Python task2 finished: " + stopWatch.formatSplitTime() );
+			System.out.println( "Payload task finished: " + stopWatch.formatSplitTime() );
 		}
+	}
+
+	private static Consumer< TaskEvent > getTaskListener()
+	{
+		return taskEvent -> {
+			String message = taskEvent.responseType.toString();
+			message += taskEvent.message == null ? "" : ": " + taskEvent.message;
+			System.out.println( message );
+		};
 	}
 }
