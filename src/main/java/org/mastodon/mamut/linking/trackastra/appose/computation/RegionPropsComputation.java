@@ -33,9 +33,9 @@ import org.mastodon.mamut.io.exporter.labelimage.ExportLabelImageUtils;
 import org.mastodon.mamut.linking.trackastra.TrackastraUtils;
 import org.mastodon.mamut.linking.trackastra.appose.types.SingleTimepointRegionProps;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.util.appose.ApposeProcess;
 import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.mamut.util.ResourceUtils;
+import org.mastodon.mamut.util.appose.ApposeProcess;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.scijava.Cancelable;
 import org.scijava.app.StatusService;
@@ -57,10 +57,9 @@ public class RegionPropsComputation extends ApposeProcess
 	private final StatusService statusService;
 
 	public RegionPropsComputation( final org.scijava.log.Logger uiLogger, final String model, final Cancelable cancelable,
-			final StatusService statusService )
-			throws IOException
+			final StatusService statusService, final Service python )
 	{
-		super();
+		super( python );
 		this.uiLogger = uiLogger;
 		this.model = model;
 		this.cancelable = cancelable;
@@ -68,7 +67,7 @@ public class RegionPropsComputation extends ApposeProcess
 	}
 
 	public List< SingleTimepointRegionProps > computeRegionPropsForSource( final Source< ? > source, final int level,
-			final SpatioTemporalIndex< Spot > spatioTemporalIndex, final int minTimepoint, final int maxTimepoint )
+			final SpatioTemporalIndex< Spot > spatioTemporalIndex, final int minTimepoint, final int maxTimepoint ) throws IOException
 	{
 		int todo = maxTimepoint - minTimepoint + 1;
 		int done = 0;
@@ -162,12 +161,6 @@ public class RegionPropsComputation extends ApposeProcess
 	}
 
 	@Override
-	protected String generateEnvFileContent()
-	{
-		return TrackastraUtils.getEnv();
-	}
-
-	@Override
 	protected String generateScript()
 	{
 		final String template =
@@ -183,11 +176,5 @@ public class RegionPropsComputation extends ApposeProcess
 				.replace( "{INTENSITY}", INTENSITY )
 				.replace( "{INERTIA_TENSOR}", INERTIA_TENSOR )
 				.replace( "{BORDER_DIST}", BORDER_DIST );
-	}
-
-	@Override
-	protected String generateImportStatements()
-	{
-		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/region_props_imports.py", getClass() );
 	}
 }

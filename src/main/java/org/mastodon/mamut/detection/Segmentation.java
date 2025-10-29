@@ -54,9 +54,9 @@ public abstract class Segmentation extends ApposeProcess
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	protected Segmentation() throws IOException
+	protected Segmentation( final Service pythonService )
 	{
-		super();
+		super( pythonService );
 	}
 
 	/**

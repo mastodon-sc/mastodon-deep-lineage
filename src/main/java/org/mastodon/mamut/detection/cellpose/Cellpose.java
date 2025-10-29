@@ -30,6 +30,7 @@ package org.mastodon.mamut.detection.cellpose;
 
 import java.io.IOException;
 
+import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.Segmentation;
 
 /**
@@ -58,9 +59,9 @@ public abstract class Cellpose extends Segmentation
 
 	public static final double DEFAULT_DIAMETER = 0d;
 
-	protected Cellpose() throws IOException
+	protected Cellpose( final Service python ) throws IOException
 	{
-		super();
+		super( python );
 	}
 
 	public void setCellProbThreshold( final double cellProbThreshold )
@@ -151,8 +152,7 @@ public abstract class Cellpose extends Segmentation
 				+ "task.outputs['label_image'] = shared" + "\n";
 	}
 
-	@Override
-	protected String generateImportStatements()
+	public static String generateImportStatements()
 	{
 		return "import numpy as np" + "\n"
 				+ "from cellpose import models" + "\n"

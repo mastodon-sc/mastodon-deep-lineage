@@ -41,10 +41,12 @@ import net.imglib2.util.Cast;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
-import org.mastodon.mamut.util.appose.ApposeProcess;
-import org.mastodon.mamut.util.ByteFormatter;
+import org.apposed.appose.Appose;
+import org.apposed.appose.Environment;
+import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.util.SpimImageProperties;
 import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.util.ByteFormatter;
 import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.mamut.util.LabelImageUtils;
 import org.mastodon.tracking.detection.AbstractDetectorOp;
@@ -78,12 +80,12 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	@Parameter
 	protected Context context;
 
+	protected Service pythonService;
+
 	/**
 	 * Represents the maximum allowable size in bytes for datasets handle via the appose java-python bridge.
 	 */
 	private static final int MAX_SIZE_IN_BYTES = Integer.MAX_VALUE - 1;
-
-	protected ApposeProcess apposeProcess;
 
 	@Override
 	public void compute( final List< SourceAndConverter< ? > > sources, final ModelGraph graph )
@@ -111,17 +113,39 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 			log.info( "Initialize python environment." );
 			log.info( "On first time use this requires internet connection and may take a couple of minutes." );
 			log.info( "Progress can be observed using FIJI console: FIJI > Window > Console." );
-			for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
+			Environment environment = Appose.mamba().scheme( "environment.yml" ).content( getPythonEnvContent() ).logDebug()
+					.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
+					.subscribeOutput( logger::info )
+					.subscribeError( logger::error ).build();
+			if ( logger.isInfoEnabled() )
+				logger.info( "Set up environment. Path: {}", environment.base() );
+			try (Service python = environment.python())
 			{
-				// We use the `statusService to show progress.
-				statusService.showProgress( timepoint - minTimepoint + 1, maxTimepoint - minTimepoint + 1 );
+				if ( isWindows() )
+					python.init( getPythonEnvInit() );
 
-				if ( isCanceled() )
-					break; // Exit but don't fail.
+				// First, get the source for the current channel (or setup) at the desired time-point. In BDV jargon, this is a source.
+				final Source< ? > source = sources.get( settings.getSetupId() ).getSpimSource();
+				RandomAccessibleInterval< ? > image = source.getSource( 0, 0 );
 
-				if ( DetectionUtil.isPresent( sources, settings.getSetupId(), timepoint ) )
-					detectAndAddSpots( sources, graph, settings.getSetupId(), timepoint, settings.getResolutionLevel() );
+				Service.Task importTask = python.task( getImportScript( !is3D( image ) ), "main" );
+				importTask.waitFor();
+				this.pythonService = python;
+				for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
+				{
+					// We use the `statusService to show progress.
+					statusService.showProgress( timepoint - minTimepoint + 1, maxTimepoint - minTimepoint + 1 );
+
+					if ( isCanceled() )
+						break; // Exit but don't fail.
+
+					if ( DetectionUtil.isPresent( sources, settings.getSetupId(), timepoint ) )
+						detectAndAddSpots( sources, graph, settings.getSetupId(), timepoint, settings.getResolutionLevel(), python );
+				}
+				if ( logger.isInfoEnabled() )
+					logger.info( "Finished python process." );
 			}
+
 		}
 		catch ( Exception e )
 		{
@@ -174,7 +198,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	}
 
 	private void detectAndAddSpots( final List< SourceAndConverter< ? > > sources, final ModelGraph graph, final int setup,
-			final int timepoint, final int level )
+			final int timepoint, final int level, final Service python )
 	{
 		// First, get the source for the current channel (or setup) at the desired time-point. In BDV jargon, this is a source.
 		final Source< ? > source = sources.get( setup ).getSpimSource();
@@ -212,7 +236,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		}
 
 		final Img< ? > segmentation =
-				performSegmentation( Views.dropSingletonDimensions( image ), source.getVoxelDimensions().dimensionsAsDoubleArray() );
+				performSegmentation( Views.dropSingletonDimensions( image ), source.getVoxelDimensions().dimensionsAsDoubleArray(),
+						python );
 
 		if ( segmentation != null )
 		{
@@ -301,11 +326,27 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 
 	protected abstract boolean validateSettings( final StringBuilder errorHolder );
 
-	protected abstract Img< ? > performSegmentation( final RandomAccessibleInterval< ? > image, final double[] voxelDimensions );
+	protected abstract Img< ? > performSegmentation( final RandomAccessibleInterval< ? > image, final double[] voxelDimensions,
+			final Service python );
 
 	protected abstract void addSpecificDefaultSettings( final Map< String, Object > defaultSettings );
 
 	protected abstract String getDetectorName();
+
+	protected abstract String getPythonEnvContent();
+
+	protected String getPythonEnvInit()
+	{
+		return "import numpy\n";
+	}
+
+	protected abstract String getImportScript( final boolean dataIs2D );
+
+	private static boolean isWindows()
+	{
+		String os = System.getProperty( "os.name" ).toLowerCase();
+		return os.contains( "win" );
+	}
 
 	/** Cancels the command execution, with the given reason for doing so. */
 	@Override
@@ -313,8 +354,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	{
 		// this is a workaround to avoid a null pointer exception during the cancel operation
 		detector = new DummyDetectorOp();
-		if ( apposeProcess != null )
-			apposeProcess.cancel();
+		if ( pythonService != null )
+			pythonService.kill();
 		super.cancel( reason );
 	}
 

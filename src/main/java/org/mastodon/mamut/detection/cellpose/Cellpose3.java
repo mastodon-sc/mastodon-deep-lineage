@@ -30,6 +30,8 @@ package org.mastodon.mamut.detection.cellpose;
 
 import java.io.IOException;
 
+import org.apposed.appose.Service;
+
 /**
  * Cellpose3 is a specialized implementation of the {@link Cellpose} class, specifically
  * designed to use Cellpose version 3 model for cell segmentation tasks.<br>
@@ -58,9 +60,9 @@ public class Cellpose3 extends Cellpose
 	private final ModelType modelType;
 	private double anisotropy = 1;
 
-	public Cellpose3( final ModelType modelType ) throws IOException
+	public Cellpose3( final ModelType modelType, final Service python ) throws IOException
 	{
-		super();
+		super( python );
 		this.modelType = modelType;
 	}
 
@@ -100,12 +102,6 @@ public class Cellpose3 extends Cellpose
 				+ "flow3D_smooth=0, "
 				+ "flow_threshold=" + flowThreshold + ", "
 				+ "cellprob_threshold=" + cellProbThreshold + ")" + "\n";
-	}
-
-	@Override
-	protected String generateEnvFileContent()
-	{
-		return ENV_FILE_CONTENT;
 	}
 
 	public enum ModelType

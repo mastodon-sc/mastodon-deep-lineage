@@ -48,6 +48,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.util.Cast;
 
+import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.DeepLearningDetector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor;
@@ -90,11 +91,12 @@ public class Cellpose4Detector extends DeepLearningDetector
 	}
 
 	@Override
-	protected Img< ? > performSegmentation( final RandomAccessibleInterval< ? > image, final double[] voxelDimensions )
+	protected Img< ? > performSegmentation( final RandomAccessibleInterval< ? > image, final double[] voxelDimensions,
+			final Service python )
 	{
-		try (Cellpose4 cellpose = new Cellpose4())
+		try
 		{
-			this.apposeProcess = cellpose;
+			Cellpose4 cellpose = new Cellpose4( python );
 			cellpose.set3D( is3D( image ) );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );
@@ -127,5 +129,17 @@ public class Cellpose4Detector extends DeepLearningDetector
 	protected String getDetectorName()
 	{
 		return "Cellpose4";
+	}
+
+	@Override
+	protected String getPythonEnvContent()
+	{
+		return Cellpose4.ENV_FILE_CONTENT;
+	}
+
+	@Override
+	protected String getImportScript( final boolean dataIs2D )
+	{
+		return Cellpose4.generateImportStatements();
 	}
 }
