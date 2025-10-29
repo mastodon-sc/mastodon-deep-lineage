@@ -311,6 +311,7 @@ public class StarDist extends Segmentation
 		FLUO_2D( "StarDist Fluorescence Nuclei Segmentation", "stardist-fluo-2d", true ),
 		// H_E( "StarDist H&E Nuclei Segmentation", "stardist-h-e-nuclei", true ), // NB: operates on 3 input channels
 		DEMO( "StarDist Demo", null, null );
+		// https://zenodo.org/records/10518151 another pre-trained 3D model for nuclei segmentation
 
 		private final String modelName;
 
