@@ -13,12 +13,11 @@ import org.mastodon.mamut.detection.PythonRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
- * Abstract class providing a framework for Python-based processing.
- * It manages the Python environment setup.<br>
- * Subclasses are required to provide details, such as generating
- * the environment file content and the script for the python process segmentation.<br>
- * This class facilitates the transfer of data between the Java and Python environments, tracks task progress and execution time.
+ * An abstract class that provides a base for executing Python-based tasks within a Java application.
+ * This class uses a Python service to run tasks, handles task status, and logs execution progress and errors.
+ * Subclasses must implement the {@link #generateScript()} method to provide the specific Python script to be executed.
  */
 public abstract class ApposeProcess
 {
@@ -26,8 +25,6 @@ public abstract class ApposeProcess
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	public static final String APPOSE_PYTHON_VERSION = "0.7.1";
-
-	protected abstract String generateScript();
 
 	protected final Service pythonWorker;
 
@@ -43,6 +40,8 @@ public abstract class ApposeProcess
 		// this.pythonWorker.debug( logger::info );
 		this.inputs = new HashMap<>();
 	}
+
+	protected abstract String generateScript();
 
 	protected Consumer< TaskEvent > getTaskListener( final StopWatch stopWatch, final Service.Task task )
 	{

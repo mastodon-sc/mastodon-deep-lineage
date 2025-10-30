@@ -30,7 +30,6 @@ import net.imglib2.view.Views;
 import org.apposed.appose.NDArray;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.io.exporter.labelimage.ExportLabelImageUtils;
-import org.mastodon.mamut.linking.trackastra.TrackastraUtils;
 import org.mastodon.mamut.linking.trackastra.appose.types.SingleTimepointRegionProps;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.util.ImgUtils;
@@ -67,7 +66,7 @@ public class RegionPropsComputation extends ApposeProcess
 	}
 
 	public List< SingleTimepointRegionProps > computeRegionPropsForSource( final Source< ? > source, final int level,
-			final SpatioTemporalIndex< Spot > spatioTemporalIndex, final int minTimepoint, final int maxTimepoint ) throws IOException
+			final SpatioTemporalIndex< Spot > spatioTemporalIndex, final int minTimepoint, final int maxTimepoint )
 	{
 		int todo = maxTimepoint - minTimepoint + 1;
 		int done = 0;

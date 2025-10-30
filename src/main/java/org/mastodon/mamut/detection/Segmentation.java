@@ -60,7 +60,7 @@ public abstract class Segmentation extends ApposeProcess
 	}
 
 	/**
-	 * Segments the input image using the configured Python environment and
+	 * Segments the input image using the configured Python runtime environment and
 	 * returns the segmented image as an {@link Img}.
 	 *
 	 * @param inputImage the input image to be segmented.

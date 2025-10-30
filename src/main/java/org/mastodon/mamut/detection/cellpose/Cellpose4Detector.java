@@ -140,6 +140,6 @@ public class Cellpose4Detector extends DeepLearningDetector
 	@Override
 	protected String getImportScript( final boolean dataIs2D )
 	{
-		return Cellpose4.generateImportStatements();
+		return Cellpose.generateImportStatements();
 	}
 }

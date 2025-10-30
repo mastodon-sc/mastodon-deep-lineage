@@ -58,6 +58,7 @@ public class Cellpose3 extends Cellpose
 			+ "  - numpy\n";
 
 	private final ModelType modelType;
+
 	private double anisotropy = 1;
 
 	public Cellpose3( final ModelType modelType, final Service python ) throws IOException
