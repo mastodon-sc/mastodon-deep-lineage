@@ -1,41 +1,30 @@
 package org.mastodon.mamut.util.appose;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.apposed.appose.TaskEvent;
-import org.apposed.appose.util.Environments;
 import org.mastodon.mamut.detection.PythonRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
- * Abstract class providing a framework for Python-based processing.
- * It manages the Python environment setup.<br>
- * Subclasses are required to provide details, such as generating
- * the environment file content and the script for the python process segmentation.<br>
- * This class facilitates the transfer of data between the Java and Python environments, tracks task progress and execution time.
+ * An abstract class that provides a base for executing Python-based tasks within a Java application.
+ * This class uses a Python service to run tasks, handles task status, and logs execution progress and errors.
+ * Subclasses must implement the {@link #generateScript()} method to provide the specific Python script to be executed.
  */
-public abstract class ApposeProcess implements AutoCloseable
+public abstract class ApposeProcess
 {
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
 	public static final String APPOSE_PYTHON_VERSION = "0.7.1";
-
-	protected abstract String generateEnvFileContent();
-
-	protected abstract String generateScript();
-
-	protected abstract String generateImportStatements();
 
 	protected final Service pythonWorker;
 
@@ -43,70 +32,16 @@ public abstract class ApposeProcess implements AutoCloseable
 
 	protected final Map< String, Object > inputs;
 
-	protected Service.Task currentTask;
-
-	protected ApposeProcess() throws IOException
+	protected ApposeProcess( final Service pythonService )
 	{
 		this.stopWatch = StopWatch.createStarted();
-		Environment environment = setUpEnv();
-		if ( environment == null )
-		{
-			logger.error( "Could not create python environment" );
-			throw new PythonRuntimeException( "Could not create python environment" );
-		}
 		stopWatch.split();
-		if ( logger.isInfoEnabled() )
-			logger.info( "Set up environment. Path: {}. Time elapsed: {}", environment.base(), stopWatch.formatSplitTime() );
-		this.pythonWorker = environment.python();
-		runInitScript();
+		this.pythonWorker = pythonService;
 		// this.pythonWorker.debug( logger::info );
 		this.inputs = new HashMap<>();
 	}
 
-	@Override
-	public void close() throws Exception
-	{
-		stopWatch.stop();
-		if ( logger.isInfoEnabled() )
-			logger.info( "Finished python process. Time elapsed: {}", stopWatch.formatTime() );
-		if ( pythonWorker != null && pythonWorker.isAlive() )
-		{
-			try
-			{
-				pythonWorker.close();
-			}
-			catch ( Exception e )
-			{
-				logger.warn( "Could not properly close python worker: {}", e.getMessage(), e );
-			}
-		}
-	}
-
-	private Environment setUpEnv()
-	{
-		Environment environment;
-		try
-		{
-			File envFileDirectory = new File( Environments.apposeEnvsDir() );
-			if ( !envFileDirectory.exists() && !envFileDirectory.mkdirs() )
-			{
-				logger.error( "Failed to create environment directory: {}", envFileDirectory.getAbsolutePath() );
-				throw new UncheckedIOException( "Failed to create environment directory: " + envFileDirectory.getAbsolutePath(),
-						new IOException() );
-			}
-			String content = generateEnvFileContent();
-			environment = org.apposed.appose.Appose.mamba().scheme( "environment.yml" ).content( content ).logDebug()
-					.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
-					.subscribeOutput( logger::info )
-					.subscribeError( logger::error ).build();
-		}
-		catch ( IOException e )
-		{
-			logger.error( "Could not create temporary yml file: {}", e.getMessage(), e );
-			return null;
-		}
-		return environment;
-	}
+	protected abstract String generateScript();
 
 	protected Consumer< TaskEvent > getTaskListener( final StopWatch stopWatch, final Service.Task task )
 	{
@@ -153,36 +88,23 @@ public abstract class ApposeProcess implements AutoCloseable
 
 	protected Service.Task runScript() throws IOException
 	{
-		runInitScript();
-		Service.Task doImports = pythonWorker.task( generateImportStatements(), "main" );
-		doImports.listen( getTaskListener( stopWatch, doImports ) );
-		try
-		{
-			doImports.waitFor();
-		}
-		catch ( InterruptedException e )
-		{
-			logger.error( "Import task interrupted: {}", e.getMessage(), e );
-			Thread.currentThread().interrupt();
-		}
-
 		String script = generateScript();
-		currentTask = pythonWorker.task( script, inputs, null );
+		Service.Task task = pythonWorker.task( script, inputs, null );
 		stopWatch.split();
 		if ( logger.isInfoEnabled() )
 			logger.info( "Created python task. Time elapsed: {}", stopWatch.formatSplitTime() );
-		currentTask.listen( getTaskListener( stopWatch, currentTask ) );
-		if ( isPythonTaskInterrupted( currentTask ) )
+		task.listen( getTaskListener( stopWatch, task ) );
+		if ( isPythonTaskInterrupted( task ) )
 			return null;
 
 		// Verify that it worked.
-		if ( currentTask.status != Service.TaskStatus.COMPLETE )
-			throw new PythonRuntimeException( "Python task failed with error: " + currentTask.error );
+		if ( task.status != Service.TaskStatus.COMPLETE )
+			throw new PythonRuntimeException( "Python task failed with error: " + task.error );
 
 		stopWatch.split();
 		if ( logger.isInfoEnabled() )
 			logger.info( "Python task completed. Total time {}", stopWatch.formatSplitTime() );
-		return currentTask;
+		return task;
 	}
 
 	protected Service.Task runScriptWithRetries( final int attempt, final int maxRetries ) throws IOException
@@ -204,22 +126,5 @@ public abstract class ApposeProcess implements AutoCloseable
 				throw e;
 			}
 		}
-	}
-
-	public void cancel()
-	{
-		pythonWorker.kill();
-	}
-
-	protected void runInitScript()
-	{
-		if ( isWindows() )
-			pythonWorker.init( "import numpy" );
-	}
-
-	protected static boolean isWindows()
-	{
-		String os = System.getProperty( "os.name" ).toLowerCase();
-		return os.contains( "win" );
 	}
 }

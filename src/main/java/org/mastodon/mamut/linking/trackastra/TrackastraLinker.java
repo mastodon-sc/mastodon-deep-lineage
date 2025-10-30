@@ -6,6 +6,7 @@ import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_WINDOW_S
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MAX_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
@@ -14,14 +15,19 @@ import net.imglib2.algorithm.Benchmark;
 import net.imglib2.util.Cast;
 
 import org.apache.commons.lang.StringUtils;
+import org.apposed.appose.Appose;
+import org.apposed.appose.Environment;
+import org.apposed.appose.Service;
 import org.mastodon.Ref;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.detection.PythonRuntimeException;
 import org.mastodon.mamut.linking.trackastra.appose.computation.LinkPrediction;
-import org.mastodon.mamut.linking.trackastra.appose.types.RegionProps;
 import org.mastodon.mamut.linking.trackastra.appose.computation.RegionPropsComputation;
+import org.mastodon.mamut.linking.trackastra.appose.types.RegionProps;
 import org.mastodon.mamut.linking.trackastra.appose.types.SingleTimepointRegionProps;
+import org.mastodon.mamut.util.ResourceUtils;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.tracking.linking.graph.AbstractGraphParticleLinkerOp;
@@ -48,15 +54,39 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		long start = System.currentTimeMillis();
 		statusService.clearStatus();
 		statusService.showStatus( "Trackastra linking." );
+		Environment environment;
 		try
 		{
-			List< SingleTimepointRegionProps > regionProps = computeRegionProps( index );
+			environment = Appose.mamba().scheme( "environment.yml" ).content( TrackastraUtils.ENV_FILE_CONTENT ).logDebug()
+					.subscribeProgress( ( title, cur, max ) -> log.info( "{}: {}/{}", title, cur, max ) )
+					.subscribeOutput( log::info )
+					.subscribeError( log::error ).build();
+		}
+		catch ( IOException e )
+		{
+			throw new PythonRuntimeException( e );
+		}
+
+		try (Service python = environment.python())
+		{
+			python.init( "import numpy\n" );
+			String importScripts = ResourceUtils
+					.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/region_props_imports.py", getClass() );
+			Service.Task importTask = python.task( importScripts, "main" );
+			importTask.waitFor();
+			List< SingleTimepointRegionProps > regionProps = computeRegionProps( index, python );
 			if ( !isCanceled() )
-				runLinkPrediction( index, regionProps );
+			{
+				importScripts = ResourceUtils
+						.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/link_prediction_imports.py", getClass() );
+				importTask = python.task( importScripts, "main" );
+				importTask.waitFor();
+				runLinkPrediction( index, regionProps, python );
+			}
 			ok = true;
 			statusService.clearStatus();
 		}
-		catch ( TrackastraLinkingException e )
+		catch ( TrackastraLinkingException | IOException e )
 		{
 			Throwable cause = e.getCause();
 			String msg = "";
@@ -67,13 +97,19 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 			ok = false;
 			errorMessage = e.getMessage() + ( ( msg != null && !msg.isEmpty() ) ? " Caused by: " + msg : "" );
 		}
+		catch ( InterruptedException e )
+		{
+			Thread.currentThread().interrupt();
+			throw new PythonRuntimeException( e );
+		}
 		finally
 		{
 			processingTime = System.currentTimeMillis() - start;
 		}
 	}
 
-	private List< SingleTimepointRegionProps > computeRegionProps( final SpatioTemporalIndex< V > index ) throws TrackastraLinkingException
+	private List< SingleTimepointRegionProps > computeRegionProps( final SpatioTemporalIndex< V > index, final Service python )
+			throws TrackastraLinkingException
 	{
 		log.info( "Computing region props for Trackastra" );
 		String model = ( ( TrackastraModel ) settings.get( TrackastraUtils.KEY_MODEL ) ).getName();
@@ -90,8 +126,9 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 			throw new IllegalArgumentException(
 					String.format( "Window size (%d) exceeds time range (%d). Adjust window size or time range.", windowSize, timeRange ) );
 
-		try (RegionPropsComputation computation = new RegionPropsComputation( logger, model, this, this.statusService ))
+		try
 		{
+			RegionPropsComputation computation = new RegionPropsComputation( logger, model, this, this.statusService, python );
 			return computation.computeRegionPropsForSource( source, level, Cast.unchecked( index ), minTimepoint, maxTimepoint );
 		}
 		catch ( Exception e )
@@ -100,15 +137,15 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		}
 	}
 
-	private void runLinkPrediction( final SpatioTemporalIndex< V > index, final List< SingleTimepointRegionProps > regionProps )
+	private void runLinkPrediction( final SpatioTemporalIndex< V > index, final List< SingleTimepointRegionProps > regionProps,
+			final Service python )
 			throws TrackastraLinkingException
 	{
 		log.info( "Performing Trackastra link prediction" );
-		try (RegionProps props = new RegionProps( regionProps );
-				LinkPrediction prediction =
-						new LinkPrediction( settings, Cast.unchecked( index ), Cast.unchecked( edgeCreator ), props, logger, this,
-								statusService ))
+		try (RegionProps props = new RegionProps( regionProps ))
 		{
+			LinkPrediction prediction = new LinkPrediction( settings, Cast.unchecked( index ), Cast.unchecked( edgeCreator ), props, logger,
+					this, statusService, python );
 			prediction.predictAndCreateLinks();
 		}
 		catch ( Exception e )

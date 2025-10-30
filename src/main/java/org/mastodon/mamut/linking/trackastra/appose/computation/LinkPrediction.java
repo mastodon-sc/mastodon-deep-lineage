@@ -57,10 +57,10 @@ public class LinkPrediction extends ApposeProcess
 
 	public LinkPrediction( final Map< String, Object > settings, final SpatioTemporalIndex< Spot > index,
 			final EdgeCreator< Spot > edgeCreator, final RegionProps regionProps, final org.scijava.log.Logger uiLogger,
-			final Cancelable cancelable, final StatusService statusService
-	) throws IOException
+			final Cancelable cancelable, final StatusService statusService, final Service python
+	)
 	{
-		super();
+		super( python );
 		this.settings = settings;
 		this.index = index;
 		this.edgeCreator = edgeCreator;
@@ -174,18 +174,6 @@ public class LinkPrediction extends ApposeProcess
 	{
 		ra.setPosition( new long[] { col, row } );
 		return ( ( FloatType ) ra.get() ).getRealFloat();
-	}
-
-	@Override
-	protected String generateEnvFileContent()
-	{
-		return TrackastraUtils.getEnv();
-	}
-
-	@Override
-	protected String generateImportStatements()
-	{
-		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/link_prediction_imports.py", getClass() );
 	}
 
 	@Override

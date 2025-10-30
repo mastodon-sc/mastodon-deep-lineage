@@ -42,6 +42,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.util.Cast;
 
+import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.DeepLearningDetector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor;
@@ -101,11 +102,12 @@ public class StarDistDetector extends DeepLearningDetector
 	}
 
 	@Override
-	protected Img< ? > performSegmentation( final RandomAccessibleInterval< ? > image, final double[] voxelDimensions )
+	protected Img< ? > performSegmentation( final RandomAccessibleInterval< ? > image, final double[] voxelDimensions,
+			final Service python )
 	{
-		try (StarDist starDist = new StarDist( ( StarDist.ModelType ) settings.get( KEY_MODEL_TYPE ) ))
+		try
 		{
-			this.apposeProcess = starDist;
+			StarDist starDist = new StarDist( ( StarDist.ModelType ) settings.get( KEY_MODEL_TYPE ), python );
 			boolean isData3D = is3D( image );
 			Boolean isModelType2D = starDist.getModelType().is2D();
 			if ( isModelType2D != null )
@@ -141,5 +143,17 @@ public class StarDistDetector extends DeepLearningDetector
 	protected String getDetectorName()
 	{
 		return "StarDist";
+	}
+
+	@Override
+	protected String getPythonEnvContent()
+	{
+		return StarDist.ENV_FILE_CONTENT;
+	}
+
+	@Override
+	protected String getImportScript( final boolean dataIs2D )
+	{
+		return StarDist.generateImportStatements( ( StarDist.ModelType ) settings.get( KEY_MODEL_TYPE ), dataIs2D );
 	}
 }

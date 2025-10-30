@@ -51,8 +51,8 @@ import java.util.Map;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.util.Cast;
-import net.imglib2.view.Views;
 
+import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.DeepLearningDetector;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.scijava.Priority;
@@ -99,11 +99,13 @@ public class Cellpose3Detector extends DeepLearningDetector
 	}
 
 	@Override
-	protected Img< ? > performSegmentation( final RandomAccessibleInterval< ? > image, final double[] voxelDimensions )
+	protected Img< ? > performSegmentation( final RandomAccessibleInterval< ? > image, final double[] voxelDimensions,
+			final Service python )
 	{
-		try (Cellpose3 cellpose = new Cellpose3( ( Cellpose3.ModelType ) settings.get( KEY_MODEL_TYPE ) ))
+
+		try
 		{
-			this.apposeProcess = cellpose;
+			Cellpose3 cellpose = new Cellpose3( ( Cellpose3.ModelType ) settings.get( KEY_MODEL_TYPE ), python );
 			boolean is3D = is3D( image );
 			cellpose.set3D( is3D );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
@@ -142,5 +144,17 @@ public class Cellpose3Detector extends DeepLearningDetector
 	protected String getDetectorName()
 	{
 		return "Cellpose3";
+	}
+
+	@Override
+	protected String getPythonEnvContent()
+	{
+		return Cellpose3.ENV_FILE_CONTENT;
+	}
+
+	@Override
+	protected String getImportScript( final boolean dataIs2D )
+	{
+		return Cellpose3.generateImportStatements();
 	}
 }

@@ -54,13 +54,13 @@ public abstract class Segmentation extends ApposeProcess
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	protected Segmentation() throws IOException
+	protected Segmentation( final Service pythonService )
 	{
-		super();
+		super( pythonService );
 	}
 
 	/**
-	 * Segments the input image using the configured Python environment and
+	 * Segments the input image using the configured Python runtime environment and
 	 * returns the segmented image as an {@link Img}.
 	 *
 	 * @param inputImage the input image to be segmented.

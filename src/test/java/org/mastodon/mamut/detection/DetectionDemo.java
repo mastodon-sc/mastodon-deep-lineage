@@ -33,6 +33,9 @@ import java.io.IOException;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 
+import org.apposed.appose.Appose;
+import org.apposed.appose.Environment;
+import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.cellpose.Cellpose4;
 import org.mastodon.mamut.detection.stardist.StarDist;
 
@@ -52,8 +55,10 @@ public class DetectionDemo
 		Img< FloatType > img = imgOpener.openImgs( filePath, new FloatType() ).get( 0 );
 		// Display the first image in a new BDV instance
 		BdvStackSource< ? > bdvSource1 = BdvFunctions.show( img, "Original Image" );
-		try (Cellpose4 cellpose = new Cellpose4())
+		Environment environment = Appose.mamba().content( Cellpose4.ENV_FILE_CONTENT ).scheme( "environment.yml" ).logDebug().build();
+		try (Service python = environment.python().init( Cellpose4.generateImportStatements() ))
 		{
+			Cellpose4 cellpose = new Cellpose4( python );
 			long startTime = System.currentTimeMillis();
 			Img< FloatType > cellposeSegmentation = cellpose.segmentImage( img );
 			long endTime = System.currentTimeMillis();
@@ -66,8 +71,10 @@ public class DetectionDemo
 		{
 			throw new RuntimeException( e );
 		}
-		try (StarDist starDist = new StarDist( null ))
+		environment = Appose.mamba().content( StarDist.ENV_FILE_CONTENT ).scheme( "environment.yml" ).logDebug().build();
+		try (Service python = environment.python().init( StarDist.generateImportStatements( StarDist.ModelType.DEMO, false ) ))
 		{
+			StarDist starDist = new StarDist( StarDist.ModelType.DEMO, python );
 			long startTime = System.currentTimeMillis();
 			Img< FloatType > starDistSegmentation = starDist.segmentImage( img );
 			long endTime = System.currentTimeMillis();

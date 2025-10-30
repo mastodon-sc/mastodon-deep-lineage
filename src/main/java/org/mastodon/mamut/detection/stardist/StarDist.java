@@ -38,6 +38,7 @@ import java.util.Map;
 
 import net.imglib2.util.Cast;
 
+import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.Segmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,9 +91,9 @@ public class StarDist extends Segmentation
 
 	public static final double DEFAULT_NMS_THRESHOLD = 0.4d;
 
-	public StarDist( final ModelType model ) throws IOException, InterruptedException
+	public StarDist( final ModelType model, final Service python ) throws IOException, InterruptedException
 	{
-		super();
+		super( python );
 		logger.info( "Initializing StarDist, model: {}", model );
 		this.modelType = model;
 		this.probThresh = DEFAULT_PROB_THRESHOLD;
@@ -160,12 +161,6 @@ public class StarDist extends Segmentation
 		JSONUtils.writeJSONFile( jsonFile.getAbsolutePath(), stardistConfig );
 	}
 
-	@Override
-	protected String generateEnvFileContent()
-	{
-		return ENV_FILE_CONTENT;
-	}
-
 	private static String getCuda()
 	{
 		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
@@ -206,8 +201,7 @@ public class StarDist extends Segmentation
 				+ "task.outputs['label_image'] = shared" + "\n";
 	}
 
-	@Override
-	protected String generateImportStatements()
+	public static String generateImportStatements( final ModelType modelType, final boolean dataIs2D )
 	{
 		String starDistImport;
 		if ( modelType.getModelPath() == null )
@@ -225,7 +219,7 @@ public class StarDist extends Segmentation
 		return "import numpy as np" + "\n"
 				+ "import appose as appose" + "\n"
 				+ "from csbdeep.utils import normalize" + "\n"
-				+ getImportStarDistCommand()
+				+ getImportStarDistCommand( modelType, dataIs2D )
 				+ "\n"
 				+ "task.update(message=\"Imports completed\")" + "\n"
 				+ "\n"
@@ -264,7 +258,7 @@ public class StarDist extends Segmentation
 		this.nmsThresh = nmsThresh;
 	}
 
-	private String getImportStarDistCommand()
+	private static String getImportStarDistCommand( final ModelType modelType, final boolean dataIs2D )
 	{
 		if ( modelType.getModelPath() == null )
 		{
@@ -311,6 +305,7 @@ public class StarDist extends Segmentation
 		FLUO_2D( "StarDist Fluorescence Nuclei Segmentation", "stardist-fluo-2d", true ),
 		// H_E( "StarDist H&E Nuclei Segmentation", "stardist-h-e-nuclei", true ), // NB: operates on 3 input channels
 		DEMO( "StarDist Demo", null, null );
+		// https://zenodo.org/records/10518151 another pre-trained 3D model for nuclei segmentation
 
 		private final String modelName;
 
