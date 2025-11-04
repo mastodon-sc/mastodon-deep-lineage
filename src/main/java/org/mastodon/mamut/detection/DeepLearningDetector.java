@@ -41,7 +41,7 @@ import net.imglib2.util.Cast;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
-import org.apposed.appose.Appose;
+import org.apposed.appose.Builder;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.util.SpimImageProperties;
@@ -113,7 +113,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 			log.info( "Initialize python environment." );
 			log.info( "On first time use this requires internet connection and may take a couple of minutes." );
 			log.info( "Progress can be observed using FIJI console: FIJI > Window > Console." );
-			Environment environment = Appose.mamba().scheme( "environment.yml" ).content( getPythonEnvContent() ).logDebug()
+			Environment environment = getBuilder().content( getPythonEnvContent() ).logDebug()
 					.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
 					.subscribeOutput( logger::info )
 					.subscribeError( logger::error ).build();
@@ -334,6 +334,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	protected abstract String getDetectorName();
 
 	protected abstract String getPythonEnvContent();
+
+	protected abstract Builder< ? > getBuilder();
 
 	protected String getPythonEnvInit()
 	{
