@@ -24,7 +24,7 @@ public abstract class ApposeProcess
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	public static final String APPOSE_PYTHON_VERSION = "0.7.1";
+	public static final String APPOSE_PYTHON_VERSION = "0.7.2";
 
 	protected final Service pythonWorker;
 
