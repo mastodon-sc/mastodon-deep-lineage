@@ -128,7 +128,7 @@ public class StarDistDetector extends DeepLearningDetector
 		{
 			ok = false;
 			errorMessage = " StarDist failed: " + e.getMessage();
-			logger.error( "StarDist failed: {}", e.getMessage() );
+			logger.error( "StarDist failed: {}", e.getMessage(), e );
 			return null;
 		}
 	}
