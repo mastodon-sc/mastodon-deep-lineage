@@ -162,6 +162,6 @@ public class Cellpose3Detector extends DeepLearningDetector
 	@Override
 	protected String getImportScript( final boolean dataIs2D )
 	{
-		return Cellpose3.generateImportStatements();
+		return Cellpose.generateImportStatements();
 	}
 }
