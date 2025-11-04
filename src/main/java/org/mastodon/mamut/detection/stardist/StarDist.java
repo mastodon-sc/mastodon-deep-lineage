@@ -40,6 +40,7 @@ import net.imglib2.util.Cast;
 
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.Segmentation;
+import org.mastodon.mamut.util.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,20 +61,10 @@ public class StarDist extends Segmentation
 {
 	public static final String ENV_NAME = "stardist";
 
-	public static final String ENV_FILE_CONTENT = "name: " + ENV_NAME + "\n"
-			+ "channels:\n"
-			+ "  - conda-forge\n"
-			+ "channel_priority: strict\n"
-			+ "dependencies:\n"
-			+ "  - python=3.10\n"
-			+ getCuda()
-			+ "  - numpy<1.24\n"
-			+ "  - pip\n"
-			+ "  - pip:\n"
-			+ "    - numpy<1.24\n"
-			+ getTensorflow()
-			+ "    - stardist==0.8.5\n"
-			+ "    - appose==" + APPOSE_PYTHON_VERSION + "\n";
+	public static final String ENV_FILE_CONTENT =
+			ResourceUtils.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/stardist.toml", StarDist.class )
+					.replace( "{ENV_NAME}", ENV_NAME )
+					.replace( "{APPOSE_VERSION}", APPOSE_PYTHON_VERSION );
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
@@ -159,25 +150,6 @@ public class StarDist extends Segmentation
 		File jsonFile = new File( modelDir, "config.json" );
 		logger.info( "Creating config.json file: {}", jsonFile.getAbsolutePath() );
 		JSONUtils.writeJSONFile( jsonFile.getAbsolutePath(), stardistConfig );
-	}
-
-	private static String getCuda()
-	{
-		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
-			return "";
-		return "  - cudatoolkit=11.2\n"
-				+ "  - cudnn=8.1.0\n";
-	}
-
-	private static String getTensorflow()
-	{
-		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
-			return "    - tensorflow-macos==2.10\n"
-					+ "    - tensorflow-metal==0.6.0\n";
-		// TODO: in order to let the following pickup the GPU, it is required that this combination of CUDA/cuDNN is installed on the system: CUDA 11.2 + cuDNN 8.1
-		// cf: https://biapol.github.io/blog/stefan_hahmann/stardist_gpu_2025/readme.html
-		return "    - tensorflow==2.10\n"
-				+ "    - tensorflow-gpu==2.10.0\n";
 	}
 
 	@Override

@@ -48,6 +48,8 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.util.Cast;
 
+import org.apposed.appose.Appose;
+import org.apposed.appose.Builder;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.DeepLearningDetector;
 import org.mastodon.mamut.detection.stardist.StarDist;
@@ -142,6 +144,12 @@ public class Cellpose4Detector extends DeepLearningDetector
 	protected String getPythonEnvName()
 	{
 		return Cellpose4.ENV_NAME;
+	}
+
+	@Override
+	protected Builder< ? > getBuilder()
+	{
+		return Appose.mamba().scheme( "environment.yml" );
 	}
 
 	@Override

@@ -43,7 +43,7 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apposed.appose.Appose;
+import org.apposed.appose.Builder;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.util.SpimImageProperties;
@@ -187,7 +187,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	 */
 	private Environment buildEnvironment() throws IOException
 	{
-		return Appose.mamba().scheme( "environment.yml" ).content( getPythonEnvContent() ).logDebug()
+		return getBuilder().content( getPythonEnvContent() ).logDebug()
 				.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
 				.subscribeOutput( logger::info )
 				.subscribeError( logger::error ).build();
@@ -373,6 +373,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	protected abstract String getPythonEnvContent();
 
 	protected abstract String getPythonEnvName();
+
+	protected abstract Builder< ? > getBuilder();
 
 	protected String getPythonEnvInit()
 	{
