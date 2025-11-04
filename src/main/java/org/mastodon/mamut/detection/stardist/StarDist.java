@@ -155,22 +155,23 @@ public class StarDist extends Segmentation
 	@Override
 	protected String generateScript()
 	{
-		return "np.random.seed(6)" + "\n"
-				+ getAxesNormalizeCommand()
-				+ "\n"
-				+ "task.update(message=\"Loading StarDist pretrained model\")" + "\n"
-				+ getLoadModelCommand()
-				+ "image_ndarray = image.ndarray()" + "\n"
-				+ "image_normalized = normalize(image_ndarray, 1, 99.8, axis=axes_normalize)" + "\n"
-				+ "task.update(message=\"Image shape:\" + str(image_normalized.shape))" + "\n"
-				+ "\n"
-				+ "guessed_tiles = model._guess_n_tiles(image_normalized)" + "\n"
-				+ "task.update(message=\"Guessed tiles: \" + str(guessed_tiles))" + "\n"
-				+ "\n"
-				+ getPredictionCommand()
-				+ "shared = appose.NDArray(image.dtype, image.shape)" + "\n"
-				+ "shared.ndarray()[:] = label_image" + "\n"
-				+ "task.outputs['label_image'] = shared" + "\n";
+		String axes = dataIs2D ? "YX" : "ZYX";
+		String baseDir = "models" + File.separator + modelType.getModelPath();
+		String model;
+		if ( modelType.getModelPath() == null )
+		{
+			if ( dataIs2D )
+				model = "model = StarDist2D.from_pretrained('2D_demo')";
+			else
+				model = "model = StarDist3D.from_pretrained('3D_demo')";
+		}
+		else
+			model = "model = StarDist3D(None, name='" + installationFolderName + "', basedir=r'" + baseDir + "')";
+		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/stardist_3d.py", StarDist.class )
+				.replace( "{AXES}", axes )
+				.replace( "{MODEL}", model )
+				.replace( "{NMS_THRESH}", String.valueOf( nmsThresh ) )
+				.replace( "{PROB_THRESH}", String.valueOf( probThresh ) );
 	}
 
 	public static String generateImportStatements( final ModelType modelType, final boolean dataIs2D )
@@ -191,11 +192,12 @@ public class StarDist extends Segmentation
 		return "import numpy as np" + "\n"
 				+ "import appose as appose" + "\n"
 				+ "from csbdeep.utils import normalize" + "\n"
+				+ "import tensorflow as tf" + "\n"
 				+ getImportStarDistCommand( modelType, dataIs2D )
 				+ "\n"
-				+ "task.update(message=\"Imports completed\")" + "\n"
+				+ "task.update(message='Imports completed')" + "\n"
 				+ "\n"
-				+ "task.export(np=np, appose=appose, normalize=normalize, " + starDistImport + ")" + "\n";
+				+ "task.export(np=np, appose=appose, normalize=normalize, tf=tf, " + starDistImport + ")" + "\n";
 	}
 
 	public ModelType getModelType()
@@ -241,34 +243,6 @@ public class StarDist extends Segmentation
 		if ( Boolean.TRUE.equals( modelType.is2D() ) )
 			return "from stardist.models import StarDist2D" + "\n ";
 		return "from stardist.models import StarDist3D" + "\n ";
-	}
-
-	private String getAxesNormalizeCommand()
-	{
-		return dataIs2D ? "axes_normalize = (0, 1)" + "\n " : // for 2D data (Y, X) or 3D data with 2D slices (Z, Y, X)
-				"axes_normalize = (0, 1, 2)" + "\n "; // for 3D data (Z, Y, X)
-	}
-
-	private String getPredictionCommand()
-	{
-		String axes = dataIs2D ? "YX" : "ZYX";
-		return "label_image, details = model.predict_instances(image_normalized, axes='" + axes + "', n_tiles=guessed_tiles, nms_thresh="
-				+ nmsThresh + ", prob_thresh=" + probThresh + ")" + "\n";
-	}
-
-	private String getLoadModelCommand()
-	{
-		if ( modelType.getModelPath() == null )
-		{
-			if ( dataIs2D )
-				return "model = StarDist2D.from_pretrained('2D_demo')" + "\n";
-			else
-				return "model = StarDist3D.from_pretrained('3D_demo')" + "\n";
-		}
-		String starDistModel = Boolean.TRUE.equals( modelType.is2D() ) ? "StarDist2D" : "StarDist3D";
-		return "model = " + starDistModel + "(None, name='" + installationFolderName + "', basedir=r\"models" + File.separator
-				+ modelType.getModelPath() + "\")"
-				+ "\n";
 	}
 
 	public enum ModelType
