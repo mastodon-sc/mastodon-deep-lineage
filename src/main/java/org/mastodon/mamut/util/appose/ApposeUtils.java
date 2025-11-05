@@ -17,6 +17,7 @@ import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apposed.appose.Appose;
 import org.apposed.appose.builder.Builders;
 import org.apposed.appose.util.Environments;
@@ -137,7 +138,7 @@ public class ApposeUtils
 	 * @param directory The directory whose size is to be calculated. Must not be null and must represent a valid directory.
 	 * @return The total size of the directory in bytes. If the directory does not exist or is null, the method will return 0.
 	 */
-	public static long calculateDirectorySize( File directory )
+	public static long calculateDirectorySize( final File directory )
 	{
 		if ( directory == null || !directory.exists() )
 		{
@@ -166,7 +167,7 @@ public class ApposeUtils
 	}
 
 	// --- Linux/macOS: actual disk usage, like du -sb ---
-	private static long calculateDiskUsageUnix( Path directory ) throws IOException
+	private static long calculateDiskUsageUnix( final Path directory ) throws IOException
 	{
 		final long[] total = { 0 };
 		boolean hasUnixView = supportsUnixAttributes();
@@ -205,7 +206,7 @@ public class ApposeUtils
 	 * Returns the disk usage (in bytes) for a single file.
 	 * Uses actual allocated blocks if the unix view is supported.
 	 */
-	private static long getFileDiskUsage( Path file, boolean hasUnixView ) throws IOException
+	private static long getFileDiskUsage( final Path file, final boolean hasUnixView ) throws IOException
 	{
 		if ( !hasUnixView )
 			return Files.size( file );
@@ -224,7 +225,7 @@ public class ApposeUtils
 	}
 
 	// --- Windows / fallback: logical file sizes only ---
-	private static long calculateFileLengthRecursive( File directory )
+	private static long calculateFileLengthRecursive( final File directory )
 	{
 		long size = 0;
 		File[] files = directory.listFiles();
@@ -241,5 +242,42 @@ public class ApposeUtils
 			}
 		}
 		return size;
+	}
+
+	/**
+	 * Checks whether a specific Python environment is installed and prompts the user to install it
+	 * if it is not already installed. The user is presented with a dialog box to confirm the installation.
+	 * If the user declines, the method a pair consisting of {@code false} and an appropriate message.
+	 *
+	 * @param envName The name of the environment to check. This should match the directory
+	 *                name inside the appose environments directory.
+	 * @param log     The logger instance used for logging messages during the environment check
+	 *                and installation process.
+	 * @return A pair where the first element is a boolean indicating if the environment is installed
+	 *         or was successfully triggered for installation, and the second element is a message
+	 *         providing additional information about the process or failure reason.
+	 */
+	public static Pair< Boolean, String > confirmEnvInstallation( final String envName, final org.scijava.log.Logger log )
+	{
+		boolean isEnvInstalled = checkEnvironmentInstalled( envName );
+		if ( !isEnvInstalled )
+		{
+			log.info( "Python environment not yet installed, but can be installed now.\n" );
+			int result = JOptionPane.showConfirmDialog(
+					null,
+					"The required Python environment is not installed.\nWould you like to install it now?\n\nNote: This requires an internet connection and may take several minutes.",
+					"Python Environment Installation",
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE
+			);
+			if ( result != JOptionPane.YES_OPTION )
+			{
+				log.info( "Python environment installation declined by user." );
+				return Pair.of( false, "Python environment installation was declined. Cannot proceed without the required environment." );
+			}
+			log.info( "User confirmed installation. Installing Python environment.\n" );
+			log.info( "Installation progress can be observed using FIJI console: FIJI > Window > Console.\n" );
+		}
+		return Pair.of( true, "" );
 	}
 }

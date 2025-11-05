@@ -15,6 +15,7 @@ import net.imglib2.algorithm.Benchmark;
 import net.imglib2.util.Cast;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
@@ -28,6 +29,7 @@ import org.mastodon.mamut.linking.trackastra.appose.computation.RegionPropsCompu
 import org.mastodon.mamut.linking.trackastra.appose.types.RegionProps;
 import org.mastodon.mamut.linking.trackastra.appose.types.SingleTimepointRegionProps;
 import org.mastodon.mamut.util.ResourceUtils;
+import org.mastodon.mamut.util.appose.ApposeUtils;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.tracking.linking.graph.AbstractGraphParticleLinkerOp;
@@ -57,10 +59,20 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		Environment environment;
 		try
 		{
-			environment = Appose.mamba().scheme( "environment.yml" ).content( TrackastraUtils.ENV_FILE_CONTENT ).logDebug()
-					.subscribeProgress( ( title, cur, max ) -> log.info( "{}: {}/{}", title, cur, max ) )
-					.subscribeOutput( log::info )
-					.subscribeError( log::error ).build();
+			Pair< Boolean, String > checkResult = ApposeUtils.confirmEnvInstallation( TrackastraUtils.ENV_NAME, logger );
+			if ( Boolean.TRUE.equals( checkResult.getKey() ) )
+			{
+				environment = Appose.mamba().scheme( "environment.yml" ).content( TrackastraUtils.ENV_FILE_CONTENT ).logDebug()
+						.subscribeProgress( ( title, cur, max ) -> log.info( "{}: {}/{}", title, cur, max ) )
+						.subscribeOutput( log::info )
+						.subscribeError( log::error ).build();
+			}
+			else
+			{
+				ok = false;
+				errorMessage = checkResult.getValue();
+				return;
+			}
 		}
 		catch ( IOException e )
 		{
