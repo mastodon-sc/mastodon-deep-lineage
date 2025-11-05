@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 import net.imglib2.Interval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -49,6 +51,7 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.util.ByteFormatter;
 import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.mamut.util.LabelImageUtils;
+import org.mastodon.mamut.util.appose.ApposeUtils;
 import org.mastodon.tracking.detection.AbstractDetectorOp;
 import org.mastodon.tracking.detection.DetectionCreatorFactory;
 import org.mastodon.tracking.detection.DetectionUtil;
@@ -110,15 +113,35 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		statusService.showStatus( "Detecting spots..." );
 		try
 		{
-			log.info( "Initialize python environment." );
-			log.info( "On first time use this requires internet connection and may take a couple of minutes." );
-			log.info( "Progress can be observed using FIJI console: FIJI > Window > Console." );
+			log.info( "Initialize python environment.\n" );
+			boolean isEnvInstalled = ApposeUtils.checkEnvironmentInstalled( getPythonEnvName() );
+			if ( !isEnvInstalled )
+			{
+				log.info( "Python environment not yet installed, but can be installed now.\n" );
+				int result = JOptionPane.showConfirmDialog(
+						null,
+						"The required Python environment is not installed.\nWould you like to install it now?\n\nNote: This requires an internet connection and may take several minutes.",
+						"Python Environment Installation",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE
+				);
+				if ( result != JOptionPane.YES_OPTION )
+				{
+					log.info( "Python environment installation declined by user." );
+					ok = false;
+					errorMessage = "Python environment installation was declined. Cannot proceed without the required environment.";
+					return;
+				}
+				log.info( "User confirmed installation. Installing Python environment.\n" );
+				log.info( "Installation progress can be observed using FIJI console: FIJI > Window > Console.\n" );
+			}
+			ApposeUtils.confirmEnvInstallation( getPythonEnvName(), log );
 			Environment environment = Appose.mamba().scheme( "environment.yml" ).content( getPythonEnvContent() ).logDebug()
 					.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
 					.subscribeOutput( logger::info )
 					.subscribeError( logger::error ).build();
 			if ( logger.isInfoEnabled() )
-				logger.info( "Set up environment. Path: {}", environment.base() );
+				logger.info( "Set up environment finished. Path: {}", environment.base() );
 			try (Service python = environment.python())
 			{
 				if ( isWindows() )
@@ -334,6 +357,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	protected abstract String getDetectorName();
 
 	protected abstract String getPythonEnvContent();
+
+	protected abstract String getPythonEnvName();
 
 	protected String getPythonEnvInit()
 	{

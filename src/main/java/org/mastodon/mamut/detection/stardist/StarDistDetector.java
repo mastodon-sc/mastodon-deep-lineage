@@ -152,6 +152,12 @@ public class StarDistDetector extends DeepLearningDetector
 	}
 
 	@Override
+	protected String getPythonEnvName()
+	{
+		return StarDist.ENV_NAME;
+	}
+
+	@Override
 	protected String getImportScript( final boolean dataIs2D )
 	{
 		return StarDist.generateImportStatements( ( StarDist.ModelType ) settings.get( KEY_MODEL_TYPE ), dataIs2D );

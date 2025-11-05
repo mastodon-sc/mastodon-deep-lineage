@@ -50,6 +50,7 @@ import net.imglib2.util.Cast;
 
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.DeepLearningDetector;
+import org.mastodon.mamut.detection.stardist.StarDist;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor;
 import org.scijava.Priority;
@@ -135,6 +136,12 @@ public class Cellpose4Detector extends DeepLearningDetector
 	protected String getPythonEnvContent()
 	{
 		return Cellpose4.ENV_FILE_CONTENT;
+	}
+
+	@Override
+	protected String getPythonEnvName()
+	{
+		return Cellpose4.ENV_NAME;
 	}
 
 	@Override
