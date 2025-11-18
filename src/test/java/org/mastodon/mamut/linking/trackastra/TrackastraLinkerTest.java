@@ -28,6 +28,7 @@ import org.mastodon.tracking.linking.EdgeCreator;
 import org.mastodon.tracking.linking.graph.AbstractGraphParticleLinkerOp;
 import org.mastodon.tracking.mamut.linking.LinkCostFeature;
 import org.scijava.Context;
+import org.scijava.app.StatusService;
 
 import mpicbg.spim.data.SpimDataException;
 
@@ -62,6 +63,11 @@ class TrackastraLinkerTest
 		Field logger = AbstractGraphParticleLinkerOp.class.getDeclaredField( "logger" );
 		logger.setAccessible( true );
 		logger.set( linker, log );
+
+		StatusService statusService = context.getService( StatusService.class );
+		Field status = AbstractGraphParticleLinkerOp.class.getDeclaredField( "statusService" );
+		status.setAccessible( true );
+		status.set( linker, statusService );
 
 		Field edgeCreator = AbstractGraphParticleLinkerOp.class.getDeclaredField( "edgeCreator" );
 		EdgeCreator< Spot > spotEdgeCreator = new MyEdgeCreator( appModel.getModel().getGraph() );
@@ -98,6 +104,11 @@ class TrackastraLinkerTest
 		Field logger = AbstractGraphParticleLinkerOp.class.getDeclaredField( "logger" );
 		logger.setAccessible( true );
 		logger.set( linker, log );
+
+		StatusService statusService = context.getService( StatusService.class );
+		Field status = AbstractGraphParticleLinkerOp.class.getDeclaredField( "statusService" );
+		status.setAccessible( true );
+		status.set( linker, statusService );
 
 		Field edgeCreator = AbstractGraphParticleLinkerOp.class.getDeclaredField( "edgeCreator" );
 		EdgeCreator< Spot > spotEdgeCreator = new MyEdgeCreator( appModel.getModel().getGraph() );
