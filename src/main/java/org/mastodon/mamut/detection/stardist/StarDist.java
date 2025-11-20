@@ -62,7 +62,7 @@ public class StarDist extends Segmentation
 	public static final String ENV_NAME = "stardist";
 
 	public static final String ENV_FILE_CONTENT =
-			ResourceUtils.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/stardist.toml", StarDist.class )
+			ResourceUtils.readResourceAsString( "org/mastodon/mamut/detection/stardist/stardist.toml", StarDist.class )
 					.replace( "{ENV_NAME}", ENV_NAME )
 					.replace( "{APPOSE_VERSION}", APPOSE_PYTHON_VERSION );
 
@@ -167,7 +167,7 @@ public class StarDist extends Segmentation
 		}
 		else
 			model = "model = StarDist3D(None, name='" + installationFolderName + "', basedir=r'" + baseDir + "')";
-		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/stardist_3d.py", StarDist.class )
+		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/detection/stardist/stardist_3d.py", StarDist.class )
 				.replace( "{AXES}", axes )
 				.replace( "{AXES_NORMALIZE}", dataIs2D ? "axes_normalize = (0, 1)" : "axes_normalize = (0, 1, 2)" )
 				.replace( "{MODEL}", model )
