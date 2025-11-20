@@ -162,4 +162,10 @@ public class StarDistDetector extends DeepLearningDetector
 	{
 		return StarDist.generateImportStatements( ( StarDist.ModelType ) settings.get( KEY_MODEL_TYPE ), dataIs2D );
 	}
+
+	@Override
+	protected String getPythonEnvInit()
+	{
+		return "import numpy\nfrom stardist.models import StarDist2D\n"; // NB: StarDist2D import needs to be inited even for 3D cases
+	}
 }
