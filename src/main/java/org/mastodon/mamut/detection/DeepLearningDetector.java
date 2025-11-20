@@ -28,12 +28,11 @@
  */
 package org.mastodon.mamut.detection;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JOptionPane;
 
 import net.imglib2.Interval;
 import net.imglib2.RandomAccessibleInterval;
@@ -43,6 +42,7 @@ import net.imglib2.util.Cast;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
@@ -85,6 +85,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 
 	protected Service pythonService;
 
+	private boolean confirmEnvInstallation = true;
+
 	/**
 	 * Represents the maximum allowable size in bytes for datasets handle via the appose java-python bridge.
 	 */
@@ -114,32 +116,9 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		try
 		{
 			log.info( "Initialize python environment.\n" );
-			boolean isEnvInstalled = ApposeUtils.checkEnvironmentInstalled( getPythonEnvName() );
-			if ( !isEnvInstalled )
-			{
-				log.info( "Python environment not yet installed, but can be installed now.\n" );
-				int result = JOptionPane.showConfirmDialog(
-						null,
-						"The required Python environment is not installed.\nWould you like to install it now?\n\nNote: This requires an internet connection and may take several minutes.",
-						"Python Environment Installation",
-						JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE
-				);
-				if ( result != JOptionPane.YES_OPTION )
-				{
-					log.info( "Python environment installation declined by user." );
-					ok = false;
-					errorMessage = "Python environment installation was declined. Cannot proceed without the required environment.";
-					return;
-				}
-				log.info( "User confirmed installation. Installing Python environment.\n" );
-				log.info( "Installation progress can be observed using FIJI console: FIJI > Window > Console.\n" );
-			}
-			ApposeUtils.confirmEnvInstallation( getPythonEnvName(), log );
-			Environment environment = Appose.mamba().scheme( "environment.yml" ).content( getPythonEnvContent() ).logDebug()
-					.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
-					.subscribeOutput( logger::info )
-					.subscribeError( logger::error ).build();
+			Environment environment = prepareEnvironment();
+			if ( environment == null )
+				return;
 			if ( logger.isInfoEnabled() )
 				logger.info( "Set up environment finished. Path: {}", environment.base() );
 			try (Service python = environment.python())
@@ -182,6 +161,36 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		 * We are done! Gracefully exit, stating we are ok.
 		 */
 		ok = true;
+	}
+
+	/**
+	 * Prepares and returns the Appose environment required for detector execution.
+	 * Handles optional environment existence checking.
+	 */
+	private Environment prepareEnvironment() throws IOException
+	{
+		if ( confirmEnvInstallation )
+		{
+			Pair< Boolean, String > check = ApposeUtils.confirmEnvInstallation( getPythonEnvName(), log );
+			if ( !Boolean.TRUE.equals( check.getKey() ) )
+			{
+				ok = false;
+				errorMessage = check.getValue();
+				return null;
+			}
+		}
+		return buildEnvironment();
+	}
+
+	/**
+	 * Builds an Appose environment using the Trackastra environment.yml descriptor.
+	 */
+	private Environment buildEnvironment() throws IOException
+	{
+		return Appose.mamba().scheme( "environment.yml" ).content( getPythonEnvContent() ).logDebug()
+				.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
+				.subscribeOutput( logger::info )
+				.subscribeError( logger::error ).build();
 	}
 
 	private SpimImageProperties extractSettings( final List< SourceAndConverter< ? > > sources )
@@ -376,6 +385,11 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	{
 		String os = System.getProperty( "os.name" ).toLowerCase();
 		return os.contains( "win" );
+	}
+
+	public void setConfirmEnvInstallation( final boolean confirmEnvInstallation )
+	{
+		this.confirmEnvInstallation = confirmEnvInstallation;
 	}
 
 	/** Cancels the command execution, with the given reason for doing so. */
