@@ -89,6 +89,7 @@ public abstract class ApposeProcess
 	protected Service.Task runScript() throws IOException
 	{
 		String script = generateScript();
+		logger.info( "Run script: {}", script );
 		Service.Task task = pythonWorker.task( script, inputs, null );
 		stopWatch.split();
 		if ( logger.isInfoEnabled() )

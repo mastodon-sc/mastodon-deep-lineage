@@ -130,7 +130,9 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 				final Source< ? > source = sources.get( settings.getSetupId() ).getSpimSource();
 				RandomAccessibleInterval< ? > image = source.getSource( 0, 0 );
 
-				Service.Task importTask = python.task( getImportScript( is2D( image ) ), "main" );
+				String importScript = getImportScript( is2D( image ) );
+				logger.info( "import script: {}", importScript );
+				Service.Task importTask = python.task( importScript, "main" );
 				importTask.waitFor();
 				this.pythonService = python;
 				for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
