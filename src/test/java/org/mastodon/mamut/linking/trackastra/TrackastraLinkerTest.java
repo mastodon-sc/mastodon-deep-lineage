@@ -50,6 +50,7 @@ class TrackastraLinkerTest
 		assertEquals( 10, graph.vertices().size() );
 		assertEquals( 0, graph.edges().size() );
 		TrackastraLinker< Spot, Link > linker = new TrackastraLinker<>();
+		linker.setConfirmEnvInstallation( false );
 		Map< String, Object > settingsMap = TrackastraUtils.getDefaultTrackAstraSettingsMap();
 		settingsMap.put( KEY_MAX_TIMEPOINT, 4 );
 		settingsMap.put( KEY_SOURCE, appModel.getSharedBdvData().getSources().get( 0 ).getSpimSource() );
@@ -91,6 +92,7 @@ class TrackastraLinkerTest
 		assertEquals( 13, graph.vertices().size() );
 		assertEquals( 0, graph.edges().size() );
 		TrackastraLinker< Spot, Link > linker = new TrackastraLinker<>();
+		linker.setConfirmEnvInstallation( false );
 		Map< String, Object > settingsMap = TrackastraUtils.getDefaultTrackAstraSettingsMap();
 		settingsMap.put( KEY_MAX_TIMEPOINT, 4 );
 		settingsMap.put( KEY_SOURCE, appModel.getSharedBdvData().getSources().get( 0 ).getSpimSource() );
