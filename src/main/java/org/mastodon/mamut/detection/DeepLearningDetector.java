@@ -151,7 +151,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 				final Source< ? > source = sources.get( settings.getSetupId() ).getSpimSource();
 				RandomAccessibleInterval< ? > image = source.getSource( 0, 0 );
 
-				Service.Task importTask = python.task( getImportScript( !is3D( image ) ), "main" );
+				Service.Task importTask = python.task( getImportScript( is2D( image ) ), "main" );
 				importTask.waitFor();
 				this.pythonService = python;
 				for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
@@ -315,6 +315,11 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 			throw new ArithmeticException( "Voxel size of zero detected. This is not allowed." );
 
 		return highestValue / lowestValue;
+	}
+
+	protected boolean is2D( final RandomAccessibleInterval< ? > image )
+	{
+		return !is3D( image );
 	}
 
 	protected boolean is3D( final RandomAccessibleInterval< ? > image )
