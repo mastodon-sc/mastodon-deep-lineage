@@ -50,6 +50,8 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 
 	private long processingTime;
 
+	private boolean confirmEnvInstallation = true;
+
 	@Override
 	public void mutate1( final ReadOnlyGraph< V, E > graph, final SpatioTemporalIndex< V > index )
 	{
@@ -59,29 +61,22 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		Environment environment;
 		try
 		{
-			Pair< Boolean, String > checkResult = ApposeUtils.confirmEnvInstallation( TrackastraUtils.ENV_NAME, logger );
-			if ( Boolean.TRUE.equals( checkResult.getKey() ) )
-			{
-				environment = Appose.mamba().scheme( "environment.yml" ).content( TrackastraUtils.ENV_FILE_CONTENT ).logDebug()
-						.subscribeProgress( ( title, cur, max ) -> log.info( "{}: {}/{}", title, cur, max ) )
-						.subscribeOutput( log::info )
-						.subscribeError( log::error ).build();
-			}
-			else
-			{
-				ok = false;
-				errorMessage = checkResult.getValue();
-				return;
-			}
+			environment = prepareEnvironment();
 		}
 		catch ( IOException e )
 		{
-			throw new PythonRuntimeException( e );
+			ok = false;
+			errorMessage = "Failed to prepare Trackastra environment: " + e.getMessage();
+			log.error( errorMessage, e );
+			return;
 		}
-
+		if ( environment == null )
+			return;
 		try (Service python = environment.python())
 		{
-			python.init( "import numpy\n" );
+			if ( isWindows() )
+				python.init(
+						"import numpy\nimport trackastra.data.wrfeat\nimport trackastra.utils\nimport trackastra.model.pretrained as pretrained\nfrom trackastra.model import Trackastra\nimport trackastra.model.predict as predict\n" );
 			String importScripts = ResourceUtils
 					.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/region_props_imports.py", getClass() );
 			Service.Task importTask = python.task( importScripts, "main" );
@@ -140,7 +135,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 
 		try
 		{
-			RegionPropsComputation computation = new RegionPropsComputation( logger, model, this, this.statusService, python );
+			RegionPropsComputation computation = new RegionPropsComputation( logger, model, this, statusService, python );
 			return computation.computeRegionPropsForSource( source, level, Cast.unchecked( index ), minTimepoint, maxTimepoint );
 		}
 		catch ( Exception e )
@@ -164,6 +159,46 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		{
 			throw new TrackastraLinkingException( "Failed to perform link prediction", e );
 		}
+	}
+
+	private static boolean isWindows()
+	{
+		String os = System.getProperty( "os.name" ).toLowerCase();
+		return os.contains( "win" );
+	}
+
+	/**
+	 * Prepares and returns the Appose environment required for Trackastra execution.
+	 * Handles optional environment existence checking and consolidates duplicated build code.
+	 */
+	private Environment prepareEnvironment() throws IOException
+	{
+		if ( confirmEnvInstallation )
+		{
+			Pair< Boolean, String > check = ApposeUtils.confirmEnvInstallation( TrackastraUtils.ENV_NAME, logger );
+			if ( !Boolean.TRUE.equals( check.getKey() ) )
+			{
+				ok = false;
+				errorMessage = check.getValue();
+				return null;
+			}
+		}
+		return buildEnvironment();
+	}
+
+	/**
+	 * Builds an Appose environment using the Trackastra environment.yml descriptor.
+	 */
+	private Environment buildEnvironment() throws IOException
+	{
+		return Appose.mamba().scheme( "environment.yml" ).content( TrackastraUtils.ENV_FILE_CONTENT ).logDebug()
+				.subscribeProgress( ( title, cur, max ) -> log.info( "{}: {}/{}", title, cur, max ) ).subscribeOutput( log::info )
+				.subscribeError( log::error ).build();
+	}
+
+	public void setConfirmEnvInstallation( final boolean confirmEnvInstallation )
+	{
+		this.confirmEnvInstallation = confirmEnvInstallation;
 	}
 
 	@Override
