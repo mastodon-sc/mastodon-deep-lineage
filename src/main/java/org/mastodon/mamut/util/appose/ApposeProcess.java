@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apposed.appose.Service;
 import org.apposed.appose.TaskEvent;
+import org.apposed.appose.TaskException;
 import org.mastodon.mamut.detection.PythonRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +78,7 @@ public abstract class ApposeProcess
 		{
 			task.waitFor();
 		}
-		catch ( InterruptedException e )
+		catch ( InterruptedException | TaskException e )
 		{
 			logger.error( "Task interrupted: {}", e.getMessage(), e );
 			Thread.currentThread().interrupt();

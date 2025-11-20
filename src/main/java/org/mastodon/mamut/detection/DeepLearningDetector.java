@@ -28,7 +28,6 @@
  */
 package org.mastodon.mamut.detection;
 
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +43,7 @@ import net.imglib2.view.Views;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.util.SpimImageProperties;
@@ -167,7 +167,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	 * Prepares and returns the Appose environment required for detector execution.
 	 * Handles optional environment existence checking.
 	 */
-	private Environment prepareEnvironment() throws IOException
+	private Environment prepareEnvironment() throws BuildException
 	{
 		if ( confirmEnvInstallation )
 		{
@@ -185,7 +185,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	/**
 	 * Builds an Appose environment using the Trackastra environment.yml descriptor.
 	 */
-	private Environment buildEnvironment() throws IOException
+	private Environment buildEnvironment() throws BuildException
 	{
 		return Appose.mamba().scheme( "environment.yml" ).content( getPythonEnvContent() ).logDebug()
 				.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )

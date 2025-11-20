@@ -45,10 +45,12 @@ import net.imglib2.type.numeric.real.FloatType;
 import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
+import org.apposed.appose.BuildException;
 
 public class ApposeFailingStarDist3DExample
 {
-	public static void main( String[] args ) throws IOException, InterruptedException
+	public static void main( String[] args ) throws InterruptedException, TaskException, BuildException
 	{
 		Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
 		Img< FloatType > shmImg = ShmImg.copyOf( img );

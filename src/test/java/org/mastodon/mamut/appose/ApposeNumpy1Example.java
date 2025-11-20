@@ -28,19 +28,17 @@
  */
 package org.mastodon.mamut.appose;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
+import org.apposed.appose.BuildException;
 
 public class ApposeNumpy1Example
 {
-	public static void main( String[] args ) throws IOException, InterruptedException
+	public static void main( String[] args ) throws IOException, InterruptedException, BuildException, TaskException
 	{
 		String content = "name: numpy1\n" +
 				"channels:\n" +

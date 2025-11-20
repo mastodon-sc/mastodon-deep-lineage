@@ -34,10 +34,12 @@ import java.io.IOException;
 import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
+import org.apposed.appose.BuildException;
 
 public class ApposeMinimalDemo
 {
-	public static void main( String[] args ) throws InterruptedException, IOException
+	public static void main( String[] args ) throws InterruptedException, BuildException, TaskException
 	{
 		String content = "name: appose\n"
 				+ "channels:\n"

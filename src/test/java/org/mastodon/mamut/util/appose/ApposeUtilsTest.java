@@ -10,12 +10,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import org.apposed.appose.BuildException;
 import org.junit.jupiter.api.Test;
 
 class ApposeUtilsTest
 {
 	@Test
-	void testInstallDeleteExistsSize() throws IOException
+	void testInstallDeleteExistsSize() throws BuildException
 	{
 		String testEnvName = "testenv";
 		String testEnvContent = "name: " + testEnvName + "\n"

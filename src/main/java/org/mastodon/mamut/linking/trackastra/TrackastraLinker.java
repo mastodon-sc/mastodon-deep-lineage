@@ -6,7 +6,6 @@ import static org.mastodon.mamut.linking.trackastra.TrackastraUtils.KEY_WINDOW_S
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MAX_TIMEPOINT;
 import static org.mastodon.tracking.detection.DetectorKeys.KEY_MIN_TIMEPOINT;
 
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
@@ -17,8 +16,10 @@ import net.imglib2.util.Cast;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
 import org.mastodon.Ref;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
@@ -63,7 +64,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		{
 			environment = prepareEnvironment();
 		}
-		catch ( IOException e )
+		catch ( BuildException e )
 		{
 			ok = false;
 			errorMessage = "Failed to prepare Trackastra environment: " + e.getMessage();
@@ -93,7 +94,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 			ok = true;
 			statusService.clearStatus();
 		}
-		catch ( TrackastraLinkingException | IOException e )
+		catch ( TrackastraLinkingException | TaskException e )
 		{
 			Throwable cause = e.getCause();
 			String msg = "";
@@ -171,7 +172,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 	 * Prepares and returns the Appose environment required for Trackastra execution.
 	 * Handles optional environment existence checking and consolidates duplicated build code.
 	 */
-	private Environment prepareEnvironment() throws IOException
+	private Environment prepareEnvironment() throws BuildException
 	{
 		if ( confirmEnvInstallation )
 		{
@@ -189,7 +190,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 	/**
 	 * Builds an Appose environment using the Trackastra environment.yml descriptor.
 	 */
-	private Environment buildEnvironment() throws IOException
+	private Environment buildEnvironment() throws BuildException
 	{
 		return Appose.mamba().scheme( "environment.yml" ).content( TrackastraUtils.ENV_FILE_CONTENT ).logDebug()
 				.subscribeProgress( ( title, cur, max ) -> log.info( "{}: {}/{}", title, cur, max ) ).subscribeOutput( log::info )

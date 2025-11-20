@@ -36,11 +36,13 @@ import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.apposed.appose.TaskEvent;
+import org.apposed.appose.TaskException;
+import org.apposed.appose.BuildException;
 import org.mastodon.mamut.detection.cellpose.Cellpose3;
 
 public class ApposeReuseEnvironmentExample
 {
-	public static void main( String[] args ) throws IOException, InterruptedException
+	public static void main( String[] args ) throws InterruptedException, BuildException, TaskException
 	{
 		Environment env = Appose.mamba().scheme( "environment.yml" ).content( Cellpose3.ENV_FILE_CONTENT ).logDebug().build();
 		System.out.println( "Created environment" );

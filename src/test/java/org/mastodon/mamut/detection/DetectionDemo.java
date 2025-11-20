@@ -28,12 +28,11 @@
  */
 package org.mastodon.mamut.detection;
 
-import java.io.IOException;
-
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.cellpose.Cellpose4;
@@ -46,7 +45,7 @@ import io.scif.img.ImgOpener;
 
 public class DetectionDemo
 {
-	public static void main( String[] args ) throws IOException
+	public static void main( String[] args ) throws BuildException
 	{
 		String filePath = "/home/pol_bia/stha735e/Documents/Mastodon/1135_n_stain_TO-PRO-3.tif";
 		//String filePath =

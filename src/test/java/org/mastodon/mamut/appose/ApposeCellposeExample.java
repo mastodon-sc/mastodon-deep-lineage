@@ -39,15 +39,17 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.NDArray;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
 
 import io.scif.img.ImgOpener;
 
 public class ApposeCellposeExample
 {
-	public static void main( String[] args ) throws IOException, InterruptedException
+	public static void main( String[] args ) throws BuildException, InterruptedException, TaskException
 	{
 		// Specify the path to the TIFF file
 		String filePath = "target/test-classes/org/mastodon/mamut/appose/nuclei_3d.tif";

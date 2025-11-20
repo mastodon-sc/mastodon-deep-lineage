@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.builder.Builders;
 import org.apposed.appose.util.Environments;
 import org.mastodon.mamut.util.ByteFormatter;
@@ -41,9 +42,9 @@ public class ApposeUtils
 	 * @param envContent The YAML content that defines the Python environment configuration.
 	 *                   This should include dependencies and other necessary details
 	 *                   to set up the environment.
-	 * @throws IOException If an I/O error occurs during the installation process.
+	 * @throws BuildException If an error occurs during the installation process.
 	 */
-	public static void installEnvironment( final String envContent ) throws IOException
+	public static void installEnvironment( final String envContent ) throws BuildException
 	{
 		Appose.mamba().content( envContent ).scheme( "environment.yml" ).logDebug().rebuild();
 	}

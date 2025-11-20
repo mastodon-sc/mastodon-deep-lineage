@@ -9,7 +9,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.io.File;
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +31,7 @@ import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.apposed.appose.BuildException;
 import org.apposed.appose.util.Environments;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.mamut.detection.cellpose.Cellpose3;
@@ -332,7 +332,7 @@ public class PythonEnvironmentManagerUI extends JFrame
 						{
 							ApposeUtils.installEnvironment( envContent );
 						}
-						catch ( IOException e )
+						catch ( BuildException e )
 						{
 							logger.error( "Installation failed for {}", envName, e );
 							SwingUtilities.invokeLater( () -> JOptionPane.showMessageDialog(

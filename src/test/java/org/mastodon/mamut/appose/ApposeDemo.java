@@ -28,8 +28,6 @@
  */
 package org.mastodon.mamut.appose;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +35,8 @@ import org.apposed.appose.Appose;
 import org.apposed.appose.Environment;
 import org.apposed.appose.NDArray;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
+import org.apposed.appose.BuildException;
 
 import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
@@ -49,7 +49,7 @@ import net.imglib2.type.numeric.real.FloatType;
 
 public class ApposeDemo
 {
-	public static void main( String[] args ) throws IOException, InterruptedException
+	public static void main( String[] args ) throws BuildException, InterruptedException, TaskException
 	{
 		// Specify the path to the TIFF file
 		String filePath = "/home/pol_bia/stha735e/Documents/Mastodon/1135_n_stain_TO-PRO-3.tif";
