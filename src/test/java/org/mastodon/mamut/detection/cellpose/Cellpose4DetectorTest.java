@@ -51,6 +51,7 @@ import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.io.importer.labelimage.util.SphereRenderer;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.tracking.detection.DetectorKeys;
+import org.mastodon.tracking.mamut.detection.AbstractSpotDetectorOp;
 import org.scijava.Context;
 
 
@@ -59,13 +60,19 @@ class Cellpose4DetectorTest
 
 	@Disabled( "This test is disabled, because it has very long runtime (> 5 minutes)" )
 	@Test
-	void testCompute3D() throws IllegalAccessException
+	void testCompute3D() throws IllegalAccessException, NoSuchFieldException
 	{
 		Cellpose4Detector detector = new Cellpose4Detector();
+		detector.setConfirmEnvInstallation( false );
 		Model model = new Model();
 
 		try (Context context = new Context())
 		{
+			org.scijava.log.Logger log = context.getService( org.scijava.log.LogService.class ).subLogger( "Cellpose4DetectorTest" );
+			Field logger = AbstractSpotDetectorOp.class.getDeclaredField( "log" );
+			logger.setAccessible( true );
+			logger.set( detector, log );
+
 			Img< FloatType > img = ArrayImgs.floats( 12, 12, 12 );
 			SphereRenderer.renderSphere( new int[] { 5, 5, 5 }, 5, 100, img );
 			context.inject( detector ); // make sure the detector is initialized with the context

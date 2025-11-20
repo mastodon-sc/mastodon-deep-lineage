@@ -48,6 +48,7 @@ import org.mastodon.mamut.detection.DeepLearningDetectorKeys;
 import org.mastodon.mamut.io.importer.labelimage.util.DemoUtils;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.tracking.detection.DetectorKeys;
+import org.mastodon.tracking.mamut.detection.AbstractSpotDetectorOp;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor;
 import org.scijava.Context;
 
@@ -57,12 +58,18 @@ class StarDistDetectorTest
 {
 	@Disabled( "This test is disabled, because it has very long runtime (> 2 minutes)" )
 	@Test
-	void testCompute3D() throws IllegalAccessException, URISyntaxException
+	void testCompute3D() throws IllegalAccessException, URISyntaxException, NoSuchFieldException
 	{
 		StarDistDetector detector = new StarDistDetector();
+		detector.setConfirmEnvInstallation( false );
 
 		try (Context context = new Context())
 		{
+			org.scijava.log.Logger log = context.getService( org.scijava.log.LogService.class ).subLogger( "StarDistDetectorTest" );
+			Field logger = AbstractSpotDetectorOp.class.getDeclaredField( "log" );
+			logger.setAccessible( true );
+			logger.set( detector, log );
+
 			ImgOpener imgOpener = new ImgOpener();
 			URL url3d = getClass().getClassLoader().getResource( "org/mastodon/mamut/appose/nuclei_3d.tif" );
 			URL url2d = getClass().getClassLoader().getResource( "org/mastodon/mamut/appose/blobs.tif" );
