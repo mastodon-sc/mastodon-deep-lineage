@@ -271,10 +271,7 @@ public class ApposeUtils
 					JOptionPane.QUESTION_MESSAGE
 			);
 			if ( result != JOptionPane.YES_OPTION )
-			{
-				log.info( "Python environment installation declined by user." );
-				return Pair.of( false, "Python environment installation was declined. Cannot proceed without the required environment." );
-			}
+				return Pair.of( false, "Python environment installation was declined.\nCannot proceed without the required environment." );
 			log.info( "User confirmed installation. Installing Python environment.\n" );
 			log.info( "Installation progress can be observed using FIJI console: FIJI > Window > Console.\n" );
 		}
