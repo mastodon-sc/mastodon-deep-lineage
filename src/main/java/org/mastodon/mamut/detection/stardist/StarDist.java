@@ -169,6 +169,7 @@ public class StarDist extends Segmentation
 			model = "model = StarDist3D(None, name='" + installationFolderName + "', basedir=r'" + baseDir + "')";
 		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/stardist_3d.py", StarDist.class )
 				.replace( "{AXES}", axes )
+				.replace( "{AXES_NORMALIZE}", dataIs2D ? "axes_normalize = (0, 1)" : "axes_normalize = (0, 1, 2)" )
 				.replace( "{MODEL}", model )
 				.replace( "{NMS_THRESH}", String.valueOf( nmsThresh ) )
 				.replace( "{PROB_THRESH}", String.valueOf( probThresh ) );

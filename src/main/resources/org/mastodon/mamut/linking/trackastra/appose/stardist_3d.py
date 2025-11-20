@@ -22,7 +22,7 @@ else:
 
 np.random.seed(6)
 
-axes_normalize = (0, 1, 2)
+{AXES_NORMALIZE}
 
 task.update(message='Loading StarDist model')
 
