@@ -1,98 +1,97 @@
 [workspace]
 name = '{ENV_NAME}'
-version = '0.0.1'
-description = 'Mastodon spot detector using StarDist3D.'
-authors = ['Curtis Rueden', 'Carlos Garcia', 'Jean-Yves Tinevez', 'Stefan Hahmann']
-channels = ['conda-forge']
-platforms = ['osx-arm64', 'osx-64', 'linux-64', 'win-64']
+version = "0.0.1"
+description = "Mastodon spot detector using StarDist3D."
+authors = [
+    "Curtis Rueden",
+    "Carlos Garcia",
+    "Jean-Yves Tinevez",
+    "Stefan Hahmann"
+]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "osx-64", "linux-64", "win-64"]
 
 [dependencies]
-python = '==3.10'
-numpy = '<2'
-scipy = '*'
-pip = '*'
+python = "==3.10"
+numpy = "<2"
+scipy = "*"
+pip = "*"
 
 [pypi-dependencies]
-appose = '=={APPOSE_VERSION}'
-stardist = '==0.9.1'
-csbdeep = '*'
-ndv = { extras = ['qt'] }
-pygfx = '<0.13.0'
+appose = "=={APPOSE_VERSION}"
+stardist = "==0.9.1"
+csbdeep = "*"
+ndv = { extras = ["qt"] }
+pygfx = "<0.13.0"
 
-[target.osx-64.dependencies]
-python = '*'
+# ---------------------------------------------------------------------------
+# WINDOWS (GPU TensorFlow by default)
+# ---------------------------------------------------------------------------
 
-[target.osx-arm64.dependencies]
-python = '*'
+[target.win-64.dependencies]
+cudatoolkit = "11.2.*"
+cudnn = "8.1.*"
 
-# PyPI deps common per-OS:
+[target.win-64.activation.env]
+# Makes CUDA runtime DLLs visible to TensorFlow
+PATH = "%CONDA_PREFIX%\\Library\\bin;%PATH%"
+
 [target.win-64.pypi-dependencies]
-tensorflow = '==2.10.1'
+tensorflow-gpu = "==2.10.1"
+
+
+# ---------------------------------------------------------------------------
+# LINUX (GPU TensorFlow by default)
+# ---------------------------------------------------------------------------
+
+[target.linux-64.dependencies]
+cudatoolkit = "11.2.*"
+cudnn = "8.1.*"
+
+[target.linux-64.activation.env]
+LD_LIBRARY_PATH = "$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
 
 [target.linux-64.pypi-dependencies]
-tensorflow = '==2.10.1'
+tensorflow-gpu = "==2.10.1"
+
+
+# ---------------------------------------------------------------------------
+# macOS INTEL (CPU TensorFlow)
+# ---------------------------------------------------------------------------
 
 [target.osx-64.pypi-dependencies]
-tensorflow = '*'                 # latest CPU TF for Intel mac
+tensorflow = "*"
+
+
+# ---------------------------------------------------------------------------
+# macOS Apple Silicon (TensorFlow-Macos + Metal)
+# ---------------------------------------------------------------------------
 
 [target.osx-arm64.pypi-dependencies]
-tensorflow-macos = '*'           # latest TF for Apple Silicon
-tensorflow-metal = '*'           # Metal plugin
+tensorflow-macos = "*"
+tensorflow-metal = "*"
 
-# ---------------- Macos no metal - ONLY APPLE SILICON ----------------
-[feature.nometal]
-channels = ['conda-forge']
 
-[feature.nometal.target.osx-arm64.pypi-dependencies]
-tensorflow = '*'
+# ---------------------------------------------------------------------------
+# DEV ENVIRONMENT (your original)
+# ---------------------------------------------------------------------------
 
-# ---------------- CUDA feature (Windows/Linux only) ----------------
-[feature.cuda]
-channels = ['nvidia', 'conda-forge']   # optional; inherits from workspace
-
-[feature.cuda.target.win-64.dependencies]
-cudatoolkit = '11.2.*'
-cudnn = '8.1.*'
-
-[feature.cuda.target.linux-64.dependencies]
-cudatoolkit = '11.2.*'
-cudnn = '8.1.*'
-
-# Activation only when the 'cuda' feature is part of the active environment:
-[feature.cuda.target.win-64.activation.env]
-PATH = '%CONDA_PREFIX%\\\\Library\\\\bin;%PATH%'
-
-[feature.cuda.target.linux-64.activation.env]
-LD_LIBRARY_PATH = '$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}'
-
-# Dev feature
 [feature.dev.dependencies]
-pytest = '*'
-ruff = '*'
+pytest = "*"
+ruff = "*"
 
 [feature.dev.pypi-dependencies]
-build = '*'
-validate-pyproject = { extras = ['all'] }
+build = "*"
+validate-pyproject = { extras = ["all"] }
 
-# ---------------- TASKS (cmd holds the whole command line) ---------------- #
 [tasks]
-# Main application
-start = 'python src/main.py'
-
-# Development tasks
-lint = 'ruff check --fix && ruff format'
-test = 'pytest -v -p no:faulthandler tests'
-validate = 'validate-pyproject pyproject.toml'
-dist = 'python -m build'
-
-# Combined tasks
-check = { depends-on = ['validate', 'lint'] }
-
-# ---------------- ENVIRONMENTS ---------------- #
+start = "python src/main.py"
+lint = "ruff check --fix && ruff format"
+test = "pytest -v -p no:faulthandler tests"
+validate = "validate-pyproject pyproject.toml"
+dist = "python -m build"
+check = { depends-on = ["validate", "lint"] }
 
 [environments]
-default = { solve-group = 'default' }
-cuda = { features = ['cuda'], solve-group = 'default' }
-nometal = { features = ['nometal'], solve-group = 'default' }
-dev = { features = ['dev'], solve-group = 'default' }
-cuda-dev = { features = ['cuda', 'dev'], solve-group = 'default' }
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }
