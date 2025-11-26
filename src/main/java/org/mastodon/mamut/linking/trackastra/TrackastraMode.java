@@ -3,7 +3,7 @@ package org.mastodon.mamut.linking.trackastra;
 public enum TrackastraMode
 {
 	GREEDY( "greedy", "Greedy linking with divisions" ),
-	GREEDY_NODIV( "gredy_nodiv", "Greedy linking without divisions" );
+	GREEDY_NODIV( "greedy_nodiv", "Greedy linking without divisions" );
 
 	private final String name;
 
