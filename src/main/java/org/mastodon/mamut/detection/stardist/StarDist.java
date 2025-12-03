@@ -120,19 +120,24 @@ public class StarDist extends Segmentation
 		{
 			try
 			{
-				logger.info( "Downloading model to {}", directory.getAbsolutePath() );
-				BioimageioRepo repo = BioimageioRepo.connect();
-				ModelDescriptor descriptor = repo.selectByName( modelType.getModelName() );
-				String installationFolder = repo.downloadByName( modelType.getModelName(), directory.getAbsolutePath() );
-				installationFolderName = Paths.get( installationFolder ).getFileName().toString();
-				createConfigFromBioimageio( descriptor, directory.getAbsolutePath() + File.separator + installationFolderName );
-				logger.info( "Downloading finished. Installation folder: {}", installationFolderName );
+				downloadFromBioimageIORepo( directory );
 			}
 			catch ( IllegalArgumentException e )
 			{
 				logger.info( "Exception while downloading model: {}", e.getMessage() );
 			}
 		}
+	}
+
+	private void downloadFromBioimageIORepo( final File directory ) throws InterruptedException, IOException
+	{
+		logger.info( "Downloading model to {}", directory.getAbsolutePath() );
+		BioimageioRepo repo = BioimageioRepo.connect();
+		ModelDescriptor descriptor = repo.selectByName( modelType.getModelName() );
+		String installationFolder = repo.downloadByName( modelType.getModelName(), directory.getAbsolutePath() );
+		installationFolderName = Paths.get( installationFolder ).getFileName().toString();
+		createConfigFromBioimageio( descriptor, directory.getAbsolutePath() + File.separator + installationFolderName );
+		logger.info( "Downloading finished. Installation folder: {}", installationFolderName );
 	}
 
 	private Path getStarDistModelRoot()
