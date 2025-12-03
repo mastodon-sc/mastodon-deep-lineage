@@ -32,6 +32,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.invoke.MethodHandles;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -267,6 +270,10 @@ public class StarDist extends Segmentation
 		// H_E( "StarDist H&E Nuclei Segmentation", "stardist-h-e-nuclei", true ), // NB: operates on 3 input channels
 		DEMO( "StarDist Demo", null, null );
 		// https://zenodo.org/records/10518151 another pre-trained 3D model for nuclei segmentation
+		PLANT_NUCLEI_3D( "StarDist Plant Nuclei 3D ResNet", "stardist-plant-nuclei-3d", false, null ),
+		FLUO_2D( "StarDist Fluorescence Nuclei 2D Segmentation", "stardist-fluo-2d", true, null ),
+		// H_E( "StarDist H&E Nuclei Segmentation", "stardist-h-e-nuclei", true, null ), // NB: operates on 3 input channels
+		DEMO( "StarDist Default Demo", null, null, null );
 
 		private final String modelName;
 
@@ -274,11 +281,14 @@ public class StarDist extends Segmentation
 
 		private final Boolean is2D;
 
-		ModelType( final String modelName, final String modelPath, final Boolean is2D )
+		private final String urlString;
+
+		ModelType( final String modelName, final String modelPath, final Boolean is2D, final String urlString )
 		{
 			this.modelName = modelName;
 			this.modelPath = modelPath;
 			this.is2D = is2D;
+			this.urlString = urlString;
 		}
 
 		public String getModelName()
@@ -289,6 +299,21 @@ public class StarDist extends Segmentation
 		public String getModelPath()
 		{
 			return modelPath;
+		}
+
+		public URL getUrl()
+		{
+			if ( urlString == null )
+				return null;
+
+			try
+			{
+				return URI.create( urlString ).toURL();
+			}
+			catch ( MalformedURLException e )
+			{
+				throw new IllegalStateException( "Invalid URL in enum: " + urlString, e );
+			}
 		}
 
 		public Boolean is2D()
