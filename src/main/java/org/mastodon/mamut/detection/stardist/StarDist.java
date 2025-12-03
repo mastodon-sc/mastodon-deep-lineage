@@ -156,23 +156,32 @@ public class StarDist extends Segmentation
 	protected String generateScript()
 	{
 		String axes = dataIs2D ? "YX" : "ZYX";
-		String baseDir = "models" + File.separator + modelType.getModelPath();
-		String model;
-		if ( modelType.getModelPath() == null )
-		{
-			if ( dataIs2D )
-				model = "model = StarDist2D.from_pretrained('2D_demo')";
-			else
-				model = "model = StarDist3D.from_pretrained('3D_demo')";
-		}
-		else
-			model = "model = StarDist3D(None, name='" + installationFolderName + "', basedir=r'" + baseDir + "')";
+		String model = getModelString();
 		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/detection/stardist/stardist_3d.py", StarDist.class )
 				.replace( "{AXES}", axes )
 				.replace( "{AXES_NORMALIZE}", dataIs2D ? "axes_normalize = (0, 1)" : "axes_normalize = (0, 1, 2)" )
 				.replace( "{MODEL}", model )
 				.replace( "{NMS_THRESH}", String.valueOf( nmsThresh ) )
 				.replace( "{PROB_THRESH}", String.valueOf( probThresh ) );
+	}
+
+	private String getModelString()
+	{
+		String baseDir = "models" + File.separator + modelType.getModelPath();
+		if ( modelType.getModelPath() == null )
+		{
+			if ( dataIs2D )
+				return "model = StarDist2D.from_pretrained('2D_demo')";
+			else
+				return "model = StarDist3D.from_pretrained('3D_demo')";
+		}
+		else
+		{
+			if ( dataIs2D )
+				return "model = StarDist2D(None, name='" + installationFolderName + "', basedir=r'" + baseDir + "')";
+			else
+				return "model = StarDist3D(None, name='" + installationFolderName + "', basedir=r'" + baseDir + "')";
+		}
 	}
 
 	public static String generateImportStatements( final ModelType modelType, final boolean dataIs2D )
