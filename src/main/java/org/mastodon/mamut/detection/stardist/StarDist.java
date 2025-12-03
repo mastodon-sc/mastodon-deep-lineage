@@ -265,14 +265,15 @@ public class StarDist extends Segmentation
 
 	public enum ModelType
 	{
-		PLANT_NUCLEI_3D( "StarDist Plant Nuclei 3D ResNet", "stardist-plant-nuclei-3d", false ),
-		FLUO_2D( "StarDist Fluorescence Nuclei Segmentation", "stardist-fluo-2d", true ),
-		// H_E( "StarDist H&E Nuclei Segmentation", "stardist-h-e-nuclei", true ), // NB: operates on 3 input channels
-		DEMO( "StarDist Demo", null, null );
-		// https://zenodo.org/records/10518151 another pre-trained 3D model for nuclei segmentation
 		PLANT_NUCLEI_3D( "StarDist Plant Nuclei 3D ResNet", "stardist-plant-nuclei-3d", false, null ),
 		FLUO_2D( "StarDist Fluorescence Nuclei 2D Segmentation", "stardist-fluo-2d", true, null ),
 		// H_E( "StarDist H&E Nuclei Segmentation", "stardist-h-e-nuclei", true, null ), // NB: operates on 3 input channels
+		SOSPIM_3D( "StarDist SoSPIM Nuclei 3D", "stardist-sospim-nuclei-3d", false,
+				"https://zenodo.org/records/10518151/files/model_sospim.zip?download=1" ),
+		CONFOCAL_3D( "StarDist Confocal Nuclei 3D", "stardist-confocal-nuclei-3d", false,
+				"https://zenodo.org/records/10518151/files/model_confocal.zip?download=1" ),
+		SPINNING_DISK_3D( "StarDist Spinning Disk Nuclei 3D", "stardist-spinning-disk-nuclei-3d", false,
+				"https://zenodo.org/records/10518151/files/model_spinning.zip?download=1" ),
 		DEMO( "StarDist Default Demo", null, null, null );
 
 		private final String modelName;
