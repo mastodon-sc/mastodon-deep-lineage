@@ -44,6 +44,7 @@ import net.imglib2.util.Cast;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.Segmentation;
 import org.mastodon.mamut.util.ResourceUtils;
+import org.mastodon.mamut.util.ZipUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +124,10 @@ public class StarDist extends Segmentation
 		{
 			try
 			{
-				downloadFromBioimageIORepo( directory );
+				if ( modelType.getUrl() == null )
+					downloadFromBioimageIORepo( directory );
+				else
+					ZipUtils.downloadAndUnpack( modelType.getUrl(), Paths.get( directory.getAbsolutePath(), installationFolderName ) );
 			}
 			catch ( IllegalArgumentException e )
 			{
