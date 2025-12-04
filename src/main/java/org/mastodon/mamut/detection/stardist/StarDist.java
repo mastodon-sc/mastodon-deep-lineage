@@ -269,16 +269,16 @@ public class StarDist extends Segmentation
 
 	public enum ModelType
 	{
-		PLANT_NUCLEI_3D( "StarDist Plant Nuclei 3D ResNet", "stardist-plant-nuclei-3d", false, null ),
-		FLUO_2D( "StarDist Fluorescence Nuclei 2D Segmentation", "stardist-fluo-2d", true, null ),
-		// H_E( "StarDist H&E Nuclei Segmentation", "stardist-h-e-nuclei", true, null ), // NB: operates on 3 input channels
-		SOSPIM_3D( "StarDist SoSPIM Nuclei 3D", "stardist-sospim-nuclei-3d", false,
+		PLANT_NUCLEI_3D( "StarDist Plant Nuclei 3D ResNet", "plant-nuclei-3d", false, null ),
+		FLUO_2D( "Fluorescence Nuclei Segmentation", "fluo-2d", true, null ),
+		// H_E( "H&E Nuclei Segmentation", "h-e-nuclei", true, null ), // NB: operates on 3 input channels
+		SOSPIM_3D( "SoSPIM Nuclei", "sospim-nuclei-3d", false,
 				"https://zenodo.org/records/10518151/files/model_sospim.zip?download=1" ),
-		CONFOCAL_3D( "StarDist Confocal Nuclei 3D", "stardist-confocal-nuclei-3d", false,
+		CONFOCAL_3D( "Confocal Nuclei", "confocal-nuclei-3d", false,
 				"https://zenodo.org/records/10518151/files/model_confocal.zip?download=1" ),
-		SPINNING_DISK_3D( "StarDist Spinning Disk Nuclei 3D", "stardist-spinning-disk-nuclei-3d", false,
+		SPINNING_DISK_3D( "Spinning Disk Nuclei", "spinning-disk-nuclei-3d", false,
 				"https://zenodo.org/records/10518151/files/model_spinning.zip?download=1" ),
-		DEMO( "StarDist Default Demo", null, null, null );
+		DEMO( "Default Model", null, null, null );
 
 		private final String modelName;
 
@@ -342,7 +342,7 @@ public class StarDist extends Segmentation
 			else
 				dimensionality = " (3D)";
 
-			return modelName + dimensionality;
+			return modelName.replace( "StarDist ", "" ) + dimensionality;
 		}
 
 		public static ModelType fromString( final String modelName )
