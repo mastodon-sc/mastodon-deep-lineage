@@ -56,7 +56,7 @@ import org.apposed.appose.Appose;
 import org.apposed.appose.Builder;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.DeepLearningDetector;
-import org.mastodon.mamut.detection.stardist.StarDist;
+import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
@@ -109,7 +109,7 @@ public class Cellpose3Detector extends DeepLearningDetector
 		try
 		{
 			Cellpose3 cellpose = new Cellpose3( ( Cellpose3.ModelType ) settings.get( KEY_MODEL_TYPE ), python );
-			boolean is3D = is3D( image );
+			boolean is3D = ImgUtils.is3D( image );
 			cellpose.set3D( is3D );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );

@@ -46,6 +46,7 @@ import org.apposed.appose.Appose;
 import org.apposed.appose.Builder;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.DeepLearningDetector;
+import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor;
 import org.scijava.Priority;
@@ -110,7 +111,7 @@ public class StarDistDetector extends DeepLearningDetector
 		try
 		{
 			StarDist starDist = new StarDist( ( StarDist.ModelType ) settings.get( KEY_MODEL_TYPE ), python );
-			boolean isData3D = is3D( image );
+			boolean isData3D = ImgUtils.is3D( image );
 			Boolean isModelType2D = starDist.getModelType().is2D();
 			if ( isModelType2D != null )
 			{

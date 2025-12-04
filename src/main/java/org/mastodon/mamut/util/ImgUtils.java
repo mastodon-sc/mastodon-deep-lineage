@@ -58,4 +58,40 @@ public class ImgUtils
 		long size = rai.size();
 		return size * bytesPerElement;
 	}
+
+	/**
+	 * Determines whether the given {@code RandomAccessibleInterval} represents a 2D image.
+	 * A 2D image is identified as having at most two dimensions with sizes greater than 1.
+	 *
+	 * @param image the {@code RandomAccessibleInterval} to analyze
+	 * @return {@code true} if the image is 2D, otherwise {@code false}
+	 */
+	public static boolean is2D( final RandomAccessibleInterval< ? > image )
+	{
+		return !is3D( image );
+	}
+
+	/**
+	 * Determines whether the given {@code RandomAccessibleInterval} represents a 3D image.
+	 * A 3D image is identified as having more at least three dimensions that have sizes greater than 1.
+	 *
+	 * @param image the {@code RandomAccessibleInterval} to analyze
+	 * @return {@code true} if the image is 3D, otherwise {@code false}
+	 */
+	public static boolean is3D( final RandomAccessibleInterval< ? > image )
+	{
+		long[] dimensions = image.dimensionsAsLongArray();
+		if ( dimensions.length <= 2 )
+			return false;
+		else
+		{
+			int nonPlaneDimensionCount = 0;
+			for ( final long dimension : dimensions )
+			{
+				if ( dimension > 1 )
+					nonPlaneDimensionCount++;
+			}
+			return nonPlaneDimensionCount > 2;
+		}
+	}
 }
