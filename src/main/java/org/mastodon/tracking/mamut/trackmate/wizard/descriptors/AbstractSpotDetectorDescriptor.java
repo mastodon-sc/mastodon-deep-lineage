@@ -79,7 +79,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 
 	private JLabel levelLabel;
 
-	protected final static String LAYOUT_CONSTRAINT = "align left, wmax 250, growx, wrap";
+	protected static final String LAYOUT_CONSTRAINT = "align left, wmax 250, growx, wrap";
 
 	@Parameter
 	private OpService ops;
