@@ -45,8 +45,11 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
+import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.detection.stardist.StarDist;
 import org.mastodon.mamut.detection.stardist.StarDistDetector;
+import org.mastodon.mamut.util.ImgUtils;
+import org.mastodon.tracking.detection.DetectorKeys;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
 import org.scijava.plugin.Plugin;
 
@@ -137,7 +140,7 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 	@Override
 	protected void configureDetectorSpecificFields( final JPanel contentPanel )
 	{
-		modelTypeSelection = new JComboBox<>( StarDist.ModelType.values() );
+		modelTypeSelection = new JComboBox<>();
 		modelTypeSelection.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		modelTypeSelection.setRenderer( new DefaultListCellRenderer()
 		{
@@ -202,5 +205,31 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 	public Collection< Class< ? extends SpotDetectorOp > > getTargetClasses()
 	{
 		return Collections.singleton( StarDistDetector.class );
+	}
+
+	@Override
+	public void setAppModel( final ProjectModel appModel )
+	{
+		super.setAppModel( appModel );
+		updateMatchingModelTypes( appModel );
+	}
+
+	private void updateMatchingModelTypes( final ProjectModel appModel )
+	{
+		StarDist.ModelType[] modelTypes = StarDist.ModelType.values();
+		for ( final StarDist.ModelType modelType : modelTypes )
+		{
+			int setupId = ( int ) settings.values.getDetectorSettings().get( DetectorKeys.KEY_SETUP_ID );
+			if ( ImgUtils.is3D( appModel.getSharedBdvData().getSources().get( setupId ).getSpimSource().getSource( 0, 0 ) ) )
+			{
+				if ( modelType.is2D() == null || !modelType.is2D() )
+					modelTypeSelection.addItem( modelType );
+			}
+			else
+			{
+				if ( modelType.is2D() == null || modelType.is2D() )
+					modelTypeSelection.addItem( modelType );
+			}
+		}
 	}
 }

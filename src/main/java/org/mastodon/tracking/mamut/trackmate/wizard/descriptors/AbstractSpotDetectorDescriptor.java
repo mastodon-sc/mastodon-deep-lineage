@@ -69,7 +69,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 
 	protected Settings settings;
 
-	private ProjectModel appModel;
+	protected ProjectModel appModel;
 
 	private ViewerFrameMamut viewFrame;
 
