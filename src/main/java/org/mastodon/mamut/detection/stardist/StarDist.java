@@ -127,7 +127,13 @@ public class StarDist extends Segmentation
 				if ( modelType.getUrl() == null )
 					downloadFromBioimageIORepo( directory );
 				else
-					ZipUtils.downloadAndUnpack( modelType.getUrl(), Paths.get( directory.getAbsolutePath(), installationFolderName ) );
+				{
+					installationFolderName = "model";
+					String path = directory.getAbsolutePath() + File.separator + installationFolderName;
+					logger.info( "Downloading model from URL: {} to {}", modelType.getUrl(), path );
+					ZipUtils.downloadAndUnpack( modelType.getUrl(), Paths.get( path ) );
+				}
+
 			}
 			catch ( IllegalArgumentException e )
 			{
@@ -169,6 +175,7 @@ public class StarDist extends Segmentation
 	{
 		String axes = dataIs2D ? "YX" : "ZYX";
 		String model = getModelString();
+		logger.info( "Using star dist model: {}", model );
 		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/detection/stardist/stardist_3d.py", StarDist.class )
 				.replace( "{AXES}", axes )
 				.replace( "{AXES_NORMALIZE}", dataIs2D ? "axes_normalize = (0, 1)" : "axes_normalize = (0, 1, 2)" )
