@@ -341,16 +341,24 @@ public class StarDist extends Segmentation
 
 	public enum ModelType
 	{
-		PLANT_NUCLEI_3D( "StarDist Plant Nuclei 3D ResNet", "plant-nuclei-3d", false, null ),
-		FLUO_2D( "Fluorescence Nuclei Segmentation", "fluo-2d", true, null ),
+		PLANT_NUCLEI_3D( "StarDist Plant Nuclei 3D ResNet", "plant-nuclei-3d", false, null, 32, 16 ),
+		FLUO_2D( "StarDist Fluorescence Nuclei Segmentation", "fluo-2d", true, null, 32, 0 ), // NB: expected diameter unknown
+		CHO_CELLS_2D( "CHO mitotic rounding segmentation - brightfield - StarDist", "cho-cells-2d", true, null, 30, 0 ), // NB: expected diameter unknown
+		NUCLEI_BOUNDARY_2D( "Nuclei Segmentation Boundary Model", "nuclei-boundary-2d", true, null, 30, 0 ), // NB: expected diameter unknown
 		// H_E( "H&E Nuclei Segmentation", "h-e-nuclei", true, null ), // NB: operates on 3 input channels
-		SOSPIM_3D( "SoSPIM Nuclei", "sospim-nuclei-3d", false,
-				"https://zenodo.org/records/10518151/files/model_sospim.zip?download=1" ),
-		CONFOCAL_3D( "Confocal Nuclei", "confocal-nuclei-3d", false,
-				"https://zenodo.org/records/10518151/files/model_confocal.zip?download=1" ),
-		SPINNING_DISK_3D( "Spinning Disk Nuclei", "spinning-disk-nuclei-3d", false,
-				"https://zenodo.org/records/10518151/files/model_spinning.zip?download=1" ),
-		DEMO( "Default Model", null, null, null );
+		SOSPIM_3D(
+				"SoSPIM - DAPI/SOX2", "sospim-nuclei-3d", false,
+				"https://zenodo.org/records/10518151/files/model_sospim.zip?download=1", 27.5, 10
+		),
+		CONFOCAL_3D(
+				"Confocal - FUCCI label", "confocal-nuclei-3d", false,
+				"https://zenodo.org/records/10518151/files/model_confocal.zip?download=1", 39, 7
+		),
+		SPINNING_DISK_3D(
+				"Spinning Disk - DAPI", "spinning-disk-nuclei-3d", false,
+				"https://zenodo.org/records/10518151/files/model_spinning.zip?download=1", 39, 7
+		),
+		DEMO( "Default Model", null, null, null, -1, -1 );
 
 		private final String modelName;
 
@@ -433,7 +441,7 @@ public class StarDist extends Segmentation
 			else
 				dimensionality = " (3D)";
 
-			return modelName.replace( "StarDist ", "" ) + dimensionality;
+			return modelName.replace( "StarDist ", "" ).replace( " - StarDist", "" ) + dimensionality;
 		}
 
 		public static ModelType fromString( final String modelName )
