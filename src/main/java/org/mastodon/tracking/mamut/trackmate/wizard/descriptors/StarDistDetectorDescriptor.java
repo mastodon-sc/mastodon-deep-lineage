@@ -134,6 +134,7 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 
 		// Get the model type.
+		addMatchingModelTypes( appModel );
 		final StarDist.ModelType modelType;
 		final Object modelTypeObject = detectorSettings.get( KEY_MODEL_TYPE );
 		if ( null == modelTypeObject )
@@ -294,14 +295,7 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 		return Collections.singleton( StarDistDetector.class );
 	}
 
-	@Override
-	public void setAppModel( final ProjectModel appModel )
-	{
-		super.setAppModel( appModel );
-		updateMatchingModelTypes( appModel );
-	}
-
-	private void updateMatchingModelTypes( final ProjectModel appModel )
+	private void addMatchingModelTypes( final ProjectModel appModel )
 	{
 		StarDist.ModelType[] modelTypes = StarDist.ModelType.values();
 		for ( final StarDist.ModelType modelType : modelTypes )
