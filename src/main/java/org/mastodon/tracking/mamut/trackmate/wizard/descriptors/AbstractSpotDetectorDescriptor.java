@@ -149,7 +149,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 		if ( null == settings )
 			return;
 
-		// To display the detector settings values, either the default ones, or the one that were set previously, read these values from the TrackMate instance.
+		// To display the detector settings values, either the default ones or the one that were set previously, read these values from the TrackMate instance.
 		getSettingsAndUpdateConfigPanel();
 	}
 
