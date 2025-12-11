@@ -82,17 +82,36 @@ public class StarDist extends Segmentation
 
 	private double nmsThresh;
 
+	private double estimatedDiameterXY;
+
+	private double estimatedDiameterZ;
+
+	private double expectedDiameterXY;
+
+	private double expectedDiameterZ;
+
 	public static final double DEFAULT_PROB_THRESHOLD = 0.5d;
 
 	public static final double DEFAULT_NMS_THRESHOLD = 0.4d;
 
-	public StarDist( final ModelType model, final Service python ) throws IOException, InterruptedException
+	public static final double DEFAULT_ESTIMATED_DIAMETER_XY = 30.0d;
+
+	public static final double DEFAULT_ESTIMATED_DIAMETER_Z = 10.0d;
+
+	public static final double DEFAULT_EXPECTED_DIAMETER_XY = 30.0d;
+
+	public static final double DEFAULT_EXPECTED_DIAMETER_Z = 10.0d;
+
+	public StarDist( final ModelType model, final Service python, final @Nullable org.scijava.log.Logger scijavaLogger )
+			throws IOException, InterruptedException
 	{
 		super( python );
 		logger.info( "Initializing StarDist, model: {}", model );
 		this.modelType = model;
 		this.probThresh = DEFAULT_PROB_THRESHOLD;
 		this.nmsThresh = DEFAULT_NMS_THRESHOLD;
+		this.estimatedDiameterXY = DEFAULT_ESTIMATED_DIAMETER_XY;
+		this.estimatedDiameterZ = DEFAULT_ESTIMATED_DIAMETER_Z;
 		Path starDistModelRoot = getStarDistModelRoot();
 		if ( starDistModelRoot == null )
 			logger.debug( "StarDist model path is null. This is normal for the built-in demo models" );
@@ -181,7 +200,11 @@ public class StarDist extends Segmentation
 				.replace( "{AXES_NORMALIZE}", dataIs2D ? "(0, 1)" : "(0, 1, 2)" )
 				.replace( "{MODEL}", model )
 				.replace( "{NMS_THRESH}", String.valueOf( nmsThresh ) )
-				.replace( "{PROB_THRESH}", String.valueOf( probThresh ) );
+				.replace( "{PROB_THRESH}", String.valueOf( probThresh ) )
+				.replace( "{ESTIMATED_DIAMETER_XY}", String.valueOf( estimatedDiameterXY ) )
+				.replace( "{ESTIMATED_DIAMETER_Z}", String.valueOf( estimatedDiameterZ ) )
+				.replace( "{EXPECTED_DIAMETER_XY}", String.valueOf( expectedDiameterXY ) )
+				.replace( "{EXPECTED_DIAMETER_Z}", String.valueOf( expectedDiameterZ ) );
 	}
 
 	private String getModelString()
@@ -222,11 +245,12 @@ public class StarDist extends Segmentation
 				+ "import appose as appose" + "\n"
 				+ "from csbdeep.utils import normalize" + "\n"
 				+ "import tensorflow as tf" + "\n"
+				+ "from scipy.ndimage import zoom" + "\n"
 				+ getImportStarDistCommand( modelType, dataIs2D )
 				+ "\n"
 				+ "task.update(message='Imports completed')" + "\n"
 				+ "\n"
-				+ "task.export(np=np, appose=appose, normalize=normalize, tf=tf, " + starDistImport + ")" + "\n";
+				+ "task.export(np=np, appose=appose, normalize=normalize, zoom=zoom, tf=tf, " + starDistImport + ")" + "\n";
 	}
 
 	public ModelType getModelType()
@@ -259,6 +283,45 @@ public class StarDist extends Segmentation
 	public void setNmsThresh( final double nmsThresh )
 	{
 		this.nmsThresh = nmsThresh;
+	}
+
+	/**
+	 * Set the estimated diameter (in pixel) for the XY plane.
+	 *
+	 * @param estimatedDiameterXY the estimated diameter in the XY plane
+	 */
+	public void setEstimatedDiameterXY( final double estimatedDiameterXY )
+	{
+		this.estimatedDiameterXY = estimatedDiameterXY;
+	}
+
+	/**
+	 * Set the estimated diameter (in pixel) for the Z axis.
+	 * @param estimatedDiameterZ the estimated diameter in the Z axis
+	 */
+	public void setEstimatedDiameterZ( final double estimatedDiameterZ )
+	{
+		this.estimatedDiameterZ = estimatedDiameterZ;
+	}
+
+	/**
+	 * Set the diameter expected by the chosen model (in pixel) for the XY plane.
+	 *
+	 * @param expectedDiameterXY the expected diameter in the XY plane
+	 */
+	public void setExpectedDiameterXY( final double expectedDiameterXY )
+	{
+		this.expectedDiameterXY = expectedDiameterXY;
+	}
+
+	/**
+	 * Set the diameter expected by the chosen model (in pixel) for the Z axis.
+	 *
+	 * @param expectedDiameterZ the expected diameter in the Z axis
+	 */
+	public void setExpectedDiameterZ( final double expectedDiameterZ )
+	{
+		this.expectedDiameterZ = expectedDiameterZ;
 	}
 
 	private static String getImportStarDistCommand( final ModelType modelType, final boolean dataIs2D )
@@ -295,12 +358,21 @@ public class StarDist extends Segmentation
 
 		private final String urlString;
 
-		ModelType( final String modelName, final String modelPath, final Boolean is2D, final String urlString )
+		private final double expectedDiameterXY;
+
+		private final double expectedDiameterZ;
+
+		ModelType(
+				final String modelName, final String modelPath, final Boolean is2D, final String urlString,
+				final double expectedDiameterXY, final double expectedDiameterZ
+		)
 		{
 			this.modelName = modelName;
 			this.modelPath = modelPath;
 			this.is2D = is2D;
 			this.urlString = urlString;
+			this.expectedDiameterXY = expectedDiameterXY;
+			this.expectedDiameterZ = expectedDiameterZ;
 		}
 
 		public String getModelName()
@@ -331,6 +403,16 @@ public class StarDist extends Segmentation
 		public Boolean is2D()
 		{
 			return is2D;
+		}
+
+		public double getExpectedDiameterXY()
+		{
+			return expectedDiameterXY;
+		}
+
+		public double getExpectedDiameterZ()
+		{
+			return expectedDiameterZ;
 		}
 
 		@Override

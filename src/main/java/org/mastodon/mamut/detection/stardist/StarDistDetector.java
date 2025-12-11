@@ -28,9 +28,17 @@
  */
 package org.mastodon.mamut.detection.stardist;
 
+import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_ESTIMATED_DIAMETER_XY;
+import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_ESTIMATED_DIAMETER_Z;
+import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_EXPECTED_DIAMETER_XY;
+import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_EXPECTED_DIAMETER_Z;
 import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_NMS_THRESHOLD;
 import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_PROB_THRESHOLD;
 import static org.mastodon.tracking.linking.LinkingUtils.checkParameter;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_ESTIMATED_DIAMETER_XY;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_ESTIMATED_DIAMETER_Z;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_EXPECTED_DIAMETER_XY;
+import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_EXPECTED_DIAMETER_Z;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_MODEL_TYPE;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_NMS_THRESHOLD;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.StarDistDetectorDescriptor.KEY_PROB_THRESHOLD;
@@ -123,6 +131,12 @@ public class StarDistDetector extends DeepLearningDetector
 			starDist.setDataIs2D( !isData3D );
 			starDist.setProbThresh( ( double ) settings.get( KEY_PROB_THRESHOLD ) );
 			starDist.setNmsThresh( ( double ) settings.get( KEY_NMS_THRESHOLD ) );
+			starDist.setEstimatedDiameterXY( ( double ) settings.get( KEY_ESTIMATED_DIAMETER_XY ) );
+			double estimatedDiameterZ =
+					settings.get( KEY_ESTIMATED_DIAMETER_Z ) == null ? -1d : ( double ) settings.get( KEY_ESTIMATED_DIAMETER_Z );
+			starDist.setEstimatedDiameterZ( estimatedDiameterZ );
+			starDist.setExpectedDiameterXY( ( double ) settings.get( KEY_EXPECTED_DIAMETER_XY ) );
+			starDist.setExpectedDiameterZ( ( double ) settings.get( KEY_EXPECTED_DIAMETER_Z ) );
 			return starDist.segmentImage( Cast.unchecked( image ) );
 		}
 		catch ( Exception e )
@@ -140,6 +154,10 @@ public class StarDistDetector extends DeepLearningDetector
 		defaultSettings.put( KEY_MODEL_TYPE, StarDist.ModelType.DEMO );
 		defaultSettings.put( KEY_PROB_THRESHOLD, DEFAULT_PROB_THRESHOLD );
 		defaultSettings.put( KEY_NMS_THRESHOLD, DEFAULT_NMS_THRESHOLD );
+		defaultSettings.put( KEY_ESTIMATED_DIAMETER_XY, DEFAULT_ESTIMATED_DIAMETER_XY );
+		defaultSettings.put( KEY_ESTIMATED_DIAMETER_Z, DEFAULT_ESTIMATED_DIAMETER_Z );
+		defaultSettings.put( KEY_EXPECTED_DIAMETER_XY, DEFAULT_EXPECTED_DIAMETER_XY );
+		defaultSettings.put( KEY_EXPECTED_DIAMETER_Z, DEFAULT_EXPECTED_DIAMETER_Z );
 	}
 
 	@Override

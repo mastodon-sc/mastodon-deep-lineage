@@ -33,17 +33,21 @@ import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_NMS_THRESHO
 import static org.mastodon.mamut.detection.stardist.StarDist.DEFAULT_PROB_THRESHOLD;
 
 import java.awt.Component;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.text.NumberFormatter;
 
 import org.mastodon.mamut.ProjectModel;
 import org.mastodon.mamut.detection.stardist.StarDist;
@@ -66,20 +70,43 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 
 	public static final String KEY_NMS_THRESHOLD = "starDistNmsThreshold";
 
+	public static final String KEY_ESTIMATED_DIAMETER_XY = "starDistEstimatedDiameterXY";
+
+	public static final String KEY_ESTIMATED_DIAMETER_Z = "starDistEstimatedDiameterZ";
+
+	public static final String KEY_EXPECTED_DIAMETER_XY = "starDistExpectedDiameterXY";
+
+	public static final String KEY_EXPECTED_DIAMETER_Z = "starDistExpectedDiameterZ";
+
 	private JComboBox< StarDist.ModelType > modelTypeSelection;
 
 	private JSpinner probThreshold;
 
 	private JSpinner nmsThreshold;
 
+	private static final NumberFormat FORMAT = new DecimalFormat( "0.0" );
+
+	private JFormattedTextField estimatedDiameterXY;
+
+	private JFormattedTextField estimatedDiameterZ;
+
+	private JLabel estimatedDiameterZLabel;
+
 	@Override
 	protected void persistSettings()
 	{
 		super.persistSettings();
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
-		detectorSettings.put( KEY_MODEL_TYPE, this.modelTypeSelection.getSelectedItem() );
-		detectorSettings.put( KEY_PROB_THRESHOLD, this.probThreshold.getValue() );
-		detectorSettings.put( KEY_NMS_THRESHOLD, this.nmsThreshold.getValue() );
+		StarDist.ModelType modelType = ( StarDist.ModelType ) this.modelTypeSelection.getSelectedItem();
+		detectorSettings.put( KEY_MODEL_TYPE, modelType );
+		detectorSettings.put( KEY_PROB_THRESHOLD, probThreshold.getValue() );
+		detectorSettings.put( KEY_NMS_THRESHOLD, nmsThreshold.getValue() );
+		detectorSettings.put( KEY_ESTIMATED_DIAMETER_XY, estimatedDiameterXY.getValue() );
+		detectorSettings.put( KEY_ESTIMATED_DIAMETER_Z, estimatedDiameterZ.getValue() == null ? -1d : estimatedDiameterZ.getValue() );
+		if ( modelType == null )
+			return;
+		detectorSettings.put( KEY_EXPECTED_DIAMETER_XY, modelType.getExpectedDiameterXY() );
+		detectorSettings.put( KEY_EXPECTED_DIAMETER_Z, modelType.getExpectedDiameterZ() );
 	}
 
 	@Override
@@ -89,6 +116,14 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 		logger.info( String.format( "  - probability threshold: %s%n", settings.values.getDetectorSettings().get( KEY_PROB_THRESHOLD ) ) );
 		logger.info( String.format( "  - overlap threshold: %s%n ", settings.values.getDetectorSettings().get( KEY_NMS_THRESHOLD ) ) );
 		logger.info( String.format( "  - resolution level: %s%n ", settings.values.getDetectorSettings().get( KEY_LEVEL ) ) );
+		logger.info( String.format( "  - estimated diameter XY: %s%n ",
+				settings.values.getDetectorSettings().get( KEY_ESTIMATED_DIAMETER_XY ) ) );
+		logger.info(
+				String.format( "  - estimated diameter Z: %s%n ", settings.values.getDetectorSettings().get( KEY_ESTIMATED_DIAMETER_Z ) ) );
+		logger.info(
+				String.format( "  - expected diameter XY: %s%n ", settings.values.getDetectorSettings().get( KEY_EXPECTED_DIAMETER_XY ) ) );
+		logger.info(
+				String.format( "  - expected diameter Z: %s%n ", settings.values.getDetectorSettings().get( KEY_EXPECTED_DIAMETER_Z ) ) );
 	}
 
 	@Override
@@ -129,6 +164,34 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 		this.probThreshold.setValue( probThresholdValue );
 		this.nmsThreshold.setValue( nmsThresholdValue );
 
+		// Get the estimated xy diameter.
+		final Object diameterXYObject = detectorSettings.get( KEY_ESTIMATED_DIAMETER_XY );
+		final double diameterXYValue;
+		if ( null == diameterXYObject )
+			diameterXYValue = modelType.getExpectedDiameterXY(); // default
+		else
+			diameterXYValue = Double.parseDouble( String.valueOf( diameterXYObject ) );
+		this.estimatedDiameterXY.setValue( diameterXYValue );
+
+		int setupId = ( int ) settings.values.getDetectorSettings().get( DetectorKeys.KEY_SETUP_ID );
+		if ( ImgUtils.is3D( appModel.getSharedBdvData().getSources().get( setupId ).getSpimSource().getSource( 0, 0 ) ) )
+		{
+			// Get the estimated z diameter.
+			final Object diameterZObject = detectorSettings.get( KEY_ESTIMATED_DIAMETER_Z );
+			final double diameterZValue;
+			if ( null == diameterZObject )
+				diameterZValue = modelType.getExpectedDiameterZ(); // default
+			else
+				diameterZValue = Double.parseDouble( String.valueOf( diameterZObject ) );
+			this.estimatedDiameterZ.setValue( diameterZValue );
+		}
+		else
+		{
+			ConfigPanel configPanel = ( ConfigPanel ) this.targetPanel;
+			JPanel contentPanel = configPanel.contentPanel;
+			contentPanel.remove( estimatedDiameterZ );
+			contentPanel.remove( estimatedDiameterZLabel );
+		}
 	}
 
 	@Override
@@ -186,6 +249,23 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 		nmsLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		contentPanel.add( nmsLabel, LAYOUT_CONSTRAINT );
 		contentPanel.add( nmsThreshold, "align left, grow" );
+
+		NumberFormatter formatter = new NumberFormatter( FORMAT );
+		formatter.setValueClass( Double.class );
+
+		estimatedDiameterXY = new JFormattedTextField( formatter );
+		estimatedDiameterXY.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		JLabel estimatedDiameterXYLabel = new JLabel( "Estimated Diameter XY (pixel):" );
+		estimatedDiameterXYLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( estimatedDiameterXYLabel, "align left, growx" );
+		contentPanel.add( estimatedDiameterXY );
+
+		estimatedDiameterZ = new JFormattedTextField( formatter );
+		estimatedDiameterZ.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		estimatedDiameterZLabel = new JLabel( "Estimated Diameter Z (pixel):" );
+		estimatedDiameterZLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
+		contentPanel.add( estimatedDiameterZLabel, "align left, growx" );
+		contentPanel.add( estimatedDiameterZ );
 	}
 
 	@Override
@@ -196,9 +276,16 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 			return;
 
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
-		detectorSettings.put( KEY_MODEL_TYPE, modelTypeSelection.getSelectedItem() );
+		StarDist.ModelType modelType = ( StarDist.ModelType ) modelTypeSelection.getSelectedItem();
+		detectorSettings.put( KEY_MODEL_TYPE, modelType );
 		detectorSettings.put( KEY_PROB_THRESHOLD, probThreshold.getValue() );
 		detectorSettings.put( KEY_NMS_THRESHOLD, nmsThreshold.getValue() );
+		detectorSettings.put( KEY_ESTIMATED_DIAMETER_XY, estimatedDiameterXY.getValue() );
+		detectorSettings.put( KEY_ESTIMATED_DIAMETER_Z, estimatedDiameterZ.getValue() );
+		if ( modelType == null )
+			return;
+		detectorSettings.put( KEY_EXPECTED_DIAMETER_XY, modelType.getExpectedDiameterXY() );
+		detectorSettings.put( KEY_EXPECTED_DIAMETER_Z, modelType.getExpectedDiameterZ() );
 	}
 
 	@Override
