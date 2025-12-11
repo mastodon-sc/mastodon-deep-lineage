@@ -172,4 +172,10 @@ public class Cellpose3Detector extends DeepLearningDetector
 	{
 		return Cellpose.generateImportStatements();
 	}
+
+	@Override
+	protected String getPythonEnvInit()
+	{
+		return "import numpy\nfrom cellpose import models\n"; // NB: StarDist2D import needs to be inited even for 3D cases
+	}
 }
