@@ -181,7 +181,7 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 
 		private final JLabel info = new JLabel( "", SwingConstants.RIGHT );
 
-		protected final JPanel contentPanel;
+		public final JPanel contentPanel;
 
 		protected ConfigPanel()
 		{
