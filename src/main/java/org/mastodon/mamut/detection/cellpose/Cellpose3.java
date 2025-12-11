@@ -30,6 +30,8 @@ package org.mastodon.mamut.detection.cellpose;
 
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import org.apposed.appose.Service;
 
 /**
@@ -61,9 +63,10 @@ public class Cellpose3 extends Cellpose
 
 	private double anisotropy = 1;
 
-	public Cellpose3( final ModelType modelType, final Service python ) throws IOException
+	public Cellpose3( final ModelType modelType, final Service python, final @Nullable org.scijava.log.Logger scijavaLogger )
+			throws IOException
 	{
-		super( python );
+		super( python, scijavaLogger );
 		this.modelType = modelType;
 	}
 

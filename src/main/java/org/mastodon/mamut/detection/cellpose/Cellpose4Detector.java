@@ -99,7 +99,7 @@ public class Cellpose4Detector extends DeepLearningDetector
 	{
 		try
 		{
-			Cellpose4 cellpose = new Cellpose4( python );
+			Cellpose4 cellpose = new Cellpose4( python, log );
 			cellpose.set3D( ImgUtils.is3D( image ) );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );

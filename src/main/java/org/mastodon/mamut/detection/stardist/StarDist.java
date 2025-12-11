@@ -39,6 +39,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import net.imglib2.util.Cast;
 
 import org.apposed.appose.Service;
@@ -105,7 +107,7 @@ public class StarDist extends Segmentation
 	public StarDist( final ModelType model, final Service python, final @Nullable org.scijava.log.Logger scijavaLogger )
 			throws IOException, InterruptedException
 	{
-		super( python );
+		super( python, scijavaLogger );
 		logger.info( "Initializing StarDist, model: {}", model );
 		this.modelType = model;
 		this.probThresh = DEFAULT_PROB_THRESHOLD;

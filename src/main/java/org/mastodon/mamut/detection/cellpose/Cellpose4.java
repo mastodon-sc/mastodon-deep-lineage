@@ -30,6 +30,8 @@ package org.mastodon.mamut.detection.cellpose;
 
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import org.apposed.appose.Service;
 
 /**
@@ -56,9 +58,9 @@ public class Cellpose4 extends Cellpose
 			+ "  - pip:\n"
 			+ "    - appose==" + APPOSE_PYTHON_VERSION + "\n";
 
-	public Cellpose4( final Service python ) throws IOException
+	public Cellpose4( final Service python, final @Nullable org.scijava.log.Logger scijavaLogger ) throws IOException
 	{
-		super( python );
+		super( python, scijavaLogger );
 	}
 
 	@Override

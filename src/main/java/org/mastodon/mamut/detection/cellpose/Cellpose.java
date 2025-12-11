@@ -30,6 +30,8 @@ package org.mastodon.mamut.detection.cellpose;
 
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.Segmentation;
 
@@ -59,9 +61,9 @@ public abstract class Cellpose extends Segmentation
 
 	public static final double DEFAULT_DIAMETER = 0d;
 
-	protected Cellpose( final Service python ) throws IOException
+	protected Cellpose( final Service python, final @Nullable org.scijava.log.Logger scijavaLogger ) throws IOException
 	{
-		super( python );
+		super( python, scijavaLogger );
 	}
 
 	public void setCellProbThreshold( final double cellProbThreshold )

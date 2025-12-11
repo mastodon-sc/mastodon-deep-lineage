@@ -108,7 +108,7 @@ public class Cellpose3Detector extends DeepLearningDetector
 
 		try
 		{
-			Cellpose3 cellpose = new Cellpose3( ( Cellpose3.ModelType ) settings.get( KEY_MODEL_TYPE ), python );
+			Cellpose3 cellpose = new Cellpose3( ( Cellpose3.ModelType ) settings.get( KEY_MODEL_TYPE ), python, log );
 			boolean is3D = ImgUtils.is3D( image );
 			cellpose.set3D( is3D );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );

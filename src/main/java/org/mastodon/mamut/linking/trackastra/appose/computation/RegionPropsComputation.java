@@ -58,7 +58,7 @@ public class RegionPropsComputation extends ApposeProcess
 	public RegionPropsComputation( final org.scijava.log.Logger uiLogger, final String model, final Cancelable cancelable,
 			final StatusService statusService, final Service python )
 	{
-		super( python );
+		super( python, uiLogger );
 		this.uiLogger = uiLogger;
 		this.model = model;
 		this.cancelable = cancelable;
