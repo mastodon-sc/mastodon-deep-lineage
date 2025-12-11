@@ -176,9 +176,9 @@ public class StarDist extends Segmentation
 		String axes = dataIs2D ? "YX" : "ZYX";
 		String model = getModelString();
 		logger.info( "Using star dist model: {}", model );
-		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/detection/stardist/stardist_3d.py", StarDist.class )
+		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/detection/stardist/stardist.py", StarDist.class )
 				.replace( "{AXES}", axes )
-				.replace( "{AXES_NORMALIZE}", dataIs2D ? "axes_normalize = (0, 1)" : "axes_normalize = (0, 1, 2)" )
+				.replace( "{AXES_NORMALIZE}", dataIs2D ? "(0, 1)" : "(0, 1, 2)" )
 				.replace( "{MODEL}", model )
 				.replace( "{NMS_THRESH}", String.valueOf( nmsThresh ) )
 				.replace( "{PROB_THRESH}", String.valueOf( probThresh ) );
