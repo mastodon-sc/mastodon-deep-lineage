@@ -313,4 +313,10 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 			}
 		}
 	}
+
+	@Override
+	protected void createLevelSpinner()
+	{
+		// Do nothing, StarDist does not use resolution levels
+	}
 }

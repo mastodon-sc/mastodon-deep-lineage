@@ -175,6 +175,11 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 		this.settings = trackmate.getSettings();
 	}
 
+	protected void createLevelSpinner()
+	{
+		level = new JSpinner( new SpinnerNumberModel( 0, 0, 0, 1 ) );
+	}
+
 	protected class ConfigPanel extends JPanel
 	{
 		private final JButton preview = new JButton( "Preview", PREVIEW_ICON );
@@ -201,13 +206,15 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 			contentPanel.add( headlineLabel, "growx" );
 
 			configureDetectorSpecificFields( contentPanel );
-
-			level = new JSpinner( new SpinnerNumberModel( 0, 0, 0, 1 ) );
-			level.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
-			levelLabel = new JLabel( getLevelText( 0 ) );
-			levelLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
-			contentPanel.add( levelLabel, LAYOUT_CONSTRAINT );
-			contentPanel.add( level, "align left, grow" );
+			createLevelSpinner();
+			if ( level != null )
+			{
+				level.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
+				levelLabel = new JLabel( getLevelText( 0 ) );
+				levelLabel.setFont( getFont().deriveFont( getFont().getSize2D() - 2f ) );
+				contentPanel.add( levelLabel, LAYOUT_CONSTRAINT );
+				contentPanel.add( level, "align left, grow" );
+			}
 
 			preview.addActionListener( e -> preview() );
 			contentPanel.add( preview, "align right, wrap" );
