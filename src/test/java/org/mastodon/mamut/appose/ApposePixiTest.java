@@ -2,6 +2,7 @@ package org.mastodon.mamut.appose;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,6 @@ import org.apposed.appose.Appose;
 import org.apposed.appose.Builder;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
-import org.apposed.appose.TaskException;
-import org.apposed.appose.BuildException;
 import org.junit.jupiter.api.Test;
 
 class ApposePixiTest
@@ -116,7 +115,7 @@ class ApposePixiTest
 			+ "cuda-dev = { features = ['cuda', 'dev'], solve-group = 'default' }";
 
 	@Test
-	void testApposePixi() throws BuildException, InterruptedException, TaskException
+	void testApposePixi() throws InterruptedException, IOException
 	{
 		Environment env = Appose.pixi().content( ENV_CONTENT ).logDebug().build();
 		List< String > launchArgs = new ArrayList<>( env.launchArgs() );
@@ -165,7 +164,7 @@ class ApposePixiTest
 	}
 
 	@Test
-	void testApposePixiToml() throws BuildException, InterruptedException, TaskException
+	void testApposePixiToml() throws InterruptedException, IOException
 	{
 		Environment env = Appose.pixi( "src/test/resources/org/mastodon/mamut/appose/stardist.toml" ).logDebug().build();
 		List< String > launchArgs = new ArrayList<>( env.launchArgs() );
@@ -214,7 +213,7 @@ class ApposePixiTest
 	}
 
 	@Test
-	void testApposePixiTomlGpu() throws BuildException, InterruptedException, TaskException
+	void testApposePixiTomlGpu() throws InterruptedException, IOException
 	{
 		Environment env = Appose.pixi( "src/test/resources/org/mastodon/mamut/appose/stardist-gpu.toml" ).logDebug().build();
 		try (Service python = env.python())
