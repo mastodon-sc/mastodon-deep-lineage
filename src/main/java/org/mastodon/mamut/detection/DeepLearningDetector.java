@@ -269,9 +269,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 			image = Views.interval( image, roi );
 		}
 
-		final Img< ? > segmentation =
-				performSegmentation( Views.dropSingletonDimensions( image ), source.getVoxelDimensions().dimensionsAsDoubleArray(),
-						python );
+		final Img< ? > segmentation = performSegmentation( Views.dropSingletonDimensions( image ),
+				source.getVoxelDimensions().dimensionsAsDoubleArray(), python );
 
 		if ( segmentation != null )
 		{
