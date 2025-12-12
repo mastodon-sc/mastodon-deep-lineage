@@ -58,7 +58,7 @@ public class DetectionDemo
 		Environment environment = Appose.mamba().content( Cellpose4.ENV_FILE_CONTENT ).scheme( "environment.yml" ).logDebug().build();
 		try (Service python = environment.python().init( Cellpose4.generateImportStatements() ))
 		{
-			Cellpose4 cellpose = new Cellpose4( python );
+			Cellpose4 cellpose = new Cellpose4( python, null );
 			long startTime = System.currentTimeMillis();
 			Img< FloatType > cellposeSegmentation = cellpose.segmentImage( img );
 			long endTime = System.currentTimeMillis();
@@ -74,7 +74,7 @@ public class DetectionDemo
 		environment = Appose.mamba().content( StarDist.ENV_FILE_CONTENT ).scheme( "environment.yml" ).logDebug().build();
 		try (Service python = environment.python().init( StarDist.generateImportStatements( StarDist.ModelType.DEMO, false ) ))
 		{
-			StarDist starDist = new StarDist( StarDist.ModelType.DEMO, python );
+			StarDist starDist = new StarDist( StarDist.ModelType.DEMO, python, null );
 			long startTime = System.currentTimeMillis();
 			Img< FloatType > starDistSegmentation = starDist.segmentImage( img );
 			long endTime = System.currentTimeMillis();

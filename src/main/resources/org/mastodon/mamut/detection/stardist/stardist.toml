@@ -1,0 +1,97 @@
+[workspace]
+name = '{ENV_NAME}'
+version = "0.0.1"
+description = "Mastodon spot detector using StarDist3D."
+authors = [
+    "Curtis Rueden",
+    "Carlos Garcia",
+    "Jean-Yves Tinevez",
+    "Stefan Hahmann"
+]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "osx-64", "linux-64", "win-64"]
+
+[dependencies]
+python = "==3.10"
+numpy = "<2"
+scipy = "*"
+pip = "*"
+
+[pypi-dependencies]
+appose = "=={APPOSE_VERSION}"
+stardist = "==0.9.1"
+csbdeep = "*"
+ndv = { extras = ["qt"] }
+pygfx = "<0.13.0"
+
+# ---------------------------------------------------------------------------
+# WINDOWS (GPU TensorFlow by default)
+# ---------------------------------------------------------------------------
+
+[target.win-64.dependencies]
+cudatoolkit = "11.2.*"
+cudnn = "8.1.*"
+
+[target.win-64.activation.env]
+# Makes CUDA runtime DLLs visible to TensorFlow
+PATH = "%CONDA_PREFIX%\\Library\\bin;%PATH%"
+
+[target.win-64.pypi-dependencies]
+tensorflow-gpu = "==2.10.1"
+
+
+# ---------------------------------------------------------------------------
+# LINUX (GPU TensorFlow by default)
+# ---------------------------------------------------------------------------
+
+[target.linux-64.dependencies]
+cudatoolkit = "11.2.*"
+cudnn = "8.1.*"
+
+[target.linux-64.activation.env]
+LD_LIBRARY_PATH = "$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
+
+[target.linux-64.pypi-dependencies]
+tensorflow-gpu = "==2.10.1"
+
+
+# ---------------------------------------------------------------------------
+# macOS INTEL (CPU TensorFlow)
+# ---------------------------------------------------------------------------
+
+[target.osx-64.pypi-dependencies]
+tensorflow = "*"
+
+
+# ---------------------------------------------------------------------------
+# macOS Apple Silicon (TensorFlow-Macos + Metal)
+# ---------------------------------------------------------------------------
+
+[target.osx-arm64.pypi-dependencies]
+tensorflow-macos = "*"
+tensorflow-metal = "*"
+
+
+# ---------------------------------------------------------------------------
+# DEV ENVIRONMENT (your original)
+# ---------------------------------------------------------------------------
+
+[feature.dev.dependencies]
+pytest = "*"
+ruff = "*"
+
+[feature.dev.pypi-dependencies]
+build = "*"
+validate-pyproject = { extras = ["all"] }
+
+[tasks]
+start = "python src/main.py"
+lint = "ruff check --fix && ruff format"
+test = "pytest -v -p no:faulthandler tests"
+validate = "validate-pyproject pyproject.toml"
+dist = "python -m build"
+check = { depends-on = ["validate", "lint"] }
+
+[environments]
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }

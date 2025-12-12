@@ -32,14 +32,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.invoke.MethodHandles;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import net.imglib2.util.Cast;
 
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.Segmentation;
+import org.mastodon.mamut.util.ResourceUtils;
+import org.mastodon.mamut.util.ZipUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,20 +67,10 @@ public class StarDist extends Segmentation
 {
 	public static final String ENV_NAME = "stardist";
 
-	public static final String ENV_FILE_CONTENT = "name: " + ENV_NAME + "\n"
-			+ "channels:\n"
-			+ "  - conda-forge\n"
-			+ "channel_priority: strict\n"
-			+ "dependencies:\n"
-			+ "  - python=3.10\n"
-			+ getCuda()
-			+ "  - numpy<1.24\n"
-			+ "  - pip\n"
-			+ "  - pip:\n"
-			+ "    - numpy<1.24\n"
-			+ getTensorflow()
-			+ "    - stardist==0.8.5\n"
-			+ "    - appose==" + APPOSE_PYTHON_VERSION + "\n";
+	public static final String ENV_FILE_CONTENT =
+			ResourceUtils.readResourceAsString( "org/mastodon/mamut/detection/stardist/stardist.toml", StarDist.class )
+					.replace( "{ENV_NAME}", ENV_NAME )
+					.replace( "{APPOSE_VERSION}", APPOSE_PYTHON_VERSION );
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
@@ -87,17 +84,36 @@ public class StarDist extends Segmentation
 
 	private double nmsThresh;
 
+	private double estimatedDiameterXY;
+
+	private double estimatedDiameterZ;
+
+	private double expectedDiameterXY;
+
+	private double expectedDiameterZ;
+
 	public static final double DEFAULT_PROB_THRESHOLD = 0.5d;
 
 	public static final double DEFAULT_NMS_THRESHOLD = 0.4d;
 
-	public StarDist( final ModelType model, final Service python ) throws IOException, InterruptedException
+	public static final double DEFAULT_ESTIMATED_DIAMETER_XY = 30.0d;
+
+	public static final double DEFAULT_ESTIMATED_DIAMETER_Z = 10.0d;
+
+	public static final double DEFAULT_EXPECTED_DIAMETER_XY = 30.0d;
+
+	public static final double DEFAULT_EXPECTED_DIAMETER_Z = 10.0d;
+
+	public StarDist( final ModelType model, final Service python, final @Nullable org.scijava.log.Logger scijavaLogger )
+			throws IOException, InterruptedException
 	{
-		super( python );
+		super( python, scijavaLogger );
 		logger.info( "Initializing StarDist, model: {}", model );
 		this.modelType = model;
 		this.probThresh = DEFAULT_PROB_THRESHOLD;
 		this.nmsThresh = DEFAULT_NMS_THRESHOLD;
+		this.estimatedDiameterXY = DEFAULT_ESTIMATED_DIAMETER_XY;
+		this.estimatedDiameterZ = DEFAULT_ESTIMATED_DIAMETER_Z;
 		Path starDistModelRoot = getStarDistModelRoot();
 		if ( starDistModelRoot == null )
 			logger.debug( "StarDist model path is null. This is normal for the built-in demo models" );
@@ -129,19 +145,33 @@ public class StarDist extends Segmentation
 		{
 			try
 			{
-				logger.info( "Downloading model to {}", directory.getAbsolutePath() );
-				BioimageioRepo repo = BioimageioRepo.connect();
-				ModelDescriptor descriptor = repo.selectByName( modelType.getModelName() );
-				String installationFolder = repo.downloadByName( modelType.getModelName(), directory.getAbsolutePath() );
-				installationFolderName = Paths.get( installationFolder ).getFileName().toString();
-				createConfigFromBioimageio( descriptor, directory.getAbsolutePath() + File.separator + installationFolderName );
-				logger.info( "Downloading finished. Installation folder: {}", installationFolderName );
+				if ( modelType.getUrl() == null )
+					downloadFromBioimageIORepo( directory );
+				else
+				{
+					installationFolderName = "model";
+					String path = directory.getAbsolutePath() + File.separator + installationFolderName;
+					logger.info( "Downloading model from URL: {} to {}", modelType.getUrl(), path );
+					ZipUtils.downloadAndUnpack( modelType.getUrl(), Paths.get( path ) );
+				}
+
 			}
 			catch ( IllegalArgumentException e )
 			{
 				logger.info( "Exception while downloading model: {}", e.getMessage() );
 			}
 		}
+	}
+
+	private void downloadFromBioimageIORepo( final File directory ) throws InterruptedException, IOException
+	{
+		logger.info( "Downloading model to {}", directory.getAbsolutePath() );
+		BioimageioRepo repo = BioimageioRepo.connect();
+		ModelDescriptor descriptor = repo.selectByName( modelType.getModelName() );
+		String installationFolder = repo.downloadByName( modelType.getModelName(), directory.getAbsolutePath() );
+		installationFolderName = Paths.get( installationFolder ).getFileName().toString();
+		createConfigFromBioimageio( descriptor, directory.getAbsolutePath() + File.separator + installationFolderName );
+		logger.info( "Downloading finished. Installation folder: {}", installationFolderName );
 	}
 
 	private Path getStarDistModelRoot()
@@ -161,44 +191,41 @@ public class StarDist extends Segmentation
 		JSONUtils.writeJSONFile( jsonFile.getAbsolutePath(), stardistConfig );
 	}
 
-	private static String getCuda()
-	{
-		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
-			return "";
-		return "  - cudatoolkit=11.2\n"
-				+ "  - cudnn=8.1.0\n";
-	}
-
-	private static String getTensorflow()
-	{
-		if ( System.getProperty( "os.name" ).toLowerCase().contains( "mac" ) )
-			return "    - tensorflow-macos==2.10\n"
-					+ "    - tensorflow-metal==0.6.0\n";
-		// TODO: in order to let the following pickup the GPU, it is required that this combination of CUDA/cuDNN is installed on the system: CUDA 11.2 + cuDNN 8.1
-		// cf: https://biapol.github.io/blog/stefan_hahmann/stardist_gpu_2025/readme.html
-		return "    - tensorflow==2.10\n"
-				+ "    - tensorflow-gpu==2.10.0\n";
-	}
-
 	@Override
 	protected String generateScript()
 	{
-		return "np.random.seed(6)" + "\n"
-				+ getAxesNormalizeCommand()
-				+ "\n"
-				+ "task.update(message=\"Loading StarDist pretrained model\")" + "\n"
-				+ getLoadModelCommand()
-				+ "image_ndarray = image.ndarray()" + "\n"
-				+ "image_normalized = normalize(image_ndarray, 1, 99.8, axis=axes_normalize)" + "\n"
-				+ "task.update(message=\"Image shape:\" + str(image_normalized.shape))" + "\n"
-				+ "\n"
-				+ "guessed_tiles = model._guess_n_tiles(image_normalized)" + "\n"
-				+ "task.update(message=\"Guessed tiles: \" + str(guessed_tiles))" + "\n"
-				+ "\n"
-				+ getPredictionCommand()
-				+ "shared = appose.NDArray(image.dtype, image.shape)" + "\n"
-				+ "shared.ndarray()[:] = label_image" + "\n"
-				+ "task.outputs['label_image'] = shared" + "\n";
+		String axes = dataIs2D ? "YX" : "ZYX";
+		String model = getModelString();
+		logger.info( "Using star dist model: {}", model );
+		return ResourceUtils.readResourceAsString( "org/mastodon/mamut/detection/stardist/stardist.py", StarDist.class )
+				.replace( "{AXES}", axes )
+				.replace( "{AXES_NORMALIZE}", dataIs2D ? "(0, 1)" : "(0, 1, 2)" )
+				.replace( "{MODEL}", model )
+				.replace( "{NMS_THRESH}", String.valueOf( nmsThresh ) )
+				.replace( "{PROB_THRESH}", String.valueOf( probThresh ) )
+				.replace( "{ESTIMATED_DIAMETER_XY}", String.valueOf( estimatedDiameterXY ) )
+				.replace( "{ESTIMATED_DIAMETER_Z}", String.valueOf( estimatedDiameterZ ) )
+				.replace( "{EXPECTED_DIAMETER_XY}", String.valueOf( expectedDiameterXY ) )
+				.replace( "{EXPECTED_DIAMETER_Z}", String.valueOf( expectedDiameterZ ) );
+	}
+
+	private String getModelString()
+	{
+		String baseDir = "models" + File.separator + modelType.getModelPath();
+		if ( modelType.getModelPath() == null )
+		{
+			if ( dataIs2D )
+				return "model = StarDist2D.from_pretrained('2D_demo')";
+			else
+				return "model = StarDist3D.from_pretrained('3D_demo')";
+		}
+		else
+		{
+			if ( dataIs2D )
+				return "model = StarDist2D(None, name='" + installationFolderName + "', basedir=r'" + baseDir + "')";
+			else
+				return "model = StarDist3D(None, name='" + installationFolderName + "', basedir=r'" + baseDir + "')";
+		}
 	}
 
 	public static String generateImportStatements( final ModelType modelType, final boolean dataIs2D )
@@ -219,11 +246,13 @@ public class StarDist extends Segmentation
 		return "import numpy as np" + "\n"
 				+ "import appose as appose" + "\n"
 				+ "from csbdeep.utils import normalize" + "\n"
+				+ "import tensorflow as tf" + "\n"
+				+ "from scipy.ndimage import zoom" + "\n"
 				+ getImportStarDistCommand( modelType, dataIs2D )
 				+ "\n"
-				+ "task.update(message=\"Imports completed\")" + "\n"
+				+ "task.update(message='Imports completed')" + "\n"
 				+ "\n"
-				+ "task.export(np=np, appose=appose, normalize=normalize, " + starDistImport + ")" + "\n";
+				+ "task.export(np=np, appose=appose, normalize=normalize, zoom=zoom, tf=tf, " + starDistImport + ")" + "\n";
 	}
 
 	public ModelType getModelType()
@@ -258,6 +287,45 @@ public class StarDist extends Segmentation
 		this.nmsThresh = nmsThresh;
 	}
 
+	/**
+	 * Set the estimated diameter (in pixel) for the XY plane.
+	 *
+	 * @param estimatedDiameterXY the estimated diameter in the XY plane
+	 */
+	public void setEstimatedDiameterXY( final double estimatedDiameterXY )
+	{
+		this.estimatedDiameterXY = estimatedDiameterXY;
+	}
+
+	/**
+	 * Set the estimated diameter (in pixel) for the Z axis.
+	 * @param estimatedDiameterZ the estimated diameter in the Z axis
+	 */
+	public void setEstimatedDiameterZ( final double estimatedDiameterZ )
+	{
+		this.estimatedDiameterZ = estimatedDiameterZ;
+	}
+
+	/**
+	 * Set the diameter expected by the chosen model (in pixel) for the XY plane.
+	 *
+	 * @param expectedDiameterXY the expected diameter in the XY plane
+	 */
+	public void setExpectedDiameterXY( final double expectedDiameterXY )
+	{
+		this.expectedDiameterXY = expectedDiameterXY;
+	}
+
+	/**
+	 * Set the diameter expected by the chosen model (in pixel) for the Z axis.
+	 *
+	 * @param expectedDiameterZ the expected diameter in the Z axis
+	 */
+	public void setExpectedDiameterZ( final double expectedDiameterZ )
+	{
+		this.expectedDiameterZ = expectedDiameterZ;
+	}
+
 	private static String getImportStarDistCommand( final ModelType modelType, final boolean dataIs2D )
 	{
 		if ( modelType.getModelPath() == null )
@@ -271,41 +339,26 @@ public class StarDist extends Segmentation
 		return "from stardist.models import StarDist3D" + "\n ";
 	}
 
-	private String getAxesNormalizeCommand()
-	{
-		return dataIs2D ? "axes_normalize = (0, 1)" + "\n " : // for 2D data (Y, X) or 3D data with 2D slices (Z, Y, X)
-				"axes_normalize = (0, 1, 2)" + "\n "; // for 3D data (Z, Y, X)
-	}
-
-	private String getPredictionCommand()
-	{
-		String axes = dataIs2D ? "YX" : "ZYX";
-		return "label_image, details = model.predict_instances(image_normalized, axes='" + axes + "', n_tiles=guessed_tiles, nms_thresh="
-				+ nmsThresh + ", prob_thresh=" + probThresh + ")" + "\n";
-	}
-
-	private String getLoadModelCommand()
-	{
-		if ( modelType.getModelPath() == null )
-		{
-			if ( dataIs2D )
-				return "model = StarDist2D.from_pretrained('2D_demo')" + "\n";
-			else
-				return "model = StarDist3D.from_pretrained('3D_demo')" + "\n";
-		}
-		String starDistModel = Boolean.TRUE.equals( modelType.is2D() ) ? "StarDist2D" : "StarDist3D";
-		return "model = " + starDistModel + "(None, name='" + installationFolderName + "', basedir=r\"models" + File.separator
-				+ modelType.getModelPath() + "\")"
-				+ "\n";
-	}
-
 	public enum ModelType
 	{
-		PLANT_NUCLEI_3D( "StarDist Plant Nuclei 3D ResNet", "stardist-plant-nuclei-3d", false ),
-		FLUO_2D( "StarDist Fluorescence Nuclei Segmentation", "stardist-fluo-2d", true ),
-		// H_E( "StarDist H&E Nuclei Segmentation", "stardist-h-e-nuclei", true ), // NB: operates on 3 input channels
-		DEMO( "StarDist Demo", null, null );
-		// https://zenodo.org/records/10518151 another pre-trained 3D model for nuclei segmentation
+		PLANT_NUCLEI_3D( "StarDist Plant Nuclei 3D ResNet", "plant-nuclei-3d", false, null, 32, 16 ),
+		FLUO_2D( "StarDist Fluorescence Nuclei Segmentation", "fluo-2d", true, null, 32, 0 ), // NB: expected diameter unknown
+		CHO_CELLS_2D( "CHO mitotic rounding segmentation - brightfield - StarDist", "cho-cells-2d", true, null, 30, 0 ), // NB: expected diameter unknown
+		NUCLEI_BOUNDARY_2D( "Nuclei Segmentation Boundary Model", "nuclei-boundary-2d", true, null, 30, 0 ), // NB: expected diameter unknown
+		// H_E( "H&E Nuclei Segmentation", "h-e-nuclei", true, null ), // NB: operates on 3 input channels
+		SOSPIM_3D(
+				"SoSPIM - DAPI/SOX2", "sospim-nuclei-3d", false,
+				"https://zenodo.org/records/10518151/files/model_sospim.zip?download=1", 27.5, 10
+		),
+		CONFOCAL_3D(
+				"Confocal - FUCCI label", "confocal-nuclei-3d", false,
+				"https://zenodo.org/records/10518151/files/model_confocal.zip?download=1", 39, 7
+		),
+		SPINNING_DISK_3D(
+				"Spinning Disk - DAPI", "spinning-disk-nuclei-3d", false,
+				"https://zenodo.org/records/10518151/files/model_spinning.zip?download=1", 39, 7
+		),
+		DEMO( "Default Model", null, null, null, -1, -1 );
 
 		private final String modelName;
 
@@ -313,11 +366,23 @@ public class StarDist extends Segmentation
 
 		private final Boolean is2D;
 
-		ModelType( final String modelName, final String modelPath, final Boolean is2D )
+		private final String urlString;
+
+		private final double expectedDiameterXY;
+
+		private final double expectedDiameterZ;
+
+		ModelType(
+				final String modelName, final String modelPath, final Boolean is2D, final String urlString,
+				final double expectedDiameterXY, final double expectedDiameterZ
+		)
 		{
 			this.modelName = modelName;
 			this.modelPath = modelPath;
 			this.is2D = is2D;
+			this.urlString = urlString;
+			this.expectedDiameterXY = expectedDiameterXY;
+			this.expectedDiameterZ = expectedDiameterZ;
 		}
 
 		public String getModelName()
@@ -330,9 +395,34 @@ public class StarDist extends Segmentation
 			return modelPath;
 		}
 
+		public URL getUrl()
+		{
+			if ( urlString == null )
+				return null;
+
+			try
+			{
+				return URI.create( urlString ).toURL();
+			}
+			catch ( MalformedURLException e )
+			{
+				throw new IllegalStateException( "Invalid URL in enum: " + urlString, e );
+			}
+		}
+
 		public Boolean is2D()
 		{
 			return is2D;
+		}
+
+		public double getExpectedDiameterXY()
+		{
+			return expectedDiameterXY;
+		}
+
+		public double getExpectedDiameterZ()
+		{
+			return expectedDiameterZ;
 		}
 
 		@Override
@@ -351,7 +441,7 @@ public class StarDist extends Segmentation
 			else
 				dimensionality = " (3D)";
 
-			return modelName + dimensionality;
+			return modelName.replace( "StarDist ", "" ).replace( " - StarDist", "" ) + dimensionality;
 		}
 
 		public static ModelType fromString( final String modelName )

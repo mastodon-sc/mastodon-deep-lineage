@@ -92,6 +92,10 @@ class StarDistDetectorTest
 			settings.put( DetectorKeys.KEY_MIN_TIMEPOINT, 0 );
 			settings.put( DetectorKeys.KEY_MAX_TIMEPOINT, 0 );
 			settings.put( DetectorKeys.KEY_SETUP_ID, 0 );
+			settings.put( StarDistDetectorDescriptor.KEY_ESTIMATED_DIAMETER_XY, 32d );
+			settings.put( StarDistDetectorDescriptor.KEY_ESTIMATED_DIAMETER_Z, 16d );
+			settings.put( StarDistDetectorDescriptor.KEY_EXPECTED_DIAMETER_XY, 32d );
+			settings.put( StarDistDetectorDescriptor.KEY_EXPECTED_DIAMETER_Z, 16d );
 			settings.put( DeepLearningDetectorKeys.KEY_LEVEL, 0 );
 
 			// make settings available for the detector

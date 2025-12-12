@@ -43,7 +43,7 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apposed.appose.Appose;
+import org.apposed.appose.Builder;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.util.SpimImageProperties;
@@ -130,7 +130,9 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 				final Source< ? > source = sources.get( settings.getSetupId() ).getSpimSource();
 				RandomAccessibleInterval< ? > image = source.getSource( 0, 0 );
 
-				Service.Task importTask = python.task( getImportScript( is2D( image ) ), "main" );
+				String importScript = getImportScript( ImgUtils.is2D( image ) );
+				logger.info( "import script:\n{}", importScript );
+				Service.Task importTask = python.task( importScript, "main" );
 				importTask.waitFor();
 				this.pythonService = python;
 				for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
@@ -187,7 +189,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	 */
 	private Environment buildEnvironment() throws IOException
 	{
-		return Appose.mamba().scheme( "environment.yml" ).content( getPythonEnvContent() ).logDebug()
+		return getBuilder().content( getPythonEnvContent() ).logDebug()
 				.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
 				.subscribeOutput( logger::info )
 				.subscribeError( logger::error ).build();
@@ -199,7 +201,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		final int minTimepoint = ( int ) settings.get( DetectorKeys.KEY_MIN_TIMEPOINT );
 		final int maxTimepoint = ( int ) settings.get( DetectorKeys.KEY_MAX_TIMEPOINT );
 		final int setup = ( int ) settings.get( DetectorKeys.KEY_SETUP_ID );
-		final int level = ( int ) settings.get( DeepLearningDetectorKeys.KEY_LEVEL );
+		final Object levelObject = settings.get( DeepLearningDetectorKeys.KEY_LEVEL );
+		final int level = levelObject == null ? 0 : ( int ) settings.get( DeepLearningDetectorKeys.KEY_LEVEL );
 
 		logger.info( "Settings contain, minTimepoint: {}, maxTimepoint: {}, setup: {} and level: {}", minTimepoint, maxTimepoint, setup,
 				level );
@@ -267,9 +270,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 			image = Views.interval( image, roi );
 		}
 
-		final Img< ? > segmentation =
-				performSegmentation( Views.dropSingletonDimensions( image ), source.getVoxelDimensions().dimensionsAsDoubleArray(),
-						python );
+		final Img< ? > segmentation = performSegmentation( Views.dropSingletonDimensions( image ),
+				source.getVoxelDimensions().dimensionsAsDoubleArray(), python );
 
 		if ( segmentation != null )
 		{
@@ -326,28 +328,6 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 		return highestValue / lowestValue;
 	}
 
-	protected boolean is2D( final RandomAccessibleInterval< ? > image )
-	{
-		return !is3D( image );
-	}
-
-	protected boolean is3D( final RandomAccessibleInterval< ? > image )
-	{
-		long[] dimensions = image.dimensionsAsLongArray();
-		if ( dimensions.length <= 2 )
-			return false;
-		else
-		{
-			int nonPlaneDimensionCount = 0;
-			for ( final long dimension : dimensions )
-			{
-				if ( dimension > 1 )
-					nonPlaneDimensionCount++;
-			}
-			return nonPlaneDimensionCount > 2;
-		}
-	}
-
 	@Override
 	public Map< String, Object > getDefaultSettings()
 	{
@@ -373,6 +353,8 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	protected abstract String getPythonEnvContent();
 
 	protected abstract String getPythonEnvName();
+
+	protected abstract Builder< ? > getBuilder();
 
 	protected String getPythonEnvInit()
 	{

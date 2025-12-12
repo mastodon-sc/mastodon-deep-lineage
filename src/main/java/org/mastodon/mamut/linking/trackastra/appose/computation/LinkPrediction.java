@@ -60,7 +60,7 @@ public class LinkPrediction extends ApposeProcess
 			final Cancelable cancelable, final StatusService statusService, final Service python
 	)
 	{
-		super( python );
+		super( python, uiLogger );
 		this.settings = settings;
 		this.index = index;
 		this.edgeCreator = edgeCreator;

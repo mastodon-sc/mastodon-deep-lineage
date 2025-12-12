@@ -33,6 +33,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.appose.NDArrays;
 import net.imglib2.appose.ShmImg;
@@ -54,9 +56,9 @@ public abstract class Segmentation extends ApposeProcess
 {
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	protected Segmentation( final Service pythonService )
+	protected Segmentation( final Service pythonService, final @Nullable org.scijava.log.Logger scijavaLogger )
 	{
-		super( pythonService );
+		super( pythonService, scijavaLogger );
 	}
 
 	/**

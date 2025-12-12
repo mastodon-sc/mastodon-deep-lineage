@@ -70,7 +70,7 @@ class StarDistTest
 	void testFromStringWithValidModelTypeDemo()
 	{
 		// Arrange
-		String modelName = "StarDist Demo";
+		String modelName = "Default Model";
 
 		// Act
 		StarDist.ModelType result = StarDist.ModelType.fromString( modelName );

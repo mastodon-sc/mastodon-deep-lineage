@@ -52,10 +52,13 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.util.Cast;
 
+import org.apposed.appose.Appose;
+import org.apposed.appose.Builder;
 import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.DeepLearningDetector;
-import org.mastodon.mamut.detection.stardist.StarDist;
+import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
+import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
@@ -106,12 +109,26 @@ public class Cellpose3Detector extends DeepLearningDetector
 
 		try
 		{
-			Cellpose3 cellpose = new Cellpose3( ( Cellpose3.ModelType ) settings.get( KEY_MODEL_TYPE ), python );
-			boolean is3D = is3D( image );
+			Cellpose3 cellpose = new Cellpose3( ( Cellpose3.ModelType ) settings.get( KEY_MODEL_TYPE ), python, log );
+			boolean is3D = ImgUtils.is3D( image );
 			cellpose.set3D( is3D );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );
-			cellpose.setDiameter( ( double ) settings.get( KEY_DIAMETER ) );
+			Object diameterObject = settings.get( Cellpose4DetectorDescriptor.KEY_DIAMETER );
+			if ( diameterObject != null )
+			{
+				double diameter = ( double ) diameterObject;
+				int level = ( int ) settings.get( KEY_LEVEL );
+				if ( level != 0 )
+				{
+					// Adjust diameter based on the pyramid level
+					diameter = diameter / Math.pow( 2, level );
+					logger.info( "Adjusted diameter for pyramid level {}: {}", level, diameter );
+				}
+				cellpose.setDiameter( diameter );
+			}
+			else
+				cellpose.setDiameter( 0 );
 			cellpose.setGpuID( ( int ) settings.get( KEY_GPU_ID ) );
 			cellpose.setGpuMemoryFraction( ( double ) settings.get( KEY_GPU_MEMORY_FRACTION ) );
 			final boolean respectAnisotropy = ( boolean ) settings.get( KEY_RESPECT_ANISOTROPY );
@@ -160,8 +177,20 @@ public class Cellpose3Detector extends DeepLearningDetector
 	}
 
 	@Override
+	protected Builder< ? > getBuilder()
+	{
+		return Appose.mamba().scheme( "environment.yml" );
+	}
+
+	@Override
 	protected String getImportScript( final boolean dataIs2D )
 	{
-		return Cellpose3.generateImportStatements();
+		return Cellpose.generateImportStatements();
+	}
+
+	@Override
+	protected String getPythonEnvInit()
+	{
+		return "import numpy\nfrom cellpose import models\n"; // NB: StarDist2D import needs to be inited even for 3D cases
 	}
 }
