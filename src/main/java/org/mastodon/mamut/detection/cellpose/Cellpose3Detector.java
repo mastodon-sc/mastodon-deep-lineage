@@ -58,6 +58,7 @@ import org.apposed.appose.Service;
 import org.mastodon.mamut.detection.DeepLearningDetector;
 import org.mastodon.mamut.util.ImgUtils;
 import org.mastodon.tracking.mamut.detection.SpotDetectorOp;
+import org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
@@ -113,7 +114,21 @@ public class Cellpose3Detector extends DeepLearningDetector
 			cellpose.set3D( is3D );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );
-			cellpose.setDiameter( ( double ) settings.get( KEY_DIAMETER ) );
+			Object diameterObject = settings.get( Cellpose4DetectorDescriptor.KEY_DIAMETER );
+			if ( diameterObject != null )
+			{
+				double diameter = ( double ) diameterObject;
+				int level = ( int ) settings.get( KEY_LEVEL );
+				if ( level != 0 )
+				{
+					// Adjust diameter based on the pyramid level
+					diameter = diameter / Math.pow( 2, level );
+					logger.info( "Adjusted diameter for pyramid level {}: {}", level, diameter );
+				}
+				cellpose.setDiameter( diameter );
+			}
+			else
+				cellpose.setDiameter( 0 );
 			cellpose.setGpuID( ( int ) settings.get( KEY_GPU_ID ) );
 			cellpose.setGpuMemoryFraction( ( double ) settings.get( KEY_GPU_MEMORY_FRACTION ) );
 			final boolean respectAnisotropy = ( boolean ) settings.get( KEY_RESPECT_ANISOTROPY );

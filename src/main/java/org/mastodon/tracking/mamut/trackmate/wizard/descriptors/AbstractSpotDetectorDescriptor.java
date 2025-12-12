@@ -97,7 +97,8 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 	protected void persistSettings()
 	{
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
-		detectorSettings.put( KEY_LEVEL, this.level.getValue() );
+		if ( level != null )
+			detectorSettings.put( KEY_LEVEL, this.level.getValue() );
 	}
 
 	protected abstract void logSettings();
@@ -107,22 +108,25 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 		// Get the values.
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
 
-		final Object levelObject = detectorSettings.get( KEY_LEVEL );
-		final int levelValue;
-		if ( null == levelObject )
-			levelValue = DEFAULT_LEVEL; // default
-		else
-			levelValue = Integer.parseInt( String.valueOf( levelObject ) );
-		this.level.setValue( levelValue );
-		SpinnerModel model = this.level.getModel();
-		int setupId = ( int ) settings.values.getDetectorSettings().get( DetectorKeys.KEY_SETUP_ID );
-		int maxLevels = appModel.getSharedBdvData().getSources().get( setupId ).getSpimSource().getNumMipmapLevels() - 1;
-		if ( model instanceof SpinnerNumberModel )
+		if ( this.level != null )
 		{
-			final SpinnerNumberModel spinnerModel = ( SpinnerNumberModel ) model;
-			spinnerModel.setMaximum( maxLevels );
+			final Object levelObject = detectorSettings.get( KEY_LEVEL );
+			final int levelValue;
+			if ( null == levelObject )
+				levelValue = DEFAULT_LEVEL; // default
+			else
+				levelValue = Integer.parseInt( String.valueOf( levelObject ) );
+			this.level.setValue( levelValue );
+			SpinnerModel model = this.level.getModel();
+			int setupId = ( int ) settings.values.getDetectorSettings().get( DetectorKeys.KEY_SETUP_ID );
+			int maxLevels = appModel.getSharedBdvData().getSources().get( setupId ).getSpimSource().getNumMipmapLevels() - 1;
+			if ( model instanceof SpinnerNumberModel )
+			{
+				final SpinnerNumberModel spinnerModel = ( SpinnerNumberModel ) model;
+				spinnerModel.setMaximum( maxLevels );
+			}
+			levelLabel.setText( getLevelText( maxLevels ) );
 		}
-		levelLabel.setText( getLevelText( maxLevels ) );
 	}
 
 	protected abstract String getDetectorName();
@@ -138,7 +142,8 @@ public abstract class AbstractSpotDetectorDescriptor extends SpotDetectorDescrip
 			return;
 
 		final Map< String, Object > detectorSettings = settings.values.getDetectorSettings();
-		detectorSettings.put( KEY_LEVEL, level.getValue() );
+		if ( level != null )
+			detectorSettings.put( KEY_LEVEL, level.getValue() );
 	}
 
 	@Override

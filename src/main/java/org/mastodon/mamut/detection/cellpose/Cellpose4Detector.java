@@ -103,7 +103,21 @@ public class Cellpose4Detector extends DeepLearningDetector
 			cellpose.set3D( ImgUtils.is3D( image ) );
 			cellpose.setCellProbThreshold( ( double ) settings.get( KEY_CELL_PROBABILITY_THRESHOLD ) );
 			cellpose.setFlowThreshold( ( double ) settings.get( KEY_FLOW_THRESHOLD ) );
-			cellpose.setDiameter( ( double ) settings.get( KEY_DIAMETER ) );
+			Object diameterObject = settings.get( Cellpose4DetectorDescriptor.KEY_DIAMETER );
+			if ( diameterObject != null )
+			{
+				double diameter = ( double ) diameterObject;
+				int level = ( int ) settings.get( KEY_LEVEL );
+				if ( level != 0 )
+				{
+					// Adjust diameter based on the pyramid level
+					diameter = diameter / Math.pow( 2, level );
+					logger.info( "Adjusted diameter for pyramid level {}: {}", level, diameter );
+				}
+				cellpose.setDiameter( diameter );
+			}
+			else
+				cellpose.setDiameter( 0 );
 			cellpose.setGpuID( ( int ) settings.get( KEY_GPU_ID ) );
 			cellpose.setGpuMemoryFraction( ( double ) settings.get( KEY_GPU_MEMORY_FRACTION ) );
 			return cellpose.segmentImage( Cast.unchecked( image ) );
