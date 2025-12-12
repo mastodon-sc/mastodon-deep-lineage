@@ -256,14 +256,14 @@ public class StarDistDetectorDescriptor extends AbstractSpotDetectorDescriptor
 
 		estimatedDiameterXY = new JFormattedTextField( formatter );
 		estimatedDiameterXY.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
-		JLabel estimatedDiameterXYLabel = new JLabel( "Estimated Diameter XY (pixel):" );
+		JLabel estimatedDiameterXYLabel = new JLabel( "Estimated average diameter of spots in X-Y plane (in pixel):" );
 		estimatedDiameterXYLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		contentPanel.add( estimatedDiameterXYLabel, "align left, growx" );
 		contentPanel.add( estimatedDiameterXY );
 
 		estimatedDiameterZ = new JFormattedTextField( formatter );
 		estimatedDiameterZ.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
-		estimatedDiameterZLabel = new JLabel( "Estimated Diameter Z (pixel):" );
+		estimatedDiameterZLabel = new JLabel( "Estimated average diameter of spots along Z axis (in pixel):" );
 		estimatedDiameterZLabel.setFont( contentPanel.getFont().deriveFont( contentPanel.getFont().getSize2D() - 2f ) );
 		contentPanel.add( estimatedDiameterZLabel, "align left, growx" );
 		contentPanel.add( estimatedDiameterZ );
