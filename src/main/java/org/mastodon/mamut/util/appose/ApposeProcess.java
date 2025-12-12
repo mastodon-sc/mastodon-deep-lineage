@@ -103,7 +103,7 @@ public abstract class ApposeProcess
 		return false;
 	}
 
-	protected Service.Task runScript()
+	protected Service.Task runScript() throws IOException
 	{
 		String script = generateScript();
 		logger.info( "Run script:\n{}", script );
