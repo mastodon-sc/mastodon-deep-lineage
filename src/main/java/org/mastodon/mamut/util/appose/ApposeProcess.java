@@ -57,31 +57,31 @@ public abstract class ApposeProcess
 			case UPDATE:
 				logger.info( "Task update: {}. Time elapsed: {}", taskEvent.message, stopWatch.formatSplitTime() );
 				if ( scijavaLogger != null )
-					scijavaLogger.info( "Task update: " + taskEvent.message + ". Time elapsed: " + stopWatch.formatSplitTime() );
+					scijavaLogger.info( "\nTask update: " + taskEvent.message + ". Time elapsed: " + stopWatch.formatSplitTime() );
 				break;
 			case LAUNCH:
 				logger.info( "Task launched. Time elapsed: {}", stopWatch.formatSplitTime() );
 				if ( scijavaLogger != null )
-					scijavaLogger.info( "Task launched: Time elapsed: " + stopWatch.formatSplitTime() );
+					scijavaLogger.info( "\nTask launched: Time elapsed: " + stopWatch.formatSplitTime() );
 				break;
 			case COMPLETION:
 				logger.info( "Task completed. Time elapsed: {}", stopWatch.formatSplitTime() );
 				if ( scijavaLogger != null )
-					scijavaLogger.info( "Task completed: Time elapsed: " + stopWatch.formatSplitTime() );
+					scijavaLogger.info( "\nTask completed: Time elapsed: " + stopWatch.formatSplitTime() );
 				break;
 			case FAILURE:
 				logger.error( "Task failed with error: {}. Time elapsed: {}", task.error, stopWatch.formatSplitTime() );
 				if ( scijavaLogger != null )
-					scijavaLogger.error( "Task failed with error: " + task.error + ". Time elapsed: " + stopWatch.formatSplitTime() );
+					scijavaLogger.error( "\nTask failed with error: " + task.error + ". Time elapsed: " + stopWatch.formatSplitTime() );
 				break;
 			case CRASH:
 				logger.error( "Task crashed with error. Error: {}. Time elapsed: {}", task.error, stopWatch.formatSplitTime() );
 				if ( scijavaLogger != null )
-					scijavaLogger.error( "Task crashed with error: " + task.error + ". Time elapsed: " + stopWatch.formatSplitTime() );
+					scijavaLogger.error( "\nTask crashed with error: " + task.error + ". Time elapsed: " + stopWatch.formatSplitTime() );
 				break;
 			default:
 				if ( scijavaLogger != null )
-					scijavaLogger.warn( "Unhandled task event: " + taskEvent.responseType );
+					scijavaLogger.warn( "\nUnhandled task event: " + taskEvent.responseType );
 				logger.warn( "Unhandled task event: {}.", taskEvent.responseType );
 				break;
 			}
