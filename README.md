@@ -14,7 +14,7 @@
 * [Numerical Features added to Mastodon](#numerical-features-added-to-mastodon)
     * [Spot Features](#spot-features)
     * [Branch Features](#branch-features)
-* [Detectors added to Mastodon](#detectors-added-to-mastodon)
+* [Detectors and Linkers added to Mastodon](#detectors-and-linkers-added-to-mastodon)
     * [StarDist Detector](#stardist-detector)
     * [Cellpose3 Detector](#cellpose3-detector)
     * [Cellpose4 Detector](#cellpose4-detector)
@@ -92,15 +92,16 @@ Mastodon Deep Lineage is an extension of Mastodon. For the full documentation of
 '*' The relative movement features cannot be called from the FeatureComputer directly. Instead, they can be accessed via
 the plugin menu: `Plugins > Compute Features > Movement of spots relative to nearest neighbors`
 
-## Detectors added to Mastodon
+## Detectors and Linkers added to Mastodon
 
-**It is highly recommended to use all detectors, added by Mastodon Deep Lineage, only on machines with a GPU (ideally
-NVIDIA). The detectors are very slow on machines without a GPU. Moreover, consider running these detectors on a
+**It is highly recommended to use all detectors/linkers, added by Mastodon Deep Lineage, only on machines with a GPU (
+ideally
+NVIDIA). The detectors/linkers are very slow on machines without a GPU. Moreover, consider running these detectors on a
 workstation and not on a typical consumer machine for better performance.**
 
-* The detectors added to Mastodon are actually implemented in Python. They can be used in Fiji via
+* The detectors/linkers added to Mastodon are actually implemented in Python. They can be used in Fiji via
   the [Appose](https://apposed.org/) bridge between Java and Python.
-* Each detector needs a specific Python runtime environment with specific dependencies. These environments are
+* Each detector/linker needs a specific Python runtime environment with specific dependencies. These environments are
   automatically created and managed by Appose.
 * There is a User Interface in Mastodon to install / update / delete these environments. The UI can be opened via
   `Plugins > Tracking > Python Environments for Detection/Linking`.
@@ -108,10 +109,10 @@ workstation and not on a typical consumer machine for better performance.**
 * The dialog for managing the environments looks like
   this: ![python-environment-manager-dialog.png](doc/detectors/python-environment-manager-dialog.png)
 * It is recommended to use this dialog before using the detectors. However, the environments will also be installed
-  automatically when using the detectors for the first time.
+  automatically when using the detectors/linkers for the first time.
 * In both case the installation process can be monitored using the Window `Console` in Fiji which can be accessed via
   `Window > Console` to monitor the progress of the installation.
-![console.png](doc/detectors/console.png)
+  ![console.png](doc/detectors/console.png)
 * **Be aware that this installation processes may take some time and requires an internet connection. Depending on the
   detector, several gigabytes of data may be downloaded and installed to your system.**
 
