@@ -98,23 +98,22 @@ the plugin menu: `Plugins > Compute Features > Movement of spots relative to nea
 NVIDIA). The detectors are very slow on machines without a GPU. Moreover, consider running these detectors on a
 workstation and not on a typical consumer machine for better performance.**
 
-* When running (or even previewing) the detectors for the first time, an internal installation process is started, which
-  may take some time (a couple of minutes, depending on the speed of internet connection). We recommend opening the
-  Window `Console` in Fiji using `Window > Console` to monitor the progress of
-  the installation.
-* If you experience problems during the installation of the detector, please check the console output for error
-  messages. If you need to re-run the installation, you should first delete the folder
-  `USER_HOME/.local/share/appose/cellpose3` or
-  `USER_HOME/.local/share/appose/cellpose4` or
-  `USER_HOME/.local/share/appose/stardist` (where `USER_HOME` is your user home directory, e.g. `/home/username` on
-  Linux or `C:\Users\username` on Windows) and then restart Fiji. This will trigger the installation process again.
-* Currently, the installation of the detectors requires git to be installed on your system and available in the
-  system path. If you do not have `git` installed, please install it first. On Linux, you can install git using your
-  package manager, e.g. `sudo apt install git`. On Windows, you can download and install git from
-  [git-scm.com](https://git-scm.com/download/win). After the installation of git, make sure that git is added to your
-  system path.
-
+* The detectors added to Mastodon are actually implemented in Python. They can be used in Fiji via
+  the [Appose](https://apposed.org/) bridge between Java and Python.
+* Each detector needs a specific Python runtime environment with specific dependencies. These environments are
+  automatically created and managed by Appose.
+* There is a User Interface in Mastodon to install / update / delete these environments. The UI can be opened via
+  `Plugins > Tracking > Python Environments for Detection/Linking`.
+  ![python-environment-ui.png](doc/detectors/python-environment-manager-menu.png)
+* The dialog for managing the environments looks like
+  this: ![python-environment-manager-dialog.png](doc/detectors/python-environment-manager-dialog.png)
+* It is recommended to use this dialog before using the detectors. However, the environments will also be installed
+  automatically when using the detectors for the first time.
+* In both case the installation process can be monitored using the Window `Console` in Fiji which can be accessed via
+  `Window > Console` to monitor the progress of the installation.
 ![console.png](doc/detectors/console.png)
+* **Be aware that this installation processes may take some time and requires an internet connection. Depending on the
+  detector, several gigabytes of data may be downloaded and installed to your system.**
 
 ### StarDist Detector
 
@@ -132,19 +131,36 @@ positions of each segmented spot.
 
 Parameters:
 
-* Model: The StarDist model to use for segmentation.
-    * StarDist Demo 2D/3D: A pre-trained model for 2D and 3D segmentation. Has been trained on artificial data.
-    * Plant Nuclei 3D: A pre-trained model for 3D segmentation of (plant) nuclei. Has been trained on real
+* Model: The StarDist model to use for segmentation. Depending on whether 2D or 3D data is processed, relevant models
+  are shown.
+    * Default Model (2D/3D): A pre-trained model for 2D and 3D segmentation. Has been trained on artificial data.
+    * Plant Nuclei (3D): A pre-trained model for 3D segmentation of (plant) nuclei. Has been trained on real
       data: [10.5281/zenodo.8421755](https://bioimage.io/#/?tags=stardist&id=10.5281/zenodo.8421755)
-    * StarDist Fluorescence Nuclei Segmentation: A pre-trained model for 2D segmentation of fluorescence nuclei. Has
+    * Fluorescence Nuclei Segmentation (2D): A pre-trained model for 2D segmentation of fluorescence nuclei. Has
       been trained on real
       data: [10.5281/zenodo.6348084](https://bioimage.io/#/?tags=stardist&type=model&id=10.5281/zenodo.6348084)
+    * SoSPIM (3D):A pre-trained model for 3D segmentation of cell nuclei imaged with SoSPIM. Has been trained on real
+      data stained with DAPI and SOX2.
+      labels: [https://doi.org/10.1101/2023.12.06.570366](https://doi.org/10.1101/2023.12.06.570366)
+    * Confocal (3D): A pre-trained model for 3D segmentation of cell nuclei imaged with confocal microscopy. Has been
+      trained on real data stained with the FUCCI
+      label: [https://doi.org/10.1101/2023.12.06.570366](https://doi.org/10.1101/2023.12.06.570366)
+    * Spinning Disk (3D): A pre-trained model for 3D segmentation of cell nuclei imaged with spinning disk
+      microscopy. Has been trained on real data stained with DAPI
+      label: [https://doi.org/10.1101/2023.12.06.570366](https://doi.org/10.1101/2023.12.06.570366)
 * Probability/Score Threshold: Determine the number of object candidates to enter non-maximum suppression. Higher values
   lead to fewer segmented objects, but will likely avoid false positives.
 * Overlap Threshold: Determine when two objects are considered the same during non-maximum suppression. Higher values
   allow segmented objects to overlap substantially.
+* Estimated Object Diameters:
+    * StarDist works best if object diameters estimates are given
+    * Average diameter of the objects to be detected (in pixels) in X-Y plane.
+    * Average diameter of the ojbects to be detected in Z direction (only for 3D data, in pixels).
+    * Units are in pixels, so if your image has a pixel size of e.g. 0.5 µm, and you expect objects to be around 10 µm,
+      enter 20 here.
+    * If you do not know, enter 0 or -1 and StarDist will try to work without this info.
 * **When this detection method is used for the first time, internet connection is needed, since an internal
-  installation process is started. The installation consumes ~5.5GB hard disk space.**
+  installation process is started. The installation consumes ~5GB hard disk space.**
 
 ### Cellpose3 Detector
 
@@ -175,6 +191,13 @@ positions of each segmented spot.
     * Units are in pixels, so if your image has a pixel size of e.g. 0.5 µm, and you expect cells to be around 10 µm,
       enter 20 here.
     * If you do not know, enter 0 and cellpose will automatically determine the cell size estimate.
+* GPU:
+    * Select whether a GPU that should be used for processing. If no GPU is available, CPU processing will be used
+      instead.
+* Fraction of GPU memory to use:
+    * Specify how much of the available GPU memory should be used for processing. If you are the only user of the GPU,
+      you can set this value to 1.0 (100%). If you share the GPU with other users or applications, you may want to
+      reduce this value.
 * For 3D data, anisotropy can be respected. Respecting anisotropy may take significantly more time but can lead to
   better detection results.
 * **When this detection method is used for the first time, internet connection is needed, since an internal
@@ -206,6 +229,13 @@ positions of each segmented spot.
     * Units are in pixels, so if your image has a pixel size of e.g. 0.5 µm, and you expect cells to be around 10 µm,
       enter 20 here.
     * If you do not know, enter 0 and cellpose will automatically determine the cell size estimate.
+* GPU:
+    * Select whether a GPU that should be used for processing. If no GPU is available, CPU processing will be used
+      instead.
+* Fraction of GPU memory to use:
+    * Specify how much of the available GPU memory should be used for processing. If you are the only user of the GPU,
+      you can set this value to 1.0 (100%). If you share the GPU with other users or applications, you may want to
+      reduce this value.
 * **When this detection method is used for the first time, internet connection is needed, since an internal
   installation process is started. The installation consumes ~7.5GB hard disk space.**
 
