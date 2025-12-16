@@ -259,6 +259,29 @@ positions of each segmented spot.
 * Cellpose4: ![mastodon-cellpose4.gif](doc/detectors/mastodon-cellpose4.gif)
 * StarDist: ![mastodon-stardist.gif](doc/detectors/mastodon-stardist.gif)
 
+## Trackastra Linker
+
+* This linker uses [TrackAstra](https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/09819.pdf) for linking spots
+  across timepoints.
+
+Parameters:
+
+* Link Threshold: Probability threshold for linking spots. Higher values lead to fewer links. Needs to be in the
+  range [0, 1].
+* Mode:
+    * Greedy linking with divisions: Uses a greedy algorithm to link spots and allows for cell divisions.
+    * Greedy linking without divisions: Uses a greedy algorithm to link spots and does not allow for cell divisions.
+* Model (depends on dimensionality of data):
+    * General Model (2D): Pre-trained model trained
+      on [diverse 2D datasets](https://github.com/weigertlab/trackastra/blob/main/trackastra/model/pretrained.json).
+      Recommended for 2D data.
+    * Cell Tracking Challenge (2D+3D): Pre-trained model trained on data from the Cell Tracking Challenge.
+* Source: The channel name of the source image that was used for detection.
+* Resolution level: The resolution level of the source image. 0 is the full resolution, 1 is half resolution, etc.
+* Window size: The size of the temporal window to consider for linking. Higher values lead to better linking results but
+  also
+  increase the running time. Must not be larger than the number of timepoints in the dataset.
+
 ## Hierarchical Clustering of Lineage Trees
 
 * Menu Location: `Plugins > Lineage Analysis > Hierarchical Clustering of Lineage Trees`
