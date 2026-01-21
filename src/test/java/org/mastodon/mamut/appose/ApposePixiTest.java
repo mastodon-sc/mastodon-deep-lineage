@@ -39,8 +39,10 @@ import org.apposed.appose.Appose;
 import org.apposed.appose.Builder;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@Disabled("Takes ~3 minutes in the github CI. Thus it is disabled.")
 class ApposePixiTest
 {
 	static final String ENV_CONTENT = "[workspace]\n"
