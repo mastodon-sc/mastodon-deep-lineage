@@ -28,12 +28,12 @@
  */
 package org.mastodon.mamut.feature.dimensionalityreduction.tsne.feature;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.mamut.feature.branch.exampleGraph.ExampleGraph2;
@@ -44,7 +44,6 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
 import org.scijava.Context;
 
-@Disabled( "mvn test takes too long" )
 class AbstractTSneFeatureComputerTest
 {
 
@@ -61,7 +60,7 @@ class AbstractTSneFeatureComputerTest
 					() -> InputDimension.getListFromFeatureModel( featureModel, Spot.class, Link.class );
 			assertThrows( IllegalArgumentException.class, () -> controller.computeFeature( inputDimensionsSupplier ) );
 			controller.getTSneSettings().setPerplexity( 2 );
-			assertThrows( ArrayIndexOutOfBoundsException.class, () -> controller.computeFeature( inputDimensionsSupplier ) );
+			assertDoesNotThrow( () -> controller.computeFeature( inputDimensionsSupplier ) );
 		}
 	}
 }

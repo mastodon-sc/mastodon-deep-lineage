@@ -2,7 +2,7 @@
  * #%L
  * mastodon-deep-lineage
  * %%
- * Copyright (C) 2022 - 2025 Stefan Hahmann
+ * Copyright (C) 2022 - 2024 Stefan Hahmann
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction.tsne.feature;
+package org.mastodon.mamut.feature.dimensionalityreduction.pca;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -38,7 +38,6 @@ import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.mamut.feature.dimensionalityreduction.AbstractOutputFeatureComputer;
 import org.mastodon.mamut.feature.dimensionalityreduction.CommonSettings;
-import org.mastodon.mamut.feature.dimensionalityreduction.tsne.TSneSettings;
 import org.mastodon.mamut.feature.dimensionalityreduction.util.InputDimension;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.properties.DoublePropertyMap;
@@ -46,74 +45,59 @@ import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import smile.manifold.TSNE;
+import smile.data.DataFrame;
+import smile.feature.extraction.PCA;
 
 /**
- * Abstract class for computing t-SNE features in the Mastodon project.
+ * Abstract class for computing PCA features in the Mastodon project.
  * <br>
- * This provides the base implementation for computing t-SNE features on vertices in a read-only graph.
- * It handles the setup, execution, and caching of t-SNE computations.
+ * This provides the base implementation for computing PCA features on vertices in a read-only graph.
+ * It handles the setup, execution, and caching of PCA computations.
  * <br>
- * This class connects the t-SNE library to the Mastodon project by providing the necessary data and settings.
- * It ensures that only valid data rows (i.e. rows where the selected feature projections do not have values, such as {@link Double#NaN} or {@link Double#POSITIVE_INFINITY}) are used for t-SNE computations.
+ * This class connects the PCA library to the Mastodon project by providing the necessary data and settings.
+ * It ensures that only valid data rows (i.e. rows where the selected feature projections do not have values, such as {@link Double#NaN} or {@link Double#POSITIVE_INFINITY}) are used for PCA computations.
  *
  * @param <V> the type of vertex
  * @param <G> the type of read-only graph
  */
-public abstract class AbstractTSneFeatureComputer< V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, E > >
+public abstract class AbstractPcaFeatureComputer< V extends Vertex< E >, E extends Edge< V >, G extends ReadOnlyGraph< V, E > >
 		extends AbstractOutputFeatureComputer< V, E, G >
 {
 
 	private static final Logger logger = LoggerFactory.getLogger( MethodHandles.lookup().lookupClass() );
 
-	private TSneSettings tSneSettings;
+	private double[][] pcaResult;
 
-	private double[][] tSneResult;
-
-	protected AbstractTSneFeatureComputer( final Model model, final Context context )
+	protected AbstractPcaFeatureComputer( final Model model, final Context context )
 	{
 		super( model, context );
 	}
 
-	public void computeFeature( final CommonSettings commonSettings, final TSneSettings tSneSettings,
-			final List< InputDimension< V > > inputDimensions, final G graph )
+	@Override
+	public void computeFeature( final CommonSettings commonSettings, final List< InputDimension< V > > inputDimensions, final G graph )
 	{
-		this.tSneSettings = tSneSettings;
 		super.computeFeature( commonSettings, inputDimensions, graph );
 	}
 
 	@Override
 	protected void computeAlgorithm( double[][] dataMatrix )
 	{
-		int rows = dataMatrix.length;
-		if ( !tSneSettings.isValidPerplexity( rows ) )
-		{
-			logger.error(
-					"For t-SNE, the number of valid rows in the dataset ({}) requires the perplexity ({}) to not be higher than ({}).",
-					rows, tSneSettings.getPerplexity(), tSneSettings.getMaxValidPerplexity( rows ) );
-			throw new IllegalArgumentException( "For t-SNE, the number of valid rows in the dataset (" + rows
-					+ ") requires the perplexity (" + tSneSettings.getPerplexity() + ") to not be higher than ("
-					+ tSneSettings.getMaxValidPerplexity( rows ) + ")." );
-		}
-		logger.info( "Computing t-SNE. Data matrix has {} rows x {} columns.", dataMatrix.length, dataMatrix[ 0 ].length );
-		double eta = 200; // learning rate
-		double earlyExaggeration = 12; // early exaggeration factor
-		TSNE.Options options =
-				new TSNE.Options( settings.getNumberOfOutputDimensions(), tSneSettings.getPerplexity(), eta, earlyExaggeration,
-				tSneSettings.getMaxIterations() );
-		TSNE tsne = TSNE.fit( dataMatrix, options );
-		tSneResult = tsne.coordinates();
-		logger.info( "Finished computing t-SNE. Results has {} rows x {} columns.", tSneResult.length,
-				tSneResult.length > 0 ? tSneResult[ 0 ].length : 0 );
+		DataFrame dataFrame = DataFrame.of( dataMatrix );
+		logger.info( "Computing PCA parameters on data matrix with {} rows x {} columns.", dataMatrix.length, dataMatrix[ 0 ].length );
+		PCA pca = PCA.fit( dataFrame ).getProjection( settings.getNumberOfOutputDimensions() );
+		logger.info( "Applying PCA projection. Data matrix has {} rows x {} columns.", dataMatrix.length, dataMatrix[ 0 ].length );
+		pcaResult = pca.apply( dataMatrix );
+		logger.info( "Finished applying PCA projection. Results has {} rows x {} columns.", pcaResult.length,
+				pcaResult.length > 0 ? pcaResult[ 0 ].length : 0 );
 	}
 
 	@Override
 	protected double[][] getResult()
 	{
-		return tSneResult;
+		return pcaResult;
 	}
 
-	protected abstract AbstractTSneFeature< V > createFeatureInstance( final List< DoublePropertyMap< V > > umapOutputMaps );
+	protected abstract AbstractPcaFeature< V > createFeatureInstance( final List< DoublePropertyMap< V > > outputMaps );
 
 	protected abstract RefPool< V > getRefPool();
 

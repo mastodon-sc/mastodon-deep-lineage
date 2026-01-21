@@ -2,17 +2,17 @@
  * #%L
  * mastodon-deep-lineage
  * %%
- * Copyright (C) 2022 - 2025 Stefan Hahmann
+ * Copyright (C) 2022 - 2024 Stefan Hahmann
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,32 +26,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction;
+package org.mastodon.mamut.feature.spot.dimensionalityreduction.pca;
 
-public enum DimensionalityReductionAlgorithm
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.mastodon.RefPool;
+import org.mastodon.mamut.feature.dimensionalityreduction.pca.AbstractPcaFeature;
+import org.mastodon.mamut.feature.dimensionalityreduction.pca.AbstractPcaFeatureComputer;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.properties.DoublePropertyMap;
+import org.scijava.Context;
+
+public class SpotPcaFeatureComputer extends AbstractPcaFeatureComputer< Spot, Link, ModelGraph >
 {
-	UMAP( "UMAP", "Uniform Manifold Approximation and Projection for Dimension Reduction." ),
-	TSNE( "t-SNE", "t-distributed Stochastic Neighbor Embedding." ),
-	PCA( "PCA", "Principal Component Analysis." ),;
 
-	private final String name;
-
-	private final String description;
-
-	DimensionalityReductionAlgorithm( final String name, final String description )
+	public SpotPcaFeatureComputer( final Model model, final Context context )
 	{
-		this.name = name;
-		this.description = description;
-	}
-
-	public String getDescription()
-	{
-		return description;
+		super( model, context );
 	}
 
 	@Override
-	public String toString()
+	protected AbstractPcaFeature< Spot > createFeatureInstance( final List< DoublePropertyMap< Spot > > outputMaps )
 	{
-		return name;
+		return new SpotPcaFeature( outputMaps );
+	}
+
+	@Override
+	protected RefPool< Spot > getRefPool()
+	{
+		return model.getGraph().vertices().getRefPool();
+	}
+
+	@Override
+	protected ReentrantReadWriteLock getLock( final ModelGraph graph )
+	{
+		return graph.getLock();
+	}
+
+	@Override
+	protected Collection< Spot > getVertices()
+	{
+		return model.getGraph().vertices();
 	}
 }
