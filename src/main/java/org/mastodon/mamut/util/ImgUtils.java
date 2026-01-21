@@ -122,4 +122,9 @@ public class ImgUtils
 			return nonPlaneDimensionCount > 2;
 		}
 	}
+
+	public static String helloWorld()
+	{
+		return "Hello World!";
+	}
 }
