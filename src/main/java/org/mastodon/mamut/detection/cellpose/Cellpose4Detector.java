@@ -163,7 +163,7 @@ public class Cellpose4Detector extends DeepLearningDetector
 	@Override
 	protected Builder< ? > getBuilder()
 	{
-		return Appose.mamba().scheme( "environment.yml" );
+		return Appose.pixi();
 	}
 
 	@Override
