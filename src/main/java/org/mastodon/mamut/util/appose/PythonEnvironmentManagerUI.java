@@ -60,6 +60,8 @@ import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.apposed.appose.Appose;
+import org.apposed.appose.Builder;
 import org.apposed.appose.util.Environments;
 import org.mastodon.app.MastodonIcons;
 import org.mastodon.mamut.detection.cellpose.Cellpose3;
@@ -104,10 +106,10 @@ public class PythonEnvironmentManagerUI extends JFrame
 	private void initEnvironmentPanels()
 	{
 		environmentPanels = new ArrayList<>();
-		environmentPanels.add( new EnvironmentPanel( Cellpose3.ENV_NAME, Cellpose3.ENV_FILE_CONTENT ) );
-		environmentPanels.add( new EnvironmentPanel( Cellpose4.ENV_NAME, Cellpose4.ENV_FILE_CONTENT ) );
-		environmentPanels.add( new EnvironmentPanel( StarDist.ENV_NAME, StarDist.ENV_FILE_CONTENT ) );
-		environmentPanels.add( new EnvironmentPanel( TrackastraUtils.ENV_NAME, TrackastraUtils.ENV_FILE_CONTENT ) );
+		environmentPanels.add( new EnvironmentPanel( Cellpose3.ENV_NAME, Cellpose3.ENV_FILE_CONTENT, Appose.pixi() ) );
+		environmentPanels.add( new EnvironmentPanel( Cellpose4.ENV_NAME, Cellpose4.ENV_FILE_CONTENT, Appose.pixi() ) );
+		environmentPanels.add( new EnvironmentPanel( StarDist.ENV_NAME, StarDist.ENV_FILE_CONTENT, Appose.pixi() ) );
+		environmentPanels.add( new EnvironmentPanel( TrackastraUtils.ENV_NAME, TrackastraUtils.ENV_FILE_CONTENT, Appose.mamba().scheme( "environment.yml" ) ) );
 	}
 
 	private void initLayout()
@@ -163,6 +165,8 @@ public class PythonEnvironmentManagerUI extends JFrame
 
 		private final String envContent;
 
+		private final Builder< ? > envBuilder;
+
 		private final JLabel statusIcon;
 
 		private final JLabel statusLabel;
@@ -173,11 +177,12 @@ public class PythonEnvironmentManagerUI extends JFrame
 
 		private final JLabel sizeValueLabel;
 
-		private EnvironmentPanel( String envName, String envContent )
+		private EnvironmentPanel( final String envName, final String envContent, final Builder< ? > envBuilder )
 		{
 			super( new MigLayout( "fill, insets 8", "[][80!][grow][]", "[]5[]5[]" ) );
 			this.envName = envName;
 			this.envContent = envContent;
+			this.envBuilder = envBuilder;
 
 			statusIcon = new JLabel();
 			statusLabel = new JLabel();
@@ -358,7 +363,7 @@ public class PythonEnvironmentManagerUI extends JFrame
 					() -> {
 						try
 						{
-							ApposeUtils.installEnvironment( envContent );
+							ApposeUtils.installEnvironment( envContent, envBuilder );
 						}
 						catch ( IOException e )
 						{
