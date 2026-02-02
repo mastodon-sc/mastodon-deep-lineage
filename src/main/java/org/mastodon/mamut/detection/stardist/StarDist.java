@@ -178,13 +178,13 @@ public class StarDist extends Segmentation
 	{
 		if ( modelType.getModelPath() == null )
 			return null;
-		return Paths.get( System.getProperty( "user.home" ), ".local", "share", "appose", "stardist", "models", modelType.getModelPath() );
+		return Paths.get( System.getProperty( "user.home" ), ".local", "share", "appose", ENV_NAME, "models", modelType.getModelPath() );
 	}
 
 	private static void createConfigFromBioimageio( final ModelDescriptor descriptor, final String modelDir )
 			throws IOException
 	{
-		Map< String, Object > stardistMap = Cast.unchecked( descriptor.getConfig().getSpecMap().get( "stardist" ) );
+		Map< String, Object > stardistMap = Cast.unchecked( descriptor.getConfig().getSpecMap().get( ENV_NAME ) );
 		Map< String, Object > stardistConfig = Cast.unchecked( stardistMap.get( "config" ) );
 		File jsonFile = new File( modelDir, "config.json" );
 		logger.info( "Creating config.json file: {}", jsonFile.getAbsolutePath() );
