@@ -2,17 +2,17 @@
  * #%L
  * mastodon-deep-lineage
  * %%
- * Copyright (C) 2022 - 2025 Stefan Hahmann
+ * Copyright (C) 2022 - 2024 Stefan Hahmann
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,32 +26,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package org.mastodon.mamut.feature.dimensionalityreduction;
+package org.mastodon.mamut.feature.dimensionalityreduction.pca;
 
-public enum DimensionalityReductionAlgorithm
+import java.util.List;
+
+import org.mastodon.graph.Vertex;
+import org.mastodon.mamut.feature.dimensionalityreduction.AbstractOutputFeature;
+import org.mastodon.properties.DoublePropertyMap;
+
+/**
+ * This generic feature is used to store the PCA outputs.
+ * <br>
+ * The PCA outputs are stored in a list of {@link DoublePropertyMap}s. The size of the list is equal to the number of dimensions of the PCA output.
+ */
+public abstract class AbstractPcaFeature< V extends Vertex< ? > > extends AbstractOutputFeature< V >
 {
-	UMAP( "UMAP", "Uniform Manifold Approximation and Projection for Dimension Reduction." ),
-	TSNE( "t-SNE", "t-distributed Stochastic Neighbor Embedding." ),
-	PCA( "PCA", "Principal Component Analysis." ),;
+	private static final String PROJECTION_NAME_TEMPLATE = "PCA%d";
 
-	private final String name;
+	protected static final String HELP_STRING =
+			"Computes the PCA according to the selected input dimensions and the number of target dimensions.";
 
-	private final String description;
-
-	DimensionalityReductionAlgorithm( final String name, final String description )
+	protected AbstractPcaFeature( final List< DoublePropertyMap< V > > outputMaps )
 	{
-		this.name = name;
-		this.description = description;
-	}
-
-	public String getDescription()
-	{
-		return description;
+		super( outputMaps );
 	}
 
 	@Override
-	public String toString()
+	protected String getProjectionNameTemplate()
 	{
-		return name;
+		return PROJECTION_NAME_TEMPLATE;
 	}
 }
