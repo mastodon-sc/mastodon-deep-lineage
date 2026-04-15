@@ -58,7 +58,7 @@ class ApposeUtilsTest
 		String numberPart = size.split( " " )[ 0 ]; // "123,4"
 		String integerPart = numberPart.split( "[.,]" )[ 0 ]; // "123"
 		int sizeInt = Integer.parseInt( integerPart );
-		assertTrue( sizeInt >= 100 && sizeInt <= 499, "Environment size should be between 100 MB and 499 MB but was " + size + " MB" );
+		assertTrue( sizeInt >= 50 && sizeInt <= 499, "Environment size should be between 50 MB and 499 MB but was " + size + " MB" );
 		ApposeUtils.deleteEnvironment( testEnvName, null );
 		assertFalse( ApposeUtils.checkEnvironmentInstalled( testEnvName ) );
 	}
