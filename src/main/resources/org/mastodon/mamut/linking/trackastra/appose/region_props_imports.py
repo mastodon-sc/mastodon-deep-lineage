@@ -2,7 +2,7 @@
 # #%L
 # mastodon-deep-lineage
 # %%
-# Copyright (C) 2022 - 2025 Stefan Hahmann
+# Copyright (C) 2022 - 2026 Stefan Hahmann
 # %%
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
