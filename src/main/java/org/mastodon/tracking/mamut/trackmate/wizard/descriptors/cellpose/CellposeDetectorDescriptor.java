@@ -165,7 +165,14 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 			gpuIdValue = DEFAULT_GPU_ID; // default
 		else
 			gpuIdValue = Integer.parseInt( String.valueOf( gpuIdObject ) );
-		this.gpuId.setSelectedIndex( gpuIdValue );
+		try
+		{
+			this.gpuId.setSelectedIndex( gpuIdValue );
+		}
+		catch (IllegalArgumentException e)
+		{
+			logger.debug( "Could not set GPU ID to "+gpuIdValue+". Defaulting to no GPU. Error message: " + e.getMessage()  );
+		}
 
 		final Object gpuMemFractionObject =
 				detectorSettings.get( KEY_GPU_MEMORY_FRACTION );
