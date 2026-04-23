@@ -88,9 +88,7 @@ public class Cellpose4Detector extends DeepLearningDetector
 		return checkParameter( settings, Cellpose4DetectorDescriptor.KEY_CELL_PROBABILITY_THRESHOLD, Double.class, errorHolder )
 				&& checkParameter( settings, Cellpose4DetectorDescriptor.KEY_FLOW_THRESHOLD, Double.class, errorHolder )
 				&& checkParameter( settings, Cellpose4DetectorDescriptor.KEY_DIAMETER, Double.class, errorHolder )
-				&& checkParameter( settings, KEY_LEVEL, Integer.class, errorHolder )
-				&& checkParameter( settings, KEY_GPU_ID, Integer.class, errorHolder )
-				&& checkParameter( settings, KEY_GPU_MEMORY_FRACTION, Double.class, errorHolder );
+				&& checkParameter( settings, KEY_LEVEL, Integer.class, errorHolder );
 	}
 
 	@Override
@@ -118,8 +116,10 @@ public class Cellpose4Detector extends DeepLearningDetector
 			}
 			else
 				cellpose.setDiameter( 0 );
-			cellpose.setGpuID( ( int ) settings.get( KEY_GPU_ID ) );
-			cellpose.setGpuMemoryFraction( ( double ) settings.get( KEY_GPU_MEMORY_FRACTION ) );
+			if (settings.get(KEY_GPU_ID) != null)
+				cellpose.setGpuID( ( int ) settings.get( KEY_GPU_ID ) );
+			if (settings.get(KEY_GPU_MEMORY_FRACTION) != null)
+				cellpose.setGpuMemoryFraction( ( double ) settings.get( KEY_GPU_MEMORY_FRACTION ) );
 			return cellpose.segmentImage( Cast.unchecked( image ) );
 		}
 		catch ( Exception e )
