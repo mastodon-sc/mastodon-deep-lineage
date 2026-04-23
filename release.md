@@ -21,8 +21,8 @@
     * [ ] Confirm version number
     * [ ] The release script pushes to master on github.com
         * This triggers a *github Action* which copies the version to be released to maven.scijava.org.
-          cf. https://maven.scijava.org/#nexus-search;quick~mastodon-deep-lineage)
-* [ ] Download created jar file from scijava Nexus (https://maven.scijava.org/#nexus-search;quick~mastodon-deep-lineage)
+          cf. https://maven.scijava.org/#browse/search/generic=keyword%3Dmastodon-deep-lineage
+* [ ] Download created jar file from scijava Nexus: https://maven.scijava.org/#browse/search/generic=keyword%3Dmastodon-deep-lineage
     * [ ] Delete jar-file from last release version from local Fiji installation path
     * [ ] Copy jar file of the new version to local Fiji installation path
     * [ ] Copy new dependencies, if any
