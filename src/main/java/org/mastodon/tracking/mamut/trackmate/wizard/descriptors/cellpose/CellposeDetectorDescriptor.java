@@ -171,7 +171,7 @@ public abstract class CellposeDetectorDescriptor extends AbstractSpotDetectorDes
 		}
 		catch (IllegalArgumentException e)
 		{
-			logger.debug( "Could not set GPU ID to "+gpuIdValue+". Defaulting to no GPU. Error message: " + e.getMessage()  );
+			slf4Logger.debug( "Could not set GPU ID to "+gpuIdValue+". Defaulting to no GPU. Error message: " + e.getMessage()  );
 		}
 
 		final Object gpuMemFractionObject =

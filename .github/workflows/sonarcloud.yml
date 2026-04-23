@@ -24,10 +24,12 @@
 name: SonarCloud analysis
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  # Automatic triggers disabled: SONAR_TOKEN is currently validly not configured for this repo.
+  # Re-enable the push/pull_request triggers below once the token is available.
+  # push:
+  #   branches: [ "master" ]
+  # pull_request:
+  #   branches: [ "master" ]
   workflow_dispatch:
 
 permissions:
