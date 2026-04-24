@@ -46,7 +46,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apposed.appose.Appose;
+import org.apposed.appose.Builder;
 import org.apposed.appose.builder.Builders;
 import org.apposed.appose.util.Environments;
 import org.mastodon.mamut.util.ByteFormatter;
@@ -71,9 +71,9 @@ public class ApposeUtils
 	 *                   to set up the environment.
 	 * @throws IOException If an I/O error occurs during the installation process.
 	 */
-	public static void installEnvironment( final String envContent ) throws IOException
+	public static void installEnvironment(final String envContent, final Builder<?> envBuilder) throws IOException
 	{
-		Appose.mamba().content( envContent ).scheme( "environment.yml" ).logDebug().rebuild();
+		envBuilder.content( envContent ).logDebug().rebuild();
 	}
 
 	/**

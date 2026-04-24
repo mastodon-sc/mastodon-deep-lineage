@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import org.apposed.appose.Appose;
+import org.apposed.appose.Builder;
 import org.junit.jupiter.api.Test;
 
 class ApposeUtilsTest
@@ -51,8 +53,9 @@ class ApposeUtilsTest
 				+ "  - conda-forge\n"
 				+ "dependencies:\n"
 				+ "  - python=3.10\n";
+		Builder<?> envBuilder = Appose.mamba().scheme( "environment.yml" );
 
-		ApposeUtils.installEnvironment( testEnvContent );
+		ApposeUtils.installEnvironment( testEnvContent, envBuilder );
 		assertTrue( ApposeUtils.checkEnvironmentInstalled( testEnvName ) );
 		String size = ApposeUtils.calculateEnvironmentSize( testEnvName );
 		String numberPart = size.split( " " )[ 0 ]; // "123,4"

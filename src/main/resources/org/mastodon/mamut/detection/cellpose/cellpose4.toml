@@ -1,0 +1,58 @@
+[workspace]
+name = "{ENV_NAME}"
+version = "0.0.1"
+description = "Cellpose4 segmentation environment."
+authors = ["Stefan Hahmann"]
+channels = ["conda-forge", "pytorch", "nvidia"]
+platforms = ["osx-arm64", "osx-64", "linux-64", "win-64"]
+
+[dependencies]
+numpy = "*"
+pip = "*"
+
+[pypi-dependencies]
+appose = "=={APPOSE_VERSION}"
+
+# ---------------------------------------------------------------------------
+# macOS Apple Silicon
+# ---------------------------------------------------------------------------
+[target.osx-arm64.dependencies]
+python = "3.11.*"
+
+[target.osx-arm64.pypi-dependencies]
+cellpose = "==4.0.8"
+torch = "==2.10.0"
+torchvision = "==0.25.0"
+
+# ---------------------------------------------------------------------------
+# macOS Intel
+# ---------------------------------------------------------------------------
+[target.osx-64.dependencies]
+python = "3.10.*"
+
+[target.osx-64.pypi-dependencies]
+cellpose = "==4.0.8"
+torch = "==2.1.2"
+torchvision = "==0.16.2"
+
+# ---------------------------------------------------------------------------
+# Linux
+# ---------------------------------------------------------------------------
+[target.linux-64.dependencies]
+python = "3.10.*"
+pytorch = "*"
+pytorch-gpu = "*"
+
+[target.linux-64.pypi-dependencies]
+cellpose = "==4.0.8"
+
+# ---------------------------------------------------------------------------
+# Windows
+# ---------------------------------------------------------------------------
+[target.win-64.dependencies]
+python = "3.10.*"
+pytorch = "*"
+pytorch-gpu = "*"
+
+[target.win-64.pypi-dependencies]
+cellpose = "==4.0.8"
