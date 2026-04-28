@@ -33,6 +33,7 @@ import java.io.IOException;
 import javax.annotation.Nullable;
 
 import org.apposed.appose.Service;
+import org.mastodon.mamut.util.ResourceUtils;
 
 /**
  * Cellpose3 is a specialized implementation of the {@link Cellpose} class, specifically
@@ -43,21 +44,10 @@ public class Cellpose3 extends Cellpose
 {
 	public static final String ENV_NAME = "cellpose3";
 
-	public static final String ENV_FILE_CONTENT = "name: " + ENV_NAME + "\n"
-			+ "channels:\n"
-			+ "  - nvidia\n"
-			+ "  - pytorch\n"
-			+ "  - conda-forge\n"
-			+ "channel_priority: strict\n"
-			+ "dependencies:\n"
-			+ "  - python=3.10\n"
-			+ "  - pip\n"
-			+ "  - pip:\n"
-			+ "    - cellpose==3.1.1.2\n"
-			+ "    - appose==" + APPOSE_PYTHON_VERSION + "\n"
-			+ "  - pytorch\n"
-			+ "  - pytorch-cuda\n"
-			+ "  - numpy\n";
+	public static final String ENV_FILE_CONTENT =
+			ResourceUtils.readResourceAsString( "org/mastodon/mamut/detection/cellpose/cellpose3.toml", Cellpose3.class )
+					.replace( "{ENV_NAME}", ENV_NAME )
+					.replace( "{APPOSE_VERSION}", APPOSE_PYTHON_VERSION );
 
 	private final ModelType modelType;
 
