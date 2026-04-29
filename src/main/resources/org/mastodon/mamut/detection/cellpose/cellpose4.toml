@@ -1,0 +1,53 @@
+[workspace]
+name = 'cellpose4'
+version = '0.0.1'
+description = 'Mastodon spot detector using Cellpose 4.'
+authors = ['Stefan Hahmann']
+channels = ['conda-forge']
+platforms = ['osx-arm64', 'osx-64', 'linux-64', 'win-64']
+
+# Assume CUDA 12 is available when solving for platforms that use it (linux-64,
+# win-64). On platforms without CUDA (macOS), pixi silently ignores this at
+# runtime.
+[system-requirements]
+cuda = '12'
+
+[dependencies]
+python = '==3.10'
+numpy = '*'
+pip = '*'
+cellpose = '==4.0.6'
+
+[pypi-dependencies]
+appose = '==0.7.2'
+
+# ---------------------------------------------------------------------------
+# WINDOWS (GPU PyTorch by default)
+# ---------------------------------------------------------------------------
+
+[target.win-64.dependencies]
+pytorch-gpu = '*'
+
+# ---------------------------------------------------------------------------
+# LINUX (GPU PyTorch by default)
+# ---------------------------------------------------------------------------
+
+[target.linux-64.dependencies]
+pytorch-gpu = '*'
+
+# ---------------------------------------------------------------------------
+# macOS INTEL (CPU PyTorch)
+# ---------------------------------------------------------------------------
+
+[target.osx-64.dependencies]
+pytorch = '*'
+
+# ---------------------------------------------------------------------------
+# macOS Apple Silicon (MPS via PyTorch)
+# ---------------------------------------------------------------------------
+
+[target.osx-arm64.dependencies]
+pytorch = '*'
+
+[environments]
+default = { solve-group = 'default' }

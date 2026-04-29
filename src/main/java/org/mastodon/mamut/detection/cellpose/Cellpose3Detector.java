@@ -97,9 +97,7 @@ public class Cellpose3Detector extends DeepLearningDetector
 				&& checkParameter( settings, KEY_FLOW_THRESHOLD, Double.class, errorHolder )
 				&& checkParameter( settings, KEY_DIAMETER, Double.class, errorHolder )
 				&& checkParameter( settings, KEY_LEVEL, Integer.class, errorHolder )
-				&& checkParameter( settings, KEY_RESPECT_ANISOTROPY, Boolean.class, errorHolder )
-				&& checkParameter( settings, KEY_GPU_ID, Integer.class, errorHolder )
-				&& checkParameter( settings, KEY_GPU_MEMORY_FRACTION, Double.class, errorHolder );
+				&& checkParameter( settings, KEY_RESPECT_ANISOTROPY, Boolean.class, errorHolder );
 	}
 
 	@Override
@@ -129,8 +127,10 @@ public class Cellpose3Detector extends DeepLearningDetector
 			}
 			else
 				cellpose.setDiameter( 0 );
-			cellpose.setGpuID( ( int ) settings.get( KEY_GPU_ID ) );
-			cellpose.setGpuMemoryFraction( ( double ) settings.get( KEY_GPU_MEMORY_FRACTION ) );
+			if (settings.get(KEY_GPU_ID) != null)
+				cellpose.setGpuID( ( int ) settings.get( KEY_GPU_ID ) );
+			if (settings.get(KEY_GPU_MEMORY_FRACTION) != null)
+				cellpose.setGpuMemoryFraction( ( double ) settings.get( KEY_GPU_MEMORY_FRACTION ) );
 			final boolean respectAnisotropy = ( boolean ) settings.get( KEY_RESPECT_ANISOTROPY );
 			double anisotropy = respectAnisotropy ? getAnisotropy( voxelDimensions, is3D ) : 1.0;
 			cellpose.setAnisotropy( ( float ) anisotropy );
@@ -179,7 +179,7 @@ public class Cellpose3Detector extends DeepLearningDetector
 	@Override
 	protected Builder< ? > getBuilder()
 	{
-		return Appose.mamba().scheme( "environment.yml" );
+		return Appose.pixi();
 	}
 
 	@Override
@@ -191,6 +191,6 @@ public class Cellpose3Detector extends DeepLearningDetector
 	@Override
 	protected String getPythonEnvInit()
 	{
-		return "import numpy\nfrom cellpose import models\n"; // NB: StarDist2D import needs to be inited even for 3D cases
+		return "import numpy\nfrom cellpose import models\n";
 	}
 }
