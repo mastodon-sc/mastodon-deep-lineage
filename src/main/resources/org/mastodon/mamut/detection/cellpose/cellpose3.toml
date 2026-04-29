@@ -1,53 +1,56 @@
 [workspace]
-name = 'cellpose3'
-version = '0.0.1'
-description = 'Mastodon spot detector using Cellpose 3.'
-authors = ['Stefan Hahmann']
-channels = ['conda-forge']
-platforms = ['osx-arm64', 'osx-64', 'linux-64', 'win-64']
+authors = [
+    "Stephane Rigaud <stephane.rigaud@imba.oeaw.ac.at>",
+    "Gaelle Letort <gaelle.letort@pasteur.fr>",
+    "Julie Mabon <julie.mabon@pasteur.fr>",
+]
+channels = ["conda-forge"]
+name = "cellpose3"
+platforms = ["osx-arm64", "win-64", "linux-64", "osx-64"]
+version = "0.1.0"
 
-# Assume CUDA 12 is available when solving for platforms that use it (linux-64,
-# win-64). On platforms without CUDA (macOS), pixi silently ignores this at
-# runtime.
-[system-requirements]
-cuda = '12'
+[tasks]
+test = { cmd = "python cp3.py" }
 
 [dependencies]
-python = '==3.10'
-numpy = '*'
-pip = '*'
+python = ">=3.10.3,<3.13"
 
 [pypi-dependencies]
-appose = '==0.7.2'
-cellpose = '==3.1.1.2'
+appose = ">=0.10.1, <0.12"
 
-# ---------------------------------------------------------------------------
-# WINDOWS (GPU PyTorch by default)
-# ---------------------------------------------------------------------------
+# --- Platform-specific PyTorch ---
+# CUDA 12.6 for Linux
+[target.linux.pypi-dependencies]
+torch = { version = ">=2.5.1", index = "https://download.pytorch.org/whl/cu126" }
+torchvision = { version = ">=0.20.1", index = "https://download.pytorch.org/whl/cu126" }
 
-[target.win-64.dependencies]
-pytorch-gpu = '*'
+# CUDA 12.6 for Windows
+[target.win.pypi-dependencies]
+#torch = { version = ">=2.5.1", index = "https://download.pytorch.org/whl/cu126" }
+#torchvision = { version = ">=0.20.1", index = "https://download.pytorch.org/whl/cu126" }
+torch = { version = ">=2.7.0, <2.8", index = "https://download.pytorch.org/whl/cu126" }
+torchvision = { version = ">=0.22, <0.23", index = "https://download.pytorch.org/whl/cu126" }
 
-# ---------------------------------------------------------------------------
-# LINUX (GPU PyTorch by default)
-# ---------------------------------------------------------------------------
 
-[target.linux-64.dependencies]
-pytorch-gpu = '*'
+# CPU-only for macOS (no CUDA support)
+[target.osx-arm64.pypi-dependencies]
+torch = { version = ">=2.10.0, <3", index = "https://download.pytorch.org/whl/cpu" }
+torchvision = { version = ">=0.25.0, <0.26", index = "https://download.pytorch.org/whl/cpu" }
 
-# ---------------------------------------------------------------------------
-# macOS INTEL (CPU PyTorch)
-# ---------------------------------------------------------------------------
+# osx-64 (should be drop in favor of osx-arm64, but we keep it for now for users on older macs)
+[target.osx-64.pypi-dependencies]
+torch = { version = ">=2.2.2, <3", index = "https://download.pytorch.org/whl/cpu" }
+torchvision = { version = ">=0.17.2, <0.18", index = "https://download.pytorch.org/whl/cpu" }
 
-[target.osx-64.dependencies]
-pytorch = '*'
+# --- CellPose version features ---
+[feature.cp3.pypi-dependencies]
+cellpose = ">=3, <4"
 
-# ---------------------------------------------------------------------------
-# macOS Apple Silicon (MPS via PyTorch)
-# ---------------------------------------------------------------------------
+[feature.cp4.pypi-dependencies]
+cellpose = ">=4, <5"
 
-[target.osx-arm64.dependencies]
-pytorch = '*'
-
+# --- Environments ---
 [environments]
-default = { solve-group = 'default' }
+default = { features = ["cp3"] }
+cp3 = { features = ["cp3"] }
+cp4 = { features = ["cp4"] }
