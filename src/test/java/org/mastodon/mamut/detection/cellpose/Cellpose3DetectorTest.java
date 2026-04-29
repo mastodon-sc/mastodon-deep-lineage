@@ -62,7 +62,7 @@ import io.scif.img.ImgOpener;
 class Cellpose3DetectorTest
 {
 
-	//@Disabled( "This test is disabled, because it has very long runtime (> 2 minutes)" )
+	@Disabled( "This test is disabled, because it has very long runtime (> 2 minutes)" )
 	@Test
 	void testCompute3D() throws IllegalAccessException, URISyntaxException, NoSuchFieldException
 	{
