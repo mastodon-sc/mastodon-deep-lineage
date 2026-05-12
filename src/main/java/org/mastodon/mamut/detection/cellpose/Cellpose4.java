@@ -33,20 +33,14 @@ import java.io.IOException;
 import javax.annotation.Nullable;
 
 import org.apposed.appose.Service;
-import org.mastodon.mamut.util.ResourceUtils;
 
 /**
- * Cellpose3 is a specialized implementation of the {@link Cellpose} class, specifically
- * designed to use Cellpose version 4 model for cell segmentation tasks.<br>
+ * Cellpose4 is a specialized implementation of the {@link Cellpose} class, specifically
+ * designed to use Cellpose version 4 (Cellpose-SAM) model for cell segmentation tasks.<br>
  */
 public class Cellpose4 extends Cellpose
 {
-	public static final String ENV_NAME = "cellpose4";
-
-	public static final String ENV_FILE_CONTENT =
-			ResourceUtils.readResourceAsString( "org/mastodon/mamut/detection/cellpose/cellpose4.toml", Cellpose4.class )
-					.replace( "{ENV_NAME}", ENV_NAME )
-					.replace( "{APPOSE_VERSION}", APPOSE_PYTHON_VERSION );
+	private static final String CP4_SCRIPT = loadCellposeScript( "/cp4.py" );
 
 	public Cellpose4( final Service python, final @Nullable org.scijava.log.Logger scijavaLogger ) throws IOException
 	{
@@ -54,24 +48,25 @@ public class Cellpose4 extends Cellpose
 	}
 
 	@Override
-	protected String getLoadModelCommand()
+	protected String generateScript()
 	{
-		return "model = models.CellposeModel(gpu=torch.cuda.is_available())" + "\n";
-	}
-
-	@Override
-	protected String getEvaluateModelCommand()
-	{
-		String zAxis = is3D() ? "0" : "None";
-		return "segmentation, flows, styles = model.eval("
-				+ "image_ndarray, "
-				+ "diameter=" + getDiameter() + ", "
-				+ "do_3D=" + is3DParam() + ", "
-				+ "z_axis=" + zAxis + ", "
-				+ "normalize=True, "
-				+ "batch_size=8, "
-				+ "flow3D_smooth=0, "
-				+ "flow_threshold=" + flowThreshold + ", "
-				+ "cellprob_threshold=" + cellProbThreshold + ")" + "\n";
+		inputs.put( "diameter", diameter );
+		inputs.put( "use_3D", is3D );
+		inputs.put( "stitch_threshold", 0.0 );
+		inputs.put( "z_axis", is3D ? 0 : null );
+		inputs.put( "channel_axis", null );
+		inputs.put( "time_axis", null );
+		inputs.put( "anisotropy", 1.0 );
+		inputs.put( "niter", null );
+		inputs.put( "flow3D_smooth", 0 );
+		inputs.put( "resample", true );
+		inputs.put( "normalize", true );
+		inputs.put( "flow_threshold", flowThreshold );
+		inputs.put( "cellprob_threshold", cellProbThreshold );
+		inputs.put( "min_size", 15 );
+		inputs.put( "tile_overlap", 0.1 );
+		inputs.put( "n_channels", 1 );
+		inputs.put( "compute_flows", false );
+		return CP4_SCRIPT;
 	}
 }

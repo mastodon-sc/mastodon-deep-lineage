@@ -29,6 +29,9 @@
 package org.mastodon.mamut.detection.cellpose;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
 
@@ -39,7 +42,7 @@ import org.mastodon.mamut.detection.Segmentation;
  * The class contains the common functionality for Cellpose3- and Cellpose4-based cell segmentation<br>
  * It contains the configurable parameters {@code probability threshold},
  * {@code flow threshold}, {@code diameter}, and {@code 3D mode} toggling.<br>
- * Derived classes must implement methods to load and run the specific models.<br>
+ * Derived classes must implement {@link #generateScript()} to provide the Python script and populate inputs.<br>
  */
 public abstract class Cellpose extends Segmentation
 {
@@ -50,10 +53,6 @@ public abstract class Cellpose extends Segmentation
 	protected double diameter = 0;
 
 	protected boolean is3D = true;
-
-	protected int gpuID = 0;
-
-	protected double gpuMemoryFraction = 0.5d;
 
 	public static final double DEFAULT_CELLPROB_THRESHOLD = 3d;
 
@@ -91,78 +90,30 @@ public abstract class Cellpose extends Segmentation
 		this.is3D = is3D;
 	}
 
-	public void setGpuID( final int gpuID )
-	{
-		this.gpuID = gpuID;
-	}
-
-	public void setGpuMemoryFraction( final double gpuMemoryFraction )
-	{
-		this.gpuMemoryFraction = gpuMemoryFraction;
-	}
-
-	protected String is3DParam()
-	{
-		return is3D ? "True" : "False";
-	}
-
-	protected String getDiameter()
-	{
-		return diameter > 0 ? String.valueOf( diameter ) : "None";
-	}
-
-	public int getGpuID()
-	{
-		return gpuID;
-	}
-
-	public double getGpuMemoryFraction()
-	{
-		return gpuMemoryFraction;
-	}
-
-	protected abstract String getLoadModelCommand();
-
-	protected abstract String getEvaluateModelCommand();
-
 	@Override
-	protected String generateScript()
+	protected String getOutputKey()
 	{
-		return "if torch.cuda.is_available():" + "\n"
-				+ "    torch.cuda.set_device(" + getGpuID() + ")" + "\n" // pick GPU explicitly
-				+ "    torch.cuda.set_per_process_memory_fraction(" + getGpuMemoryFraction() + ", device=" + getGpuID() + ")" + "\n" // cap memory usage of that GPU
-				+ "    device_id = torch.cuda.current_device()" + "\n"
-				+ "    device_name = torch.cuda.get_device_name(device_id)" + "\n"
-				+ "    task.update(message=\"Running cellpose on GPU: \" + str(device_id) + \" (\"+device_name+\")\")" + "\n"
-				+ "else:" + "\n"
-				+ "    task.update(message=\"Running cellpose on CPU\")" + "\n"
-				+ "\n"
-				+ "image_ndarray = image.ndarray()" + "\n"
-				+ "task.update(message=\"Image converted, Image shape: \" + \",\".join(str(dim) for dim in image.shape))" + "\n"
-				+ getLoadModelCommand()
-				+ "task.update(message=\"Model loaded\")" + "\n"
-				+ "\n"
-				+ getEvaluateModelCommand()
-				+ "\n"
-				+ "task.update(message=\"Segmentation completed, Segmentation shape: \" + \",\".join(str(dim) for dim in segmentation.shape))"
-				+ "\n"
-				+ "\n"
-				+ "shared = appose.NDArray(image.dtype, image.shape)" + "\n"
-				+ "task.update(message=\"NDArray created\")" + "\n"
-				+ "shared.ndarray()[:] = segmentation" + "\n"
-				+ "task.update(message=\"NDArray filled\")" + "\n"
-				+ "task.outputs['label_image'] = shared" + "\n";
+		return "labels";
 	}
 
-	public static String generateImportStatements()
+	/**
+	 * Loads a Python script resource from the cellpose-appose jar by classpath path.
+	 */
+	protected static String loadCellposeScript( final String path )
 	{
-		return "import numpy as np" + "\n"
-				+ "from cellpose import models" + "\n"
-				+ "import appose" + "\n"
-				+ "import torch" + "\n"
-				+ "\n"
-				+ "task.update(message=\"Imports completed\")" + "\n"
-				+ "\n"
-				+ "task.export(np=np, models=models, appose=appose, torch=torch)" + "\n";
+		try
+		{
+			java.net.URL url = fiji.plugin.appose.cellpose.Cellpose.class.getResource( path );
+			if ( url == null )
+				throw new RuntimeException( path + " not found in classpath — is cellpose-appose on the classpath?" );
+			return IOUtils.toString( url, StandardCharsets.UTF_8 );
+		}
+		catch ( IOException e )
+		{
+			throw new RuntimeException( "Failed to load " + path, e );
+		}
 	}
+
+	/** Content of cp_utils.py from cellpose-appose, used as the Python service init script. */
+	public static final String CP_UTILS_SCRIPT = loadCellposeScript( "/cp_utils.py" );
 }

@@ -33,7 +33,6 @@ import java.io.IOException;
 import javax.annotation.Nullable;
 
 import org.apposed.appose.Service;
-import org.mastodon.mamut.util.ResourceUtils;
 
 /**
  * Cellpose3 is a specialized implementation of the {@link Cellpose} class, specifically
@@ -42,12 +41,7 @@ import org.mastodon.mamut.util.ResourceUtils;
  */
 public class Cellpose3 extends Cellpose
 {
-	public static final String ENV_NAME = "cellpose3";
-
-	public static final String ENV_FILE_CONTENT =
-			ResourceUtils.readResourceAsString( "org/mastodon/mamut/detection/cellpose/cellpose3.toml", Cellpose3.class )
-					.replace( "{ENV_NAME}", ENV_NAME )
-					.replace( "{APPOSE_VERSION}", APPOSE_PYTHON_VERSION );
+	private static final String CP3_SCRIPT = loadCellposeScript( "/cp3.py" );
 
 	private final ModelType modelType;
 
@@ -65,37 +59,28 @@ public class Cellpose3 extends Cellpose
 		this.anisotropy = anisotropy;
 	}
 
-	private String anisotropyParam()
-	{
-		return is3D() ? String.valueOf( anisotropy ) : "1.0";
-	}
-
 	@Override
-	protected String getLoadModelCommand()
+	protected String generateScript()
 	{
-		if ( modelType.hasSizeModel() )
-			return "model = models.Cellpose(model_type=\"" + modelType.getModelName() + "\", gpu=torch.cuda.is_available())" + "\n";
-		else
-			return "model = models.CellposeModel(model_type=\"" + modelType.getModelName() + "\", gpu=torch.cuda.is_available())" + "\n";
-	}
-
-	@Override
-	protected String getEvaluateModelCommand()
-	{
-		String diams = modelType.hasSizeModel() ? ", diams" : "";
-		String zAxis = is3D() ? "0" : "None";
-		return "segmentation, flows, styles" + diams + " = model.eval("
-				+ "image_ndarray, "
-				+ "diameter=" + getDiameter() + ", "
-				+ "channels=[0, 0], "
-				+ "do_3D=" + is3DParam() + ", "
-				+ "anisotropy=" + anisotropyParam() + ", "
-				+ "z_axis=" + zAxis + ", "
-				+ "normalize=True, "
-				+ "batch_size=8, "
-				+ "flow3D_smooth=0, "
-				+ "flow_threshold=" + flowThreshold + ", "
-				+ "cellprob_threshold=" + cellProbThreshold + ")" + "\n";
+		inputs.put( "model_name", modelType.getModelName() );
+		inputs.put( "custom_model", null );
+		inputs.put( "cell_channel", 0 );
+		inputs.put( "nuclei_channel", 0 );
+		inputs.put( "diameter", diameter );
+		inputs.put( "use_3D", is3D );
+		inputs.put( "stitch_threshold", 0.0 );
+		inputs.put( "z_axis", is3D ? 0 : null );
+		inputs.put( "anisotropy", anisotropy );
+		inputs.put( "niter", null );
+		inputs.put( "flow3D_smooth", 0 );
+		inputs.put( "resample", true );
+		inputs.put( "normalize", true );
+		inputs.put( "flow_threshold", flowThreshold );
+		inputs.put( "cellprob_threshold", cellProbThreshold );
+		inputs.put( "min_size", 15.0 );
+		inputs.put( "tile_overlap", 0.1 );
+		inputs.put( "compute_flows", false );
+		return CP3_SCRIPT;
 	}
 
 	public enum ModelType
