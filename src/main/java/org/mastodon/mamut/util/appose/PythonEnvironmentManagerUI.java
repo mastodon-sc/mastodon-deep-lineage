@@ -62,8 +62,6 @@ import net.miginfocom.swing.MigLayout;
 
 import org.apposed.appose.util.Environments;
 import org.mastodon.app.MastodonIcons;
-import org.mastodon.mamut.detection.cellpose.Cellpose3;
-import org.mastodon.mamut.detection.cellpose.Cellpose4;
 import org.mastodon.mamut.detection.stardist.StarDist;
 import org.mastodon.mamut.linking.trackastra.TrackastraUtils;
 import org.slf4j.Logger;
@@ -104,10 +102,23 @@ public class PythonEnvironmentManagerUI extends JFrame
 	private void initEnvironmentPanels()
 	{
 		environmentPanels = new ArrayList<>();
-		environmentPanels.add( new EnvironmentPanel( Cellpose3.ENV_NAME, Cellpose3.ENV_FILE_CONTENT ) );
-		environmentPanels.add( new EnvironmentPanel( Cellpose4.ENV_NAME, Cellpose4.ENV_FILE_CONTENT ) );
-		environmentPanels.add( new EnvironmentPanel( StarDist.ENV_NAME, StarDist.ENV_FILE_CONTENT ) );
-		environmentPanels.add( new EnvironmentPanel( TrackastraUtils.ENV_NAME, TrackastraUtils.ENV_FILE_CONTENT ) );
+		String cp3EnvName = "cp3" + fiji.plugin.appose.ApposeUtils.getBestTorchConfig();
+		String cp4EnvName = "cp4" + fiji.plugin.appose.ApposeUtils.getBestTorchConfig();
+		String cellposeEnvContent;
+		try
+		{
+			cellposeEnvContent = fiji.plugin.appose.cellpose.Cellpose.pixiEnv();
+		}
+		catch ( IOException e )
+		{
+			cellposeEnvContent = "";
+			logger.error( "Could not load cellpose pixi environment content.", e );
+		}
+		final String cpContent = cellposeEnvContent;
+		environmentPanels.add( new EnvironmentPanel( cp3EnvName, () -> ApposeUtils.installPixiEnvironment( cpContent, cp3EnvName ) ) );
+		environmentPanels.add( new EnvironmentPanel( cp4EnvName, () -> ApposeUtils.installPixiEnvironment( cpContent, cp4EnvName ) ) );
+		environmentPanels.add( new EnvironmentPanel( StarDist.ENV_NAME, () -> ApposeUtils.installPixiEnvironment( StarDist.ENV_FILE_CONTENT, StarDist.ENV_NAME ) ) );
+		environmentPanels.add( new EnvironmentPanel( TrackastraUtils.ENV_NAME, () -> ApposeUtils.installMambaEnvironment( TrackastraUtils.ENV_FILE_CONTENT ) ) );
 	}
 
 	private void initLayout()
@@ -157,11 +168,17 @@ public class PythonEnvironmentManagerUI extends JFrame
 		worker.execute();
 	}
 
+	@FunctionalInterface
+	private interface CheckedRunnable
+	{
+		void run() throws Exception;
+	}
+
 	private class EnvironmentPanel extends JPanel
 	{
 		private final String envName;
 
-		private final String envContent;
+		private final CheckedRunnable installAction;
 
 		private final JLabel statusIcon;
 
@@ -173,11 +190,11 @@ public class PythonEnvironmentManagerUI extends JFrame
 
 		private final JLabel sizeValueLabel;
 
-		private EnvironmentPanel( String envName, String envContent )
+		private EnvironmentPanel( String envName, CheckedRunnable installAction )
 		{
 			super( new MigLayout( "fill, insets 8", "[][80!][grow][]", "[]5[]5[]" ) );
 			this.envName = envName;
-			this.envContent = envContent;
+			this.installAction = installAction;
 
 			statusIcon = new JLabel();
 			statusLabel = new JLabel();
@@ -358,9 +375,9 @@ public class PythonEnvironmentManagerUI extends JFrame
 					() -> {
 						try
 						{
-							ApposeUtils.installEnvironment( envContent );
+							installAction.run();
 						}
-						catch ( IOException e )
+						catch ( Exception e )
 						{
 							logger.error( "Installation failed for {}", envName, e );
 							SwingUtilities.invokeLater( () -> JOptionPane.showMessageDialog(

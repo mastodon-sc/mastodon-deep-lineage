@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.builder.Builders;
 import org.apposed.appose.util.Environments;
 import org.mastodon.mamut.util.ByteFormatter;
@@ -69,11 +70,33 @@ public class ApposeUtils
 	 * @param envContent The YAML content that defines the Python environment configuration.
 	 *                   This should include dependencies and other necessary details
 	 *                   to set up the environment.
-	 * @throws IOException If an I/O error occurs during the installation process.
+	 * @throws BuildException If an error occurs during the installation process.
 	 */
-	public static void installEnvironment( final String envContent ) throws IOException
-	{
+	public static void installMambaEnvironment(final String envContent ) throws BuildException {
 		Appose.mamba().content( envContent ).scheme( "environment.yml" ).logDebug().rebuild();
+	}
+
+	/**
+	 * Installs a Pixi environment from a pixi.toml manifest (default environment).
+	 *
+	 * @param envContent The pixi.toml content that defines the environment.
+	 * @throws BuildException If the build fails.
+	 */
+	public static void installPixiEnvironment( final String envContent ) throws BuildException
+	{
+		Appose.pixi().content( envContent ).logDebug().rebuild();
+	}
+
+	/**
+	 * Installs a named Pixi environment from a pixi.toml manifest.
+	 *
+	 * @param envContent The pixi.toml content that defines the environment.
+	 * @param envName    The named environment within the pixi.toml to install (e.g. {@code "cp3-cpu"}).
+	 * @throws BuildException If the build fails.
+	 */
+	public static void installPixiEnvironment( final String envContent, final String envName ) throws BuildException
+	{
+		Appose.pixi().content( envContent ).environment( envName ).logDebug().rebuild();
 	}
 
 	/**
