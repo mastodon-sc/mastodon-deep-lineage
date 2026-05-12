@@ -30,11 +30,11 @@ package org.mastodon.mamut.appose;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +59,7 @@ class ApposePixiCellpose4Test
 			+ "cellpose = '==4.0.6'\n"
 			+ "\n"
 			+ "[pypi-dependencies]\n"
-			+ "appose = '==0.7.2'\n"
+			+ "appose = '==0.10.1'\n"
 			+ "\n"
 			+ "[target.win-64.dependencies]\n"
 			+ "pytorch-gpu = '*'\n"
@@ -122,26 +122,28 @@ class ApposePixiCellpose4Test
 					+ "print('OK: cellpose segmentation works')\n";
 
 	@Test
-	void testApposePixiCellpose4Content() throws InterruptedException, IOException
+	void testApposePixiCellpose4Content() throws InterruptedException, BuildException, TaskException
 	{
 		Environment env = Appose.pixi().content( ENV_CONTENT ).logDebug().build();
 		try (Service python = env.python())
 		{
 			python.debug( System.out::println );
 			Service.Task task = python.task( SMOKE_SCRIPT );
+			task.start();
 			task.waitFor();
 		}
 		assertTrue( true, "Appose Pixi cellpose4 environment built and torch/cellpose imported successfully." );
 	}
 
 	@Test
-	void testApposePixiCellpose4Toml() throws InterruptedException, IOException
+	void testApposePixiCellpose4Toml() throws InterruptedException, BuildException, TaskException
 	{
 		Environment env = Appose.pixi( "src/test/resources/org/mastodon/mamut/appose/cellpose4.toml" ).logDebug().build();
 		try (Service python = env.python())
 		{
 			python.debug( System.out::println );
 			Service.Task task = python.task( SMOKE_SCRIPT );
+			task.start();
 			task.waitFor();
 		}
 		assertTrue( true, "Appose Pixi cellpose4 environment built and torch/cellpose imported successfully." );

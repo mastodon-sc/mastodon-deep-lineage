@@ -28,15 +28,15 @@
  */
 package org.mastodon.mamut.appose;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.NDArray;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
 
 import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
@@ -49,7 +49,7 @@ import net.imglib2.type.numeric.real.FloatType;
 
 public class ApposeDemo
 {
-	public static void main( String[] args ) throws IOException, InterruptedException
+	public static void main( String[] args ) throws InterruptedException, BuildException, TaskException
 	{
 		// Specify the path to the TIFF file
 		String filePath = "/home/pol_bia/stha735e/Documents/Mastodon/1135_n_stain_TO-PRO-3.tif";
@@ -108,6 +108,7 @@ public class ApposeDemo
 
 			// Run the script!
 			Service.Task task = python.task( script, inputs );
+			task.start();
 			task.waitFor();
 
 			// Verify that it worked.

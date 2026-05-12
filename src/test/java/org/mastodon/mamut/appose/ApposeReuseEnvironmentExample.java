@@ -33,16 +33,19 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
 import org.apposed.appose.TaskEvent;
-import org.mastodon.mamut.detection.cellpose.Cellpose3;
+import org.apposed.appose.TaskException;
 
 public class ApposeReuseEnvironmentExample
 {
-	public static void main( String[] args ) throws IOException, InterruptedException
+	public static void main( String[] args ) throws IOException, InterruptedException, BuildException, TaskException
 	{
-		Environment env = Appose.mamba().scheme( "environment.yml" ).content( Cellpose3.ENV_FILE_CONTENT ).logDebug().build();
+		String envContent = fiji.plugin.appose.cellpose.Cellpose.pixiEnv();
+		String envName = "cp3" + fiji.plugin.appose.ApposeUtils.getBestTorchConfig();
+		Environment env = Appose.pixi().content( envContent ).environment( envName ).logDebug().build();
 		System.out.println( "Created environment" );
 		StopWatch stopWatch = StopWatch.createStarted();
 
@@ -69,8 +72,9 @@ public class ApposeReuseEnvironmentExample
 		{
 			stopWatch.split();
 			System.out.println( "Python service started: " + stopWatch.formatSplitTime() );
-			Service.Task task1 = python.task( importScript, "main" );
+			Service.Task task1 = python.task( importScript );
 			task1.listen( getTaskListener() );
+			task1.start();
 			task1.waitFor();
 			System.out.println( "Import script ran successfully." );
 			stopWatch.split();
@@ -79,6 +83,7 @@ public class ApposeReuseEnvironmentExample
 			// Now run the payload script that uses the imported modules
 			Service.Task task2 = python.task( script );
 			task2.listen( getTaskListener() );
+			task2.start();
 			task2.waitFor();
 			Object result = task2.outputs.get( "result" );
 			System.out.println( "Nodes + Edges (result): " + result );

@@ -30,7 +30,6 @@ package org.mastodon.mamut.appose;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,14 +40,16 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.real.FloatType;
 
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
 import org.apposed.appose.builder.Builders;
 import org.apposed.appose.util.Environments;
 
 public class ApposeCellpose3Example
 {
-	public static void main( String[] args ) throws IOException, InterruptedException
+	public static void main( String[] args ) throws InterruptedException, BuildException, TaskException
 	{
 		Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
 		Img< FloatType > shmImg = ShmImg.copyOf( img );
@@ -88,7 +89,8 @@ public class ApposeCellpose3Example
 			python.debug( System.out::println );
 
 			// Run the script using provided inputs.
-			Service.Task task = python.task( script, inputs, "main" );
+			Service.Task task = python.task( script, inputs );
+			task.start();
 			task.waitFor();
 
 			// Verify that it worked.

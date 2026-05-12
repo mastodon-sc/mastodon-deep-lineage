@@ -34,8 +34,10 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.mastodon.mamut.detection.cellpose.Cellpose;
 import org.mastodon.mamut.detection.cellpose.Cellpose4;
 import org.mastodon.mamut.detection.stardist.StarDist;
 
@@ -46,7 +48,7 @@ import io.scif.img.ImgOpener;
 
 public class DetectionDemo
 {
-	public static void main( String[] args ) throws IOException
+	public static void main( String[] args ) throws IOException, BuildException
 	{
 		String filePath = "/home/pol_bia/stha735e/Documents/Mastodon/1135_n_stain_TO-PRO-3.tif";
 		//String filePath =
@@ -55,8 +57,10 @@ public class DetectionDemo
 		Img< FloatType > img = imgOpener.openImgs( filePath, new FloatType() ).get( 0 );
 		// Display the first image in a new BDV instance
 		BdvStackSource< ? > bdvSource1 = BdvFunctions.show( img, "Original Image" );
-		Environment environment = Appose.mamba().content( Cellpose4.ENV_FILE_CONTENT ).scheme( "environment.yml" ).logDebug().build();
-		try (Service python = environment.python().init( Cellpose4.generateImportStatements() ))
+		String cp4EnvContent = fiji.plugin.appose.cellpose.Cellpose.pixiEnv();
+		String cp4EnvName = "cp4" + fiji.plugin.appose.ApposeUtils.getBestTorchConfig();
+		Environment environment = Appose.pixi().content( cp4EnvContent ).environment( cp4EnvName ).logDebug().build();
+		try (Service python = environment.python().init( Cellpose.CP_UTILS_SCRIPT ))
 		{
 			Cellpose4 cellpose = new Cellpose4( python, null );
 			long startTime = System.currentTimeMillis();

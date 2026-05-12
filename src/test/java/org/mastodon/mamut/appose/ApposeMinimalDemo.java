@@ -28,16 +28,15 @@
  */
 package org.mastodon.mamut.appose;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
 
 public class ApposeMinimalDemo
 {
-	public static void main( String[] args ) throws InterruptedException, IOException
+	public static void main( String[] args ) throws InterruptedException, BuildException, TaskException
 	{
 		String content = "name: appose\n"
 				+ "channels:\n"
@@ -51,6 +50,7 @@ public class ApposeMinimalDemo
 		try (Service python = env.python())
 		{
 			Service.Task task = python.task( "5 + 6" );
+			task.start();
 			task.waitFor();
 			Object result = task.outputs.get( "result" );
 			System.out.println( "result: " + result );

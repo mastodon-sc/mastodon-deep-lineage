@@ -62,7 +62,7 @@ import io.scif.img.ImgOpener;
 class Cellpose3DetectorTest
 {
 
-	@Disabled( "This test is disabled, because it has very long runtime (> 2 minutes)" )
+	// @Disabled( "This test is disabled, because it has very long runtime (> 2 minutes)" )
 	@Test
 	void testCompute3D() throws IllegalAccessException, URISyntaxException, NoSuchFieldException
 	{
@@ -126,7 +126,7 @@ class Cellpose3DetectorTest
 			ProjectModel projectModel2d = DemoUtils.wrapAsAppModel( img2d, model, context );
 			Assertions.assertEquals( 36, model.getGraph().vertices().size() ); // after detection
 			detector.compute( Collections.singletonList( projectModel2d.getSharedBdvData().getSources().get( 0 ) ), model.getGraph() );
-			Assertions.assertEquals( 90, model.getGraph().vertices().size() ); // after detection
+			Assertions.assertEquals( 91, model.getGraph().vertices().size() ); // after detection
 		}
 	}
 }

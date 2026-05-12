@@ -28,11 +28,6 @@
  */
 package org.mastodon.mamut.appose;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,12 +38,14 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.real.FloatType;
 
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
 
 public class ApposeFailingStarDist3DExample
 {
-	public static void main( String[] args ) throws IOException, InterruptedException
+	public static void main( String[] args ) throws InterruptedException, BuildException, TaskException
 	{
 		Img< FloatType > img = ArrayImgs.floats( 10, 10, 10 );
 		Img< FloatType > shmImg = ShmImg.copyOf( img );

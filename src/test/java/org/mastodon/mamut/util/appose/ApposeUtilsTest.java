@@ -38,13 +38,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import org.apposed.appose.BuildException;
 import org.junit.jupiter.api.Test;
 
 class ApposeUtilsTest
 {
 	@Test
-	void testInstallDeleteExistsSize() throws IOException
-	{
+	void testInstallDeleteExistsSize() throws IOException, BuildException {
 		String testEnvName = "testenv";
 		String testEnvContent = "name: " + testEnvName + "\n"
 				+ "channels:\n"
@@ -52,7 +52,7 @@ class ApposeUtilsTest
 				+ "dependencies:\n"
 				+ "  - python=3.10\n";
 
-		ApposeUtils.installEnvironment( testEnvContent );
+		ApposeUtils.installMambaEnvironment( testEnvContent );
 		assertTrue( ApposeUtils.checkEnvironmentInstalled( testEnvName ) );
 		String size = ApposeUtils.calculateEnvironmentSize( testEnvName );
 		String numberPart = size.split( " " )[ 0 ]; // "123,4"

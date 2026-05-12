@@ -68,7 +68,7 @@ class TrackastraLinkerTest
 
 	private final Context context = new Context();
 
-	@Disabled( "This test is disabled, because it has very long runtime (> 5 minutes)" )
+	// @Disabled( "This test is disabled, because it has very long runtime (> 5 minutes)" )
 	@Test
 	void testLinking3D() throws IOException, SpimDataException, NoSuchFieldException, IllegalAccessException
 	{

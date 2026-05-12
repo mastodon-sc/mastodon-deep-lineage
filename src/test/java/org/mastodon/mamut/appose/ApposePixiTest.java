@@ -30,15 +30,16 @@ package org.mastodon.mamut.appose;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Builder;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -60,7 +61,7 @@ class ApposePixiTest
 			+ "pip = '*'\n"
 			+ "\n"
 			+ "[pypi-dependencies]\n"
-			+ "appose = '==0.7.2'\n"
+			+ "appose = '==0.10.1'\n"
 			+ "stardist = '==0.9.1'\n"
 			+ "csbdeep = '*'\n"
 			+ "ndv = { extras = ['qt'] }\n"
@@ -145,7 +146,7 @@ class ApposePixiTest
 			+ "cuda-dev = { features = ['cuda', 'dev'], solve-group = 'default' }";
 
 	@Test
-	void testApposePixi() throws InterruptedException, IOException
+	void testApposePixi() throws InterruptedException, BuildException, TaskException
 	{
 		Environment env = Appose.pixi().content( ENV_CONTENT ).logDebug().build();
 		List< String > launchArgs = new ArrayList<>( env.launchArgs() );
@@ -188,13 +189,14 @@ class ApposePixiTest
 			python.debug( System.out::println );
 			Service.Task task = python.task( "import tensorflow as tf\n"
 					+ "print(tf.config.list_physical_devices('GPU'))\n" );
+			task.start();
 			task.waitFor();
 		}
 		assertTrue( true, "Appose Pixi environment built and gpu devices printed successfully." );
 	}
 
 	@Test
-	void testApposePixiToml() throws InterruptedException, IOException
+	void testApposePixiToml() throws InterruptedException, BuildException, TaskException
 	{
 		Environment env = Appose.pixi( "src/test/resources/org/mastodon/mamut/appose/stardist.toml" ).logDebug().build();
 		List< String > launchArgs = new ArrayList<>( env.launchArgs() );
@@ -237,13 +239,14 @@ class ApposePixiTest
 			python.debug( System.out::println );
 			Service.Task task = python.task( "import tensorflow as tf\n"
 					+ "print(tf.config.list_physical_devices('GPU'))\n" );
+			task.start();
 			task.waitFor();
 		}
 		assertTrue( true, "Appose Pixi environment built and gpu devices printed successfully." );
 	}
 
 	@Test
-	void testApposePixiTomlGpu() throws InterruptedException, IOException
+	void testApposePixiTomlGpu() throws InterruptedException, BuildException, TaskException
 	{
 		Environment env = Appose.pixi( "src/test/resources/org/mastodon/mamut/appose/stardist-gpu.toml" ).logDebug().build();
 		try (Service python = env.python())
@@ -251,6 +254,7 @@ class ApposePixiTest
 			python.debug( System.out::println );
 			Service.Task task = python.task( "import tensorflow as tf\n"
 					+ "print(tf.config.list_physical_devices('GPU'))\n" );
+			task.start();
 			task.waitFor();
 		}
 		assertTrue( true, "Appose Pixi environment built and gpu devices printed successfully." );
