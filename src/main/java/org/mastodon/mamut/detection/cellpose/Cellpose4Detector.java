@@ -41,6 +41,7 @@ import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor.KEY_DIAMETER;
 import static org.mastodon.tracking.mamut.trackmate.wizard.descriptors.cellpose.Cellpose4DetectorDescriptor.KEY_FLOW_THRESHOLD;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
@@ -116,10 +117,6 @@ public class Cellpose4Detector extends DeepLearningDetector
 			}
 			else
 				cellpose.setDiameter( 0 );
-			if (settings.get(KEY_GPU_ID) != null)
-				cellpose.setGpuID( ( int ) settings.get( KEY_GPU_ID ) );
-			if (settings.get(KEY_GPU_MEMORY_FRACTION) != null)
-				cellpose.setGpuMemoryFraction( ( double ) settings.get( KEY_GPU_MEMORY_FRACTION ) );
 			return cellpose.segmentImage( Cast.unchecked( image ) );
 		}
 		catch ( Exception e )
@@ -149,32 +146,32 @@ public class Cellpose4Detector extends DeepLearningDetector
 	}
 
 	@Override
-	protected String getPythonEnvContent()
+	protected String getPythonEnvContent() throws IOException
 	{
-		return Cellpose4.ENV_FILE_CONTENT;
+		return fiji.plugin.appose.cellpose.Cellpose.pixiEnv();
 	}
 
 	@Override
 	protected String getPythonEnvName()
 	{
-		return Cellpose4.ENV_NAME;
+		return "cp4" + fiji.plugin.appose.ApposeUtils.getBestTorchConfig();
 	}
 
 	@Override
 	protected Builder< ? > getBuilder()
 	{
-		return Appose.pixi();
+		return Appose.pixi().environment( getPythonEnvName() );
+	}
+
+	@Override
+	protected String getPythonInitScript()
+	{
+		return Cellpose.CP_UTILS_SCRIPT;
 	}
 
 	@Override
 	protected String getImportScript( final boolean dataIs2D )
 	{
-		return Cellpose.generateImportStatements();
-	}
-
-	@Override
-	protected String getPythonEnvInit()
-	{
-		return "import numpy\nfrom cellpose import models\n";
+		return "";
 	}
 }
