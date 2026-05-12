@@ -141,24 +141,12 @@
             <artifactId>commons-math3</artifactId>
         </dependency>
 
-        <!-- imglib2-appose for cellpose and stardist based detection -->
+        <!-- cellpose-appose: environment setup and Python scripts for Cellpose integration.
+             Transitively brings appose and imglib2-appose. -->
         <dependency>
-            <groupId>net.imglib2</groupId>
-            <artifactId>imglib2-appose</artifactId>
-            <version>0.4.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apposed</groupId>
-                    <artifactId>appose</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- appose, a library for shared memory between java and python -->
-        <dependency>
-            <groupId>org.apposed</groupId>
-            <artifactId>appose</artifactId>
-            <version>0.9.0</version>
+            <groupId>fiji.plugin</groupId>
+            <artifactId>Cellpose_Appose</artifactId>
+            <version>0.1.8</version>
         </dependency>
 
         <!-- mastodon tracking as base for custom detectors (cellpose, stardist) -->
