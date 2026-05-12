@@ -36,6 +36,17 @@
         <sonar.language>java</sonar.language>
         <sonar.verbose>false</sonar.verbose>
     </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>9</release>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <name>Deep Lineage Project Mastodon Plugins</name>
     <description>A collection of plugins to analyse lineages of tracked objects in Mastodon,
