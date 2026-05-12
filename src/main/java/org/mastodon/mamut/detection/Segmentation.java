@@ -62,6 +62,15 @@ public abstract class Segmentation extends ApposeProcess
 	}
 
 	/**
+	 * Returns the key under which the segmentation script stores its label image in {@code task.outputs}.
+	 * Subclasses may override to match their script's output key.
+	 */
+	protected String getOutputKey()
+	{
+		return "label_image";
+	}
+
+	/**
 	 * Segments the input image using the configured Python runtime environment and
 	 * returns the segmented image as an {@link Img}.
 	 *
@@ -89,7 +98,7 @@ public abstract class Segmentation extends ApposeProcess
 
 			inputs.put( "image", ndArray );
 			Service.Task result = runScript();
-			NDArray segmentedImageArray = ( NDArray ) result.outputs.get( "label_image" );
+			NDArray segmentedImageArray = ( NDArray ) result.outputs.get( getOutputKey() );
 			ShmImg< T > segmentedImage = new ShmImg<>( segmentedImageArray );
 			stopWatch.split();
 			if ( logger.isInfoEnabled() )

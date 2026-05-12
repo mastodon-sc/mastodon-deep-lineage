@@ -45,8 +45,10 @@ import net.imglib2.util.Cast;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apposed.appose.Appose;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
+import org.apposed.appose.TaskException;
 import org.mastodon.Ref;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ReadOnlyGraph;
@@ -91,7 +93,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 		{
 			environment = prepareEnvironment();
 		}
-		catch ( IOException e )
+		catch ( BuildException e )
 		{
 			ok = false;
 			errorMessage = "Failed to prepare Trackastra environment: " + e.getMessage();
@@ -107,21 +109,23 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 						"import numpy\nimport trackastra.data.wrfeat\nimport trackastra.utils\nimport trackastra.model.pretrained as pretrained\nfrom trackastra.model import Trackastra\nimport trackastra.model.predict as predict\n" );
 			String importScripts = ResourceUtils
 					.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/region_props_imports.py", getClass() );
-			Service.Task importTask = python.task( importScripts, "main" );
+			Service.Task importTask = python.task( importScripts );
+			importTask.start();
 			importTask.waitFor();
 			List< SingleTimepointRegionProps > regionProps = computeRegionProps( index, python );
 			if ( !isCanceled() )
 			{
 				importScripts = ResourceUtils
 						.readResourceAsString( "org/mastodon/mamut/linking/trackastra/appose/link_prediction_imports.py", getClass() );
-				importTask = python.task( importScripts, "main" );
+				importTask = python.task( importScripts );
+				importTask.start();
 				importTask.waitFor();
 				runLinkPrediction( index, regionProps, python );
 			}
 			ok = true;
 			statusService.clearStatus();
 		}
-		catch ( TrackastraLinkingException | IOException e )
+		catch (TrackastraLinkingException | TaskException e )
 		{
 			Throwable cause = e.getCause();
 			String msg = "";
@@ -199,7 +203,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 	 * Prepares and returns the Appose environment required for Trackastra execution.
 	 * Handles optional environment existence checking and consolidates duplicated build code.
 	 */
-	private Environment prepareEnvironment() throws IOException
+	private Environment prepareEnvironment() throws BuildException
 	{
 		if ( confirmEnvInstallation )
 		{
@@ -217,7 +221,7 @@ public class TrackastraLinker< V extends Vertex< E > & HasTimepoint & RealLocali
 	/**
 	 * Builds an Appose environment using the Trackastra environment.yml descriptor.
 	 */
-	private Environment buildEnvironment() throws IOException
+	private Environment buildEnvironment() throws BuildException
 	{
 		return Appose.mamba().scheme( "environment.yml" ).content( TrackastraUtils.ENV_FILE_CONTENT ).logDebug()
 				.subscribeProgress( ( title, cur, max ) -> log.info( "{}: {}/{}", title, cur, max ) ).subscribeOutput( log::info )

@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apposed.appose.Service;
 import org.apposed.appose.TaskEvent;
+import org.apposed.appose.TaskException;
 import org.mastodon.mamut.detection.PythonRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public abstract class ApposeProcess
 
 	private final org.scijava.log.Logger scijavaLogger;
 
-	public static final String APPOSE_PYTHON_VERSION = "0.7.2";
+	public static final String APPOSE_PYTHON_VERSION = "0.10.1";
 
 	protected final Service pythonWorker;
 
@@ -122,7 +123,7 @@ public abstract class ApposeProcess
 		{
 			task.waitFor();
 		}
-		catch ( InterruptedException e )
+		catch (InterruptedException | TaskException e )
 		{
 			logger.error( "Task interrupted: {}", e.getMessage(), e );
 			Thread.currentThread().interrupt();
@@ -135,11 +136,12 @@ public abstract class ApposeProcess
 	{
 		String script = generateScript();
 		logger.info( "Run script:\n{}", script );
-		Service.Task task = pythonWorker.task( script, inputs, null );
+		Service.Task task = pythonWorker.task( script, inputs );
 		stopWatch.split();
 		if ( logger.isInfoEnabled() )
 			logger.info( "Created python task. Time elapsed: {}", stopWatch.formatSplitTime() );
 		task.listen( getTaskListener( stopWatch, task ) );
+		task.start();
 		if ( isPythonTaskInterrupted( task ) )
 			return null;
 

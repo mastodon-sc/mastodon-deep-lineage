@@ -167,7 +167,7 @@ public class StarDistDetector extends DeepLearningDetector
 	}
 
 	@Override
-	protected String getPythonEnvContent()
+	protected String getPythonEnvContent() throws java.io.IOException
 	{
 		return StarDist.ENV_FILE_CONTENT;
 	}

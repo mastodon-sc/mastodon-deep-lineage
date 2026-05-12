@@ -43,6 +43,7 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apposed.appose.BuildException;
 import org.apposed.appose.Builder;
 import org.apposed.appose.Environment;
 import org.apposed.appose.Service;
@@ -123,7 +124,13 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 				logger.info( "Set up environment finished. Path: {}", environment.base() );
 			try (Service python = environment.python())
 			{
-				if ( isWindows() )
+				// If the detector provides a Python init script (e.g. cp_utils.py for cellpose),
+				// run it to establish utility functions in the Python service's global scope.
+				// Otherwise fall back to the Windows numpy workaround when needed.
+				String initScript = getPythonInitScript();
+				if ( !initScript.isEmpty() )
+					python.init( initScript );
+				else if ( isWindows() )
 					python.init( getPythonEnvInit() );
 
 				// First, get the source for the current channel (or setup) at the desired time-point. In BDV jargon, this is a source.
@@ -131,9 +138,13 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 				RandomAccessibleInterval< ? > image = source.getSource( 0, 0 );
 
 				String importScript = getImportScript( ImgUtils.is2D( image ) );
-				logger.info( "import script:\n{}", importScript );
-				Service.Task importTask = python.task( importScript, "main" );
-				importTask.waitFor();
+				if ( importScript != null && !importScript.isEmpty() )
+				{
+					logger.info( "import script:\n{}", importScript );
+					Service.Task importTask = python.task( importScript, Map.of() );
+					importTask.start();
+					importTask.waitFor();
+				}
 				this.pythonService = python;
 				for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
 				{
@@ -169,7 +180,7 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	 * Prepares and returns the Appose environment required for detector execution.
 	 * Handles optional environment existence checking.
 	 */
-	private Environment prepareEnvironment() throws IOException
+	private Environment prepareEnvironment() throws IOException, BuildException
 	{
 		if ( confirmEnvInstallation )
 		{
@@ -185,11 +196,12 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 	}
 
 	/**
-	 * Builds an Appose environment using the Trackastra environment.yml descriptor.
+	 * Builds an Appose environment using the environment descriptor returned by {@link #getPythonEnvContent()}.
+	 * Subclasses that need a named environment (e.g. pixi) should configure it via {@link #getBuilder()}.
 	 */
-	private Environment buildEnvironment() throws IOException
+	private Environment buildEnvironment() throws IOException, BuildException
 	{
-		return getBuilder().content( getPythonEnvContent() ).logDebug()
+		return getBuilder().content( getPythonEnvContent() )
 				.subscribeProgress( ( title, cur, max ) -> logger.info( "{}: {}/{}", title, cur, max ) )
 				.subscribeOutput( logger::info )
 				.subscribeError( logger::error ).build();
@@ -275,12 +287,14 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 
 		if ( segmentation != null )
 		{
-			IntervalView< ? > roiSegmentation = Views.zeroMin( segmentation );
+			// Drop any singleton dimensions added by the segmentation script (e.g. T and C from cp3.py/cp4.py TZCYX output)
+			RandomAccessibleInterval< ? > squeezedSegmentation = Views.dropSingletonDimensions( segmentation );
+			IntervalView< ? > roiSegmentation = Views.zeroMin( squeezedSegmentation );
 			if ( roi != null )
 			{
 				long[] min = new long[ roi.numDimensions() ];
 				roi.min( min );
-				roiSegmentation = Views.translate( segmentation, min );
+				roiSegmentation = Views.translate( squeezedSegmentation, min );
 			}
 
 			final AffineTransform3D transform = DetectionUtil.getTransform( sources, timepoint, setup, level );
@@ -350,9 +364,19 @@ public abstract class DeepLearningDetector extends AbstractSpotDetectorOp
 
 	protected abstract String getDetectorName();
 
-	protected abstract String getPythonEnvContent();
+	protected abstract String getPythonEnvContent() throws IOException;
 
 	protected abstract String getPythonEnvName();
+
+	/**
+	 * Returns a Python script to run once via {@code python.init()} when the service starts,
+	 * making its definitions available to all subsequent tasks. Return an empty string if no
+	 * one-time initialization is needed (the default).
+	 */
+	protected String getPythonInitScript()
+	{
+		return "";
+	}
 
 	protected abstract Builder< ? > getBuilder();
 
